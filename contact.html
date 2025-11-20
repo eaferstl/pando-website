@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Contact Pando for serious inquiries about our compute infrastructure security research and potential collaboration opportunities.">
+    <title>Contact - Pando</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a href="index.html" class="logo">
+                    <img src="images/logoNew.png" alt="Pando Logo">
+                </a>
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html" class="active">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contact Hero -->
+    <section class="page-hero">
+        <div class="wave-container">
+            <div class="wave wave-layer-1"></div>
+            <div class="wave wave-layer-2"></div>
+        </div>
+        <div class="container">
+            <h1>Get in Touch</h1>
+            <p class="page-subtitle">We welcome inquiries from serious parties interested in our research</p>
+        </div>
+    </section>
+
+    <!-- Contact Form Section -->
+    <section class="contact-section">
+        <div class="wave-container">
+            <div class="wave wave-layer-1"></div>
+            <div class="wave wave-layer-2"></div>
+        </div>
+        <div class="container">
+            <div class="contact-wrapper">
+                <div class="contact-info">
+                    <h2>Contact Guidelines</h2>
+                    <p>We welcome inquiries from:</p>
+                    <ul class="info-list">
+                        <li>Organizations exploring enhanced infrastructure security solutions</li>
+                        <li>Potential partners interested in collaboration opportunities</li>
+                        <li>Domain experts with relevant feedback or insights</li>
+                        <li>Technical decision-makers facing compute security challenges</li>
+                    </ul>
+                    <p>Please allow 3-5 business days for a response. All inquiries are treated with appropriate confidentiality.</p>
+                    
+                    <div class="privacy-note">
+                        <h3>Privacy & Confidentiality</h3>
+                        <p>Your information will be used solely to respond to your inquiry. We do not share contact information with third parties, and all communications are treated as confidential.</p>
+                    </div>
+                </div>
+
+                <div class="contact-form-wrapper">
+                    <form id="contactForm" class="contact-form" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field">
+                        <!-- Hidden fields for Netlify -->
+                        <input type="hidden" name="form-name" value="contact">
+                        <p class="hidden">
+                            <label>Don't fill this out if you're human: <input name="bot-field" /></label>
+                        </p>
+
+                        <div class="form-group">
+                            <label for="name">Name <span class="required">*</span></label>
+                            <input type="text" id="name" name="name" required>
+                            <span class="error-message" id="nameError"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email <span class="required">*</span></label>
+                            <input type="email" id="email" name="email" required>
+                            <span class="error-message" id="emailError"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="organization">Organization / Company</label>
+                            <input type="text" id="organization" name="organization">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="subject">Subject / Area of Interest <span class="required">*</span></label>
+                            <select id="subject" name="subject" required>
+                                <option value="">Please select...</option>
+                                <option value="partnership">Partnership Opportunity</option>
+                                <option value="collaboration">Research Collaboration</option>
+                                <option value="technical">Technical Inquiry</option>
+                                <option value="business">Business Inquiry</option>
+                                <option value="feedback">Feedback / Discussion</option>
+                                <option value="other">Other</option>
+                            </select>
+                            <span class="error-message" id="subjectError"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="message">Message <span class="required">*</span></label>
+                            <textarea id="message" name="message" rows="6" required></textarea>
+                            <span class="error-message" id="messageError"></span>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-submit">Send Message</button>
+                        
+                        <div class="form-status" id="formStatus"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2024 Pando. All rights reserved.</p>
+                <p class="patent-notice">This technology is subject to pending patent applications. All proprietary information is confidential.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
