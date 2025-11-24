@@ -5,11 +5,11 @@
 /* CSS Variables for consistent theming */
 :root {
     /* Color Palette */
-    --sage-green: #67897d;
-    --cream: #F5F0E8;
-    --pastel-pink: #E8C5C1;
-    --dark-charcoal: #2C3333;
-    --light-gray: #F8F9FA;
+    --black-forest: #00380B;
+    --floral-white: #F7F4EB;
+    --amber-honey: #DF9F15;
+    --coffee-bean: #1F1102;
+    --azure-mist: #E1F0F4;
     --white: #FFFFFF;
     --error-red: #D32F2F;
     --success-green: #388E3C;
@@ -56,7 +56,7 @@ html {
 body {
     font-family: var(--font-family);
     line-height: var(--line-height-base);
-    color: var(--dark-charcoal);
+    color: var(--coffee-bean);
     background-color: var(--white);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -70,7 +70,7 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
     line-height: 1.3;
     margin-bottom: var(--spacing-md);
-    color: var(--dark-charcoal);
+    color: var(--coffee-bean);
 }
 
 h1 {
@@ -91,13 +91,14 @@ p {
 }
 
 a {
-    color: var(--sage-green);
+    color: var(--black-forest);
     text-decoration: none;
     transition: color var(--transition-speed);
 }
 
 a:hover {
-    color: #567364;
+    color: var(--black-forest);
+    opacity: 0.7;
 }
 
 ul {
@@ -120,7 +121,7 @@ ul {
    =================================== */
 
 .navbar {
-    background-color: var(--sage-green);
+    background-color: var(--black-forest);
     padding: var(--spacing-md) 0;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     position: sticky;
@@ -257,7 +258,7 @@ ul {
    =================================== */
 
 .hero {
-    background: linear-gradient(135deg, var(--cream) 0%, var(--light-gray) 100%);
+    background: linear-gradient(135deg, var(--floral-white) 0%, var(--azure-mist) 100%);
     padding: var(--spacing-xxl) 0;
     text-align: center;
     position: relative;
@@ -280,12 +281,13 @@ ul {
 .hero h1 {
     font-size: 2.5rem;
     margin-bottom: var(--spacing-md);
-    color: var(--dark-charcoal);
+    color: var(--coffee-bean);
 }
 
 .hero-subtitle {
     font-size: 1.25rem;
-    color: #4a5568;
+    color: var(--coffee-bean);
+    opacity: 0.7;
     margin-bottom: var(--spacing-xl);
     line-height: 1.7;
 }
@@ -302,10 +304,10 @@ ul {
    =================================== */
 
 .page-hero {
-    background: var(--cream);
+    background: var(--floral-white);
     padding: var(--spacing-xxl) 0;
     text-align: center;
-    color: var(--dark-charcoal);
+    color: var(--coffee-bean);
     position: relative;
     overflow: hidden;
 }
@@ -322,7 +324,7 @@ ul {
 }
 
 .page-hero h1 {
-    color: var(--dark-charcoal);
+    color: var(--coffee-bean);
     font-size: 2.5rem;
     margin-bottom: var(--spacing-sm);
     position: relative;
@@ -331,7 +333,7 @@ ul {
 
 .page-subtitle {
     font-size: 1.1rem;
-    color: var(--dark-charcoal);
+    color: var(--coffee-bean);
     opacity: 0.85;
     position: relative;
     z-index: 1;
@@ -355,27 +357,28 @@ ul {
 }
 
 .btn-primary {
-    background-color: var(--pastel-pink);
-    color: var(--dark-charcoal);
-    border-color: var(--pastel-pink);
+    background-color: var(--amber-honey);
+    color: var(--coffee-bean);
+    border-color: var(--amber-honey);
 }
 
 .btn-primary:hover {
-    background-color: #d9b0ac;
-    border-color: #d9b0ac;
-    color: var(--dark-charcoal);
+    background-color: var(--amber-honey);
+    border-color: var(--amber-honey);
+    color: var(--coffee-bean);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(232, 197, 193, 0.4);
+    box-shadow: 0 4px 12px rgba(223, 159, 21, 0.4);
+    opacity: 0.9;
 }
 
 .btn-secondary {
     background-color: transparent;
-    color: var(--sage-green);
-    border-color: var(--sage-green);
+    color: var(--black-forest);
+    border-color: var(--black-forest);
 }
 
 .btn-secondary:hover {
-    background-color: var(--sage-green);
+    background-color: var(--black-forest);
     color: var(--white);
 }
 
@@ -398,7 +401,7 @@ ul {
     text-align: center;
     font-size: 2rem;
     margin-bottom: var(--spacing-xl);
-    color: var(--sage-green);
+    color: var(--black-forest);
     position: relative;
     z-index: 1;
 }
@@ -413,10 +416,10 @@ ul {
 }
 
 .problem-card {
-    background-color: var(--cream);
+    background-color: var(--floral-white);
     padding: var(--spacing-lg);
     border-radius: var(--border-radius);
-    border: 1px solid #e5dfd5;
+    border: 1px solid var(--floral-white);
     transition: all var(--transition-speed);
     position: relative;
     z-index: 1;
@@ -428,12 +431,12 @@ ul {
 }
 
 .problem-card h3 {
-    color: var(--sage-green);
+    color: var(--black-forest);
     margin-bottom: var(--spacing-sm);
 }
 
 .problem-card p {
-    color: var(--dark-charcoal);
+    color: var(--coffee-bean);
     margin-bottom: 0;
 }
 
@@ -443,7 +446,7 @@ ul {
 
 .vision-section {
     padding: var(--spacing-xxl) 0;
-    background-color: var(--light-gray);
+    background: linear-gradient(to bottom, var(--azure-mist) 0%, var(--floral-white) 100%);
     position: relative;
     overflow: hidden;
 }
@@ -452,7 +455,7 @@ ul {
     text-align: center;
     font-size: 2rem;
     margin-bottom: var(--spacing-xl);
-    color: var(--sage-green);
+    color: var(--black-forest);
     position: relative;
     z-index: 1;
 }
@@ -473,8 +476,8 @@ ul {
 .disclaimer {
     margin-top: var(--spacing-lg);
     padding: var(--spacing-md);
-    background-color: rgba(107, 142, 127, 0.1);
-    border-left: 4px solid var(--sage-green);
+    background-color: rgba(0, 56, 11, 0.1);
+    border-left: 4px solid var(--black-forest);
     border-radius: var(--border-radius);
 }
 
@@ -484,7 +487,7 @@ ul {
 
 .cta-section {
     padding: var(--spacing-xxl) 0;
-    background-color: var(--pastel-pink);
+    background-color: var(--amber-honey);
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -505,13 +508,13 @@ ul {
 }
 
 .cta-content h2 {
-    color: var(--dark-charcoal);
+    color: var(--coffee-bean);
     margin-bottom: var(--spacing-md);
 }
 
 .cta-content p {
     font-size: 1.1rem;
-    color: var(--dark-charcoal);
+    color: var(--coffee-bean);
     margin-bottom: var(--spacing-lg);
     max-width: 600px;
     margin-left: auto;
@@ -529,7 +532,7 @@ ul {
 }
 
 .content-section.alt-bg {
-    background-color: var(--light-gray);
+    background: linear-gradient(to bottom, var(--azure-mist) 0%, var(--floral-white) 50%, var(--azure-mist) 100%);
 }
 
 .content-wrapper {
@@ -540,7 +543,7 @@ ul {
 }
 
 .content-wrapper h2 {
-    color: var(--sage-green);
+    color: var(--black-forest);
     margin-bottom: var(--spacing-lg);
 }
 
@@ -559,11 +562,11 @@ ul {
     list-style: disc;
     margin-bottom: var(--spacing-sm);
     line-height: 1.7;
-    color: var(--dark-charcoal);
+    color: var(--coffee-bean);
 }
 
 .content-list li strong {
-    color: var(--sage-green);
+    color: var(--black-forest);
 }
 
 /* ===================================
@@ -587,7 +590,7 @@ ul {
 }
 
 .contact-info h2 {
-    color: var(--sage-green);
+    color: var(--black-forest);
     margin-bottom: var(--spacing-md);
 }
 
@@ -610,13 +613,13 @@ ul {
 .privacy-note {
     margin-top: var(--spacing-lg);
     padding: var(--spacing-md);
-    background-color: var(--cream);
+    background-color: var(--floral-white);
     border-radius: var(--border-radius);
 }
 
 .privacy-note h3 {
     font-size: 1.1rem;
-    color: var(--sage-green);
+    color: var(--black-forest);
     margin-bottom: var(--spacing-sm);
 }
 
@@ -630,7 +633,7 @@ ul {
    =================================== */
 
 .contact-form-wrapper {
-    background-color: var(--cream);
+    background-color: var(--floral-white);
     padding: var(--spacing-lg);
     border-radius: var(--border-radius);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -644,7 +647,7 @@ ul {
     display: block;
     margin-bottom: var(--spacing-xs);
     font-weight: 600;
-    color: var(--dark-charcoal);
+    color: var(--coffee-bean);
 }
 
 .required {
@@ -657,7 +660,7 @@ ul {
 .contact-form textarea {
     width: 100%;
     padding: 12px 16px;
-    border: 2px solid #e5dfd5;
+    border: 2px solid var(--floral-white);
     border-radius: var(--border-radius);
     font-family: var(--font-family);
     font-size: 1rem;
@@ -669,7 +672,7 @@ ul {
 .contact-form select:focus,
 .contact-form textarea:focus {
     outline: none;
-    border-color: var(--sage-green);
+    border-color: var(--black-forest);
 }
 
 .contact-form textarea {
@@ -728,7 +731,7 @@ ul {
    =================================== */
 
 .footer {
-    background-color: var(--dark-charcoal);
+    background-color: var(--coffee-bean);
     color: rgba(255, 255, 255, 0.8);
     padding: var(--spacing-xl) 0;
     text-align: center;
@@ -870,7 +873,7 @@ button:focus,
 input:focus,
 select:focus,
 textarea:focus {
-    outline: 2px solid var(--sage-green);
+    outline: 2px solid var(--black-forest);
     outline-offset: 2px;
 }
 
@@ -884,7 +887,7 @@ textarea:focus {
 .skip-to-main:focus {
     left: 0;
     top: 0;
-    background: var(--sage-green);
+    background: var(--black-forest);
     color: white;
     padding: var(--spacing-sm);
 }
