@@ -258,7 +258,7 @@ ul {
    =================================== */
 
 .hero {
-    background: linear-gradient(135deg, var(--floral-white) 0%, var(--azure-mist) 100%);
+    background: linear-gradient(135deg, var(--floral-white) 0%, var(--amber-honey) 100%);
     padding: var(--spacing-xxl) 0;
     text-align: center;
     position: relative;
@@ -357,17 +357,17 @@ ul {
 }
 
 .btn-primary {
-    background-color: var(--amber-honey);
+    background-color: var(--azure-mist);
     color: var(--coffee-bean);
-    border-color: var(--amber-honey);
+    border-color: var(--azure-mist);
 }
 
 .btn-primary:hover {
-    background-color: var(--amber-honey);
-    border-color: var(--amber-honey);
+    background-color: var(--azure-mist);
+    border-color: var(--azure-mist);
     color: var(--coffee-bean);
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(223, 159, 21, 0.4);
+    box-shadow: 0 4px 12px rgba(225, 240, 244, 0.4);
     opacity: 0.9;
 }
 
@@ -446,7 +446,7 @@ ul {
 
 .vision-section {
     padding: var(--spacing-xxl) 0;
-    background: linear-gradient(to bottom, var(--azure-mist) 0%, var(--floral-white) 100%);
+    background: linear-gradient(to bottom, var(--amber-honey) 0%, var(--floral-white) 100%);
     position: relative;
     overflow: hidden;
 }
@@ -487,7 +487,7 @@ ul {
 
 .cta-section {
     padding: var(--spacing-xxl) 0;
-    background-color: var(--amber-honey);
+    background-color: var(--azure-mist);
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -532,7 +532,7 @@ ul {
 }
 
 .content-section.alt-bg {
-    background: linear-gradient(to bottom, var(--azure-mist) 0%, var(--floral-white) 50%, var(--azure-mist) 100%);
+    background: linear-gradient(to bottom, var(--amber-honey) 0%, var(--floral-white) 50%, var(--amber-honey) 100%);
 }
 
 .content-wrapper {
