@@ -699,6 +699,355 @@ ul {
 }
 
 /* ===================================
+   ALTERNATIVE LAYOUT 1: Side-by-Side Feature Rows
+   Modern, Apple-style alternating content
+   =================================== */
+
+.feature-rows {
+    max-width: 1000px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+.feature-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+    align-items: center;
+    margin-bottom: var(--spacing-md);
+    padding: var(--spacing-xs) 0;
+}
+
+.feature-row:last-child {
+    margin-bottom: 0;
+}
+
+/* Alternate the direction */
+.feature-row:nth-child(even) .feature-content {
+    order: 2;
+}
+
+.feature-row:nth-child(even) .feature-visual {
+    order: 1;
+}
+
+.feature-content h3 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--black-forest);
+    margin-bottom: var(--spacing-md);
+    line-height: 1.2;
+}
+
+.feature-content p {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--coffee-bean);
+    margin-bottom: 0;
+}
+
+.feature-visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-lg);
+}
+
+.feature-number {
+    font-size: 8rem;
+    font-weight: 800;
+    color: var(--azure-mist);
+    opacity: 0.6;
+    line-height: 1;
+}
+
+/* ===================================
+   ALTERNATIVE LAYOUT 2: Minimal Icon Cards
+   Clean, borderless approach with hover effects
+   =================================== */
+
+.minimal-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: var(--spacing-lg);
+    position: relative;
+    z-index: 1;
+}
+
+.minimal-card {
+    text-align: center;
+    padding: var(--spacing-md) var(--spacing-sm);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    background: transparent;
+}
+
+.minimal-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 2px;
+    background: var(--amber-honey);
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.minimal-card:hover::before {
+    width: 60%;
+}
+
+.minimal-card:hover {
+    transform: translateY(-8px);
+}
+
+.card-icon {
+    font-size: 3rem;
+    margin-bottom: var(--spacing-md);
+    display: block;
+}
+
+.minimal-card h3 {
+    font-size: 1.35rem;
+    font-weight: 600;
+    color: var(--black-forest);
+    margin-bottom: var(--spacing-md);
+}
+
+.minimal-card p {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--coffee-bean);
+    margin-bottom: 0;
+}
+
+/* ===================================
+   ALTERNATIVE LAYOUT 3: Full-Width Feature Blocks
+   Bold, immersive sections like Apple product pages
+   =================================== */
+
+.fullwidth-feature {
+    padding: var(--spacing-xxl) 0;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+.fullwidth-feature.dark {
+    background-color: var(--coffee-bean);
+    color: var(--white);
+}
+
+.fullwidth-feature h2 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-lg);
+    letter-spacing: -0.5px;
+}
+
+.fullwidth-feature.dark h2 {
+    color: var(--white);
+}
+
+.fullwidth-feature p {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    max-width: 700px;
+    margin: 0 auto var(--spacing-xl) auto;
+}
+
+.fullwidth-feature.dark p {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.feature-highlights {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing-lg);
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.highlight-item {
+    padding: var(--spacing-md);
+}
+
+.highlight-item h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: var(--spacing-sm);
+    color: var(--black-forest);
+}
+
+.fullwidth-feature.dark .highlight-item h4 {
+    color: var(--white);
+}
+
+.highlight-item p {
+    font-size: 0.95rem;
+    margin-bottom: 0;
+}
+
+/* ===================================
+   ALTERNATIVE LAYOUT 4: Timeline/Process Flow
+   Sequential presentation for methodologies
+   =================================== */
+
+.timeline-container {
+    max-width: 800px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
+
+.timeline-item {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+    position: relative;
+}
+
+.timeline-item:last-child {
+    margin-bottom: 0;
+}
+
+.timeline-marker {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.timeline-number {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--black-forest), var(--amber-honey));
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(0, 56, 11, 0.2);
+    z-index: 2;
+}
+
+.timeline-line {
+    width: 3px;
+    flex: 1;
+    background: linear-gradient(to bottom, var(--amber-honey), var(--azure-mist));
+    margin-top: var(--spacing-sm);
+    opacity: 0.4;
+}
+
+.timeline-item:last-child .timeline-line {
+    display: none;
+}
+
+.timeline-content {
+    padding: var(--spacing-md) 0;
+}
+
+.timeline-content h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--black-forest);
+    margin-bottom: var(--spacing-sm);
+}
+
+.timeline-content p {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--coffee-bean);
+    margin-bottom: 0;
+}
+
+/* ===================================
+   ALTERNATIVE LAYOUT 5: Split Focus Cards
+   Two-column emphasis for key differentiators
+   =================================== */
+
+.split-focus {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-xl);
+    position: relative;
+    z-index: 1;
+}
+
+.focus-card {
+    padding: var(--spacing-xxl) var(--spacing-xl);
+    background: linear-gradient(135deg, var(--floral-white) 0%, var(--azure-mist) 100%);
+    border-radius: 12px;
+    text-align: center;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.focus-card::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.focus-card:hover::after {
+    opacity: 1;
+}
+
+.focus-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.focus-card h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--black-forest);
+    margin-bottom: var(--spacing-lg);
+}
+
+.focus-card p {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--coffee-bean);
+    margin-bottom: 0;
+}
+
+.focus-list {
+    list-style: none;
+    padding: 0;
+    margin: var(--spacing-md) 0 0 0;
+    text-align: left;
+}
+
+.focus-list li {
+    padding: var(--spacing-sm) 0;
+    padding-left: var(--spacing-lg);
+    position: relative;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.focus-list li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--black-forest);
+    font-weight: bold;
+}
+
+/* ===================================
    Use Cases Section
    =================================== */
 
@@ -841,6 +1190,44 @@ ul {
     max-width: 600px;
     margin-left: auto;
     margin-right: auto;
+}
+
+.cta-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-lg);
+    flex-wrap: wrap;
+}
+
+.cta-section .social-links {
+    margin: 0;
+}
+
+.cta-section .social-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    background-color: var(--amber-honey);
+    color: var(--white);
+    border-radius: 50%;
+    transition: all var(--transition-speed);
+    text-decoration: none;
+}
+
+.cta-section .social-link:hover {
+    background-color: var(--coffee-bean);
+    transform: translateY(-3px) scale(1.1);
+    box-shadow: 0 6px 16px rgba(223, 159, 21, 0.4);
+    opacity: 1;
+}
+
+.cta-section .social-link svg {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
 }
 
 /* ===================================
@@ -1007,6 +1394,65 @@ ul {
     padding: var(--spacing-lg);
     border-radius: var(--border-radius);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Social Media Links */
+.contact-section .social-links {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: var(--spacing-xl);
+    position: relative;
+    z-index: 1;
+}
+
+.page-hero .social-links {
+    text-align: center;
+    margin-top: var(--spacing-lg);
+    position: relative;
+    z-index: 1;
+}
+
+.page-hero .social-intro {
+    font-size: 1rem;
+    color: var(--coffee-bean);
+    margin-bottom: var(--spacing-md);
+}
+
+.contact-section .social-icons,
+.page-hero .social-icons {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-lg);
+    flex-wrap: wrap;
+}
+
+.contact-section .social-link,
+.page-hero .social-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 70px;
+    height: 70px;
+    background-color: var(--amber-honey);
+    color: var(--white);
+    border-radius: 50%;
+    transition: all var(--transition-speed);
+    text-decoration: none;
+}
+
+.contact-section .social-link:hover,
+.page-hero .social-link:hover {
+    background-color: var(--coffee-bean);
+    transform: translateY(-3px) scale(1.1);
+    box-shadow: 0 6px 16px rgba(223, 159, 21, 0.4);
+    opacity: 1;
+}
+
+.contact-section .social-link svg,
+.page-hero .social-link svg {
+    width: 30px;
+    height: 30px;
+    fill: currentColor;
 }
 
 .contact-form .form-group {
@@ -1226,6 +1672,67 @@ ul {
     
     .use-cases-grid {
         grid-template-columns: 1fr;
+    }
+    
+    /* Alternative layouts - Mobile responsive */
+    .feature-row {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+        margin-bottom: var(--spacing-lg);
+    }
+    
+    .feature-row:nth-child(even) .feature-content,
+    .feature-row:nth-child(even) .feature-visual {
+        order: initial;
+    }
+    
+    .feature-number {
+        font-size: 5rem;
+    }
+    
+    .feature-content h3 {
+        font-size: 1.5rem;
+    }
+    
+    .minimal-cards-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .fullwidth-feature h2 {
+        font-size: 2rem;
+    }
+    
+    .fullwidth-feature p {
+        font-size: 1.1rem;
+    }
+    
+    .timeline-item {
+        grid-template-columns: 60px 1fr;
+        gap: var(--spacing-md);
+        margin-bottom: var(--spacing-lg);
+    }
+    
+    .timeline-number {
+        width: 50px;
+        height: 50px;
+        font-size: 1.25rem;
+    }
+    
+    .timeline-content h3 {
+        font-size: 1.25rem;
+    }
+    
+    .split-focus {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+    }
+    
+    .focus-card {
+        padding: var(--spacing-lg);
+    }
+    
+    .focus-card h3 {
+        font-size: 1.5rem;
     }
 }
 
