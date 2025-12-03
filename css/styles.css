@@ -238,19 +238,19 @@ ul {
 
 /* High frequency, low amplitude waves - only for non-hero sections */
 .wave-layer-4 {
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 20" preserveAspectRatio="none"><path d="M0,10 Q50,7 100,10 T200,10" stroke="rgba(103,137,125,0.25)" fill="none" stroke-width="0.5"/></svg>') repeat;
-    background-size: 200px 20px;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 20" preserveAspectRatio="none"><path d="M0,10 Q50,7 100,10 T200,10" stroke="rgba(225,240,244,0.5)" fill="none" stroke-width="0.5"/></svg>') repeat;
+    background-size: 400px 60px;
     background-position: 0 0;
     animation: wave-motion-1 50s linear infinite;
-    opacity: 0.7;
+    opacity: 1;
 }
 
 .wave-layer-5 {
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 15" preserveAspectRatio="none"><path d="M0,7.5 Q37.5,5 75,7.5 T150,7.5" stroke="rgba(103,137,125,0.2)" fill="none" stroke-width="0.5"/></svg>') repeat;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 15" preserveAspectRatio="none"><path d="M0,7.5 Q37.5,5 75,7.5 T150,7.5" stroke="rgba(0,56,11,0.4)" fill="none" stroke-width="0.5"/></svg>') repeat;
     background-size: 150px 15px;
     background-position: 0 0;
     animation: wave-motion-2 55s linear infinite reverse;
-    opacity: 0.6;
+    opacity: 0.3;
 }
 
 /* ===================================
