@@ -1356,6 +1356,12 @@ ul {
     line-height: 1.7;
 }
 
+.contact-subtitle {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--black-forest);
+}
+
 .info-list {
     margin: var(--spacing-md) 0;
     padding-left: var(--spacing-md);
