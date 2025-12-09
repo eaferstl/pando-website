@@ -1548,8 +1548,8 @@ ul {
     display: block;
     color: var(--error-red);
     font-size: 0.875rem;
-    margin-top: var(--spacing-xs);
-    min-height: 5px;
+    margin-top: 4px;
+    min-height: 0;
 }
 
 .btn-submit {

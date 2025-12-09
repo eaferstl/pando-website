@@ -3,8 +3,18 @@
  * Handles form validation and interactive features
  */
 
+// EmailJS Configuration
+const EMAILJS_CONFIG = {
+    publicKey: 'QOE9Vl1cBq8l2TlPN',
+    serviceId: 'service_1q1byab',
+    templateId: 'template_1zf3ykh'
+};
+
 // Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize EmailJS
+    emailjs.init(EMAILJS_CONFIG.publicKey);
+    
     // Initialize form validation if contact form exists
     const contactForm = document.getElementById('contactForm');
     if (contactForm) {
@@ -55,6 +65,8 @@ function initializeContactForm(form) {
 
     // Form submission
     form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
         // Validate all fields before submission
         const isNameValid = validateName(nameInput.value);
         const isEmailValid = validateEmail(emailInput.value);
@@ -62,17 +74,43 @@ function initializeContactForm(form) {
         const isMessageValid = validateMessage(messageInput.value);
 
         if (!isNameValid || !isEmailValid || !isSubjectValid || !isMessageValid) {
-            e.preventDefault();
             showFormStatus('error', 'Please fix the errors above before submitting.');
             return false;
         }
 
-        // If using Netlify Forms, let it handle the submission naturally
-        // The data-netlify attribute will handle the form processing
-        
         // Disable submit button to prevent double submission
         submitButton.disabled = true;
         submitButton.textContent = 'Sending...';
+        
+        // Prepare template parameters
+        const templateParams = {
+            from_name: nameInput.value,
+            from_email: emailInput.value,
+            organization: document.getElementById('organization').value || 'Not provided',
+            subject: subjectInput.value,
+            message: messageInput.value
+        };
+        
+        // Send email using EmailJS
+        emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, templateParams)
+            .then(function(response) {
+                console.log('SUCCESS!', response.status, response.text);
+                showFormStatus('success', 'Thank you for your message! We will typically respond within 1-3 business days.');
+                
+                // Reset form
+                form.reset();
+                
+                // Re-enable button
+                submitButton.disabled = false;
+                submitButton.textContent = 'Send Message';
+            }, function(error) {
+                console.error('FAILED...', error);
+                showFormStatus('error', 'Failed to send message. Please try again or contact us directly via LinkedIn or X.');
+                
+                // Re-enable button
+                submitButton.disabled = false;
+                submitButton.textContent = 'Send Message';
+            });
     });
 }
 
@@ -226,7 +264,7 @@ function initializeSmoothScroll() {
 function handleFormSuccess() {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('success') === 'true') {
-        showFormStatus('success', 'Thank you for your message! We will respond within 3-5 business days.');
+        showFormStatus('success', 'Thank you for your message! We will respond within 1-3 business days.');
         
         // Clear the URL parameter
         if (window.history.replaceState) {
