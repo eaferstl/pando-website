@@ -13,6 +13,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Smooth scroll for anchor links
     initializeSmoothScroll();
+    
+    // Initialize scroll-triggered logo text visibility on home page
+    initializeLogoTextScroll();
 });
 
 /**
@@ -249,6 +252,57 @@ function debounce(func, wait) {
         clearTimeout(timeout);
         timeout = setTimeout(later, wait);
     };
+}
+
+/**
+ * Initialize scroll-triggered logo text visibility
+ * On home page: hide logo text until scrolled past hero
+ * On other pages: always show logo text
+ */
+function initializeLogoTextScroll() {
+    const logoText = document.querySelector('.logo-text');
+    const heroSection = document.querySelector('.hero');
+    
+    // Only apply this behavior on home page (where hero section exists)
+    if (!logoText || !heroSection) {
+        return;
+    }
+    
+    // Hide logo text initially on home page
+    logoText.classList.add('logo-text-hidden');
+    
+    // Throttle scroll events for better performance
+    let ticking = false;
+    
+    window.addEventListener('scroll', function() {
+        if (!ticking) {
+            window.requestAnimationFrame(function() {
+                handleLogoTextScroll(logoText, heroSection);
+                ticking = false;
+            });
+            ticking = true;
+        }
+    });
+    
+    // Check initial state
+    handleLogoTextScroll(logoText, heroSection);
+}
+
+/**
+ * Handle logo text visibility based on scroll position
+ */
+function handleLogoTextScroll(logoText, heroSection) {
+    const heroHeight = heroSection.offsetHeight;
+    const scrollPosition = window.scrollY;
+    
+    // Show logo text when scrolled past 35% of hero section
+    if (scrollPosition > heroHeight * 0.35) {
+        logoText.classList.remove('logo-text-hidden');
+        logoText.classList.add('logo-text-visible');
+    } else {
+        logoText.classList.remove('logo-text-visible');
+        logoText.classList.add('logo-text-hidden');
+    }
 }
 
 /**

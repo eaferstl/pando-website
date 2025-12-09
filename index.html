@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Pando - Advancing security and reliability for traditional compute infrastructure through innovative research and development.">
+    <meta name="description" content="Pando - Building trustless compute security that assumes everything is compromised. Software-based protection for AI models, financial services, and confidential workloads across any infrastructure.">
     <title>Pando | The Foundation for Trustless Compute</title>
     <link rel="icon" type="image/png" href="images/favicon.png">
     <link rel="stylesheet" href="css/styles.css">
@@ -15,6 +15,7 @@
             <div class="nav-wrapper">
                 <a href="index.html" class="logo">
                     <img src="images/logoTransparency.png" alt="Pando Logo">
+                    <span class="logo-text">Pando</span>
                 </a>
                 <ul class="nav-links">
                     <li><a href="index.html" class="active">Home</a></li>
@@ -35,10 +36,10 @@
             <div class="hero-split">
                 <div class="hero-content-left">
                     <h1>Pando</h1>
-                    <p class="hero-subtitle">The Foundation for Trustless Compute</p>
+                    <p class="hero-subtitle">Your infrastructure can't be trusted. We're building security that assumes everything is compromised.</p>
                     <div class="hero-buttons">
-                        <a href="about.html" class="btn btn-primary">Learn More</a>
-                        <a href="contact.html" class="btn btn-secondary">Contact Us</a>
+                        <a href="about.html" class="btn btn-primary">See the Approach</a>
+                        <a href="contact.html" class="btn btn-secondary">Let's Talk</a>
                     </div>
                 </div>
                 <div class="hero-visual">
@@ -72,7 +73,7 @@
         </div>
     </section>
 
-    <!-- Problem Section -->
+    <!-- Reality Section -->
     <section class="problem-section">
         <div class="wave-container">
             <div class="wave wave-layer-1"></div>
@@ -81,39 +82,57 @@
             <div class="wave wave-layer-5"></div>
         </div>
         <div class="container">
-            <h2>The Challenge</h2>
+            <h2>The Reality</h2>
             <div class="problem-grid">
                 <div class="problem-card">
-                    <h3>Security Concerns</h3>
-                    <p>Current compute infrastructure faces a plethora of vulnerabilities. Even enhanced security layers, including trusted hardware, are subject to runtime attacks.</p>
+                    <h3>Hardware isn't safe.</h3>
+                    <p>TEEs and secure enclaves have been compromised. Trusting silicon is a bet against determined attackers.</p>
                 </div>
                 <div class="problem-card">
-                    <h3>Reliability Requirements</h3>
-                    <p>Organizations demand consistent, fault-tolerant processing that maintains performance under diverse conditions and unexpected challenges.</p>
+                    <h3>Networks aren't private.</h3>
+                    <p>Traffic analysis, side channels, and infrastructure compromise mean your data's path is exposed.</p>
                 </div>
                 <div class="problem-card">
-                    <h3>Scalability Challenges</h3>
-                    <p>Modern applications need solutions that efficiently scale across traditional cloud, edge, and hybrid infrastructure without compromising security.</p>
+                    <h3>Runtime is exposed.</h3>
+                    <p>Memory inspection, debugging interfaces, and runtime analysis can extract logic and data during execution.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Vision Section -->
+    <!-- What's New Section -->
     <section class="vision-section">
         <div class="wave-container">
             <div class="wave wave-layer-1"></div>
             <div class="wave wave-layer-2"></div>
         </div>
         <div class="container">
-            <h2>Our Approach</h2>
+            <h2>What's New</h2>
             <div class="vision-content">
-                <p>We're creating innovative solutions to these fundamental challenges in compute security. We focus on developing tools that work across diverse environments while disrupting the need for trust in the first place. By combining rigorous research with practical considerations, we're advancing secure computing. Our approach emphasizes platform-agnostic solutions applicable to traditional cloud, edge, and hybrid deployments.</p>
+                <p>Pando makes zero assumptions about trust. Our approach treats every layer—from hardware to network to runtime—as potentially hostile. Through software-based techniques inspired by quantum systems, we create protection that works on any infrastructure without relying on "trusted" components. The result: verifiable security across cloud, edge, and hybrid environments where confidentiality and integrity don't depend on trust.</p>
+                <div class="feature-callout" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--spacing-lg); margin-top: var(--spacing-xl); padding: var(--spacing-xl); background: rgba(107, 142, 127, 0.05); border-radius: 8px; border-left: 4px solid var(--sage-green);">
+                    <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                        <span style="color: var(--sage-green); font-size: 1.5rem;">✓</span>
+                        <span style="font-weight: 600;">No specialized hardware required</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                        <span style="color: var(--sage-green); font-size: 1.5rem;">✓</span>
+                        <span style="font-weight: 600;">Software-only approach</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                        <span style="color: var(--sage-green); font-size: 1.5rem;">✓</span>
+                        <span style="font-weight: 600;">Works on existing infrastructure</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                        <span style="color: var(--sage-green); font-size: 1.5rem;">✓</span>
+                        <span style="font-weight: 600;">Verifiable protection</span>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Use Cases Section -->
+    <!-- Who Needs This Section -->
     <section class="use-cases-section">
         <div class="wave-container">
             <div class="wave wave-layer-1"></div>
@@ -122,29 +141,41 @@
             <div class="wave wave-layer-5"></div>
         </div>
         <div class="container">
-            <h2>Potential Applications</h2>
-            <p class="section-intro">Our technology has applications across diverse computing scenarios requiring enhanced security:</p>
-            <div class="minimal-cards-grid" style="grid-template-columns: repeat(2, 1fr); max-width: 900px; margin-left: auto; margin-right: auto;">
+            <h2>Who Needs This</h2>
+            <div class="minimal-cards-grid" style="grid-template-columns: repeat(3, 1fr); max-width: 1200px; margin-left: auto; margin-right: auto;">
                 <div class="minimal-card">
                     <span class="card-icon">🤖</span>
-                    <h3>AI & ML Protection</h3>
-                    <p>Enable deployment of proprietary AI inference and machine learning models with enhanced protection against extraction and reverse engineering.</p>
+                    <h3>For AI Builders</h3>
+                    <p style="font-weight: 600; margin-bottom: var(--spacing-md);">"Deploy your AI model without fear of extraction"</p>
+                    <p>Your proprietary model is your competitive advantage. Deploy it anywhere—cloud, edge, customer infrastructure—knowing the logic and weights stay protected even during inference.</p>
                 </div>
                 <div class="minimal-card">
                     <span class="card-icon">💰</span>
-                    <h3>Financial Operations</h3>
-                    <p>Execute sensitive financial transactions with high-level inspection resistance.</p>
-                </div>
-                <div class="minimal-card">
-                    <span class="card-icon">🏥</span>
-                    <h3>Healthcare Data Processing</h3>
-                    <p>Process HIPAA-compliant and other regulated data with enhanced security measures.</p>
+                    <h3>For Financial Services</h3>
+                    <p style="font-weight: 600; margin-bottom: var(--spacing-md);">"Run transactions where the infrastructure can't see"</p>
+                    <p>Execute sensitive financial logic in environments you don't fully control. The transaction processes correctly, but the infrastructure running it can't inspect, modify, or extract the logic.</p>
                 </div>
                 <div class="minimal-card">
                     <span class="card-icon">🔗</span>
-                    <h3>API Security</h3>
-                    <p>Protect any serverless functions and API endpoints from forensic analysis and unauthorized observation.</p>
+                    <h3>For Any Confidential Workload</h3>
+                    <p style="font-weight: 600; margin-bottom: var(--spacing-md);">"Protect any API or function with sensitive logic"</p>
+                    <p>Whether it's proprietary algorithms, confidential business logic, or sensitive data processing—if your code contains value, it needs protection. Deploy with confidence knowing your logic stays hidden even when running on untrusted infrastructure.</p>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Credibility Section -->
+    <section class="vision-section">
+        <div class="wave-container">
+            <div class="wave wave-layer-1"></div>
+            <div class="wave wave-layer-2"></div>
+        </div>
+        <div class="container">
+            <h2>Built by Infrastructure Veterans</h2>
+            <div class="vision-content">
+                <p><strong>Founded by an engineer who's built production systems at scale.</strong> Background spanning product engineering leadership, automation, and distributed systems across cloud infrastructure platforms. Combined with a physics foundation from Ohio State University and a deep understanding of cryptography, machine learning, and security.</p>
+                <p><strong>Not just theory; but validated through rigorous testing.</strong> Our Python implementation has undergone extensive attack simulation and verification testing. The approach works. Now we're refining and scaling it.</p>
             </div>
         </div>
     </section>
@@ -157,11 +188,11 @@
         </div>
         <div class="container">
             <div class="cta-content">
-                <h2>Interested in Learning More?</h2>
-                <p>We welcome inquiries from anyone interested in discussing these innovations and potential collaboration.</p>
+                <h2>Ready to Build Trustless Infrastructure?</h2>
+                <p>Whether you're securing critical workloads or looking to invest in the future of compute security, we want to hear from you.</p>
                 
                 <div class="cta-actions">
-                    <a href="contact.html" class="btn btn-primary">Get in Touch</a>
+                    <a href="contact.html" class="btn btn-primary">Schedule a Conversation</a>
                     
                     <!-- Social Media Links -->
                     <div class="social-links">

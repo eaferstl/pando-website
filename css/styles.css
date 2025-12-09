@@ -135,10 +135,37 @@ ul {
     align-items: center;
 }
 
+.logo {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
 .logo img {
     height: 100px;
     width: auto;
     display: block;
+}
+
+.logo-text {
+    color: var(--floral-white);
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+}
+
+/* Scroll-triggered visibility states for home page */
+.logo-text-hidden {
+    opacity: 0;
+    transform: translateX(-10px);
+    pointer-events: none;
+}
+
+.logo-text-visible {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
 }
 
 .nav-links {
@@ -221,7 +248,7 @@ ul {
 
 /* Large amplitude, low frequency waves - subtle */
 .wave-layer-1 {
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,60 Q300,0 600,60 T1200,60 L1200,120 L0,120 Z" fill="rgba(103,137,125,0.06)"/></svg>') repeat;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,60 Q300,0 600,60 T1200,60 L1200,120 L0,120 Z" fill="rgba(0,56,11,0.06)"/></svg>') repeat;
     background-size: 1200px 120px;
     background-position: 0 0;
     animation: wave-motion-1 18s ease-in-out infinite;
@@ -534,22 +561,37 @@ ul {
 
 .page-hero {
     background: var(--floral-white);
-    padding: var(--spacing-xxl) 0;
+    padding: var(--spacing-xxl) 0 120px 0;
     text-align: center;
     color: var(--coffee-bean);
     position: relative;
     overflow: hidden;
+    margin-bottom: -10px;
 }
 
-/* Page hero with sage green wave */
+/* Page hero with black forest green wave - positioned at bottom */
+.page-hero .wave-container {
+    top: auto;
+    bottom: -10px;
+    height: 185px;
+}
+
 .page-hero .wave-layer-1 {
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,60 Q300,0 600,60 T1200,60 L1200,120 L0,120 Z" fill="rgba(103,137,125,0.35)"/></svg>') repeat;
-    opacity: 0.85;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 185" preserveAspectRatio="none"><path d="M0,92.5 Q300,20 600,92.5 T1200,92.5 L1200,185 L0,185 Z" fill="rgba(0,56,11,0.4)"/></svg>') repeat-x bottom;
+    background-size: 1200px 185px;
+    opacity: 0.9;
+    top: auto;
+    bottom: -10px;
+    height: 185px;
 }
 
 .page-hero .wave-layer-2 {
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,40 Q300,80 600,40 T1200,40 L1200,120 L0,120 Z" fill="rgba(103,137,125,0.15)"/></svg>') repeat;
-    opacity: 0.5;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 185" preserveAspectRatio="none"><path d="M0,73 Q300,137 600,73 T1200,73 L1200,185 L0,185 Z" fill="rgba(0,56,11,0.2)"/></svg>') repeat-x bottom;
+    background-size: 1200px 185px;
+    opacity: 0.6;
+    top: auto;
+    bottom: -10px;
+    height: 185px;
 }
 
 .page-hero h1 {
@@ -1165,7 +1207,7 @@ ul {
 }
 
 .cta-section .wave-layer-1 {
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,60 Q300,0 600,60 T1200,60 L1200,120 L0,120 Z" fill="rgba(103,137,125,0.35)"/></svg>') repeat;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,60 Q300,0 600,60 T1200,60 L1200,120 L0,120 Z" fill="rgba(0,56,11,0.35)"/></svg>') repeat;
     opacity: 0.7;
 }
 
