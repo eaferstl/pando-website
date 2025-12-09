@@ -12,8 +12,10 @@ const EMAILJS_CONFIG = {
 
 // Wait for DOM to be fully loaded
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize EmailJS
-    emailjs.init(EMAILJS_CONFIG.publicKey);
+    // Initialize EmailJS only if library is loaded
+    if (typeof emailjs !== 'undefined') {
+        emailjs.init(EMAILJS_CONFIG.publicKey);
+    }
     
     // Initialize form validation if contact form exists
     const contactForm = document.getElementById('contactForm');
