@@ -296,11 +296,12 @@ function debounce(func, wait) {
 
 /**
  * Initialize scroll-triggered logo text visibility
- * On home page: hide logo text until scrolled past hero
- * On other pages: always show logo text
+ * On home page: hide logo text and tagline until scrolled past hero
+ * On other pages: always show logo text and tagline
  */
 function initializeLogoTextScroll() {
     const logoText = document.querySelector('.logo-text');
+    const logoTagline = document.querySelector('.logo-tagline');
     const heroSection = document.querySelector('.hero');
     
     // Only apply this behavior on home page (where hero section exists)
@@ -308,8 +309,11 @@ function initializeLogoTextScroll() {
         return;
     }
     
-    // Hide logo text initially on home page
+    // Hide logo text and tagline initially on home page
     logoText.classList.add('logo-text-hidden');
+    if (logoTagline) {
+        logoTagline.classList.add('logo-text-hidden');
+    }
     
     // Throttle scroll events for better performance
     let ticking = false;
@@ -317,7 +321,7 @@ function initializeLogoTextScroll() {
     window.addEventListener('scroll', function() {
         if (!ticking) {
             window.requestAnimationFrame(function() {
-                handleLogoTextScroll(logoText, heroSection);
+                handleLogoTextScroll(logoText, logoTagline, heroSection);
                 ticking = false;
             });
             ticking = true;
@@ -325,23 +329,31 @@ function initializeLogoTextScroll() {
     });
     
     // Check initial state
-    handleLogoTextScroll(logoText, heroSection);
+    handleLogoTextScroll(logoText, logoTagline, heroSection);
 }
 
 /**
- * Handle logo text visibility based on scroll position
+ * Handle logo text and tagline visibility based on scroll position
  */
-function handleLogoTextScroll(logoText, heroSection) {
+function handleLogoTextScroll(logoText, logoTagline, heroSection) {
     const heroHeight = heroSection.offsetHeight;
     const scrollPosition = window.scrollY;
     
-    // Show logo text when scrolled past 35% of hero section
+    // Show logo text and tagline when scrolled past 35% of hero section
     if (scrollPosition > heroHeight * 0.35) {
         logoText.classList.remove('logo-text-hidden');
         logoText.classList.add('logo-text-visible');
+        if (logoTagline) {
+            logoTagline.classList.remove('logo-text-hidden');
+            logoTagline.classList.add('logo-text-visible');
+        }
     } else {
         logoText.classList.remove('logo-text-visible');
         logoText.classList.add('logo-text-hidden');
+        if (logoTagline) {
+            logoTagline.classList.remove('logo-text-visible');
+            logoTagline.classList.add('logo-text-hidden');
+        }
     }
 }
 
