@@ -864,9 +864,29 @@ ul {
 }
 
 .card-icon {
-    font-size: 3rem;
     margin-bottom: var(--spacing-md);
-    display: block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card-icon svg {
+    width: 80px;
+    height: 80px;
+}
+
+.icon-bg {
+    fill: var(--black-forest);
+    opacity: 0.95;
+}
+
+.icon-shape {
+    fill: var(--floral-white);
+}
+
+.minimal-card:hover .icon-bg {
+    fill: var(--amber-honey);
+    transition: fill 0.3s ease, opacity 0.3s ease;
 }
 
 .minimal-card h3 {
