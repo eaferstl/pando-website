@@ -356,16 +356,3 @@ function handleLogoTextScroll(logoText, logoTagline, heroSection) {
         }
     }
 }
-
-/**
- * Add subtle hover effects to cards
- */
-document.querySelectorAll('.problem-card').forEach(card => {
-    card.addEventListener('mouseenter', function() {
-        this.style.transform = 'translateY(-4px)';
-    });
-    
-    card.addEventListener('mouseleave', function() {
-        this.style.transform = 'translateY(0)';
-    });
-});
