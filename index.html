@@ -16,8 +16,7 @@
                 <a href="index.html" class="logo">
                     <img src="images/logoTransparency.png" alt="Pando Logo">
                     <div class="logo-text-wrapper">
-                        <span class="logo-text">Pando</span>
-                        <span class="logo-tagline">The Secure Execution Primitive</span>
+                        <span class="logo-text">PandoCore</span>
                     </div>
                 </a>
                 <ul class="nav-links">
@@ -39,7 +38,7 @@
             <div class="hero-split">
                 <div class="hero-content-left">
                     <h1>Pando</h1>
-                    <p class="hero-subtitle">Your infrastructure can't be trusted. We're building security that assumes everything is compromised.</p>
+                    <p class="hero-subtitle">Your infrastructure can't be trusted. We're building runtime security for containerized environments that assumes everything is compromised.</p>
                     <div class="hero-buttons">
                         <a href="about.html" class="btn btn-primary">See the Approach</a>
                         <a href="contact.html" class="btn btn-secondary">Let's Talk</a>
@@ -116,19 +115,23 @@
                 <div class="feature-callout" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--spacing-lg); margin-top: var(--spacing-xl); padding: var(--spacing-xl); background: rgba(107, 142, 127, 0.05); border-radius: 8px; border-left: 4px solid var(--sage-green);">
                     <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
                         <span style="color: var(--sage-green); font-size: 1.5rem;">✓</span>
-                        <span style="font-weight: 600;">No specialized hardware required</span>
+                        <span style="font-weight: 600;">Kubernetes-native deployment</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
                         <span style="color: var(--sage-green); font-size: 1.5rem;">✓</span>
-                        <span style="font-weight: 600;">Software-only approach</span>
+                        <span style="font-weight: 600;">No application code changes</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                        <span style="color: var(--sage-green); font-size: 1.5rem;">✓</span>
+                        <span style="font-weight: 600;">No specialized hardware required</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
                         <span style="color: var(--sage-green); font-size: 1.5rem;">✓</span>
                         <span style="font-weight: 600;">Works on existing infrastructure</span>
                     </div>
-                    <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                    <div style="display: flex; align-items: center; gap: var(--spacing-sm); grid-column: span 2; justify-content: center;">
                         <span style="color: var(--sage-green); font-size: 1.5rem;">✓</span>
-                        <span style="font-weight: 600;">Verifiable protection</span>
+                        <span style="font-weight: 600;">Integrates with your existing security stack</span>
                     </div>
                 </div>
             </div>
@@ -163,7 +166,7 @@
                     </div>
                     <h3>For AI Builders</h3>
                     <p style="font-weight: 600; margin-bottom: var(--spacing-md);">"Deploy your AI model without fear of extraction"</p>
-                    <p>Your proprietary model is your competitive advantage. Deploy it anywhere—cloud, edge, customer infrastructure—knowing the logic and weights stay protected even during inference.</p>
+                    <p>Your proprietary model is your competitive advantage. Deploy it across any Kubernetes cluster—cloud, edge, or customer infrastructure—knowing the logic and weights stay protected even during inference.</p>
                 </div>
                 <div class="minimal-card">
                     <div class="card-icon">
@@ -174,7 +177,7 @@
                     </div>
                     <h3>For Financial Services</h3>
                     <p style="font-weight: 600; margin-bottom: var(--spacing-md);">"Run transactions where the infrastructure can't see"</p>
-                    <p>Execute sensitive financial logic in environments you don't fully control. The transaction processes correctly, but the infrastructure running it can't inspect, modify, or extract the logic.</p>
+                    <p>Execute sensitive financial logic in containerized environments you don't fully control. The transaction processes correctly, but the infrastructure running it can't inspect, modify, or extract the logic.</p>
                 </div>
                 <div class="minimal-card">
                     <div class="card-icon">
@@ -184,8 +187,8 @@
                         </svg>
                     </div>
                     <h3>For Any Confidential Workload</h3>
-                    <p style="font-weight: 600; margin-bottom: var(--spacing-md);">"Protect any API or function with sensitive logic"</p>
-                    <p>Whether it's proprietary algorithms, confidential business logic, or sensitive data processing—if your code contains value, it needs protection. Deploy with confidence knowing your logic stays hidden even when running on untrusted infrastructure.</p>
+                    <p style="font-weight: 600; margin-bottom: var(--spacing-md);">"Protect any containerized workload with sensitive logic"</p>
+                    <p>Whether it's proprietary algorithms, confidential business logic, or sensitive data processing—if your Kubernetes workload contains value, it needs protection. Deploy with confidence knowing your logic stays hidden even on untrusted infrastructure.</p>
                 </div>
             </div>
         </div>
