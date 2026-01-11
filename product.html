@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Learn about PandoCore's mission to advance secure computing through innovative research and development.">
-    <title>PandoCore | About</title>
+    <meta name="description" content="PandoCore's runtime security primitive - a Kubernetes sidecar that protects sensitive logic and data during execution. No code changes required.">
+    <title>PandoCore | Product</title>
     <link rel="icon" type="image/png" href="images/favicon.png">
     <link rel="stylesheet" href="css/styles.css">
 </head>
@@ -21,49 +21,73 @@
                 </a>
                 <ul class="nav-links">
                     <li><a href="index.html">Home</a></li>
-                    <li><a href="product.html">Product</a></li>
-                    <li><a href="about.html" class="active">About</a></li>
+                    <li><a href="product.html" class="active">Product</a></li>
+                    <li><a href="about.html">About</a></li>
                     <li><a href="contact.html">Contact</a></li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- About Hero -->
+    <!-- Product Hero -->
     <section class="page-hero">
         <div class="wave-container">
             <div class="wave wave-layer-1"></div>
             <div class="wave wave-layer-2"></div>
         </div>
         <div class="container">
-            <h1>About PandoCore</h1>
-            <p class="page-subtitle">Creating innovative technology to enhance security across diverse computing environments</p>
+            <h1>Runtime Security for Kubernetes</h1>
+            <p class="page-subtitle">A software-based security primitive that protects your sensitive logic and data during execution—deployed as a sidecar with zero code changes.</p>
         </div>
     </section>
 
-    <!-- Mission Section -->
+    <!-- What It Is Section -->
     <section class="content-section alt-bg">
         <div class="wave-container">
             <div class="wave wave-layer-1"></div>
             <div class="wave wave-layer-2"></div>
         </div>
         <div class="container">
-            <div class="content-wrapper">
-                <h2>Mission</h2>
-                <p><strong>PandoCore exists to eliminate trust as a requirement for secure computing.</strong></p>
-                <p>We are building infrastructure security that works when everything is assumed compromised. Our values guide this mission:</p>
-                <ul class="content-list">
-                    <li><strong>Trustlessness:</strong> Security should never depend on trusting hardware, networks, or execution environments.</li>
-                    <li><strong>First Principles Thinking:</strong> Question every assumption to discover solutions others miss.</li>
-                    <li><strong>Nature as Inspiration:</strong> Draw insights from quantum systems and natural phenomena to solve complex problems.</li>
-                    <li><strong>Practical Validation:</strong> Theory must be proven through rigorous testing in real-world conditions.</li>
-                    <li><strong>Platform Agnosticism:</strong> Solutions should work across any infrastructure without specialized dependencies.</li>
-                </ul>
+            <h2 style="text-align: center; color: var(--black-forest); margin-bottom: var(--spacing-xl); position: relative; z-index: 1;">What PandoCore Does</h2>
+            <div class="content-wrapper" style="max-width: var(--container-max-width);">
+                <p style="text-align: center; margin-bottom: var(--spacing-xl); max-width: 100%; margin-left: auto; margin-right: auto;">Encryption protects data at rest and in transit. Authentication controls who gets access. But once your code runs, it's exposed.</p>
+                <p style="text-align: center; margin-bottom: var(--spacing-xxl); max-width: 100%; margin-left: auto; margin-right: auto;"><strong>PandoCore fills this gap.</strong> We provide runtime protection for containerized workloads—a critical missing layer that shields your sensitive logic and data while your code executes, even on infrastructure you don't fully trust.</p>
+                
+                <div class="feature-callout" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--spacing-lg); margin-top: var(--spacing-xl); padding: var(--spacing-xl); background: rgba(107, 142, 127, 0.05); border-radius: 8px; border-left: 4px solid var(--sage-green);">
+                    <div style="display: flex; align-items: flex-start; gap: var(--spacing-sm);">
+                        <span style="color: var(--sage-green); font-size: 1.5rem; flex-shrink: 0;">✓</span>
+                        <div>
+                            <span style="font-weight: 600;">Runtime Protection</span>
+                            <p style="margin: 0; font-size: 0.9rem; color: var(--charcoal); opacity: 0.8;">Shields logic and data during execution</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: flex-start; gap: var(--spacing-sm);">
+                        <span style="color: var(--sage-green); font-size: 1.5rem; flex-shrink: 0;">✓</span>
+                        <div>
+                            <span style="font-weight: 600;">Software-Based</span>
+                            <p style="margin: 0; font-size: 0.9rem; color: var(--charcoal); opacity: 0.8;">No specialized hardware required</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: flex-start; gap: var(--spacing-sm);">
+                        <span style="color: var(--sage-green); font-size: 1.5rem; flex-shrink: 0;">✓</span>
+                        <div>
+                            <span style="font-weight: 600;">Zero Code Changes</span>
+                            <p style="margin: 0; font-size: 0.9rem; color: var(--charcoal); opacity: 0.8;">Transparent protection layer</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; align-items: flex-start; gap: var(--spacing-sm);">
+                        <span style="color: var(--sage-green); font-size: 1.5rem; flex-shrink: 0;">✓</span>
+                        <div>
+                            <span style="font-weight: 600;">Kubernetes Native</span>
+                            <p style="margin: 0; font-size: 0.9rem; color: var(--charcoal); opacity: 0.8;">Deploys as a sidecar container</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Problem Section -->
+    <!-- Integration Section -->
     <section class="content-section">
         <div class="wave-container">
             <div class="wave wave-layer-1"></div>
@@ -72,53 +96,45 @@
             <div class="wave wave-layer-5"></div>
         </div>
         <div class="container">
-            <h2 style="text-align: center; color: var(--black-forest); margin-bottom: var(--spacing-xl); position: relative; z-index: 1;">The Problem We're Addressing</h2>
+            <h2 style="text-align: center; color: var(--black-forest); margin-bottom: var(--spacing-xl); position: relative; z-index: 1;">Fits Into Your Security Stack</h2>
             <div class="content-wrapper" style="max-width: var(--container-max-width);">
-                <p style="text-align: center; margin-bottom: var(--spacing-xxl); max-width: 100%; margin-left: auto; margin-right: auto;">As systems become more distributed and workloads more sensitive, the limitations of current approaches become more apparent:</p>
+                <p style="text-align: center; margin-bottom: var(--spacing-xxl); max-width: 100%; margin-left: auto; margin-right: auto;">PandoCore complements your existing security tools—it doesn't replace them. Add runtime protection to workloads already defended by encryption, authentication, and observability.</p>
+                
                 <div class="feature-rows">
                     <div class="feature-row">
                         <div class="feature-visual">
-                            <span class="feature-number">01</span>
+                            <span class="feature-number">K8s</span>
                         </div>
                         <div class="feature-content">
-                            <h3>Runtime Security</h3>
-                            <p>Efficiently protecting your data and logic where encryption can't.</p>
+                            <h3>Kubernetes Sidecar Deployment</h3>
+                            <p>Deploy alongside your existing pods as a sidecar container. No changes to your application code, Dockerfiles, or deployment manifests beyond adding the sidecar specification.</p>
                         </div>
                     </div>
                     <div class="feature-row">
                         <div class="feature-visual">
-                            <span class="feature-number">02</span>
+                            <span class="feature-number">CI</span>
                         </div>
                         <div class="feature-content">
-                            <h3>Secure and Verifiable</h3>
-                            <p>Ensuring computational integrity across diverse, potentially untrusted infrastructure environments.</p>
+                            <h3>CI/CD Pipeline Compatible</h3>
+                            <p>Works with your existing build and deployment pipelines. No new build steps, no custom tooling required. Protection activates automatically at runtime.</p>
                         </div>
                     </div>
                     <div class="feature-row">
                         <div class="feature-visual">
-                            <span class="feature-number">03</span>
+                            <span class="feature-number">+</span>
                         </div>
                         <div class="feature-content">
-                            <h3>Fault Tolerance</h3>
-                            <p>Maintaining security reliability and consistency even when individual components fail or behave unexpectedly.</p>
+                            <h3>Complements Existing Tools</h3>
+                            <p>Layer runtime protection on top of your existing security investments—service meshes, network policies, secrets management, and runtime observability tools all continue to work as expected.</p>
                         </div>
                     </div>
                     <div class="feature-row">
                         <div class="feature-visual">
-                            <span class="feature-number">04</span>
+                            <span class="feature-number">☁️</span>
                         </div>
                         <div class="feature-content">
-                            <h3>Endless Scalability</h3>
-                            <p>Meeting growing computational demands without compromising security guarantees or operational efficiency.</p>
-                        </div>
-                    </div>
-                    <div class="feature-row">
-                        <div class="feature-visual">
-                            <span class="feature-number">05</span>
-                        </div>
-                        <div class="feature-content">
-                            <h3>Platform Diversity</h3>
-                            <p>Supporting secure operations across heterogeneous infrastructure from cloud to edge to on-premises deployments.</p>
+                            <h3>Multi-Environment Support</h3>
+                            <p>Deploy across cloud providers (AWS, Azure, GCP), on-premises data centers, edge locations, or hybrid environments. Protection works consistently regardless of where your infrastructure runs.</p>
                         </div>
                     </div>
                 </div>
@@ -126,11 +142,46 @@
         </div>
     </section>
 
-    <!-- Security Principles Section -->
+    <!-- Developer Experience Section -->
     <section class="content-section alt-bg">
         <div class="wave-container">
             <div class="wave wave-layer-1"></div>
             <div class="wave wave-layer-2"></div>
+        </div>
+        <div class="container">
+            <h2 style="text-align: center; color: var(--black-forest); margin-bottom: var(--spacing-xl); position: relative; z-index: 1;">Developer Experience</h2>
+            <div class="content-wrapper" style="max-width: var(--container-max-width);">
+                <div class="split-focus">
+                    <div class="focus-card">
+                        <h3>Easy to Adopt</h3>
+                        <ul class="focus-list">
+                            <li>Deploys as a sidecar container alongside your existing Kubernetes workloads</li>
+                            <li>No modifications required to your application code—protection is transparent</li>
+                            <li>Compatible with existing CI/CD pipelines, testing frameworks, and deployment processes</li>
+                            <li>Fits into your current orchestration and security tooling workflows</li>
+                        </ul>
+                    </div>
+                    <div class="focus-card">
+                        <h3>Flexible & Powerful</h3>
+                        <ul class="focus-list">
+                            <li>Customizable parameters allow tuning security properties to match specific use case requirements</li>
+                            <li>Sensible defaults enable quick deployment while advanced options support specialized needs</li>
+                            <li>Works with containerized workloads across cloud, edge, and on-premises environments</li>
+                            <li>Complements your existing runtime security tools—adds protection, doesn't replace visibility</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Security Principles Section -->
+    <section class="content-section">
+        <div class="wave-container">
+            <div class="wave wave-layer-1"></div>
+            <div class="wave wave-layer-2"></div>
+            <div class="wave wave-layer-4"></div>
+            <div class="wave wave-layer-5"></div>
         </div>
         <div class="container">
             <h2 style="text-align: center; color: var(--black-forest); margin-bottom: var(--spacing-xl); position: relative; z-index: 1;">Security Principles</h2>
@@ -219,105 +270,11 @@
         </div>
     </section>
 
-    <!-- Approach Section -->
-    <section class="content-section">
-        <div class="wave-container">
-            <div class="wave wave-layer-1"></div>
-            <div class="wave wave-layer-2"></div>
-            <div class="wave wave-layer-4"></div>
-            <div class="wave wave-layer-5"></div>
-        </div>
-        <div class="container">
-            <h2 style="text-align: center; color: var(--black-forest); margin-bottom: var(--spacing-xl); position: relative; z-index: 1;">Our Approach to Innovation</h2>
-            <div class="content-wrapper" style="max-width: var(--container-max-width);">
-                <p style="text-align: center; margin-bottom: var(--spacing-xxl); max-width: 100%; margin-left: auto; margin-right: auto;">We believe that solving hard problems in computer security requires both theoretical rigor and practical validation. Our research methodology combines:</p>
-                <div class="timeline-container">
-                    <div class="timeline-item">
-                        <div class="timeline-marker">
-                            <div class="timeline-number">1</div>
-                            <div class="timeline-line"></div>
-                        </div>
-                        <div class="timeline-content">
-                            <h3>First Principles</h3>
-                            <p>Deconstructing a problem and questioning any assumptions creates category defining inventions.</p>
-                        </div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="timeline-marker">
-                            <div class="timeline-number">2</div>
-                            <div class="timeline-line"></div>
-                        </div>
-                        <div class="timeline-content">
-                            <h3>Rigorous Testing</h3>
-                            <p>Extensive validation and testing to verify that innovations work effectively in real-world conditions.</p>
-                        </div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="timeline-marker">
-                            <div class="timeline-number">3</div>
-                            <div class="timeline-line"></div>
-                        </div>
-                        <div class="timeline-content">
-                            <h3>Practical Considerations</h3>
-                            <p>Ensuring solutions are deployable and operational given actual infrastructure constraints.</p>
-                        </div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="timeline-marker">
-                            <div class="timeline-number">4</div>
-                            <div class="timeline-line"></div>
-                        </div>
-                        <div class="timeline-content">
-                            <h3>Iterative Development</h3>
-                            <p>Continuously refining our approaches based on testing results and emerging requirements.</p>
-                        </div>
-                    </div>
-                </div>
-                <p style="margin-top: var(--spacing-xxl); text-align: center; max-width: 100%; margin-left: auto; margin-right: auto;">We're committed to patient, thorough development rather than rushing to market with unproven solutions. Security-critical infrastructure demands careful validation at every stage.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Developer Experience Section -->
+    <!-- Current Stage Section -->
     <section class="content-section alt-bg">
         <div class="wave-container">
             <div class="wave wave-layer-1"></div>
             <div class="wave wave-layer-2"></div>
-        </div>
-        <div class="container">
-            <h2 style="text-align: center; color: var(--black-forest); margin-bottom: var(--spacing-xl); position: relative; z-index: 1;">Developer Experience</h2>
-            <div class="content-wrapper" style="max-width: var(--container-max-width);">
-                <div class="split-focus">
-                    <div class="focus-card">
-                        <h3>Easy to Adopt</h3>
-                        <ul class="focus-list">
-                            <li>Deploys as a sidecar container alongside your existing Kubernetes workloads</li>
-                            <li>No modifications required to your application code—protection is transparent</li>
-                            <li>Compatible with existing CI/CD pipelines, testing frameworks, and deployment processes</li>
-                            <li>Fits into your current orchestration and security tooling workflows</li>
-                        </ul>
-                    </div>
-                    <div class="focus-card">
-                        <h3>Flexible & Powerful</h3>
-                        <ul class="focus-list">
-                            <li>Customizable parameters allow tuning security properties to match specific use case requirements</li>
-                            <li>Sensible defaults enable quick deployment while advanced options support specialized needs</li>
-                            <li>Works with containerized workloads across cloud, edge, and on-premises environments</li>
-                            <li>Complements your existing runtime security tools—adds protection, doesn't replace visibility</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Current Stage Section -->
-    <section class="content-section">
-        <div class="wave-container">
-            <div class="wave wave-layer-1"></div>
-            <div class="wave wave-layer-2"></div>
-            <div class="wave wave-layer-4"></div>
-            <div class="wave wave-layer-5"></div>
         </div>
         <div class="container">
             <div class="content-wrapper">
@@ -373,8 +330,8 @@
         </div>
         <div class="container">
             <div class="cta-content">
-                <h2>Interested in Learning More?</h2>
-                <p>We welcome inquiries from anyone interested in discussing these innovations and potential collaboration.</p>
+                <h2>Interested in Early Access?</h2>
+                <p>We're working with select partners to validate PandoCore in production environments. If you have sensitive containerized workloads that need runtime protection, let's talk.</p>
                 
                 <div class="cta-actions">
                     <a href="contact.html" class="btn btn-primary">Get In Touch</a>
