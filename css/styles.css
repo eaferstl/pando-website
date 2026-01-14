@@ -1902,8 +1902,9 @@ ul {
    =================================== */
 
 .founder-single {
-    display: flex;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    grid-template-rows: auto auto;
     gap: var(--spacing-xl);
     max-width: 900px;
     margin: 0 auto;
@@ -1923,16 +1924,18 @@ ul {
     height: 220px;
     object-fit: cover;
     border-radius: 12px;
-    flex-shrink: 0;
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
     border: 3px solid var(--amber-honey);
+    grid-row: 1;
+    grid-column: 1;
 }
 
 .founder-content {
-    flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    grid-row: 1;
+    grid-column: 2;
 }
 
 .founder-header {
@@ -1974,7 +1977,7 @@ ul {
     font-size: 1.05rem;
     line-height: 1.7;
     color: var(--floral-white);
-    margin-bottom: var(--spacing-md);
+    margin-bottom: 0;
     max-width: none;
 }
 
@@ -1986,6 +1989,30 @@ ul {
     border-radius: 8px;
     border-left: 3px solid var(--amber-honey);
     margin-bottom: 0;
+}
+
+/* Founder Footer - Fun Fact & CTA inside card at bottom */
+.founder-footer {
+    grid-row: 2;
+    grid-column: 1 / -1; /* Span full width */
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-lg);
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    margin-top: calc(-1 * var(--spacing-md)); /* Pull up slightly */
+}
+
+.founder-footer .founder-fun-fact {
+    flex: 1;
+    background: rgba(223, 159, 21, 0.15);
+    margin-left: 40px; /* Partially under the photo */
+}
+
+.founder-footer .founder-cta {
+    flex-shrink: 0;
+    white-space: nowrap;
+    margin-right: 40px; /* Match the Fun Fact's left offset */
 }
 
 /* ===================================
@@ -2587,6 +2614,7 @@ ul {
     
     /* Single Founder - Mobile */
     .founder-single {
+        display: flex;
         flex-direction: column;
         text-align: center;
         padding: var(--spacing-lg);
@@ -2597,6 +2625,13 @@ ul {
         width: 180px;
         height: 180px;
         margin: 0 auto;
+        grid-row: auto;
+        grid-column: auto;
+    }
+    
+    .founder-content {
+        grid-row: auto;
+        grid-column: auto;
     }
     
     .founder-header {
@@ -2625,6 +2660,23 @@ ul {
     
     .founder-fun-fact {
         text-align: left;
+    }
+    
+    /* Founder Footer - Mobile */
+    .founder-footer {
+        grid-row: auto;
+        grid-column: auto;
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+    
+    .founder-footer .founder-fun-fact {
+        margin-left: 0;
+    }
+    
+    .founder-footer .founder-cta {
+        width: 100%;
+        text-align: center;
     }
 }
 
