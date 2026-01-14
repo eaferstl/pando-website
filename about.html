@@ -29,31 +29,18 @@
         </div>
     </nav>
 
-    <!-- About Hero -->
-    <section class="page-hero">
-        <div class="wave-container">
-            <div class="wave wave-layer-1"></div>
-            <div class="wave wave-layer-2"></div>
-        </div>
-        <div class="container">
-            <h1>About PandoCore</h1>
-            <p class="page-subtitle">Creating innovative technology to enhance security across diverse computing environments</p>
-        </div>
-    </section>
-
-    <!-- Mission Section -->
-    <section class="content-section alt-bg">
+    <!-- Mission Section - First section, no hero -->
+    <section class="content-section alt-bg" style="padding-top: calc(var(--spacing-xxl) * 3);">
         <div class="wave-container">
             <div class="wave wave-layer-1"></div>
             <div class="wave wave-layer-2"></div>
         </div>
         <div class="container">
             <div class="content-wrapper">
-                <h2>Mission</h2>
-                <p><strong>PandoCore exists to eliminate trust as a requirement for secure computing.</strong></p>
-                <p>We are building infrastructure security that works when everything is assumed compromised. Our values guide this mission:</p>
+                <h1 style="font-size: 2.5rem; margin-bottom: var(--spacing-lg);">Why We Exist</h1>
+                <p><strong>PandoCore exists to transform runtime security.</strong></p>
+                <p>We are building infrastructure security that works when everything is assumed compromised. These principles guide our work:</p>
                 <ul class="content-list">
-                    <li><strong>Trustlessness:</strong> Security should never depend on trusting hardware, networks, or execution environments.</li>
                     <li><strong>First Principles Thinking:</strong> Question every assumption to discover solutions others miss.</li>
                     <li><strong>Nature as Inspiration:</strong> Draw insights from quantum systems and natural phenomena to solve complex problems.</li>
                     <li><strong>Practical Validation:</strong> Theory must be proven through rigorous testing in real-world conditions.</li>
@@ -74,7 +61,7 @@
         <div class="container">
             <h2 style="text-align: center; color: var(--black-forest); margin-bottom: var(--spacing-xl); position: relative; z-index: 1;">The Problem We're Addressing</h2>
             <div class="content-wrapper" style="max-width: var(--container-max-width);">
-                <p style="text-align: center; margin-bottom: var(--spacing-xxl); max-width: 100%; margin-left: auto; margin-right: auto;">As systems become more distributed and workloads more sensitive, the limitations of current approaches become more apparent:</p>
+                <p style="text-align: center; margin-bottom: var(--spacing-xxl); max-width: 100%; margin-left: auto; margin-right: auto;">As systems become more distributed and workloads more sensitive, the limitations of current approaches are clear:</p>
                 <div class="feature-rows">
                     <div class="feature-row">
                         <div class="feature-visual">
@@ -126,106 +113,11 @@
         </div>
     </section>
 
-    <!-- Security Principles Section -->
+    <!-- Approach Section -->
     <section class="content-section alt-bg">
         <div class="wave-container">
             <div class="wave wave-layer-1"></div>
             <div class="wave wave-layer-2"></div>
-        </div>
-        <div class="container">
-            <h2 style="text-align: center; color: var(--black-forest); margin-bottom: var(--spacing-xl); position: relative; z-index: 1;">Security Principles</h2>
-            <div class="content-wrapper" style="max-width: var(--container-max-width);">
-                <p style="text-align: center; margin-bottom: var(--spacing-xxl); max-width: 100%; margin-left: auto; margin-right: auto;">Our approach to security and reliability is built on fundamental principles:</p>
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-xl); position: relative; z-index: 1;">
-                    <div class="minimal-card">
-                        <div class="card-icon">
-                            <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-                                <rect width="64" height="64" rx="16" class="icon-bg"/>
-                                <circle cx="32" cy="22" r="3" class="icon-shape"/>
-                                <line x1="32" y1="25" x2="24" y2="32" stroke="white" stroke-width="2" class="icon-shape"/>
-                                <line x1="32" y1="25" x2="40" y2="32" stroke="white" stroke-width="2" class="icon-shape"/>
-                                <circle cx="24" cy="32" r="3" class="icon-shape"/>
-                                <circle cx="40" cy="32" r="3" class="icon-shape"/>
-                                <line x1="24" y1="35" x2="18" y2="42" stroke="white" stroke-width="2" class="icon-shape"/>
-                                <line x1="24" y1="35" x2="28" y2="42" stroke="white" stroke-width="2" class="icon-shape"/>
-                                <line x1="40" y1="35" x2="36" y2="42" stroke="white" stroke-width="2" class="icon-shape"/>
-                                <line x1="40" y1="35" x2="46" y2="42" stroke="white" stroke-width="2" class="icon-shape"/>
-                                <circle cx="18" cy="42" r="2" class="icon-shape"/>
-                                <circle cx="28" cy="42" r="2" class="icon-shape"/>
-                                <circle cx="36" cy="42" r="2" class="icon-shape"/>
-                                <circle cx="46" cy="42" r="2" class="icon-shape"/>
-                            </svg>
-                        </div>
-                        <h3>Platform Independence</h3>
-                        <p>No reliance on specialized hardware or trusted execution environments. Our software-based approach enables deployment across diverse infrastructure while maintaining security properties through software techniques.</p>
-                    </div>
-                    <div class="minimal-card">
-                        <div class="card-icon">
-                            <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-                                <rect width="64" height="64" rx="16" class="icon-bg"/>
-                                <path d="M32 16l-14 8v12c0 8.7 6 16.8 14 19 8-2.2 14-10.3 14-19V24l-14-8zm0 4.5l10 5.7v10.8c0 6.5-4.5 12.6-10 14.3-5.5-1.7-10-7.8-10-14.3V26.2l10-5.7z" class="icon-shape"/>
-                            </svg>
-                        </div>
-                        <h3>Multi-Layered Defense</h3>
-                        <p>Security derives from multiple independent mechanisms working in concert. This layered approach ensures that compromise of any single element doesn't undermine overall protection.</p>
-                    </div>
-                    <div class="minimal-card">
-                        <div class="card-icon">
-                            <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-                                <rect width="64" height="64" rx="16" class="icon-bg"/>
-                                <g class="icon-shape">
-                                    <rect x="16" y="18" width="4" height="6"/>
-                                    <rect x="22" y="18" width="4" height="6"/>
-                                    <rect x="28" y="18" width="4" height="6"/>
-                                    <rect x="34" y="18" width="4" height="6"/>
-                                    <rect x="40" y="18" width="4" height="6"/>
-                                    <rect x="16" y="26" width="4" height="10"/>
-                                    <rect x="22" y="26" width="4" height="10"/>
-                                    <rect x="28" y="26" width="4" height="10"/>
-                                    <rect x="34" y="26" width="4" height="10"/>
-                                    <rect x="40" y="26" width="4" height="10"/>
-                                    <rect x="16" y="38" width="28" height="4"/>
-                                </g>
-                            </svg>
-                        </div>
-                        <h3>Active Attack Resistance</h3>
-                        <p>Designed to detect and respond to common attack vectors including debugging attempts, memory inspection, code modification, and timing analysis. The system actively monitors execution to identify anomalous conditions.</p>
-                    </div>
-                </div>
-                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--spacing-xl); max-width: 700px; margin: var(--spacing-xl) auto 0; position: relative; z-index: 1;">
-                    <div class="minimal-card">
-                        <div class="card-icon">
-                            <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-                                <rect width="64" height="64" rx="16" class="icon-bg"/>
-                                <polyline points="18,32 28,42 48,22" stroke="#F7F4EB" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </div>
-                        <h3>Validated Performance</h3>
-                        <p>Security properties and performance characteristics are continuously validated through rigorous testing, attack simulations, and benchmark analysis. We optimize for real-world deployment while maintaining security guarantees through measurable, verified results.</p>
-                    </div>
-                    <div class="minimal-card">
-                        <div class="card-icon">
-                            <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-                                <rect width="64" height="64" rx="16" class="icon-bg"/>
-                                <polyline points="16,44 22,36 28,42 36,30 44,40 54,26" stroke="#F7F4EB" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-                                <line x1="16" y1="46" x2="54" y2="46" stroke="#F7F4EB" stroke-width="2" fill="none"/>
-                            </svg>
-                        </div>
-                        <h3>Scalability by Design</h3>
-                        <p>Solutions architected to scale across diverse infrastructure environments, from edge computing devices to large-scale cloud deployments, without compromising security guarantees.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Approach Section -->
-    <section class="content-section">
-        <div class="wave-container">
-            <div class="wave wave-layer-1"></div>
-            <div class="wave wave-layer-2"></div>
-            <div class="wave wave-layer-4"></div>
-            <div class="wave wave-layer-5"></div>
         </div>
         <div class="container">
             <h2 style="text-align: center; color: var(--black-forest); margin-bottom: var(--spacing-xl); position: relative; z-index: 1;">Our Approach to Innovation</h2>
@@ -278,41 +170,8 @@
         </div>
     </section>
 
-    <!-- Developer Experience Section -->
-    <section class="content-section alt-bg">
-        <div class="wave-container">
-            <div class="wave wave-layer-1"></div>
-            <div class="wave wave-layer-2"></div>
-        </div>
-        <div class="container">
-            <h2 style="text-align: center; color: var(--black-forest); margin-bottom: var(--spacing-xl); position: relative; z-index: 1;">Developer Experience</h2>
-            <div class="content-wrapper" style="max-width: var(--container-max-width);">
-                <div class="split-focus">
-                    <div class="focus-card">
-                        <h3>Easy to Adopt</h3>
-                        <ul class="focus-list">
-                            <li>Deploys as a sidecar container alongside your existing Kubernetes workloads</li>
-                            <li>No modifications required to your application code—protection is transparent</li>
-                            <li>Compatible with existing CI/CD pipelines, testing frameworks, and deployment processes</li>
-                            <li>Fits into your current orchestration and security tooling workflows</li>
-                        </ul>
-                    </div>
-                    <div class="focus-card">
-                        <h3>Flexible & Powerful</h3>
-                        <ul class="focus-list">
-                            <li>Customizable parameters allow tuning security properties to match specific use case requirements</li>
-                            <li>Sensible defaults enable quick deployment while advanced options support specialized needs</li>
-                            <li>Works with containerized workloads across cloud, edge, and on-premises environments</li>
-                            <li>Complements your existing runtime security tools—adds protection, doesn't replace visibility</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Current Stage Section -->
-    <section class="content-section">
+    <!-- The PandoCore Founder Section -->
+    <section class="team-section">
         <div class="wave-container">
             <div class="wave wave-layer-1"></div>
             <div class="wave wave-layer-2"></div>
@@ -320,46 +179,21 @@
             <div class="wave wave-layer-5"></div>
         </div>
         <div class="container">
-            <div class="content-wrapper">
-                <h2>Current Stage</h2>
-                <p>Our proof of concept is complete with validated security properties. We are now developing the Kubernetes sidecar for production deployment.</p>
-                <p>Current focus areas include:</p>
-                <ul class="content-list">
-                    <li><strong>Kubernetes sidecar development</strong> for production-ready deployment</li>
-                    <li><strong>Performance optimization</strong> for real-world workloads</li>
-                    <li><strong>Integration testing</strong> with enterprise Kubernetes environments</li>
-                    <li><strong>Continued security validation</strong> and threat modeling</li>
-                </ul>
-                
-                <h3 style="margin-top: var(--spacing-xl); color: var(--black-forest);">Development Milestones</h3>
-                
-                <div class="milestone-section completed">
-                    <h4 class="milestone-title completed">Phase 1 (Completed): Proof of concept and validation</h4>
-                    <ul class="content-list">
-                        <li>Core security primitive implementation</li>
-                        <li>Attack resistance verification through simulation</li>
-                        <li>Security property validation</li>
-                        <li>Performance baseline establishment</li>
-                    </ul>
-                </div>
-                
-                <div class="milestone-section in-progress">
-                    <h4 class="milestone-title in-progress">Phase 2 (In Progress): Kubernetes sidecar development</h4>
-                    <ul class="content-list">
-                        <li>Production-grade sidecar container implementation</li>
-                        <li>Kubernetes-native integration and deployment tooling</li>
-                        <li>Language-agnostic design supporting diverse workload runtimes</li>
-                        <li>Enterprise workload compatibility testing</li>
-                    </ul>
-                </div>
-                
-                <div class="milestone-section planned">
-                    <h4 class="milestone-title planned">Phase 3 (Planned): Production hardening and go-to-market</h4>
-                    <ul class="content-list">
-                        <li>Advanced optimization for production environments</li>
-                        <li>Extended platform support</li>
-                        <li>Customer pilot programs</li>
-                    </ul>
+            <h2>The Founder</h2>
+            <div class="founder-single">
+                <img src="images/eliot.jpg" alt="Eliot Ferstl" class="founder-photo">
+                <div class="founder-content">
+                    <div class="founder-header">
+                        <h3>Eliot Ferstl</h3>
+                        <p class="founder-role">Founder & Architect</p>
+                        <a href="https://www.linkedin.com/in/eliot-ferstl/" target="_blank" rel="noopener noreferrer" class="linkedin-link" aria-label="Eliot Ferstl LinkedIn Profile">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                            </svg>
+                        </a>
+                    </div>
+                    <p class="founder-bio">Eliot founded PandoCore to address a critical gap in cybersecurity. He studied Physics at Ohio State University. His career spans product engineering leadership and automation combined with a deep understanding and passion for security, machine learning, and cryptography.</p>
+                    <p class="founder-fun-fact"><strong>Fun Fact:</strong> Eliot has skied at over 25 resorts. His favorite is Crested Butte!</p>
                 </div>
             </div>
         </div>
@@ -377,7 +211,8 @@
                 <p>We welcome inquiries from anyone interested in discussing these innovations and potential collaboration.</p>
                 
                 <div class="cta-actions">
-                    <a href="contact.html" class="btn btn-primary">Get In Touch</a>
+                    <a href="product.html" class="btn btn-primary">See the Product</a>
+                    <a href="contact.html" class="btn btn-secondary">Get In Touch</a>
                     
                     <!-- Social Media Links -->
                     <div class="social-links">
