@@ -790,10 +790,10 @@ ul {
 .feature-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: var(--spacing-md);
+    gap: var(--spacing-sm);
     align-items: center;
-    margin-bottom: var(--spacing-md);
-    padding: var(--spacing-xs) 0;
+    margin-bottom: var(--spacing-xs);
+    padding: 0;
 }
 
 .feature-row:last-child {
@@ -1053,8 +1053,8 @@ ul {
 .timeline-item {
     display: grid;
     grid-template-columns: 80px 1fr;
-    gap: var(--spacing-md);
-    margin-bottom: var(--spacing-lg);
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
     position: relative;
 }
 
@@ -1834,7 +1834,7 @@ ul {
 .vision-section h2 {
     text-align: center;
     font-size: 2rem;
-    margin-bottom: var(--spacing-xl);
+    margin-bottom: var(--spacing-lg);
     color: var(--black-forest);
     position: relative;
     z-index: 1;
@@ -2041,13 +2041,28 @@ ul {
     overflow: hidden;
 }
 
+/* CTA section waves - positioned at bottom like page-hero */
+.cta-section .wave-container {
+    top: auto;
+    bottom: -10px;
+    height: 185px;
+}
+
 .cta-section .wave-layer-1 {
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,60 Q300,0 600,60 T1200,60 L1200,120 L0,120 Z" fill="rgba(0,56,11,0.35)"/></svg>') repeat;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 185" preserveAspectRatio="none"><path d="M0,92.5 Q300,20 600,92.5 T1200,92.5 L1200,185 L0,185 Z" fill="rgba(0,56,11,0.35)"/></svg>') repeat-x bottom;
+    background-size: 1200px 185px;
     opacity: 0.7;
+    top: auto;
+    bottom: -10px;
+    height: 185px;
 }
 
 .cta-section .wave-layer-2 {
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,40 Q300,80 600,40 T1200,40 L1200,120 L0,120 Z" fill="rgba(255,255,255,0.12)"/></svg>') repeat;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 185" preserveAspectRatio="none"><path d="M0,73 Q300,137 600,73 T1200,73 L1200,185 L0,185 Z" fill="rgba(255,255,255,0.12)"/></svg>') repeat-x bottom;
+    background-size: 1200px 185px;
+    top: auto;
+    bottom: -10px;
+    height: 185px;
 }
 
 .cta-content {
@@ -2079,6 +2094,22 @@ ul {
 
 .cta-section .social-links {
     margin: 0;
+}
+
+/* CTA Section Button - Black Forest background with Azure Mist text */
+.cta-section .btn-primary {
+    background-color: var(--black-forest);
+    color: var(--azure-mist);
+    border: none;
+}
+
+.cta-section .btn-primary:hover {
+    background-color: var(--black-forest);
+    color: var(--azure-mist);
+    border: none;
+    opacity: 0.85;
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 20px rgba(0, 56, 11, 0.3);
 }
 
 .cta-section .social-link {
