@@ -13,7 +13,7 @@ This document outlines design refinements to elevate the Pando website's profess
 ### ✅ Keep These Design Choices:
 - **Wave animations** - Representing wave-particle duality from quantum mechanics
 - **Color palette** - Natural colors of an aspen grove (Pando is the largest)
-  - Black Forest Green (#00380B)
+  - Black Forest Green (#002707)
   - Floral White (#F7F4EB)
   - Amber Honey (#DF9F15)
   - Coffee Bean (#1F1102)
