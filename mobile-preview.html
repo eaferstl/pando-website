@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Preview - PandoCore</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        h1 {
+            color: #fff;
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .device-btn {
+            padding: 10px 20px;
+            border: 2px solid #fff;
+            background: transparent;
+            color: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .device-btn:hover,
+        .device-btn.active {
+            background: #fff;
+            color: #1a1a2e;
+        }
+        
+        .page-links {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .page-btn {
+            padding: 8px 16px;
+            border: 1px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+        
+        .page-btn:hover,
+        .page-btn.active {
+            background: rgba(255,255,255,0.2);
+            border-color: #fff;
+        }
+        
+        .phone-frame {
+            background: #1c1c1e;
+            border-radius: 45px;
+            padding: 12px;
+            box-shadow: 
+                0 0 0 3px #3a3a3c,
+                0 25px 50px -12px rgba(0, 0, 0, 0.5),
+                inset 0 0 0 2px #2c2c2e;
+            transition: all 0.3s ease;
+        }
+        
+        .phone-screen {
+            background: #fff;
+            border-radius: 35px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 30px;
+            background: #1c1c1e;
+            border-radius: 0 0 20px 20px;
+            z-index: 10;
+        }
+        
+        .notch::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 8px;
+            background: #3a3a3c;
+            border-radius: 4px;
+        }
+        
+        iframe {
+            border: none;
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .dimension-info {
+            color: rgba(255,255,255,0.7);
+            font-size: 12px;
+            margin-top: 15px;
+            text-align: center;
+        }
+        
+        .tips {
+            color: rgba(255,255,255,0.5);
+            font-size: 11px;
+            margin-top: 10px;
+            text-align: center;
+            max-width: 400px;
+        }
+    </style>
+</head>
+<body>
+    <h1>📱 Mobile Preview</h1>
+    
+    <div class="controls">
+        <button class="device-btn active" onclick="setDevice('iphone-14', 390, 844)">iPhone 14</button>
+        <button class="device-btn" onclick="setDevice('iphone-se', 375, 667)">iPhone SE</button>
+        <button class="device-btn" onclick="setDevice('pixel-7', 412, 915)">Pixel 7</button>
+        <button class="device-btn" onclick="setDevice('ipad-mini', 768, 1024)">iPad Mini</button>
+    </div>
+    
+    <div class="page-links">
+        <button class="page-btn active" onclick="loadPage('index.html', this)">Home</button>
+        <button class="page-btn" onclick="loadPage('product.html', this)">Product</button>
+        <button class="page-btn" onclick="loadPage('about.html', this)">About</button>
+        <button class="page-btn" onclick="loadPage('contact.html', this)">Contact</button>
+    </div>
+    
+    <div class="phone-frame" id="phoneFrame">
+        <div class="phone-screen" id="phoneScreen">
+            <div class="notch" id="notch"></div>
+            <iframe id="siteFrame" src="index.html"></iframe>
+        </div>
+    </div>
+    
+    <p class="dimension-info" id="dimensionInfo">iPhone 14: 390 × 844</p>
+    <p class="tips">Click the hamburger menu (☰) in the top right to test mobile navigation</p>
+    
+    <script>
+        let currentWidth = 390;
+        let currentHeight = 844;
+        let currentDevice = 'iphone-14';
+        
+        function setDevice(device, width, height) {
+            currentWidth = width;
+            currentHeight = height;
+            currentDevice = device;
+            
+            const phoneScreen = document.getElementById('phoneScreen');
+            const notch = document.getElementById('notch');
+            
+            phoneScreen.style.width = width + 'px';
+            phoneScreen.style.height = height + 'px';
+            
+            // Show/hide notch based on device
+            if (device === 'ipad-mini') {
+                notch.style.display = 'none';
+            } else {
+                notch.style.display = 'block';
+            }
+            
+            // Update dimension info
+            const deviceNames = {
+                'iphone-14': 'iPhone 14',
+                'iphone-se': 'iPhone SE',
+                'pixel-7': 'Pixel 7',
+                'ipad-mini': 'iPad Mini'
+            };
+            document.getElementById('dimensionInfo').textContent = 
+                `${deviceNames[device]}: ${width} × ${height}`;
+            
+            // Update active button
+            document.querySelectorAll('.device-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+        
+        function loadPage(page, btn) {
+            document.getElementById('siteFrame').src = page;
+            
+            // Update active button
+            document.querySelectorAll('.page-btn').forEach(b => {
+                b.classList.remove('active');
+            });
+            btn.classList.add('active');
+        }
+        
+        // Initialize with iPhone 14 dimensions
+        document.getElementById('phoneScreen').style.width = '390px';
+        document.getElementById('phoneScreen').style.height = '844px';
+    </script>
+</body>
+</html>

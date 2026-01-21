@@ -4,10 +4,11 @@
  */
 
 // EmailJS Configuration
+// These values are replaced during build by environment variables
 const EMAILJS_CONFIG = {
-    publicKey: 'QOE9Vl1cBq8l2TlPN',
-    serviceId: 'service_1q1byab',
-    templateId: 'template_1zf3ykh'
+    publicKey: 'EMAILJS_PUBLIC_KEY',
+    serviceId: 'EMAILJS_SERVICE_ID',
+    templateId: 'EMAILJS_TEMPLATE_ID'
 };
 
 // Wait for DOM to be fully loaded
@@ -26,7 +27,88 @@ document.addEventListener('DOMContentLoaded', function() {
     // Smooth scroll for anchor links
     initializeSmoothScroll();
     
+    // Initialize mobile menu
+    initializeMobileMenu();
 });
+
+/**
+ * Initialize mobile hamburger menu functionality
+ */
+function initializeMobileMenu() {
+    const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+    const navLinks = document.querySelector('.nav-links');
+    const navOverlay = document.querySelector('.nav-overlay');
+    
+    if (!mobileMenuToggle || !navLinks) return;
+    
+    // Toggle menu on hamburger click
+    mobileMenuToggle.addEventListener('click', function() {
+        const isExpanded = this.getAttribute('aria-expanded') === 'true';
+        
+        this.setAttribute('aria-expanded', !isExpanded);
+        this.classList.toggle('active');
+        navLinks.classList.toggle('active');
+        
+        if (navOverlay) {
+            navOverlay.classList.toggle('active');
+        }
+        
+        // Prevent body scroll when menu is open
+        document.body.style.overflow = navLinks.classList.contains('active') ? 'hidden' : '';
+    });
+    
+    // Close menu when clicking overlay
+    if (navOverlay) {
+        navOverlay.addEventListener('click', function() {
+            closeMobileMenu();
+        });
+    }
+    
+    // Close menu when clicking a nav link
+    navLinks.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', function() {
+            closeMobileMenu();
+        });
+    });
+    
+    // Close menu on escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && navLinks.classList.contains('active')) {
+            closeMobileMenu();
+        }
+    });
+    
+    // Close menu on window resize to desktop
+    window.addEventListener('resize', debounce(function() {
+        if (window.innerWidth > 767 && navLinks.classList.contains('active')) {
+            closeMobileMenu();
+        }
+    }, 100));
+}
+
+/**
+ * Close the mobile menu
+ */
+function closeMobileMenu() {
+    const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+    const navLinks = document.querySelector('.nav-links');
+    const navOverlay = document.querySelector('.nav-overlay');
+    
+    if (mobileMenuToggle) {
+        mobileMenuToggle.setAttribute('aria-expanded', 'false');
+        mobileMenuToggle.classList.remove('active');
+    }
+    
+    if (navLinks) {
+        navLinks.classList.remove('active');
+    }
+    
+    if (navOverlay) {
+        navOverlay.classList.remove('active');
+    }
+    
+    document.body.style.overflow = '';
+}
 
 /**
  * Initialize contact form with validation and submission handling
