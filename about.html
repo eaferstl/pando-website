@@ -6,6 +6,9 @@
     <meta name="description" content="Learn about PandoCore's mission to advance secure computing through innovative research and development.">
     <title>PandoCore | About</title>
     <link rel="icon" type="image/png" href="images/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -33,11 +36,11 @@
     <section class="content-section alt-bg" style="padding-top: calc(var(--spacing-xxl) * 1.5);">
         <div class="wave-container">
             <div class="wave wave-layer-1"></div>
-            <div class="wave wave-layer-2"></div>
+            <div class="wave wave-layer-5"></div>
         </div>
         <div class="container">
             <div class="content-wrapper">
-                <h1 style="font-size: 2.25rem; margin-bottom: var(--spacing-lg);">PandoCore exists to transform runtime security.</h1>
+                <h1 style="font-size: 2.1rem; margin-bottom: var(--spacing-lg);">PandoCore exists to transform runtime security</h1>
                 <p>We are building infrastructure security that works when everything is assumed compromised. These values guide our work:</p>
                 <ul class="content-list">
                     <li><strong>First Principles Thinking:</strong> Question every assumption to discover solutions others miss.</li>
@@ -51,14 +54,11 @@
     <!-- The PandoCore Founder Section -->
     <section class="team-section">
         <div class="wave-container">
-            <div class="wave wave-layer-1"></div>
-            <div class="wave wave-layer-2"></div>
             <div class="wave wave-layer-4"></div>
-            <div class="wave wave-layer-5"></div>
         </div>
         <div class="container">
             <div class="founder-single">
-                <img src="images/eliot.jpg" alt="Eliot Ferstl" class="founder-photo">
+                <img src="images/founder.jpg" alt="Eliot Ferstl" class="founder-photo">
                 <div class="founder-content">
                     <div class="founder-header">
                         <h3>Eliot Ferstl</h3>
@@ -83,7 +83,6 @@
     <section class="content-section alt-bg">
         <div class="wave-container">
             <div class="wave wave-layer-1"></div>
-            <div class="wave wave-layer-2"></div>
         </div>
         <div class="container">
             <h2 style="text-align: center; color: var(--black-forest); margin-bottom: var(--spacing-lg); position: relative; z-index: 1;">The Problem We're Addressing</h2>
@@ -92,7 +91,12 @@
                 <div class="feature-rows">
                     <div class="feature-row">
                         <div class="feature-visual">
-                            <span class="feature-number">01</span>
+                            <!-- Single Root Node - Foundation -->
+                            <svg class="feature-icon" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="40" cy="32" r="14" fill="none" stroke="currentColor" stroke-width="2.5"/>
+                                <circle cx="40" cy="32" r="6" fill="currentColor" opacity="0.3"/>
+                                <line x1="40" y1="46" x2="40" y2="68" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                            </svg>
                         </div>
                         <div class="feature-content">
                             <h3>Runtime Security</h3>
@@ -101,7 +105,12 @@
                     </div>
                     <div class="feature-row">
                         <div class="feature-visual">
-                            <span class="feature-number">02</span>
+                            <!-- Verified Node - Trust & Verification -->
+                            <svg class="feature-icon" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="40" cy="40" r="18" fill="none" stroke="currentColor" stroke-width="2.5"/>
+                                <circle cx="40" cy="40" r="8" fill="currentColor" opacity="0.3"/>
+                                <polyline points="32,40 38,46 50,34" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
                         </div>
                         <div class="feature-content">
                             <h3>Secure and Verifiable</h3>
@@ -110,7 +119,16 @@
                     </div>
                     <div class="feature-row">
                         <div class="feature-visual">
-                            <span class="feature-number">03</span>
+                            <!-- Branching Resilience - Multiple Paths -->
+                            <svg class="feature-icon" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="40" cy="55" r="10" fill="none" stroke="currentColor" stroke-width="2.5"/>
+                                <circle cx="40" cy="55" r="4" fill="currentColor" opacity="0.3"/>
+                                <line x1="40" y1="45" x2="40" y2="35" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="40" y1="35" x2="25" y2="20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="40" y1="35" x2="55" y2="20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                                <circle cx="25" cy="20" r="5" fill="currentColor" opacity="0.2"/>
+                                <circle cx="55" cy="20" r="5" fill="currentColor" opacity="0.2"/>
+                            </svg>
                         </div>
                         <div class="feature-content">
                             <h3>Fault Tolerance</h3>
@@ -119,7 +137,23 @@
                     </div>
                     <div class="feature-row">
                         <div class="feature-visual">
-                            <span class="feature-number">04</span>
+                            <!-- Growing Network - Expanding Connections -->
+                            <svg class="feature-icon" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="40" cy="40" r="8" fill="none" stroke="currentColor" stroke-width="2.5"/>
+                                <circle cx="40" cy="40" r="3" fill="currentColor" opacity="0.4"/>
+                                <line x1="40" y1="32" x2="40" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <line x1="48" y1="40" x2="65" y2="40" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <line x1="32" y1="40" x2="15" y2="40" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <line x1="46" y1="34" x2="58" y2="22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <line x1="34" y1="34" x2="22" y2="22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <line x1="40" y1="48" x2="40" y2="65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <circle cx="40" cy="15" r="4" fill="currentColor" opacity="0.2"/>
+                                <circle cx="65" cy="40" r="4" fill="currentColor" opacity="0.2"/>
+                                <circle cx="15" cy="40" r="4" fill="currentColor" opacity="0.2"/>
+                                <circle cx="58" cy="22" r="4" fill="currentColor" opacity="0.2"/>
+                                <circle cx="22" cy="22" r="4" fill="currentColor" opacity="0.2"/>
+                                <circle cx="40" cy="65" r="4" fill="currentColor" opacity="0.2"/>
+                            </svg>
                         </div>
                         <div class="feature-content">
                             <h3>Endless Scalability</h3>
@@ -128,7 +162,29 @@
                     </div>
                     <div class="feature-row">
                         <div class="feature-visual">
-                            <span class="feature-number">05</span>
+                            <!-- Interconnected Root System - Unified Yet Distributed -->
+                            <svg class="feature-icon" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Central trunk line -->
+                                <line x1="40" y1="12" x2="40" y2="28" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                                <!-- Main nodes -->
+                                <circle cx="40" cy="32" r="6" fill="none" stroke="currentColor" stroke-width="2"/>
+                                <circle cx="22" cy="50" r="6" fill="none" stroke="currentColor" stroke-width="2"/>
+                                <circle cx="58" cy="50" r="6" fill="none" stroke="currentColor" stroke-width="2"/>
+                                <circle cx="30" cy="68" r="5" fill="none" stroke="currentColor" stroke-width="2"/>
+                                <circle cx="50" cy="68" r="5" fill="none" stroke="currentColor" stroke-width="2"/>
+                                <!-- Connecting lines (root system) -->
+                                <line x1="40" y1="38" x2="26" y2="46" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <line x1="40" y1="38" x2="54" y2="46" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <line x1="22" y1="56" x2="28" y2="64" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <line x1="58" y1="56" x2="52" y2="64" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <line x1="28" y1="50" x2="52" y2="50" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="3,3" opacity="0.5"/>
+                                <!-- Node fills -->
+                                <circle cx="40" cy="32" r="2.5" fill="currentColor" opacity="0.3"/>
+                                <circle cx="22" cy="50" r="2.5" fill="currentColor" opacity="0.3"/>
+                                <circle cx="58" cy="50" r="2.5" fill="currentColor" opacity="0.3"/>
+                                <circle cx="30" cy="68" r="2" fill="currentColor" opacity="0.3"/>
+                                <circle cx="50" cy="68" r="2" fill="currentColor" opacity="0.3"/>
+                            </svg>
                         </div>
                         <div class="feature-content">
                             <h3>Platform Diversity</h3>
@@ -143,8 +199,6 @@
     <!-- Approach Section -->
     <section class="content-section">
         <div class="wave-container">
-            <div class="wave wave-layer-1"></div>
-            <div class="wave wave-layer-2"></div>
             <div class="wave wave-layer-4"></div>
             <div class="wave wave-layer-5"></div>
         </div>
@@ -203,7 +257,6 @@
     <section class="cta-section">
         <div class="wave-container">
             <div class="wave wave-layer-1"></div>
-            <div class="wave wave-layer-2"></div>
         </div>
         <div class="container">
             <div class="cta-content">

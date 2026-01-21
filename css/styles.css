@@ -15,7 +15,7 @@
     --success-green: #388E3C;
     
     /* Typography */
-    --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     --font-size-base: 16px;
     --line-height-base: 1.6;
     
@@ -306,16 +306,16 @@ ul {
    =================================== */
 
 .hero {
-    background: linear-gradient(135deg, var(--floral-white) 0%, var(--amber-honey) 100%);
+    background: linear-gradient(135deg, var(--floral-white) 0%, var(--floral-white) 20%, rgba(223, 159, 21, 0.55) 100%);
     padding: var(--spacing-md) 0;
     position: relative;
     overflow: hidden;
 }
 
-/* Hero section with contrasting pastel pink wave */
+/* Hero section waves - subtle black forest green */
 .hero .wave-layer-2 {
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,40 Q300,80 600,40 T1200,40 L1200,120 L0,120 Z" fill="rgba(232,197,193,0.35)"/></svg>') repeat;
-    opacity: 0.7;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,40 Q300,80 600,40 T1200,40 L1200,120 L0,120 Z" fill="rgba(0,56,11,0.08)"/></svg>') repeat;
+    opacity: 0.5;
 }
 
 .hero-split {
@@ -837,6 +837,21 @@ ul {
     color: var(--azure-mist);
     opacity: 0.6;
     line-height: 1;
+}
+
+/* Feature Icons - Pando Tree/Branch Theme */
+.feature-icon {
+    width: 120px;
+    height: 120px;
+    color: var(--black-forest);
+    opacity: 0.7;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.feature-row:hover .feature-icon {
+    opacity: 1;
+    transform: scale(1.08);
+    color: var(--black-forest);
 }
 
 /* ===================================
@@ -1826,7 +1841,7 @@ ul {
 
 .vision-section {
     padding: var(--spacing-xxl) 0;
-    background: linear-gradient(to bottom, var(--amber-honey) 0%, var(--floral-white) 100%);
+    background: linear-gradient(to bottom, var(--floral-white) 0%, var(--floral-white) 30%, rgba(223, 159, 21, 0.45) 100%);
     position: relative;
     overflow: hidden;
 }
@@ -2146,10 +2161,12 @@ ul {
     padding: var(--spacing-xxl) 0;
     position: relative;
     overflow: hidden;
+    z-index: 2;
 }
 
 .content-section.alt-bg {
-    background: linear-gradient(to bottom, var(--amber-honey) 0%, var(--floral-white) 50%, var(--amber-honey) 100%);
+    background-color: var(--floral-white);
+    background-image: linear-gradient(to bottom, rgba(223, 159, 21, 0.35) 0%, var(--floral-white) 50%, rgba(223, 159, 21, 0.35) 100%);
 }
 
 .content-wrapper {
@@ -2610,6 +2627,11 @@ ul {
     
     .feature-number {
         font-size: 5rem;
+    }
+    
+    .feature-icon {
+        width: 80px;
+        height: 80px;
     }
     
     .feature-content h3 {

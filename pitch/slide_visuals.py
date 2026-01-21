@@ -139,6 +139,132 @@ def slide3():
     fig.savefig("slide3_problem.png", transparent=False)
     plt.close(fig)
 
+def draw_wave_function(ax, x, y, size=2.0, collapsed=False):
+    """
+    Draw a wave function visualization (like Copenhagen interpretation).
+    For uncollapsed: bell curve / probability distribution
+    For collapsed: sharp spike (measurement result)
+    """
+    # 3D-style base plane (perspective quad)
+    plane_w = size * 1.6
+    plane_d = size * 1.0  # depth
+    plane_h = 0.05  # thickness
+    
+    # Base vertices for pseudo-3D plane
+    base_left = x - plane_w/2
+    base_right = x + plane_w/2
+    base_front = y - plane_d/2
+    base_back = y + plane_d/4
+    
+    # Perspective offset
+    persp = plane_d * 0.4
+    
+    # Draw base plane (gray floor)
+    plane = np.array([
+        [base_left, base_front],
+        [base_right, base_front],
+        [base_right + persp*0.5, base_back],
+        [base_left + persp*0.5, base_back]
+    ])
+    ax.add_patch(Polygon(plane, closed=True, facecolor="#D0D0D0", 
+                         edgecolor=COFFEE_BEAN, linewidth=1.5, alpha=0.7))
+    
+    # Draw Y-axis (vertical)
+    axis_height = size * 1.4
+    ax.plot([base_left, base_left], [base_front, base_front + axis_height], 
+            color=COFFEE_BEAN, linewidth=1.5)
+    ax.add_patch(FancyArrowPatch((base_left, base_front + axis_height - 0.1), 
+                                 (base_left, base_front + axis_height + 0.2),
+                                 arrowstyle='-|>', mutation_scale=10,
+                                 linewidth=1.5, color=COFFEE_BEAN))
+    
+    # Draw X-axis (horizontal, front edge)
+    ax.plot([base_left, base_right], [base_front, base_front], 
+            color=COFFEE_BEAN, linewidth=1.5)
+    ax.add_patch(FancyArrowPatch((base_right - 0.1, base_front), 
+                                 (base_right + 0.2, base_front),
+                                 arrowstyle='-|>', mutation_scale=10,
+                                 linewidth=1.5, color=COFFEE_BEAN))
+    
+    # Generate wave function curve
+    center_x = x
+    center_y = base_front + plane_d * 0.15
+    
+    if not collapsed:
+        # Bell curve / probability distribution
+        t = np.linspace(-1.5, 1.5, 100)
+        wave_x = center_x + t * (plane_w/3)
+        # Gaussian curve
+        wave_height = np.exp(-t**2 * 1.5) * (axis_height * 0.7)
+        wave_y = center_y + wave_height
+        
+        # Draw filled bell curve with gradient effect
+        # Create polygon for filled area
+        fill_x = np.concatenate([[wave_x[0]], wave_x, [wave_x[-1]]])
+        fill_y = np.concatenate([[center_y], wave_y, [center_y]])
+        fill_pts = np.column_stack([fill_x, fill_y])
+        ax.add_patch(Polygon(fill_pts, closed=True, facecolor="#E8E4DB", 
+                             edgecolor=COFFEE_BEAN, linewidth=2, alpha=0.9))
+        
+        # Add some depth lines
+        for i in range(3):
+            offset = (i + 1) * plane_d * 0.06
+            depth_t = np.linspace(-1.2 + i*0.3, 1.2 - i*0.3, 50)
+            depth_x = center_x + depth_t * (plane_w/3) + offset*0.3
+            depth_height = np.exp(-depth_t**2 * 1.5) * (axis_height * 0.65 - i*0.15)
+            depth_y = center_y + offset + depth_height
+            ax.plot(depth_x, depth_y, color=COFFEE_BEAN, linewidth=0.8, alpha=0.4-i*0.1)
+        
+        # Label
+        ax.text(base_left - 0.2, center_y + axis_height * 0.5, "Wave\nFunction",
+                ha="right", va="center", fontsize=14, color=COFFEE_BEAN, 
+                fontweight="bold", fontname=FONT_FAMILY)
+        ax.text(base_left - 0.2, center_y + axis_height * 0.2, "ψ",
+                ha="right", va="center", fontsize=18, color=COFFEE_BEAN, 
+                fontweight="bold", fontname=FONT_FAMILY, style='italic')
+    else:
+        # Collapsed state - sharp spike
+        spike_x = center_x + plane_w * 0.05
+        spike_base_width = plane_w * 0.08
+        spike_height = axis_height * 0.75
+        
+        # Draw spike as triangle
+        spike = np.array([
+            [spike_x - spike_base_width/2, center_y],
+            [spike_x, center_y + spike_height],
+            [spike_x + spike_base_width/2, center_y]
+        ])
+        ax.add_patch(Polygon(spike, closed=True, facecolor="#E8E4DB", 
+                             edgecolor=COFFEE_BEAN, linewidth=2, alpha=0.9))
+        
+        # Convergence arrows pointing to the spike
+        arrow_y = center_y + spike_height * 0.4
+        ax.add_patch(FancyArrowPatch((spike_x - plane_w*0.35, arrow_y), 
+                                     (spike_x - spike_base_width*0.8, arrow_y),
+                                     arrowstyle='-|>', mutation_scale=10,
+                                     linewidth=1.5, color=COFFEE_BEAN))
+        ax.add_patch(FancyArrowPatch((spike_x + plane_w*0.35, arrow_y), 
+                                     (spike_x + spike_base_width*0.8, arrow_y),
+                                     arrowstyle='-|>', mutation_scale=10,
+                                     linewidth=1.5, color=COFFEE_BEAN))
+        
+        # Label
+        ax.text(spike_x + plane_w*0.4, center_y + spike_height + 0.2, 
+                'wave function "collapse"',
+                ha="center", va="bottom", fontsize=12, color=COFFEE_BEAN, 
+                fontname=FONT_FAMILY, style='italic')
+    
+    # Axis labels
+    ax.text(center_x, base_front - 0.4, "Position in Space",
+            ha="center", va="top", fontsize=12, color=COFFEE_BEAN, 
+            fontname=FONT_FAMILY)
+    ax.text(base_right + 0.15, base_front - 0.15, "X",
+            ha="left", va="top", fontsize=12, color=COFFEE_BEAN, 
+            fontweight="bold", fontname=FONT_FAMILY)
+    ax.text(base_left - 0.1, base_front + axis_height + 0.25, "Y",
+            ha="right", va="bottom", fontsize=12, color=COFFEE_BEAN, 
+            fontweight="bold", fontname=FONT_FAMILY)
+
 def slide4():
     fig, ax = setup_ax()
     # No vignette - clean background
@@ -190,7 +316,55 @@ def slide4():
     fig.savefig("slide4_breakthrough.png", transparent=False)
     plt.close(fig)
 
+def slide5():
+    fig, ax = setup_ax()
+    # No vignette - clean background
+
+    # Title
+    ax.text(W/2, 7.8, "Superposition Execution: Self-Protecting Software",
+            ha="center", va="center", fontsize=36, color=BLACK_FOREST, fontweight="bold",
+            fontname=FONT_FAMILY)
+
+    # Bullet points
+    bullet_x = 1.0
+    bullet_y = 6.8
+    ax.text(bullet_x, bullet_y, "•", ha="left", va="center", fontsize=20,
+            color=AMBER_HONEY, fontweight="bold", fontname=FONT_FAMILY)
+    ax.text(bullet_x + 0.5, bullet_y, "Workloads exist in entropy-bound Kubernetes(K8s) pods that self-delete under attack",
+            ha="left", va="center", fontsize=18, color=COFFEE_BEAN, fontname=FONT_FAMILY)
+    
+    ax.text(bullet_x, bullet_y - 0.6, "•", ha="left", va="center", fontsize=20,
+            color=AMBER_HONEY, fontweight="bold", fontname=FONT_FAMILY)
+    ax.text(bullet_x + 0.5, bullet_y - 0.6, "Delivers secure execution with near-native performance",
+            ha="left", va="center", fontsize=18, color=COFFEE_BEAN, fontname=FONT_FAMILY)
+
+    # Section title for the graphic
+    ax.text(W/4 + 0.8, 5.3, "The Copenhagen Interpretation:",
+            ha="center", va="center", fontsize=18, color=BLACK_FOREST, fontweight="bold",
+            fontname=FONT_FAMILY)
+
+    # Left wave function (uncollapsed - probability distribution) - moved closer to center
+    draw_wave_function(ax, 5.0, 3.3, size=1.8, collapsed=False)
+    
+    # Measurement arrow in the center
+    ax.add_patch(FancyArrowPatch((7.8, 4.0), (8.8, 4.0),
+                                 arrowstyle='-|>', mutation_scale=18,
+                                 linewidth=2.5, color=AMBER_HONEY))
+    ax.text(8.3, 4.5, "Measurement", ha="center", va="bottom", fontsize=16,
+            color=COFFEE_BEAN, fontweight="bold", fontname=FONT_FAMILY)
+
+    # Right wave function (collapsed - spike) - moved closer to center
+    draw_wave_function(ax, 11.2, 3.3, size=1.8, collapsed=True)
+
+    # Bottom quote box - centered
+    draw_quote_box(ax, W/2, 0.9, "Inspiration: Quantum Wave\nFunction Collapse", 
+                   width=5.5, height=1.3)
+
+    fig.savefig("slide5_superposition.png", transparent=False)
+    plt.close(fig)
+
 if __name__ == "__main__":
     slide3()
     slide4()
-    print("Wrote: slide3_problem.png, slide4_breakthrough.png")
+    slide5()
+    print("Wrote: slide3_problem.png, slide4_breakthrough.png, slide5_superposition.png")
