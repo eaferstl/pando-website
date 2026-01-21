@@ -6,9 +6,9 @@
 // EmailJS Configuration
 // These values are replaced during build by environment variables
 const EMAILJS_CONFIG = {
-    publicKey: 'EMAILJS_PUBLIC_KEY',
-    serviceId: 'EMAILJS_SERVICE_ID',
-    templateId: 'EMAILJS_TEMPLATE_ID'
+    publicKey: 'QOE9Vl1cBq8l2TlPN',
+    serviceId: 'service_1q1byab',
+    templateId: 'template_1zf3ykh'
 };
 
 // Wait for DOM to be fully loaded
