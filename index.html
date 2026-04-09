@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="PandoCore - Building secure execution infrastructure that assumes everything is compromised. Software-based protection for confidential workloads across any infrastructure.">
-    <title>PandoCore | The Secure Execution Primitive</title>
+    <meta name="description" content="PandoCore - Zero-configuration behavioral runtime monitoring for Kubernetes. Learns your workload, detects anomalies, responds automatically.">
+    <title>PandoCore | Zero-Config Runtime Monitoring for Kubernetes</title>
     <link rel="icon" type="image/png" href="images/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -32,6 +32,7 @@
                     <li><a href="index.html" class="active">Home</a></li>
                     <li><a href="product.html">Product</a></li>
                     <li><a href="about.html">About</a></li>
+                    <li><a href="docs/index.html">Docs</a></li>
                     <li><a href="contact.html" class="nav-contact">Contact</a></li>
                 </ul>
             </div>
@@ -48,10 +49,10 @@
             <div class="hero-split">
                 <div class="hero-content-left">
                     <h1>The Execution Security Primitive</h1>
-                    <p class="hero-subtitle">Your infrastructure can't be trusted. So security has to live at runtime.</p>
+                    <p class="hero-subtitle">A Kubernetes sidecar that learns your workload's normal behavior and detects when something changes.<br>No rules to write.<br>No policies to configure.</p>
                     <div class="hero-buttons">
-                        <a href="product.html" class="btn btn-primary">See the Approach</a>
-                        <a href="contact.html" class="btn btn-secondary">Let's Talk</a>
+                        <a href="product.html" class="btn btn-primary">How It Works</a>
+                        <a href="docs/getting-started.html" class="btn btn-secondary">Get Started</a>
                     </div>
                 </div>
                 <div class="hero-visual">
@@ -88,19 +89,19 @@
     <!-- Reality Section -->
     <section class="problem-section">
         <div class="container">
-            <h2>The Reality</h2>
+            <h2>The Problem</h2>
             <div class="problem-grid">
                 <div class="problem-card">
-                    <h3>Hardware isn't safe.</h3>
-                    <p>TEEs and secure enclaves have been compromised. Trusting silicon is a bet against determined attackers.</p>
+                    <h3>Rules can't cover everything.</h3>
+                    <p>Rule-based runtime tools require you to anticipate every attack. If you don't write the rule, you miss the threat.</p>
                 </div>
                 <div class="problem-card">
-                    <h3>Networks aren't private.</h3>
-                    <p>Traffic analysis, side channels, and infrastructure compromise mean your data's path is exposed.</p>
+                    <h3>Runtime threats evolve.</h3>
+                    <p>Attackers adapt faster than static policies. You need monitoring that adapts to your workload automatically.</p>
                 </div>
                 <div class="problem-card">
-                    <h3>Runtime is exposed.</h3>
-                    <p>Memory inspection, debugging interfaces, and runtime analysis can extract logic and data during execution.</p>
+                    <h3>Alert fatigue kills response.</h3>
+                    <p>Generic detection generates false positives. Real threats get buried. You need detection tuned to your specific workload behavior.</p>
                 </div>
             </div>
         </div>
@@ -109,13 +110,13 @@
     <!-- What's New Section -->
     <section class="vision-section">
         <div class="container">
-            <h2>What's New</h2>
+            <h2>A Different Approach</h2>
             <div class="vision-content">
-                <p>PandoCore adds a critical missing layer to your security stack: live execution protection. While encryption secures data at rest and in transit, and authentication controls access, your code remains vulnerable during execution. We've built a software-based runtime security primitive that protects sensitive logic and data while your code runs, preventing exfiltration even on compromised infrastructure.</p>
-                <div class="feature-callout" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--spacing-md); margin-top: var(--spacing-lg); padding: var(--spacing-lg); background: rgba(107, 142, 127, 0.05); border-radius: 8px; border-left: 4px solid var(--sage-green);">
+                <p>PandoCore takes a fundamentally different approach to runtime security. Instead of requiring you to write detection rules for every possible threat, PandoCore learns what normal looks like for each of your workloads and flags when behavior deviates. Deploy it with one label, and it starts working immediately.</p>
+                <div class="checkmarks-grid-simple">
                     <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
                         <span style="color: var(--sage-green); font-size: 1.5rem;">✓</span>
-                        <span style="font-weight: 600;">Kubernetes-native deployment</span>
+                        <span style="font-weight: 600;">Zero configuration required</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
                         <span style="color: var(--sage-green); font-size: 1.5rem;">✓</span>
@@ -123,15 +124,15 @@
                     </div>
                     <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
                         <span style="color: var(--sage-green); font-size: 1.5rem;">✓</span>
-                        <span style="font-weight: 600;">No specialized hardware required</span>
+                        <span style="font-weight: 600;">Kubernetes-native sidecar deployment</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
                         <span style="color: var(--sage-green); font-size: 1.5rem;">✓</span>
                         <span style="font-weight: 600;">Works on existing infrastructure</span>
                     </div>
-                    <div style="display: flex; align-items: center; gap: var(--spacing-sm); grid-column: span 2; justify-content: center;">
+                    <div class="checkmark-span-row" style="display: flex; align-items: center; gap: var(--spacing-sm); grid-column: span 2; justify-content: center;">
                         <span style="color: var(--sage-green); font-size: 1.5rem;">✓</span>
-                        <span style="font-weight: 600;">Integrates with your current security stack</span>
+                        <span style="font-weight: 600;">Validated: 693 pod-hours, 0 false positives</span>
                     </div>
                 </div>
             </div>
@@ -158,9 +159,9 @@
                             <line x1="32" y1="36" x2="42" y2="42" stroke="white" stroke-width="2" class="icon-shape"/>
                         </svg>
                     </div>
-                    <h3>For AI Builders</h3>
-                    <p style="font-weight: 600; margin-bottom: var(--spacing-md);">"Deploy your AI model without fear of extraction"</p>
-                    <p>Your proprietary model is your competitive advantage. Deploy it across any Kubernetes cluster—cloud, edge, or customer infrastructure—knowing the logic and weights stay protected even during inference.</p>
+                    <h3>For Platform Teams</h3>
+                    <p style="font-weight: 600; margin-bottom: var(--spacing-md);">"One label. Every service monitored."</p>
+                    <p>Add runtime anomaly detection across all your services with a single Kubernetes label. No per-service configuration needed. PandoCore learns each workload's behavior independently and works out of the box.</p>
                 </div>
                 <div class="minimal-card">
                     <div class="card-icon">
@@ -169,9 +170,9 @@
                             <path d="M32 16l-16 12v2h32v-2l-16-12zm-14 16v14h4v-14h-4zm6 0v14h4v-14h-4zm6 0v14h4v-14h-4zm6 0v14h4v-14h-4zm6 0v14h4v-14h-4zm-26 16v2h32v-2h-32z" class="icon-shape"/>
                         </svg>
                     </div>
-                    <h3>For Financial Services</h3>
-                    <p style="font-weight: 600; margin-bottom: var(--spacing-md);">"Run transactions where the infrastructure can't see"</p>
-                    <p>Execute sensitive financial logic in containerized environments you don't fully control. The transaction processes correctly, but the infrastructure running it can't inspect, modify, or extract the logic.</p>
+                    <h3>For Security Teams</h3>
+                    <p style="font-weight: 600; margin-bottom: var(--spacing-md);">"Catch what rules-based tools miss."</p>
+                    <p>PandoCore detects runtime anomalies that policy-based tools can't catch without custom rules: unexpected process changes, behavioral shifts, and subtle deviations. Complements your existing Falco, OPA, or network policy stack.</p>
                 </div>
                 <div class="minimal-card">
                     <div class="card-icon">
@@ -180,9 +181,9 @@
                             <path d="M32 18c-4.4 0-8 3.6-8 8v4h-2c-1.1 0-2 0.9-2 2v12c0 1.1 0.9 2 2 2h20c1.1 0 2-0.9 2-2V32c0-1.1-0.9-2-2-2h-2v-4c0-4.4-3.6-8-8-8zm0 3c2.8 0 5 2.2 5 5v4h-10v-4c0-2.8 2.2-5 5-5zm0 15c-1.7 0-3 1.3-3 3s1.3 3 3 3 3-1.3 3-3-1.3-3-3-3z" class="icon-shape"/>
                         </svg>
                     </div>
-                    <h3>For Any Confidential Workload</h3>
-                    <p style="font-weight: 600; margin-bottom: var(--spacing-md);">"Protect any containerized workload with sensitive logic"</p>
-                    <p>Whether it's proprietary algorithms, confidential business logic, or sensitive data processing—if your Kubernetes workload contains value, it needs protection. Deploy with confidence knowing your logic stays hidden even on untrusted infrastructure.</p>
+                    <h3>For Compliance-Sensitive Workloads</h3>
+                    <p style="font-weight: 600; margin-bottom: var(--spacing-md);">"Continuous monitoring with a full audit trail."</p>
+                    <p>Every detection generates structured evidence with forensic context. Monitor mode gives you visibility. Alert mode notifies your team. Enforce mode responds automatically. All with complete, auditable records.</p>
                 </div>
             </div>
         </div>
@@ -195,8 +196,8 @@
         </div>
         <div class="container">
             <div class="cta-content">
-                <h2>Ready to Build Secure Infrastructure?</h2>
-                <p>Whether you're securing critical workloads or looking to invest in the future of compute security, we want to hear from you.</p>
+                <h2>See It In Action</h2>
+                <p>Whether you're securing critical workloads or exploring runtime monitoring for your Kubernetes clusters, we want to hear from you.</p>
                 
                 <div class="cta-actions">
                     <a href="contact.html" class="btn btn-primary">Get In Touch</a>
@@ -207,11 +208,6 @@
                             <a href="https://www.linkedin.com/company/pando-core/" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="LinkedIn">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
-                                </svg>
-                            </a>
-                            <a href="https://x.com/eaferstl" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="X (Twitter)">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                                 </svg>
                             </a>
                         </div>

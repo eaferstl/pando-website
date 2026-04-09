@@ -2878,6 +2878,87 @@ ul {
 }
 
 /* ===================================
+   Responsive Grids (validation, workloads, checkmarks)
+   =================================== */
+
+.validation-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+    padding: var(--spacing-xl);
+    background: rgba(107, 142, 127, 0.05);
+    border-radius: 8px;
+    text-align: center;
+}
+
+.workloads-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    background: rgba(107, 142, 127, 0.05);
+    border-radius: 8px;
+    text-align: center;
+}
+
+.checkmarks-grid {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    gap: var(--spacing-lg) var(--spacing-xxl);
+    margin-top: var(--spacing-xl);
+    padding: var(--spacing-xl);
+    background: rgba(107, 142, 127, 0.05);
+    border-radius: 8px;
+    justify-content: center;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.checkmarks-grid-simple {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+    padding: var(--spacing-lg);
+    background: rgba(107, 142, 127, 0.05);
+    border-radius: 8px;
+    border-left: 4px solid var(--sage-green);
+}
+
+@media (max-width: 767px) {
+    .validation-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .workloads-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .checkmarks-grid,
+    .checkmarks-grid-simple {
+        grid-template-columns: 1fr;
+        width: auto;
+    }
+
+    .checkmark-span-row {
+        grid-column: span 1 !important;
+        justify-content: flex-start !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .validation-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .workloads-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ===================================
    Accessibility
    =================================== */
 

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PandoCore FAQ - Frequently asked questions about runtime protection, deployment, and operations.">
+    <title>FAQ | PandoCore Docs</title>
+    <link rel="icon" type="image/png" href="../images/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/docs.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a href="../index.html" class="logo">
+                    <img src="../images/logoTransparency.png" alt="Pando Logo">
+                    <div class="logo-text-wrapper">
+                        <span class="logo-text">PandoCore</span>
+                    </div>
+                </a>
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div class="nav-overlay"></div>
+                <ul class="nav-links">
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="../product.html">Product</a></li>
+                    <li><a href="../about.html">About</a></li>
+                    <li><a href="index.html" class="active">Docs</a></li>
+                    <li><a href="../contact.html" class="nav-contact">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Docs Hero -->
+    <section class="docs-hero">
+        <div class="container">
+            <h1>Frequently Asked Questions</h1>
+            <p>Common questions about PandoCore runtime protection.</p>
+        </div>
+    </section>
+
+    <!-- Documentation Layout -->
+    <div class="docs-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="docs-sidebar">
+            <h3>Documentation</h3>
+            <ul class="docs-nav">
+                <li><a href="index.html">Overview</a></li>
+                <li><a href="getting-started.html">Getting Started</a></li>
+                <li><a href="webhook.html">Admission Webhook</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="configuration.html">Configuration</a></li>
+                <li><a href="policy.html">CRD Policy</a></li>
+                <li><a href="operating-modes.html">Operating Modes</a></li>
+                <li><a href="emergency.html">Emergency Procedures</a></li>
+                <li><a href="evidence-format.html">Evidence Format</a></li>
+                <li><a href="faq.html" class="active">FAQ</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="docs-content">
+            <div class="docs-breadcrumb">
+                <a href="index.html">Docs</a>
+                <span>/</span>
+                FAQ
+            </div>
+
+            <h1>Frequently Asked Questions</h1>
+
+            <h2>General</h2>
+
+            <h3>What is PandoCore?</h3>
+            <p>PandoCore is a runtime execution-integrity security system for Kubernetes. It monitors containerized workloads for signs of anomalous behavior and responds instantly when detected, providing runtime protection that complements your existing security stack.</p>
+
+            <h3>How does PandoCore differ from other security tools?</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Aspect</th>
+                        <th>Traditional Security</th>
+                        <th>PandoCore</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Focus</strong></td>
+                        <td>Prevention, detection, alerting</td>
+                        <td>Real-time detection + automated response</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Response Time</strong></td>
+                        <td>Minutes to hours (human-dependent)</td>
+                        <td>Seconds (automated)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Integration</strong></td>
+                        <td>Often requires code changes or agents</td>
+                        <td>Zero application changes (sidecar)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Language Support</strong></td>
+                        <td>Often language-specific</td>
+                        <td>Language-agnostic (any container)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Does PandoCore replace my firewall/WAF/scanner?</h3>
+            <p>No. PandoCore complements your existing security infrastructure. It focuses specifically on runtime execution integrity — detecting issues that occur while code runs. Use PandoCore alongside your existing preventive security measures (firewalls, WAFs, vulnerability scanners, etc.).</p>
+
+            <h2>Deployment</h2>
+
+            <h3>What Kubernetes versions are supported?</h3>
+            <p>PandoCore supports Kubernetes 1.25 and later. It has been tested on:</p>
+            <ul>
+                <li>GKE (Google Kubernetes Engine)</li>
+                <li>kind (local development)</li>
+                <li>minikube (local development)</li>
+            </ul>
+            <p>EKS and AKS support is expected but not yet validated.</p>
+
+            <h3>What are the resource requirements?</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Resource</th>
+                        <th>Minimum</th>
+                        <th>Recommended</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>CPU per sidecar</td>
+                        <td>50m</td>
+                        <td>100m</td>
+                    </tr>
+                    <tr>
+                        <td>Memory per sidecar</td>
+                        <td>25Mi</td>
+                        <td>50Mi</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Does PandoCore require code changes?</h3>
+            <p>No. PandoCore deploys as a sidecar container alongside your existing application. You add the sidecar to your deployment manifest — no changes to your application code are required.</p>
+
+            <h3>How long does deployment take?</h3>
+            <p>Initial deployment (Helm install + adding sidecar to first deployment) typically takes under 5 minutes. See our <a href="getting-started.html">Getting Started guide</a>.</p>
+
+            <h2>Operations</h2>
+
+            <h3>What is the "learning phase"?</h3>
+            <p>When a pod starts with PandoCore, the sidecar enters a learning phase where it observes your application's normal behavior and establishes a baseline. During this phase:</p>
+            <ul>
+                <li>The <code>/readyz</code> endpoint returns 503</li>
+                <li>Detection occurs but no enforcement (even in enforce mode)</li>
+                <li>Duration is configurable (default: 10 minutes)</li>
+            </ul>
+            <p>After learning completes, <code>/readyz</code> returns 200 and full monitoring begins.</p>
+
+            <h3>How do I know if PandoCore is working?</h3>
+            <p>Check these indicators:</p>
+            <pre><code># Sidecar is running
+kubectl get pods -l app=your-app -o wide
+
+# Sidecar is healthy
+kubectl exec &lt;pod&gt; -c pando-sidecar -- wget -qO- http://localhost:9090/healthz
+
+# Learning complete (returns 200)
+kubectl exec &lt;pod&gt; -c pando-sidecar -- wget -qO- http://localhost:9090/readyz
+
+# View current drift scores
+kubectl exec &lt;pod&gt; -c pando-sidecar -- wget -qO- http://localhost:9090/metrics | grep pando_drift</code></pre>
+
+            <h3>What happens if the sidecar crashes?</h3>
+            <p>If the PandoCore sidecar crashes, your application container continues running unprotected. Kubernetes will automatically restart the sidecar container based on its restartPolicy. The new sidecar instance will re-establish a baseline through the learning phase.</p>
+            <p>Configure liveness probes to ensure Kubernetes restarts unhealthy sidecars promptly:</p>
+            <pre><code>livenessProbe:
+  httpGet:
+    path: /healthz
+    port: 9090
+  initialDelaySeconds: 5
+  periodSeconds: 10</code></pre>
+
+            <h3>What if PandoCore keeps terminating my pods?</h3>
+            <p>If you're experiencing unexpected pod terminations:</p>
+            <ol>
+                <li><strong>Switch to monitor mode immediately:</strong>
+                    <pre><code>kubectl set env deployment/NAME -c pando-sidecar PANDO_MODE=monitor</code></pre>
+                </li>
+                <li><strong>Review the evidence:</strong> Check logs to understand what triggered the detection</li>
+                <li><strong>Adjust thresholds:</strong> Your workload may have legitimate behavioral variance that requires higher thresholds</li>
+                <li><strong>Trigger re-learning:</strong> If your application behavior has legitimately changed</li>
+            </ol>
+            <p>See <a href="emergency.html">Emergency Procedures</a> for detailed steps.</p>
+
+            <h3>How do I tune the detection sensitivity?</h3>
+            <p>Adjust these environment variables:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Variable</th>
+                        <th>Default</th>
+                        <th>Effect</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>PANDO_THRESHOLD_INCREMENTAL</code></td>
+                        <td>0.15</td>
+                        <td>Lower = more sensitive to sudden changes</td>
+                    </tr>
+                    <tr>
+                        <td><code>PANDO_THRESHOLD_CUMULATIVE</code></td>
+                        <td>0.45</td>
+                        <td>Lower = more sensitive to gradual drift</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>Start with monitor mode, observe detection events, then tune thresholds before enabling enforcement.</p>
+
+            <h2>Detection</h2>
+
+            <h3>What does PandoCore detect?</h3>
+            <p>PandoCore monitors multiple dimensions of workload behavior and detects significant deviations from established baselines:</p>
+            <ul>
+                <li><strong>Memory anomalies:</strong> Unusual heap growth, allocation patterns</li>
+                <li><strong>Process anomalies:</strong> Thread count changes, file descriptor anomalies, unexpected child processes</li>
+                <li><strong>Timing anomalies:</strong> Unusual execution patterns</li>
+                <li><strong>System anomalies:</strong> CPU and I/O pattern deviations</li>
+            </ul>
+
+            <h3>What doesn't PandoCore detect?</h3>
+            <p>PandoCore focuses on runtime execution integrity. It does <strong>not</strong> detect:</p>
+            <ul>
+                <li><strong>Pre-execution issues:</strong> Supply chain compromises, malicious images, vulnerabilities in dependencies (use image scanning)</li>
+                <li><strong>Application logic bugs:</strong> SQL injection, authentication bypass, business logic flaws (use application security testing)</li>
+                <li><strong>Network attacks:</strong> Man-in-the-middle, DDoS, DNS spoofing (use network security tools)</li>
+            </ul>
+
+            <h3>Can PandoCore cause false positives?</h3>
+            <p>PandoCore is designed to minimize false positives through adaptive learning. The learning phase establishes a baseline specific to your workload's normal behavior. However, legitimate behavioral changes (new deployments, load spikes, batch jobs) may trigger detections.</p>
+            <p>Best practices to avoid false positives:</p>
+            <ul>
+                <li>Run in monitor mode for at least one week before enabling enforcement</li>
+                <li>Trigger re-learning after deployments that significantly change behavior</li>
+                <li>Tune thresholds based on your workload's characteristics</li>
+            </ul>
+
+            <h2>Security</h2>
+
+            <h3>What permissions does the sidecar need?</h3>
+            <p>The PandoCore sidecar requires minimal Kubernetes RBAC permissions:</p>
+            <ul>
+                <li><code>get</code> on pods in its namespace (to read pod info)</li>
+                <li><code>delete</code> on pods in its namespace (to terminate compromised pods in enforce mode)</li>
+            </ul>
+            <p>These permissions are namespace-scoped. The sidecar cannot access resources in other namespaces.</p>
+
+            <h3>Can an attacker disable PandoCore?</h3>
+            <p>The sidecar runs in a separate container within the same pod. An attacker would need container escape capabilities to reach the sidecar. If they can escape the application container, PandoCore may detect the anomalous behavior (process/memory changes) before the attacker can disable protection.</p>
+            <p>If an attacker has root access on the node, they could potentially kill the sidecar process. This is a limitation of software-based monitoring.</p>
+
+            <h3>Where is evidence stored?</h3>
+            <p>Evidence is emitted to multiple channels:</p>
+            <ul>
+                <li><strong>stdout:</strong> Captured by your log aggregator (Fluentd, Filebeat, etc.)</li>
+                <li><strong>Kubernetes Events:</strong> Stored in the Kubernetes API (survives pod deletion)</li>
+                <li><strong>Prometheus metrics:</strong> Time-series data in your metrics stack</li>
+            </ul>
+            <p>Evidence is externalized <strong>before</strong> pod termination to ensure it's preserved.</p>
+
+            <h2>Troubleshooting</h2>
+
+            <h3>Sidecar logs show "learning" for a long time</h3>
+            <p>The default learning phase is 10 minutes. During this time, the sidecar is in monitor-only mode. If you need to shorten this for testing, you can reduce the learning duration (not recommended for production).</p>
+
+            <h3>Drift scores are high but no termination</h3>
+            <p>Check the operating mode:</p>
+            <pre><code>kubectl get pod &lt;pod&gt; -o jsonpath='{.spec.containers[?(@.name=="pando-sidecar")].env}' | jq .</code></pre>
+            <p>If <code>PANDO_MODE=monitor</code> or <code>alert</code>, PandoCore detects but does not enforce. Change to <code>enforce</code> for active protection.</p>
+
+            <h3>Grafana shows no PandoCore data</h3>
+            <ol>
+                <li>Verify Prometheus is scraping the sidecar: Check Prometheus targets UI</li>
+                <li>Verify the sidecar metrics port is exposed: Should be port 9090</li>
+                <li>Check that Grafana's data source is correctly configured</li>
+            </ol>
+
+            <h3>How do I get support?</h3>
+            <p>For pilot customers, contact PandoCore support directly with:</p>
+            <ol>
+                <li>Evidence JSON from the detection event</li>
+                <li>What your workload was doing at the time</li>
+                <li>Your current threshold settings</li>
+                <li>Sidecar logs from around the time of the issue</li>
+            </ol>
+
+            <h2>Still Have Questions?</h2>
+            
+            <p>If your question isn't answered here, <a href="../contact.html">contact us</a> and we'll be happy to help.</p>
+
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2026 PandoCore Inc. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

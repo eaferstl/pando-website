@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PandoCore Emergency Procedures - How to quickly disable or remove PandoCore from your workloads.">
+    <title>Emergency Procedures | PandoCore Docs</title>
+    <link rel="icon" type="image/png" href="../images/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/docs.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a href="../index.html" class="logo">
+                    <img src="../images/logoTransparency.png" alt="Pando Logo">
+                    <div class="logo-text-wrapper">
+                        <span class="logo-text">PandoCore</span>
+                    </div>
+                </a>
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div class="nav-overlay"></div>
+                <ul class="nav-links">
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="../product.html">Product</a></li>
+                    <li><a href="../about.html">About</a></li>
+                    <li><a href="index.html" class="active">Docs</a></li>
+                    <li><a href="../contact.html" class="nav-contact">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Docs Hero -->
+    <section class="docs-hero">
+        <div class="container">
+            <h1>Emergency Procedures</h1>
+            <p>How to quickly disable or remove PandoCore when needed.</p>
+        </div>
+    </section>
+
+    <!-- Documentation Layout -->
+    <div class="docs-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="docs-sidebar">
+            <h3>Documentation</h3>
+            <ul class="docs-nav">
+                <li><a href="index.html">Overview</a></li>
+                <li><a href="getting-started.html">Getting Started</a></li>
+                <li><a href="webhook.html">Admission Webhook</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="configuration.html">Configuration</a></li>
+                <li><a href="policy.html">CRD Policy</a></li>
+                <li><a href="operating-modes.html">Operating Modes</a></li>
+                <li><a href="emergency.html" class="active">Emergency Procedures</a></li>
+                <li><a href="evidence-format.html">Evidence Format</a></li>
+                <li><a href="faq.html">FAQ</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="docs-content">
+            <div class="docs-breadcrumb">
+                <a href="index.html">Docs</a>
+                <span>/</span>
+                Emergency Procedures
+            </div>
+
+            <h1>Emergency Procedures</h1>
+            
+            <p>This page provides procedures for quickly disabling or removing PandoCore from your workloads. Keep this information accessible for incident response scenarios.</p>
+
+            <h2>Quick Reference</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Scenario</th>
+                        <th>Time</th>
+                        <th>Command</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Stop enforcement (keep monitoring)</td>
+                        <td>30 seconds</td>
+                        <td><code>kubectl set env deployment/NAME -c pando-sidecar PANDO_MODE=monitor</code></td>
+                    </tr>
+                    <tr>
+                        <td>Remove sidecar completely</td>
+                        <td>2 minutes</td>
+                        <td>Edit deployment to remove sidecar container</td>
+                    </tr>
+                    <tr>
+                        <td>Uninstall all PandoCore components</td>
+                        <td>5 minutes</td>
+                        <td><code>helm uninstall pando-sidecar -n pando-system</code></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Immediate: Stop Pod Termination (30 seconds)</h2>
+            
+            <p>If PandoCore is terminating pods you need running, switch to monitor mode immediately:</p>
+
+            <pre><code># Stop enforcement but keep monitoring
+kubectl set env deployment/YOUR_DEPLOYMENT -c pando-sidecar PANDO_MODE=monitor</code></pre>
+
+            <div class="docs-callout success">
+                <div class="docs-callout-title">✓ Safe and Reversible</div>
+                <p>This triggers a rolling restart. New pods will still run PandoCore, but it will only observe and log — it will <strong>not</strong> terminate pods. Evidence is still generated for review.</p>
+            </div>
+
+            <h3>For Multiple Deployments</h3>
+            
+            <pre><code># List all deployments with PandoCore sidecar
+kubectl get deployments --all-namespaces -o json | \
+  jq -r '.items[] | select(.spec.template.spec.containers[].name=="pando-sidecar") | 
+  "\(.metadata.namespace)/\(.metadata.name)"'
+
+# Switch all to monitor mode
+for deploy in $(kubectl get deployments --all-namespaces -o json | \
+  jq -r '.items[] | select(.spec.template.spec.containers[].name=="pando-sidecar") | 
+  "\(.metadata.namespace) \(.metadata.name)"'); do
+    ns=$(echo $deploy | cut -d' ' -f1)
+    name=$(echo $deploy | cut -d' ' -f2)
+    kubectl set env deployment/$name -n $ns -c pando-sidecar PANDO_MODE=monitor
+done</code></pre>
+
+            <h2>Full Removal: Remove the Sidecar (2 minutes)</h2>
+            
+            <p>To completely remove PandoCore from a specific deployment:</p>
+
+            <h3>Step 1: Edit the Deployment</h3>
+            
+            <pre><code>kubectl edit deployment/YOUR_DEPLOYMENT -n YOUR_NAMESPACE</code></pre>
+
+            <h3>Step 2: Remove These Elements</h3>
+            
+            <p>In the editor, remove:</p>
+            
+            <ol>
+                <li>The <code>pando-sidecar</code> container from <code>spec.template.spec.containers</code></li>
+                <li><code>shareProcessNamespace: true</code> from <code>spec.template.spec</code> (if no other container needs it)</li>
+                <li>The <code>serviceAccountName: pando-sidecar</code> (if you want to revert to default)</li>
+            </ol>
+
+            <h3>Alternative: Patch Command</h3>
+            
+            <pre><code># Remove shareProcessNamespace
+kubectl patch deployment YOUR_DEPLOYMENT -n YOUR_NAMESPACE \
+  --type=json \
+  -p='[{"op": "remove", "path": "/spec/template/spec/shareProcessNamespace"}]'
+
+# Note: Removing the container requires editing the deployment directly</code></pre>
+
+            <h2>Complete Uninstall (5 minutes)</h2>
+            
+            <p>To remove all PandoCore components from your cluster:</p>
+
+            <h3>Step 1: Uninstall Helm Release</h3>
+            
+            <pre><code>helm uninstall pando-sidecar -n pando-system</code></pre>
+
+            <h3>Step 2: Clean Up Namespace (Optional)</h3>
+            
+            <pre><code># Delete the PandoCore namespace and all resources
+kubectl delete namespace pando-system</code></pre>
+
+            <h3>Step 3: Remove Sidecars from Deployments</h3>
+            
+            <p>The Helm uninstall removes RBAC and ConfigMaps, but sidecars remain in your deployments until you remove them. See the "Full Removal" section above for each deployment.</p>
+
+            <h2>Diagnosing Before Disabling</h2>
+            
+            <p>Before disabling PandoCore, check what triggered the response:</p>
+
+            <h3>View Recent Evidence</h3>
+            
+            <pre><code># View the most recent detection event
+kubectl logs -n YOUR_NAMESPACE YOUR_POD -c pando-sidecar --previous | \
+  grep "enforcement_triggered\|drift_detected" | tail -5</code></pre>
+
+            <h3>View Kubernetes Events</h3>
+            
+            <pre><code>kubectl get events -n YOUR_NAMESPACE --sort-by='.lastTimestamp' | grep -i pando</code></pre>
+
+            <h3>Check Current Drift Score</h3>
+            
+            <pre><code>kubectl exec YOUR_POD -c pando-sidecar -- \
+  wget -qO- http://localhost:9090/metrics | grep pando_drift</code></pre>
+
+            <h2>Common Causes and Solutions</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Symptom</th>
+                        <th>Likely Cause</th>
+                        <th>Solution</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Termination during deployment</td>
+                        <td>New code changes baseline behavior</td>
+                        <td>Trigger re-learn: <code>wget --post-data='' http://localhost:9090/relearn</code></td>
+                    </tr>
+                    <tr>
+                        <td>Termination during autoscaling</td>
+                        <td>Memory/process spike from load</td>
+                        <td>Raise thresholds: <code>PANDO_THRESHOLD_INCREMENTAL=0.20</code></td>
+                    </tr>
+                    <tr>
+                        <td>Termination during CronJob</td>
+                        <td>Periodic batch processing</td>
+                        <td>Raise cumulative threshold: <code>PANDO_THRESHOLD_CUMULATIVE=0.55</code></td>
+                    </tr>
+                    <tr>
+                        <td>Repeated terminations</td>
+                        <td>Workload is inherently variable</td>
+                        <td>Run in monitor mode longer, then tune thresholds</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Threshold Adjustment</h2>
+            
+            <p>If PandoCore is responding to legitimate workload behavior, adjust thresholds instead of disabling:</p>
+
+            <pre><code># Make less sensitive to sudden spikes
+kubectl set env deployment/YOUR_DEPLOYMENT -c pando-sidecar \
+  PANDO_THRESHOLD_INCREMENTAL=0.20
+
+# Make less sensitive to gradual drift
+kubectl set env deployment/YOUR_DEPLOYMENT -c pando-sidecar \
+  PANDO_THRESHOLD_CUMULATIVE=0.55
+
+# Apply both
+kubectl set env deployment/YOUR_DEPLOYMENT -c pando-sidecar \
+  PANDO_THRESHOLD_INCREMENTAL=0.20 \
+  PANDO_THRESHOLD_CUMULATIVE=0.55</code></pre>
+
+            <h2>Trigger Re-Learning</h2>
+            
+            <p>If your application's normal behavior has changed (new deployment, config change), trigger a re-learn instead of disabling:</p>
+
+            <pre><code># Via HTTP endpoint
+kubectl exec YOUR_POD -c pando-sidecar -- \
+  wget -qO- --post-data='' http://localhost:9090/relearn</code></pre>
+
+            <div class="docs-callout info">
+                <div class="docs-callout-title">ℹ️ Re-Learning</div>
+                <p>This resets the sidecar to its learning phase, recalibrating the baseline to the current behavior. The sidecar won't enforce during the learning period.</p>
+            </div>
+
+            <h2>Emergency Contacts</h2>
+            
+            <p>If you're experiencing issues during your pilot that aren't resolved by these procedures, contact PandoCore support directly with:</p>
+            
+            <ol>
+                <li>The evidence JSON from the detection event</li>
+                <li>What your workload was doing at the time</li>
+                <li>Your current threshold settings</li>
+                <li>Sidecar logs from around the time of the issue</li>
+            </ol>
+
+            <h2>Printable Quick Reference</h2>
+            
+            <div class="docs-callout warning">
+                <div class="docs-callout-title">📋 Emergency Commands</div>
+                <pre><code># STOP ENFORCEMENT (30 seconds)
+kubectl set env deployment/NAME -c pando-sidecar PANDO_MODE=monitor
+
+# TRIGGER RE-LEARN
+kubectl exec POD -c pando-sidecar -- wget -qO- --post-data='' http://localhost:9090/relearn
+
+# RAISE THRESHOLDS
+kubectl set env deployment/NAME -c pando-sidecar PANDO_THRESHOLD_INCREMENTAL=0.20
+
+# VIEW RECENT EVENTS
+kubectl logs POD -c pando-sidecar --previous | grep enforcement_triggered</code></pre>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2026 PandoCore Inc. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

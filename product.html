@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="PandoCore's runtime security primitive - a Kubernetes sidecar that protects sensitive logic and data during execution. No code changes required.">
+    <meta name="description" content="PandoCore - A Kubernetes sidecar that learns your workload's normal behavior and detects anomalies at runtime. Zero configuration. No code changes required.">
     <title>PandoCore | Product</title>
     <link rel="icon" type="image/png" href="images/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -32,6 +32,7 @@
                     <li><a href="index.html">Home</a></li>
                     <li><a href="product.html" class="active">Product</a></li>
                     <li><a href="about.html">About</a></li>
+                    <li><a href="docs/index.html">Docs</a></li>
                     <li><a href="contact.html" class="nav-contact">Contact</a></li>
                 </ul>
             </div>
@@ -45,8 +46,8 @@
             <div class="wave wave-layer-2"></div>
         </div>
         <div class="container">
-            <h1>Proactive Runtime Security</h1>
-            <p class="page-subtitle">A software security primitive that protects your sensitive logic and data during execution.</p>
+            <h1>Behavioral Runtime Monitoring</h1>
+            <p class="page-subtitle">A Kubernetes sidecar that learns your workload's normal behavior and detects when something goes wrong. No rules. No configuration. Just deploy.</p>
         </div>
     </section>
 
@@ -55,36 +56,36 @@
         <div class="container">
             <h2 style="text-align: center; color: var(--black-forest); margin-bottom: var(--spacing-lg); position: relative; z-index: 1;">What PandoCore Does</h2>
             <div class="content-wrapper" style="max-width: var(--container-max-width);">
-                <p style="text-align: center; margin-bottom: var(--spacing-md); max-width: 100%; margin-left: auto; margin-right: auto;">Encryption protects data at rest and in transit. Authentication controls who gets access. But once your code runs, it's exposed.</p>
-                <p style="text-align: center; margin-bottom: var(--spacing-lg); max-width: 100%; margin-left: auto; margin-right: auto;"><strong>PandoCore fills this gap.</strong> We provide runtime protection for containerized workloads, a critical missing layer that proactively defends your sensitive logic and data while your code executes.</p>
+                <p style="text-align: center; margin-bottom: var(--spacing-md); max-width: 100%; margin-left: auto; margin-right: auto;">Traditional runtime security tools require you to write detection rules for every threat you want to catch. If you don't write the rule, you miss the attack.</p>
+                <p style="text-align: center; margin-bottom: var(--spacing-lg); max-width: 100%; margin-left: auto; margin-right: auto;"><strong>PandoCore takes a different approach.</strong> It automatically learns what normal looks like for each workload, then continuously monitors for deviations. When anomalous behavior is detected, it responds with a graduated action chain: alert, isolate, or terminate.</p>
                 
-                <div class="feature-callout" style="display: grid; grid-template-columns: repeat(2, auto); gap: var(--spacing-lg) var(--spacing-xxl); margin-top: var(--spacing-xl); padding: var(--spacing-xl); background: rgba(107, 142, 127, 0.05); border-radius: 8px; justify-content: center; width: fit-content; margin-left: auto; margin-right: auto;">
+                <div class="checkmarks-grid">
                     <div style="display: flex; align-items: flex-start; gap: var(--spacing-sm);">
                         <span style="color: var(--sage-green); font-size: 1.5rem; flex-shrink: 0;">✓</span>
                         <div>
-                            <span style="font-weight: 600;">Runtime Protection</span>
-                            <p style="margin: 0; font-size: 0.9rem; color: var(--charcoal); opacity: 0.8;">Shields logic and data during execution</p>
+                            <span style="font-weight: 600;">Behavioral Detection</span>
+                            <p style="margin: 0; font-size: 0.9rem; color: var(--charcoal); opacity: 0.8;">Automatically learns normal patterns and detects anomalies</p>
                         </div>
                     </div>
                     <div style="display: flex; align-items: flex-start; gap: var(--spacing-sm);">
                         <span style="color: var(--sage-green); font-size: 1.5rem; flex-shrink: 0;">✓</span>
                         <div>
-                            <span style="font-weight: 600;">Software-Based</span>
-                            <p style="margin: 0; font-size: 0.9rem; color: var(--charcoal); opacity: 0.8;">No specialized hardware required</p>
+                            <span style="font-weight: 600;">Automated Response</span>
+                            <p style="margin: 0; font-size: 0.9rem; color: var(--charcoal); opacity: 0.8;">Graduated response: alert, network isolation, terminate</p>
                         </div>
                     </div>
                     <div style="display: flex; align-items: flex-start; gap: var(--spacing-sm);">
                         <span style="color: var(--sage-green); font-size: 1.5rem; flex-shrink: 0;">✓</span>
                         <div>
-                            <span style="font-weight: 600;">Zero Code Changes</span>
-                            <p style="margin: 0; font-size: 0.9rem; color: var(--charcoal); opacity: 0.8;">Transparent protection layer</p>
+                            <span style="font-weight: 600;">Zero Configuration</span>
+                            <p style="margin: 0; font-size: 0.9rem; color: var(--charcoal); opacity: 0.8;">No rules to write, works out of the box</p>
                         </div>
                     </div>
                     <div style="display: flex; align-items: flex-start; gap: var(--spacing-sm);">
                         <span style="color: var(--sage-green); font-size: 1.5rem; flex-shrink: 0;">✓</span>
                         <div>
                             <span style="font-weight: 600;">Minimal Overhead</span>
-                            <p style="margin: 0; font-size: 0.9rem; color: var(--charcoal); opacity: 0.8;">Delivers near-native performance</p>
+                            <p style="margin: 0; font-size: 0.9rem; color: var(--charcoal); opacity: 0.8;">6-17Mi memory footprint, validated across 693 pod-hours</p>
                         </div>
                     </div>
                 </div>
@@ -179,7 +180,7 @@
                                                     <path d="M14 4L8 13h4l-2 7 6-9h-4l2-7z" fill="var(--floral-white)"/>
                                                 </svg>
                                             </span>
-                                            <span>Runtime Protection</span>
+                                            <span>Baseline Learning</span>
                                         </div>
                                         <div class="protection-item">
                                             <span class="protection-icon">
@@ -189,7 +190,7 @@
                                                     <path d="M9 10V8a3 3 0 0 1 6 0v2" stroke="var(--floral-white)" stroke-width="1.5" fill="none"/>
                                                 </svg>
                                             </span>
-                                            <span>Memory Shielding</span>
+                                            <span>Anomaly Detection</span>
                                         </div>
                                         <div class="protection-item">
                                             <span class="protection-icon">
@@ -205,7 +206,7 @@
                                 </div>
                                 <div class="container-footer sidecar-footer">
                                     <span class="status-dot protected"></span>
-                                    <span>Protecting</span>
+                                    <span>Monitoring</span>
                                 </div>
                             </div>
                         </div>
@@ -337,7 +338,7 @@
                     </div>
                 </div>
                 
-                <p class="stack-summary">Not a replacement. No new tooling. PandoCore operates transparently alongside your existing stack, activating automatically at runtime.</p>
+                <p class="stack-summary">Not a replacement. No new tooling. PandoCore operates transparently alongside your existing stack, monitoring automatically at runtime.</p>
             </div>
         </div>
     </section>
@@ -389,7 +390,7 @@
                             </svg>
                         </div>
                         <h3>Validated Performance</h3>
-                        <p>Security properties and performance characteristics are continuously validated through rigorous testing, attack simulations, and benchmark analysis. We optimize for real-world deployment while maintaining security guarantees through measurable, verified results.</p>
+                        <p>Validated across 5 real-world workloads over 693 pod-hours with zero false positives. Every capability is backed by measured results from continuous soak testing against diverse production-representative applications.</p>
                     </div>
                 </div>
                 
@@ -421,7 +422,7 @@
                             <li>Customizable parameters allow tuning security properties to match specific use case requirements</li>
                             <li>Sensible defaults enable quick deployment while advanced options support specialized needs</li>
                             <li>Works with containerized workloads across cloud, edge, and on-premises environments</li>
-                            <li>Complements your existing runtime security tools; adds protection, doesn't replace observation-based protection</li>
+                            <li>Complements your existing runtime security tools; adds behavioral detection alongside your existing preventive tools</li>
                         </ul>
                     </div>
                 </div>
@@ -429,41 +430,118 @@
         </div>
     </section>
 
+    <!-- Validation Results Section -->
+    <section class="content-section alt-bg" id="validation">
+        <div class="container">
+            <h2 style="text-align: center; color: var(--black-forest); margin-bottom: var(--spacing-lg); position: relative; z-index: 1;">Validated Against Real Workloads</h2>
+            <div class="content-wrapper" style="max-width: var(--container-max-width);">
+                <p style="text-align: center; margin-bottom: var(--spacing-lg); max-width: 100%; margin-left: auto; margin-right: auto;">PandoCore was deployed alongside 5 real-world workload types in a Kubernetes cluster for 7 continuous days. No manual configuration or tuning was performed -- all workloads ran with default settings.</p>
+
+                <div class="validation-grid">
+                    <div>
+                        <div style="font-size: 2.2rem; font-weight: 700; color: var(--black-forest);">693</div>
+                        <div style="font-size: 0.9rem; color: var(--charcoal); opacity: 0.8;">Pod-Hours</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 2.2rem; font-weight: 700; color: var(--sage-green);">0</div>
+                        <div style="font-size: 0.9rem; color: var(--charcoal); opacity: 0.8;">False Positives</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 2.2rem; font-weight: 700; color: var(--black-forest);">~25M</div>
+                        <div style="font-size: 0.9rem; color: var(--charcoal); opacity: 0.8;">Samples Collected</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 2.2rem; font-weight: 700; color: var(--black-forest);">247,725</div>
+                        <div style="font-size: 0.9rem; color: var(--charcoal); opacity: 0.8;">Attestation Checks Passed</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 2.2rem; font-weight: 700; color: var(--black-forest);">6-17Mi</div>
+                        <div style="font-size: 0.9rem; color: var(--charcoal); opacity: 0.8;">Memory Overhead</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 2.2rem; font-weight: 700; color: var(--black-forest);">5</div>
+                        <div style="font-size: 0.9rem; color: var(--charcoal); opacity: 0.8;">Workload Types</div>
+                    </div>
+                </div>
+
+                <h3 style="text-align: center; color: var(--black-forest); margin-bottom: var(--spacing-md);">Workloads Tested</h3>
+                <div class="workloads-grid">
+                    <div>
+                        <div style="font-weight: 600;">nginx</div>
+                        <div style="font-size: 0.85rem; color: var(--charcoal); opacity: 0.8;">Web Server</div>
+                    </div>
+                    <div>
+                        <div style="font-weight: 600;">PostgreSQL</div>
+                        <div style="font-size: 0.85rem; color: var(--charcoal); opacity: 0.8;">Database</div>
+                    </div>
+                    <div>
+                        <div style="font-weight: 600;">Express.js</div>
+                        <div style="font-size: 0.85rem; color: var(--charcoal); opacity: 0.8;">Node.js API</div>
+                    </div>
+                    <div>
+                        <div style="font-weight: 600;">Spring PetClinic</div>
+                        <div style="font-size: 0.85rem; color: var(--charcoal); opacity: 0.8;">Java Application</div>
+                    </div>
+                    <div>
+                        <div style="font-weight: 600;">FastAPI</div>
+                        <div style="font-size: 0.85rem; color: var(--charcoal); opacity: 0.8;">Python API</div>
+                    </div>
+                </div>
+
+                <p style="text-align: center; margin-top: var(--spacing-lg); max-width: 100%; margin-left: auto; margin-right: auto; font-size: 0.95rem; color: var(--charcoal);">Zero false positives means PandoCore can run in enforce mode without disrupting legitimate workloads. The behavioral learning adapted to each workload type automatically -- from static web servers to JIT-compiled Java applications -- with no manual tuning required.</p>
+            </div>
+        </div>
+    </section>
+
     <!-- Current Stage Section -->
-    <section class="content-section alt-bg">
+    <section class="content-section">
         <div class="container">
             <div class="content-wrapper">
                 <h2>Current Stage</h2>
-                <p>Our proof of concept is complete with validated security properties. We are now developing the Kubernetes sidecar for production deployment.</p>
-                
+                <p>PandoCore is a production-ready behavioral runtime monitoring sidecar for Kubernetes. The core detection engine, admission webhook, and policy system are complete and validated.</p>
+
                 <h3 style="margin-top: var(--spacing-xl); color: var(--black-forest);">Development Milestones</h3>
-                
+
                 <div class="milestone-section completed">
-                    <h4 class="milestone-title completed">Phase 1 (Completed): Proof of concept and validation</h4>
+                    <h4 class="milestone-title completed">Phase 1 (Complete): Core sidecar and behavioral monitoring</h4>
                     <ul class="content-list">
-                        <li>Core security primitive implementation</li>
-                        <li>Attack resistance verification through simulation</li>
-                        <li>Security property validation</li>
-                        <li>Performance baseline establishment</li>
+                        <li>Rust-based sidecar with behavioral anomaly detection</li>
+                        <li>Adaptive baseline learning (zero configuration required)</li>
+                        <li>Three operating modes: Monitor, Alert, Enforce</li>
+                        <li>Structured evidence generation and Prometheus metrics</li>
                     </ul>
                 </div>
-                
+
+                <div class="milestone-section completed">
+                    <h4 class="milestone-title completed">Phase 2 (Complete): Enterprise features and validation</h4>
+                    <ul class="content-list">
+                        <li>Admission webhook for automatic sidecar injection via label</li>
+                        <li>CRD-based policy (PandoCorePolicy) for declarative GitOps configuration</li>
+                        <li>Graduated response: alert, network isolation (NetworkPolicy), terminate</li>
+                        <li>Slack integration and portal dashboard</li>
+                        <li>7-day soak test: 5 workloads, 693 pod-hours, 0 false positives</li>
+                    </ul>
+                </div>
+
                 <div class="milestone-section in-progress">
-                    <h4 class="milestone-title in-progress">Phase 2 (In Progress): Kubernetes sidecar development</h4>
+                    <h4 class="milestone-title in-progress">Phase 3 (In Progress): Extended monitoring and hardening</h4>
                     <ul class="content-list">
-                        <li>Production-grade sidecar container implementation</li>
-                        <li>Kubernetes-native integration and deployment tooling</li>
-                        <li>Language-agnostic design supporting diverse workload runtimes</li>
-                        <li>Enterprise workload compatibility testing</li>
+                        <li>Pod-level monitoring across all containers</li>
+                        <li>Canary execution verification (clean replica comparison)</li>
+                        <li>30-day extended validation with pod-level monitoring</li>
+                        <li>Extended platform validation (EKS, AKS)</li>
+                        <li>Additional alert integrations (PagerDuty, Splunk)</li>
                     </ul>
                 </div>
-                
+
                 <div class="milestone-section planned">
-                    <h4 class="milestone-title planned">Phase 3 (Planned): Production hardening and go-to-market</h4>
+                    <h4 class="milestone-title planned">Phase 4 (Planned): Fleet operations and enterprise scale</h4>
                     <ul class="content-list">
-                        <li>Advanced optimization for production environments</li>
-                        <li>Extended platform support</li>
-                        <li>Customer pilot programs</li>
+                        <li>DaemonSet layer for node-level sensing and fleet-wide visibility</li>
+                        <li>Cross-pod attack correlation and cluster-wide anomaly detection</li>
+                        <li>eBPF syscall monitoring for deeper behavioral insight</li>
+                        <li>CLI tool (pandoctl) for streamlined cluster management</li>
+                        <li>Sidecar tamper resistance via external watchdog</li>
                     </ul>
                 </div>
             </div>
@@ -477,8 +555,8 @@
         </div>
         <div class="container">
             <div class="cta-content">
-                <h2>Interested in Early Access?</h2>
-                <p>We're working with select partners to validate PandoCore in production environments. If you have sensitive containerized workloads that need runtime protection, let's talk.</p>
+                <h2>Ready to Try PandoCore?</h2>
+                <p>We're working with teams to bring behavioral runtime monitoring to production Kubernetes clusters. If you run sensitive workloads on Kubernetes, let's talk.</p>
                 
                 <div class="cta-actions">
                     <a href="contact.html" class="btn btn-primary">Get In Touch</a>
@@ -489,11 +567,6 @@
                             <a href="https://www.linkedin.com/company/pando-core/" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="LinkedIn">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
-                                </svg>
-                            </a>
-                            <a href="https://x.com/eaferstl" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="X (Twitter)">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                                 </svg>
                             </a>
                         </div>

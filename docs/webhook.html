@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PandoCore admission webhook - Automatic sidecar injection for Kubernetes workloads.">
+    <title>Admission Webhook | PandoCore Docs</title>
+    <link rel="icon" type="image/png" href="../images/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/docs.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a href="../index.html" class="logo">
+                    <img src="../images/logoTransparency.png" alt="Pando Logo">
+                    <div class="logo-text-wrapper">
+                        <span class="logo-text">PandoCore</span>
+                    </div>
+                </a>
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div class="nav-overlay"></div>
+                <ul class="nav-links">
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="../product.html">Product</a></li>
+                    <li><a href="../about.html">About</a></li>
+                    <li><a href="index.html" class="active">Docs</a></li>
+                    <li><a href="../contact.html" class="nav-contact">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Docs Hero -->
+    <section class="docs-hero">
+        <div class="container">
+            <h1>Admission Webhook</h1>
+            <p>Automatic sidecar injection via Kubernetes MutatingAdmissionWebhook.</p>
+        </div>
+    </section>
+
+    <!-- Documentation Layout -->
+    <div class="docs-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="docs-sidebar">
+            <h3>Documentation</h3>
+            <ul class="docs-nav">
+                <li><a href="index.html">Overview</a></li>
+                <li><a href="getting-started.html">Getting Started</a></li>
+                <li><a href="webhook.html" class="active">Admission Webhook</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="configuration.html">Configuration</a></li>
+                <li><a href="policy.html">CRD Policy</a></li>
+                <li><a href="operating-modes.html">Operating Modes</a></li>
+                <li><a href="emergency.html">Emergency Procedures</a></li>
+                <li><a href="evidence-format.html">Evidence Format</a></li>
+                <li><a href="faq.html">FAQ</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="docs-content">
+            <div class="docs-breadcrumb">
+                <a href="index.html">Docs</a>
+                <span>/</span>
+                Admission Webhook
+            </div>
+
+            <h2>How It Works</h2>
+
+            <p>The PandoCore admission webhook uses Kubernetes' <a href="https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#mutatingadmissionwebhook">MutatingAdmissionWebhook</a> API to automatically inject the PandoCore sidecar into pods at creation time.</p>
+
+            <p>When a pod is created with the label <code>pandocore.xyz/protect: "true"</code>, the webhook intercepts the request and adds:</p>
+
+            <ul>
+                <li>The <code>pando-sidecar</code> container with health probes, resource limits, and security context</li>
+                <li><code>shareProcessNamespace: true</code> (required for /proc-based entropy collection)</li>
+                <li>The <code>pando-sidecar</code> service account reference</li>
+                <li>License key from a Kubernetes Secret (not inline)</li>
+                <li>Downward API environment variables (<code>POD_NAME</code>, <code>POD_NAMESPACE</code>)</li>
+            </ul>
+
+            <p>This is the same injection performed by <code>inject-pandocore.sh</code>, but automated cluster-wide.</p>
+
+            <h2>Label Reference</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Label / Annotation</th>
+                        <th>Type</th>
+                        <th>Values</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>pandocore.xyz/protect</code></td>
+                        <td>Label</td>
+                        <td><code>"true"</code></td>
+                        <td>Enables sidecar injection for pods with this label</td>
+                    </tr>
+                    <tr>
+                        <td><code>pandocore.xyz/mode</code></td>
+                        <td>Annotation</td>
+                        <td><code>"monitor"</code>, <code>"enforce"</code>, <code>"debug"</code></td>
+                        <td>Overrides the default operating mode for this pod</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Configuration</h2>
+
+            <p>The webhook is configured via Helm values:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Value</th>
+                        <th>Default</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>licenseKey</code></td>
+                        <td><em>(required)</em></td>
+                        <td>Your PandoCore license key</td>
+                    </tr>
+                    <tr>
+                        <td><code>defaultMode</code></td>
+                        <td><code>monitor</code></td>
+                        <td>Default operating mode for injected sidecars</td>
+                    </tr>
+                    <tr>
+                        <td><code>excludedNamespaces</code></td>
+                        <td><code>[kube-system, kube-public, kube-node-lease]</code></td>
+                        <td>Namespaces where injection is always skipped</td>
+                    </tr>
+                    <tr>
+                        <td><code>sidecar.image</code></td>
+                        <td>Latest sidecar from registry</td>
+                        <td>Sidecar container image to inject</td>
+                    </tr>
+                    <tr>
+                        <td><code>replicas</code></td>
+                        <td><code>2</code></td>
+                        <td>Webhook server replicas (2 recommended for HA)</td>
+                    </tr>
+                    <tr>
+                        <td><code>tls.certManager</code></td>
+                        <td><code>false</code></td>
+                        <td>Use cert-manager for TLS (otherwise self-signed)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Per-Namespace Setup</h2>
+
+            <p>Each namespace with protected pods needs two resources:</p>
+
+            <pre><code># 1. ServiceAccount for the sidecar
+kubectl create serviceaccount pando-sidecar -n your-namespace
+
+# 2. RoleBinding to the cluster-wide sidecar ClusterRole
+kubectl create rolebinding pando-sidecar \
+  --clusterrole=pando-sidecar \
+  --serviceaccount=your-namespace:pando-sidecar \
+  -n your-namespace
+
+# 3. Copy the license Secret into the namespace
+kubectl create secret generic pando-license \
+  --from-literal=license-key="YOUR_LICENSE_KEY" \
+  -n your-namespace</code></pre>
+
+            <h2>Upgrading</h2>
+
+            <pre><code># Upgrade the webhook (picks up new sidecar image + webhook config)
+helm upgrade pando-webhook \
+  oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-webhook \
+  --namespace pando-system \
+  --set licenseKey="YOUR_LICENSE_KEY"
+
+# Existing pods are NOT affected. To inject the new sidecar version,
+# restart protected deployments:
+kubectl rollout restart deployment/your-app -n your-namespace</code></pre>
+
+            <h2 id="troubleshooting">Troubleshooting</h2>
+
+            <h3>Sidecar not being injected</h3>
+            <ul>
+                <li>Verify the label: <code>kubectl get pod &lt;name&gt; --show-labels</code></li>
+                <li>Check the namespace is not excluded: <code>helm get values pando-webhook -n pando-system</code></li>
+                <li>Check webhook logs: <code>kubectl logs -n pando-system -l app.kubernetes.io/name=pando-webhook</code></li>
+                <li>Verify the webhook is registered: <code>kubectl get mutatingwebhookconfigurations</code></li>
+            </ul>
+
+            <h3>TLS certificate issues</h3>
+            <ul>
+                <li>Check the TLS setup job completed: <code>kubectl get jobs -n pando-system</code></li>
+                <li>Verify the TLS secret exists: <code>kubectl get secret -n pando-system | grep tls</code></li>
+                <li>If using cert-manager, check the Certificate resource: <code>kubectl get certificates -n pando-system</code></li>
+            </ul>
+
+            <h3>Pod creation failing</h3>
+            <p>The webhook is configured with <code>failurePolicy: Ignore</code>, so webhook failures will not block pod creation. If pods are failing for other reasons after injection, check:</p>
+            <ul>
+                <li>The license Secret exists in the pod's namespace</li>
+                <li>The <code>pando-sidecar</code> ServiceAccount exists in the pod's namespace</li>
+                <li>The sidecar image is pullable (check image pull secrets)</li>
+            </ul>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2026 PandoCore Inc. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

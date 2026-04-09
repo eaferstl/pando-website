@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PandoCore CRD Policy - Manage sidecar configuration declaratively with Kubernetes custom resources.">
+    <title>CRD Policy | PandoCore Docs</title>
+    <link rel="icon" type="image/png" href="../images/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/docs.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a href="../index.html" class="logo">
+                    <img src="../images/logoTransparency.png" alt="Pando Logo">
+                    <div class="logo-text-wrapper">
+                        <span class="logo-text">PandoCore</span>
+                    </div>
+                </a>
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div class="nav-overlay"></div>
+                <ul class="nav-links">
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="../product.html">Product</a></li>
+                    <li><a href="../about.html">About</a></li>
+                    <li><a href="index.html" class="active">Docs</a></li>
+                    <li><a href="../contact.html" class="nav-contact">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Docs Hero -->
+    <section class="docs-hero">
+        <div class="container">
+            <h1>CRD-Based Policy</h1>
+            <p>Manage PandoCore configuration declaratively with Kubernetes custom resources.</p>
+        </div>
+    </section>
+
+    <!-- Documentation Layout -->
+    <div class="docs-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="docs-sidebar">
+            <h3>Documentation</h3>
+            <ul class="docs-nav">
+                <li><a href="index.html">Overview</a></li>
+                <li><a href="getting-started.html">Getting Started</a></li>
+                <li><a href="webhook.html">Admission Webhook</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="configuration.html">Configuration</a></li>
+                <li><a href="policy.html" class="active">CRD Policy</a></li>
+                <li><a href="operating-modes.html">Operating Modes</a></li>
+                <li><a href="emergency.html">Emergency Procedures</a></li>
+                <li><a href="evidence-format.html">Evidence Format</a></li>
+                <li><a href="faq.html">FAQ</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="docs-content">
+            <div class="docs-breadcrumb">
+                <a href="index.html">Docs</a>
+                <span>/</span>
+                CRD Policy
+            </div>
+
+            <h1>CRD-Based Policy</h1>
+
+            <p>Instead of scattering environment variables across deployments, define a single <code>PandoCorePolicy</code> custom resource per namespace and apply it with <code>kubectl</code>. Policy values override environment variables automatically.</p>
+
+            <div class="docs-callout info">
+                <div class="docs-callout-title">Three-Step Setup</div>
+                <ol>
+                    <li>Create a <code>pando-policy.yaml</code> file</li>
+                    <li>Run <code>kubectl apply -f pando-policy.yaml</code></li>
+                    <li>Done &mdash; sidecars pick up the policy within 30 seconds</li>
+                </ol>
+            </div>
+
+            <h2>Quick Start</h2>
+
+            <p>Create a file called <code>pando-policy.yaml</code>:</p>
+
+            <pre><code>apiVersion: pandocore.xyz/v1alpha1
+kind: PandoCorePolicy
+metadata:
+  name: default
+  namespace: production
+spec:
+  mode: enforce
+  sensitivity: high</code></pre>
+
+            <p>Apply it:</p>
+
+            <pre><code>kubectl apply -f pando-policy.yaml</code></pre>
+
+            <p>Verify:</p>
+
+            <pre><code>kubectl get pcp -n production
+
+NAME      MODE      SENSITIVITY   AGE
+default   enforce   high          5s</code></pre>
+
+            <h2>Full Policy Reference</h2>
+
+            <p>Every field is optional. The sidecar falls back to environment variables (or built-in defaults) for any field not specified.</p>
+
+            <pre><code>apiVersion: pandocore.xyz/v1alpha1
+kind: PandoCorePolicy
+metadata:
+  name: default            # must be "default" &mdash; one policy per namespace
+  namespace: production
+spec:
+  # Operating mode
+  mode: enforce            # monitor | alert | enforce | debug
+
+  # Sensitivity preset (maps to threshold multipliers)
+  # Ignored if explicit thresholds are set below
+  sensitivity: medium      # low | medium | high
+
+  # Graduated response chain
+  response:
+    actions:
+      - alert
+      - isolate
+      - terminate
+    escalationDelaySec: 60
+
+  # Explicit drift thresholds (override sensitivity preset)
+  thresholds:
+    incremental: 0.15      # sample-to-sample drift (0.0&ndash;1.0)
+    cumulative: 0.45       # total drift from baseline (0.0&ndash;1.0)
+
+  # Feature toggles
+  features:
+    mlDetection: true
+    networkAudit: true
+    attestation: true
+
+  # Alert integrations
+  integrations:
+    slack: "https://hooks.slack.com/services/T.../B.../xxx"
+    pagerduty: "&lt;routing-key&gt;"
+
+  # Exclusions (applied at webhook level)
+  exclude:
+    namespaces:
+      - kube-system
+      - monitoring
+    labels:
+      pandocore.xyz/skip: "true"</code></pre>
+
+            <h2>Sensitivity Presets</h2>
+
+            <p>Sensitivity presets map to threshold values, making it easy to tune detection without specifying exact numbers:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Preset</th>
+                        <th>Incremental Threshold</th>
+                        <th>Cumulative Threshold</th>
+                        <th>Use Case</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>low</code></td>
+                        <td>0.25</td>
+                        <td>0.60</td>
+                        <td>Noisy workloads, batch jobs</td>
+                    </tr>
+                    <tr>
+                        <td><code>medium</code></td>
+                        <td>0.15</td>
+                        <td>0.45</td>
+                        <td>General-purpose (default)</td>
+                    </tr>
+                    <tr>
+                        <td><code>high</code></td>
+                        <td>0.10</td>
+                        <td>0.30</td>
+                        <td>Security-critical services</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>Setting explicit <code>thresholds</code> overrides the sensitivity preset entirely.</p>
+
+            <h2>Precedence</h2>
+
+            <p>PandoCore uses a layered configuration model:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Priority</th>
+                        <th>Source</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1 (highest)</td>
+                        <td>CRD Policy</td>
+                        <td>Values in <code>PandoCorePolicy</code> win</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Environment Variables</td>
+                        <td>Fallback when no CRD field is set</td>
+                    </tr>
+                    <tr>
+                        <td>3 (lowest)</td>
+                        <td>Built-in Defaults</td>
+                        <td>Hardcoded sane defaults</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>If the CRD is deleted, the sidecar reverts to env-var-based configuration on the next poll cycle.</p>
+
+            <h2>Spec Fields</h2>
+
+            <h3>mode</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Value</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>monitor</code></td>
+                        <td>Detect and log only &mdash; no enforcement action</td>
+                    </tr>
+                    <tr>
+                        <td><code>alert</code></td>
+                        <td>Detect, log, and send alerts to integrations</td>
+                    </tr>
+                    <tr>
+                        <td><code>enforce</code></td>
+                        <td>Full response chain: alert &rarr; isolate &rarr; terminate</td>
+                    </tr>
+                    <tr>
+                        <td><code>debug</code></td>
+                        <td>Verbose logging for troubleshooting</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>response</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>actions</code></td>
+                        <td>array of strings</td>
+                        <td>Ordered response chain: <code>alert</code>, <code>isolate</code>, <code>terminate</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>escalationDelaySec</code></td>
+                        <td>integer (0&ndash;3600)</td>
+                        <td>Seconds after isolation before escalating to terminate</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>features</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>mlDetection</code></td>
+                        <td>boolean</td>
+                        <td>Enable ML-based anomaly detection</td>
+                    </tr>
+                    <tr>
+                        <td><code>networkAudit</code></td>
+                        <td>boolean</td>
+                        <td>Enable network connection auditing</td>
+                    </tr>
+                    <tr>
+                        <td><code>attestation</code></td>
+                        <td>boolean</td>
+                        <td>Enable periodic attestation checks</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>integrations</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>slack</code></td>
+                        <td>string</td>
+                        <td>Slack incoming webhook URL</td>
+                    </tr>
+                    <tr>
+                        <td><code>pagerduty</code></td>
+                        <td>string</td>
+                        <td>PagerDuty routing key</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Examples</h2>
+
+            <h3>Production Namespace</h3>
+
+            <pre><code>apiVersion: pandocore.xyz/v1alpha1
+kind: PandoCorePolicy
+metadata:
+  name: default
+  namespace: production
+spec:
+  mode: enforce
+  sensitivity: high
+  response:
+    actions: [alert, isolate, terminate]
+    escalationDelaySec: 60
+  features:
+    mlDetection: true
+    networkAudit: true
+  integrations:
+    slack: "https://hooks.slack.com/services/T.../B.../xxx"</code></pre>
+
+            <h3>Staging Namespace (Monitor Only)</h3>
+
+            <pre><code>apiVersion: pandocore.xyz/v1alpha1
+kind: PandoCorePolicy
+metadata:
+  name: default
+  namespace: staging
+spec:
+  mode: monitor
+  sensitivity: low</code></pre>
+
+            <h3>Custom Thresholds</h3>
+
+            <pre><code>apiVersion: pandocore.xyz/v1alpha1
+kind: PandoCorePolicy
+metadata:
+  name: default
+  namespace: payments
+spec:
+  mode: enforce
+  thresholds:
+    incremental: 0.12
+    cumulative: 0.35
+  response:
+    actions: [alert, terminate]
+    escalationDelaySec: 30</code></pre>
+
+            <h2>Verifying</h2>
+
+            <p>Check that the CRD is registered:</p>
+
+            <pre><code>kubectl get crd pandocorepolicies.pandocore.xyz</code></pre>
+
+            <p>List policies across namespaces:</p>
+
+            <pre><code>kubectl get pcp --all-namespaces</code></pre>
+
+            <p>Check sidecar logs for policy pickup:</p>
+
+            <pre><code>kubectl logs &lt;pod&gt; -c pando-sidecar | grep "PandoCorePolicy"</code></pre>
+
+            <p>Expected output:</p>
+
+            <pre><code>PandoCorePolicy CRD found  namespace=production name=default
+Applied PandoCorePolicy  mode=enforce resource_version="12345"</code></pre>
+
+            <h2>Polling Interval</h2>
+
+            <p>The sidecar polls for policy changes every 30 seconds by default. To customize, set <code>PANDO_POLICY_POLL_INTERVAL_SECS</code> on the sidecar container.</p>
+
+            <h2>GitOps Integration</h2>
+
+            <p>Because <code>PandoCorePolicy</code> is a standard Kubernetes resource, it integrates naturally with GitOps workflows:</p>
+
+            <ul>
+                <li>Store policy YAML in your Git repository alongside application manifests</li>
+                <li>Review policy changes in pull requests</li>
+                <li>Apply via ArgoCD, Flux, or any <code>kubectl apply</code> pipeline</li>
+                <li>Track policy history with <code>git log</code></li>
+            </ul>
+
+            <h2>Next Steps</h2>
+
+            <ul>
+                <li><a href="configuration.html">Configuration</a> &mdash; Full env var and Helm reference</li>
+                <li><a href="operating-modes.html">Operating Modes</a> &mdash; Understand monitor vs enforce</li>
+                <li><a href="webhook.html">Admission Webhook</a> &mdash; Per-pod annotation overrides</li>
+            </ul>
+
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2026 PandoCore Inc. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

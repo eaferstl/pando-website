@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PandoCore Detection Events Dashboard - View protection status, detection events, and what-would-have-happened analysis.">
+    <title>Dashboard | PandoCore Docs</title>
+    <link rel="icon" type="image/png" href="../images/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/docs.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a href="../index.html" class="logo">
+                    <img src="../images/logoTransparency.png" alt="Pando Logo">
+                    <div class="logo-text-wrapper">
+                        <span class="logo-text">PandoCore</span>
+                    </div>
+                </a>
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div class="nav-overlay"></div>
+                <ul class="nav-links">
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="../product.html">Product</a></li>
+                    <li><a href="../about.html">About</a></li>
+                    <li><a href="index.html" class="active">Docs</a></li>
+                    <li><a href="../contact.html" class="nav-contact">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Docs Hero -->
+    <section class="docs-hero">
+        <div class="container">
+            <h1>Detection Events Dashboard</h1>
+            <p>In-cluster visibility into what PandoCore is detecting and protecting.</p>
+        </div>
+    </section>
+
+    <!-- Documentation Layout -->
+    <div class="docs-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="docs-sidebar">
+            <h3>Documentation</h3>
+            <ul class="docs-nav">
+                <li><a href="index.html">Overview</a></li>
+                <li><a href="getting-started.html">Getting Started</a></li>
+                <li><a href="webhook.html">Admission Webhook</a></li>
+                <li><a href="dashboard.html" class="active">Dashboard</a></li>
+                <li><a href="configuration.html">Configuration</a></li>
+                <li><a href="policy.html">CRD Policy</a></li>
+                <li><a href="operating-modes.html">Operating Modes</a></li>
+                <li><a href="emergency.html">Emergency Procedures</a></li>
+                <li><a href="evidence-format.html">Evidence Format</a></li>
+                <li><a href="faq.html">FAQ</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="docs-content">
+            <div class="docs-breadcrumb">
+                <a href="index.html">Docs</a>
+                <span>/</span>
+                Dashboard
+            </div>
+
+            <h1>Detection Events Dashboard</h1>
+
+            <p>PandoCore provides two ways to view detection events:</p>
+
+            <ol>
+                <li><strong>Portal Dashboard</strong> (recommended) &mdash; Detection events are streamed from sidecars to your PandoCore Portal at <code>portal.pandocore.xyz</code>, stored in Firestore, and displayed in your authenticated customer dashboard. This is the primary way to view events and requires no additional setup beyond the Helm install.</li>
+                <li><strong>In-cluster Dashboard</strong> (optional) &mdash; A lightweight dashboard that runs entirely within your cluster for real-time debugging. No data leaves your environment.</li>
+            </ol>
+
+            <div class="docs-callout info">
+                <div class="docs-callout-title">Portal Integration</div>
+                <p>When installed via Helm, the sidecar's <code>PANDO_EVIDENCE_WEBHOOK_URL</code> is automatically configured to send detection events to the PandoCore Portal. Events appear in your customer dashboard at <a href="https://portal.pandocore.xyz/dashboard">portal.pandocore.xyz/dashboard</a>.</p>
+            </div>
+
+            <h2>Portal Dashboard</h2>
+
+            <p>The portal dashboard is available at <a href="https://portal.pandocore.xyz/dashboard">portal.pandocore.xyz/dashboard</a> after signing in. It shows:</p>
+
+            <ul>
+                <li><strong>Event Stats</strong> &mdash; events in last 24h and 7 days, enforcements, and "would have killed" counts</li>
+                <li><strong>Recent Events</strong> &mdash; chronological list of detection events with drift scores, severity, and actions taken</li>
+                <li><strong>Namespace Breakdown</strong> &mdash; which namespaces are generating events</li>
+            </ul>
+
+            <p>Events are automatically streamed from sidecars to the portal when <code>portalWebhook.enabled=true</code> (the default). No additional configuration is needed.</p>
+
+            <h3>Event Data Flow</h3>
+            <ol>
+                <li>Sidecar detects drift or threshold exceedance</li>
+                <li>Evidence is POSTed to <code>portal.pandocore.xyz/api/events/ingest</code> (authenticated via license key)</li>
+                <li>Portal stores the event in Firestore under your customer account</li>
+                <li>Dashboard displays events with severity classification and action details</li>
+            </ol>
+
+            <h2>In-Cluster Dashboard (Optional)</h2>
+
+            <p>For real-time debugging or air-gapped environments, PandoCore also offers an optional in-cluster dashboard.</p>
+
+            <h2>What the In-Cluster Dashboard Shows</h2>
+
+            <h3>Overview</h3>
+            <ul>
+                <li><strong>Protected Deployments</strong> &mdash; count of deployments with the PandoCore sidecar</li>
+                <li><strong>Protected Pods</strong> &mdash; total running pods under protection</li>
+                <li><strong>Events (24h / 7d)</strong> &mdash; detection events in the last day and week</li>
+                <li><strong>Trips (24h)</strong> &mdash; threshold-exceeding detections</li>
+                <li><strong>Pod Status</strong> &mdash; how many pods are in learning, monitoring, or enforcing phase</li>
+            </ul>
+
+            <h3>Event Timeline</h3>
+            <p>A chronological list of detection events, filterable by:</p>
+            <ul>
+                <li><strong>Type</strong> &mdash; drift detected, trip executed, attestation failed</li>
+                <li><strong>Severity</strong> &mdash; info, warning, critical</li>
+                <li><strong>Namespace</strong> &mdash; filter to a specific namespace</li>
+            </ul>
+
+            <h3>"What Would Have Happened"</h3>
+            <p>In <strong>monitor mode</strong>, PandoCore detects but does not terminate pods. The dashboard shows which pods <em>would have been killed</em> if enforcement were enabled, along with the drift score and reason. This lets you validate PandoCore's behavior before switching to enforce mode.</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Mode</th>
+                        <th>Action Column Shows</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Monitor</td>
+                        <td><strong>WOULD HAVE KILLED</strong> &mdash; trip threshold exceeded, but no action taken</td>
+                    </tr>
+                    <tr>
+                        <td>Enforce</td>
+                        <td><strong>POD TERMINATED</strong> &mdash; pod was killed and evidence emitted</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Enabling the Dashboard</h2>
+
+            <p>The dashboard is an optional component of the <code>pando-webhook</code> Helm chart:</p>
+
+            <pre><code>helm install pando-webhook oci://&lt;registry&gt;/charts/pando-webhook \
+  --namespace pando-system \
+  --set licenseKey="&lt;your-key&gt;" \
+  --set dashboard.enabled=true</code></pre>
+
+            <p>Or enable it on an existing installation:</p>
+
+            <pre><code>helm upgrade pando-webhook oci://&lt;registry&gt;/charts/pando-webhook \
+  --namespace pando-system \
+  --reuse-values \
+  --set dashboard.enabled=true</code></pre>
+
+            <h2>Accessing the Dashboard</h2>
+
+            <p>The dashboard runs as a ClusterIP Service. Access it via port-forward:</p>
+
+            <pre><code>kubectl port-forward svc/pando-dashboard -n pando-system 8080:80</code></pre>
+
+            <p>Then open <code>http://localhost:8080</code> in your browser.</p>
+
+            <div class="docs-callout success">
+                <div class="docs-callout-title">No Ingress Required</div>
+                <p>The dashboard is designed for <code>kubectl port-forward</code> access. You can optionally expose it via an Ingress or LoadBalancer Service if your security policy allows it.</p>
+            </div>
+
+            <h2>Configuration</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Helm Value</th>
+                        <th>Default</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>dashboard.enabled</code></td>
+                        <td><code>false</code></td>
+                        <td>Enable the dashboard deployment</td>
+                    </tr>
+                    <tr>
+                        <td><code>dashboard.pollInterval</code></td>
+                        <td><code>"30s"</code></td>
+                        <td>How often to poll sidecar <code>/status</code> endpoints</td>
+                    </tr>
+                    <tr>
+                        <td><code>dashboard.maxEvents</code></td>
+                        <td><code>10000</code></td>
+                        <td>Maximum events stored in memory</td>
+                    </tr>
+                    <tr>
+                        <td><code>dashboard.resources</code></td>
+                        <td>50m CPU / 64Mi mem</td>
+                        <td>Resource limits for the dashboard pod</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>REST API</h2>
+
+            <p>The dashboard exposes a REST API that the UI consumes. You can also use it directly:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Endpoint</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>GET /api/summary</code></td>
+                        <td>Cluster-wide stats: protected pods, events, trips</td>
+                    </tr>
+                    <tr>
+                        <td><code>GET /api/deployments</code></td>
+                        <td>List of protected deployments with status and drift scores</td>
+                    </tr>
+                    <tr>
+                        <td><code>GET /api/events?page=1&amp;limit=50</code></td>
+                        <td>Paginated event timeline with optional filters (<code>type</code>, <code>severity</code>, <code>namespace</code>)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Architecture</h2>
+
+            <p>The dashboard is a single Go binary running as a Deployment in <code>pando-system</code>. It collects data from two sources:</p>
+
+            <ol>
+                <li><strong>Kubernetes Events</strong> &mdash; watches for events with label <code>pando.io/event-type=collapse</code> (created by sidecars on trip/detection)</li>
+                <li><strong>Sidecar <code>/status</code> endpoints</strong> &mdash; polls each protected pod's sidecar on port 9090 at the configured interval</li>
+            </ol>
+
+            <p>Events are stored in an in-memory ring buffer (configurable size, default 10,000 events). The dashboard has <strong>read-only</strong> RBAC permissions: it can list/watch events and list pods, but cannot modify any resources.</p>
+
+            <h2>Resource Footprint</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Resource</th>
+                        <th>Limit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>CPU</td>
+                        <td>50m</td>
+                    </tr>
+                    <tr>
+                        <td>Memory</td>
+                        <td>64Mi</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Troubleshooting</h2>
+
+            <h3>Dashboard shows 0 protected pods</h3>
+            <ol>
+                <li>Verify pods have the label: <code>kubectl get pods -l pandocore.xyz/protect=true --all-namespaces</code></li>
+                <li>Verify the sidecar container is running (2/2 Ready)</li>
+                <li>Check the dashboard logs: <code>kubectl logs -n pando-system -l app.kubernetes.io/name=pando-dashboard</code></li>
+            </ol>
+
+            <h3>Events not appearing</h3>
+            <p>Events are populated from two sources. If the event timeline is empty:</p>
+            <ul>
+                <li>Check that sidecars have RBAC to create events (<code>events/create</code> permission)</li>
+                <li>Wait for the poll interval (default 30s) for status-based events to appear</li>
+                <li>Verify the dashboard's ClusterRole has <code>events</code> watch permission</li>
+            </ul>
+
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2026 PandoCore Inc. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

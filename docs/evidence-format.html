@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PandoCore Evidence Format - JSON schema reference for SIEM integration and log analysis.">
+    <title>Evidence Format | PandoCore Docs</title>
+    <link rel="icon" type="image/png" href="../images/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/docs.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a href="../index.html" class="logo">
+                    <img src="../images/logoTransparency.png" alt="Pando Logo">
+                    <div class="logo-text-wrapper">
+                        <span class="logo-text">PandoCore</span>
+                    </div>
+                </a>
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div class="nav-overlay"></div>
+                <ul class="nav-links">
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="../product.html">Product</a></li>
+                    <li><a href="../about.html">About</a></li>
+                    <li><a href="index.html" class="active">Docs</a></li>
+                    <li><a href="../contact.html" class="nav-contact">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Docs Hero -->
+    <section class="docs-hero">
+        <div class="container">
+            <h1>Evidence Format</h1>
+            <p>JSON schema reference for SIEM integration and log analysis.</p>
+        </div>
+    </section>
+
+    <!-- Documentation Layout -->
+    <div class="docs-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="docs-sidebar">
+            <h3>Documentation</h3>
+            <ul class="docs-nav">
+                <li><a href="index.html">Overview</a></li>
+                <li><a href="getting-started.html">Getting Started</a></li>
+                <li><a href="webhook.html">Admission Webhook</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="configuration.html">Configuration</a></li>
+                <li><a href="policy.html">CRD Policy</a></li>
+                <li><a href="operating-modes.html">Operating Modes</a></li>
+                <li><a href="emergency.html">Emergency Procedures</a></li>
+                <li><a href="evidence-format.html" class="active">Evidence Format</a></li>
+                <li><a href="faq.html">FAQ</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="docs-content">
+            <div class="docs-breadcrumb">
+                <a href="index.html">Docs</a>
+                <span>/</span>
+                Evidence Format
+            </div>
+
+            <h1>Evidence Format</h1>
+            
+            <p>When PandoCore detects anomalous behavior, it generates structured evidence records. These records are designed for easy integration with SIEMs, log aggregators, and security analytics platforms.</p>
+
+            <h2>Evidence Output Channels</h2>
+            
+            <p>Evidence is emitted through multiple channels simultaneously:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Channel</th>
+                        <th>Format</th>
+                        <th>Persistence</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>stdout</strong></td>
+                        <td>JSON (one record per line)</td>
+                        <td>Captured by any log aggregator</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Kubernetes Events</strong></td>
+                        <td>K8s Event object</td>
+                        <td>Survives pod deletion (namespace-scoped)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Evidence Webhook</strong></td>
+                        <td>Full Evidence JSON (POST)</td>
+                        <td>Delivered to external endpoint (portal, SIEM, etc.)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Slack Alerts</strong></td>
+                        <td>Slack Block Kit message</td>
+                        <td>Delivered to Slack channel (alert + enforce modes)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Prometheus Metrics</strong></td>
+                        <td>Counter/Gauge metrics</td>
+                        <td>Time-series data in your metrics stack</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Evidence Webhook</h3>
+
+            <p>When <code>PANDO_EVIDENCE_WEBHOOK_URL</code> is configured, the full Evidence JSON record is POSTed to the specified endpoint before pod deletion. This is the primary data path for the <a href="dashboard.html">PandoCore Portal</a>.</p>
+
+            <p>The webhook includes these HTTP headers:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Header</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>Content-Type</code></td>
+                        <td><code>application/json</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>X-Pando-Evidence-ID</code></td>
+                        <td>UUID of the evidence record</td>
+                    </tr>
+                    <tr>
+                        <td><code>X-Pando-Event-Type</code></td>
+                        <td><code>collapse</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>X-Pando-Schema-Version</code></td>
+                        <td>Evidence schema version (e.g., <code>2.0</code>)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>The request body is the complete Evidence JSON record shown below. Delivery is retried up to 3 times (configurable via <code>PANDO_EVIDENCE_WEBHOOK_MAX_RETRIES</code>) with a default 5-second timeout per attempt.</p>
+
+            <p>This webhook can be pointed at any endpoint that accepts JSON POSTs — use it to integrate with SIEMs, incident management platforms, or custom pipelines. The PandoCore Portal uses this channel by default (auto-configured by the Helm chart).</p>
+
+            <h3>Slack Alerts</h3>
+
+            <p>When <code>PANDO_SLACK_WEBHOOK_URL</code> is configured and the operating mode is <strong>alert</strong> or <strong>enforce</strong>, PandoCore sends formatted Slack messages on each detection event.</p>
+
+            <p>Slack alerts are color-coded by severity:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Severity</th>
+                        <th>Color</th>
+                        <th>Criteria</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Critical</strong></td>
+                        <td style="color: #dc2626;">Red (#dc2626)</td>
+                        <td>Pod was terminated (enforce mode)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>High</strong></td>
+                        <td style="color: #ea580c;">Orange (#ea580c)</td>
+                        <td>Drift score &ge; 0.6</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Warning</strong></td>
+                        <td style="color: #d97706;">Yellow (#d97706)</td>
+                        <td>Drift score &ge; 0.3</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Info</strong></td>
+                        <td style="color: #16a34a;">Green (#16a34a)</td>
+                        <td>Low drift detection</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>Each Slack message includes:</p>
+            <ul>
+                <li>Pod name and namespace</li>
+                <li>Drift score and detection reason</li>
+                <li>Action taken (pod terminated vs. would have killed)</li>
+                <li>Timestamp</li>
+                <li>Per-dimension drift breakdown (memory, process)</li>
+            </ul>
+
+            <p>See <a href="configuration.html">Configuration</a> for setup instructions.</p>
+
+            <h2>Evidence JSON Schema (v2.0)</h2>
+            
+            <p>Each detection event produces a JSON record with the following structure. PandoCore uses a three-path detection model for comprehensive anomaly detection:</p>
+
+            <pre><code>{
+  "version": "2.0",
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "timestamp": "2026-03-16T14:30:00.123Z",
+  "pod": {
+    "name": "my-app-7d4f9b8c5-x2kl9",
+    "namespace": "production",
+    "node": "gke-cluster-pool-1-abc123"
+  },
+  "trip_reason": "cumulative_threshold_exceeded",
+  "drift_score": 0.67,
+  "dimensions": {
+    "memory": 0.52,
+    "process": 0.43,
+    "temporal": 0.08,
+    "system": 0.12
+  },
+  "action_taken": "pod_deleted",
+  "detection": {
+    "trigger": "cumulative_threshold",
+    "fast_path": {
+      "drift_score": 0.67,
+      "incremental_drift": 0.12,
+      "velocity": 0.08,
+      "dimensions": { "memory": 0.52, "process": 0.43, "temporal": 0.08, "system": 0.12 },
+      "primary_dimension": "memory"
+    },
+    "medium_path": {
+      "attestation_results": { "result_count": 5, "pass_rate": 1.0 },
+      "integrity_check": "pass"
+    },
+    "slow_path": {
+      "ml_anomaly_score": 0.85,
+      "ml_decision": "suspicious",
+      "model_trained": true,
+      "training_sample_count": 1500
+    }
+  },
+  "learned_thresholds": {
+    "incremental": 0.12,
+    "cumulative": 0.38,
+    "velocity": 0.08,
+    "learned_at": "2026-03-16T14:20:00Z",
+    "sensitivity": 2.0
+  },
+  "hash": "a1b2c3d4e5f6...",
+  "previous_hash": "9f8e7d6c5b4a...",
+  "sequence": 42,
+  "metadata": {
+    "sidecar_version": "0.1.0",
+    "mode": "enforce",
+    "customer_id": "cust_abc123",
+    "thresholds": { "incremental": 0.15, "cumulative": 0.45 }
+  }
+}</code></pre>
+
+            <h2>Field Reference</h2>
+
+            <h3>Top-Level Fields</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>version</code></td>
+                        <td>string</td>
+                        <td>Schema version (currently "2.0")</td>
+                    </tr>
+                    <tr>
+                        <td><code>id</code></td>
+                        <td>string (UUID)</td>
+                        <td>Unique identifier for this evidence record</td>
+                    </tr>
+                    <tr>
+                        <td><code>timestamp</code></td>
+                        <td>string (ISO 8601)</td>
+                        <td>When the detection occurred</td>
+                    </tr>
+                    <tr>
+                        <td><code>customer_id</code></td>
+                        <td>string</td>
+                        <td>Your customer identifier (from license)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Pod Information</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>pod.name</code></td>
+                        <td>string</td>
+                        <td>Full pod name</td>
+                    </tr>
+                    <tr>
+                        <td><code>pod.namespace</code></td>
+                        <td>string</td>
+                        <td>Kubernetes namespace</td>
+                    </tr>
+                    <tr>
+                        <td><code>pod.node</code></td>
+                        <td>string</td>
+                        <td>Node the pod was running on</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Detection Details</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>detection.type</code></td>
+                        <td>string</td>
+                        <td>Type of detection: <code>drift</code>, <code>integrity</code>, <code>anomaly</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>detection.reason</code></td>
+                        <td>string</td>
+                        <td>Specific reason for the detection</td>
+                    </tr>
+                    <tr>
+                        <td><code>detection.score</code></td>
+                        <td>number</td>
+                        <td>Overall detection score (0.0 - 1.0)</td>
+                    </tr>
+                    <tr>
+                        <td><code>detection.threshold</code></td>
+                        <td>number</td>
+                        <td>The threshold that was exceeded</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Detection Reasons</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Reason</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>incremental_threshold_exceeded</code></td>
+                        <td>Sudden behavioral change detected</td>
+                    </tr>
+                    <tr>
+                        <td><code>cumulative_threshold_exceeded</code></td>
+                        <td>Gradual drift accumulated beyond threshold</td>
+                    </tr>
+                    <tr>
+                        <td><code>velocity_threshold_exceeded</code></td>
+                        <td>Rate of change exceeded safe bounds</td>
+                    </tr>
+                    <tr>
+                        <td><code>integrity_check_failed</code></td>
+                        <td>Integrity validation detected anomaly</td>
+                    </tr>
+                    <tr>
+                        <td><code>anomaly_detected</code></td>
+                        <td>Behavioral pattern anomaly identified</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Dimension Scores</h3>
+            
+            <p>The <code>dimensions</code> object contains drift scores for each monitored dimension (0.0 = no drift, 1.0 = maximum drift):</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Dimension</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>memory</code></td>
+                        <td>Memory usage, allocation patterns</td>
+                    </tr>
+                    <tr>
+                        <td><code>process</code></td>
+                        <td>Thread count, file descriptors, child processes</td>
+                    </tr>
+                    <tr>
+                        <td><code>temporal</code></td>
+                        <td>Execution timing patterns</td>
+                    </tr>
+                    <tr>
+                        <td><code>system</code></td>
+                        <td>CPU and I/O patterns</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Action Information</h3>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>action.taken</code></td>
+                        <td>string</td>
+                        <td><code>logged_only</code> (monitor/alert) or <code>pod_terminated</code> (enforce)</td>
+                    </tr>
+                    <tr>
+                        <td><code>action.mode</code></td>
+                        <td>string</td>
+                        <td>Operating mode when detection occurred</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Hash Chain</h3>
+            
+            <p>Evidence records form a tamper-evident chain:</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>chain.hash</code></td>
+                        <td>string</td>
+                        <td>SHA-256 hash of this record</td>
+                    </tr>
+                    <tr>
+                        <td><code>chain.previous_hash</code></td>
+                        <td>string</td>
+                        <td>Hash of the previous record (enables chain verification)</td>
+                    </tr>
+                    <tr>
+                        <td><code>chain.sequence</code></td>
+                        <td>number</td>
+                        <td>Monotonically increasing sequence number</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="docs-callout info">
+                <div class="docs-callout-title">ℹ️ Tamper-Evident Chain</div>
+                <p>Each evidence record includes a cryptographic hash linking it to the previous record. This creates a verifiable chain that can be audited for tampering.</p>
+            </div>
+
+            <h2>SIEM Integration</h2>
+
+            <h3>Splunk</h3>
+            
+            <p>Configure your log forwarder (Fluentd, Filebeat, etc.) to send PandoCore logs to Splunk:</p>
+
+            <pre><code># Example Splunk search for PandoCore detections
+index=kubernetes sourcetype=pando-sidecar
+| spath path=detection.type
+| where 'detection.type'="drift"
+| table timestamp, pod.name, detection.reason, detection.score</code></pre>
+
+            <h3>Elastic / ELK</h3>
+            
+            <p>PandoCore's JSON output is directly compatible with Elasticsearch. Example Kibana query:</p>
+
+            <pre><code>{
+  "query": {
+    "bool": {
+      "must": [
+        { "match": { "detection.type": "drift" } },
+        { "range": { "detection.score": { "gte": 0.5 } } }
+      ]
+    }
+  }
+}</code></pre>
+
+            <h3>Datadog</h3>
+            
+            <p>Forward logs to Datadog and use the following facets for filtering:</p>
+            
+            <ul>
+                <li><code>@detection.type</code></li>
+                <li><code>@detection.reason</code></li>
+                <li><code>@detection.score</code></li>
+                <li><code>@pod.namespace</code></li>
+                <li><code>@action.taken</code></li>
+            </ul>
+
+            <h2>Prometheus Metrics</h2>
+            
+            <p>PandoCore exposes metrics on port 9090 at <code>/metrics</code> for real-time monitoring and alerting:</p>
+
+            <h3>Drift Metrics</h3>
+            <pre><code># Current cumulative drift score from baseline
+pando_drift_score 0.23
+
+# Per-dimension drift scores
+pando_drift_memory 0.18
+pando_drift_process 0.12
+pando_drift_temporal 0.05
+pando_drift_system 0.08
+
+# Velocity metrics (rate-of-change per second)
+pando_velocity_weighted 0.02
+pando_velocity_memory 0.01
+pando_velocity_process 0.02
+pando_velocity_temporal 0.001
+pando_velocity_system 0.003
+
+# Acceleration (velocity change per second)
+pando_acceleration_weighted 0.005</code></pre>
+
+            <h3>Trip/Detection Metrics</h3>
+            <pre><code># Total number of trips (collapses)
+pando_trips_total 3
+
+# Trips by reason
+pando_trips_by_reason_total{reason="cumulative_threshold"} 2
+pando_trips_by_reason_total{reason="velocity_threshold"} 1
+
+# Total evidence emitted
+pando_evidence_emitted_total 3</code></pre>
+
+            <h3>Baseline & Sampling Metrics</h3>
+            <pre><code># Age of current baseline in seconds
+pando_baseline_age_seconds 3600
+
+# Total baselines established
+pando_baselines_established_total 1
+
+# Total samples collected
+pando_samples_collected_total 36000
+
+# Collection errors
+pando_collection_errors_total 0</code></pre>
+
+            <h3>ML Anomaly Detection Metrics</h3>
+            <pre><code># Number of training samples used
+pando_ml_training_samples 1500
+
+# Total inference runs
+pando_ml_inference_total 60
+
+# Most recent anomaly score (0.0=normal, 1.0=anomalous)
+pando_ml_anomaly_score 0.25
+
+# Suspicious decisions and corroborated trips
+pando_ml_suspicious_total 2
+pando_ml_corroborated_trips_total 1</code></pre>
+
+            <h3>Attestation Metrics</h3>
+            <pre><code># Attestation pass/fail counts
+pando_attestation_pass_total 120
+pando_attestation_fail_total 0
+
+# Last attestation result (0=fail, 1=pass)
+pando_attestation_last_result 1</code></pre>
+
+            <h3>Network Audit Metrics</h3>
+            <pre><code># Network audit pass/fail
+pando_network_audit_pass_total 60
+pando_network_audit_fail_total 0
+
+# Unexpected connections detected
+pando_network_audit_unexpected_remotes 0
+pando_network_audit_connections 5</code></pre>
+
+            <h3>Operational Metrics</h3>
+            <pre><code># Current operating mode (0=monitor, 0.5=alert, 1=enforce, 2=debug)
+pando_operating_mode 1
+
+# Sidecar health status (0=unhealthy, 1=healthy)
+pando_healthy 1
+
+# Collection and calculation durations (histogram)
+pando_collection_duration_seconds_bucket{le="0.01"} 35000
+pando_drift_calculation_seconds_bucket{le="0.001"} 36000</code></pre>
+
+            <h3>Useful Alerts</h3>
+            
+            <pre><code># Alert on high drift scores (approaching threshold)
+- alert: PandoDriftHigh
+  expr: pando_drift_score > 0.35
+  for: 5m
+  labels:
+    severity: warning
+  annotations:
+    summary: "High drift detected in {{ $labels.pod }}"
+
+# Alert on enforcement events
+- alert: PandoEnforcement
+  expr: increase(pando_enforcements_total[5m]) > 0
+  labels:
+    severity: critical
+  annotations:
+    summary: "PandoCore terminated pod {{ $labels.pod }}"</code></pre>
+
+            <h2>Kubernetes Events</h2>
+            
+            <p>Detection events are also emitted as Kubernetes Events:</p>
+
+            <pre><code># View PandoCore events
+kubectl get events -n YOUR_NAMESPACE --field-selector reason=PandoDetection
+
+# Example event
+LAST SEEN   TYPE      REASON           OBJECT                    MESSAGE
+2m          Warning   PandoDetection   pod/my-app-abc123         Drift detected: score=0.67, reason=cumulative_threshold_exceeded</code></pre>
+
+            <h2>Next Steps</h2>
+            
+            <ul>
+                <li><a href="configuration.html">Configuration</a> — Tune detection thresholds</li>
+                <li><a href="operating-modes.html">Operating Modes</a> — Control detection vs enforcement</li>
+                <li><a href="faq.html">FAQ</a> — Common questions about evidence</li>
+            </ul>
+
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2026 PandoCore Inc. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

@@ -265,6 +265,60 @@ def draw_wave_function(ax, x, y, size=2.0, collapsed=False):
             ha="right", va="bottom", fontsize=12, color=COFFEE_BEAN, 
             fontweight="bold", fontname=FONT_FAMILY)
 
+def draw_multi_path_boxes(ax, x, y, width=2.0, height=1.2, n_rows=3, n_cols=4):
+    """
+    Draw multiple small boxes representing multi-path ephemeral execution.
+    Creates a grid of small interconnected boxes to visualize parallel/superposition paths.
+    """
+    box_w = width / (n_cols + 0.5)  # width of each small box
+    box_h = height / (n_rows + 0.5)  # height of each small box
+    gap_x = box_w * 0.15
+    gap_y = box_h * 0.15
+    
+    start_x = x - width/2 + box_w/2
+    start_y = y - height/2 + box_h/2
+    
+    # Draw the small boxes
+    for row in range(n_rows):
+        for col in range(n_cols):
+            bx = start_x + col * (box_w + gap_x)
+            by = start_y + row * (box_h + gap_y)
+            
+            # Small isometric-style box (simplified)
+            rect = Rectangle((bx - box_w/2, by - box_h/2), box_w, box_h,
+                            facecolor="#E8E4DB", edgecolor=COFFEE_BEAN, 
+                            linewidth=1.0, alpha=0.85)
+            ax.add_patch(rect)
+            
+            # Add subtle 3D effect (top and side)
+            offset = box_w * 0.15
+            # Top face
+            top = np.array([
+                [bx - box_w/2, by + box_h/2],
+                [bx + box_w/2, by + box_h/2],
+                [bx + box_w/2 + offset, by + box_h/2 + offset*0.6],
+                [bx - box_w/2 + offset, by + box_h/2 + offset*0.6]
+            ])
+            ax.add_patch(Polygon(top, closed=True, facecolor="#F0EDE5", 
+                                edgecolor=COFFEE_BEAN, linewidth=0.8, alpha=0.7))
+            # Side face
+            side = np.array([
+                [bx + box_w/2, by - box_h/2],
+                [bx + box_w/2, by + box_h/2],
+                [bx + box_w/2 + offset, by + box_h/2 + offset*0.6],
+                [bx + box_w/2 + offset, by - box_h/2 + offset*0.6]
+            ])
+            ax.add_patch(Polygon(side, closed=True, facecolor="#DDD9D0", 
+                                edgecolor=COFFEE_BEAN, linewidth=0.8, alpha=0.7))
+    
+    # Draw some connecting lines between boxes to show paths
+    for row in range(n_rows):
+        for col in range(n_cols - 1):
+            bx1 = start_x + col * (box_w + gap_x) + box_w/2
+            bx2 = start_x + (col + 1) * (box_w + gap_x) - box_w/2
+            by = start_y + row * (box_h + gap_y)
+            ax.plot([bx1, bx2], [by, by], color=AMBER_HONEY, linewidth=1.0, alpha=0.5)
+
 def slide4():
     fig, ax = setup_ax()
     # No vignette - clean background
@@ -274,44 +328,70 @@ def slide4():
             ha="center", va="center", fontsize=36, color=BLACK_FOREST, fontweight="bold",
             fontname=FONT_FAMILY)
 
-    # Left: cube (unobserved)
-    draw_cube(ax, 4.0, 4.4, s=1.15)
-    ax.text(4.0, 2.8, "Unobserved Execution", ha="center", va="center",
-            fontsize=20, color=COFFEE_BEAN, fontweight="bold", fontname=FONT_FAMILY)
+    # ===== TOP PATH: Current Execution Tool =====
+    top_y = 5.6  # Upper path Y position
+    
+    # Left: Single cube (unobserved) - Current tool
+    draw_cube(ax, 3.5, top_y, s=0.9)
+    ax.text(3.5, top_y - 1.0, "Current Execution Tool", ha="center", va="center",
+            fontsize=16, color=COFFEE_BEAN, fontweight="bold", fontname=FONT_FAMILY)
+    ax.text(3.5, top_y, "Single\nPath", ha="center", va="center", fontsize=11,
+            color=COFFEE_BEAN, fontname=FONT_FAMILY)
 
-    # Center: Eye symbol for observation (much more obvious)
+    # ===== BOTTOM PATH: Future Superposition Execution Tool =====
+    bottom_y = 2.8  # Lower path Y position
+    
+    # Left: Multiple small boxes representing multi-path execution
+    draw_multi_path_boxes(ax, 3.5, bottom_y, width=2.4, height=1.4, n_rows=3, n_cols=4)
+    ax.text(3.5, bottom_y - 1.3, "Future Superposition\nExecution Tool", ha="center", va="center",
+            fontsize=16, color=COFFEE_BEAN, fontweight="bold", fontname=FONT_FAMILY)
+
+    # ===== CENTER: Eye symbol for observation =====
     eye_x = 8.0
-    eye_y = 4.4
+    eye_y = 4.2  # Centered between the two paths
     draw_eye(ax, eye_x, eye_y, size=0.7)
-    ax.text(eye_x, 6.0, "Observation", ha="center", va="bottom",
+    ax.text(eye_x, eye_y + 1.4, "Observation", ha="center", va="bottom",
             fontsize=20, color=COFFEE_BEAN, fontweight="bold", fontname=FONT_FAMILY)
     
     # Vertical dashed lines around the eye to emphasize barrier/threshold
-    ax.plot([eye_x - 1.2, eye_x - 1.2], [2.6, 5.8], color=AMBER_HONEY, 
+    ax.plot([eye_x - 1.2, eye_x - 1.2], [1.3, 6.6], color=AMBER_HONEY, 
             linewidth=2, linestyle='--', alpha=0.6)
-    ax.plot([eye_x + 1.2, eye_x + 1.2], [2.6, 5.8], color=AMBER_HONEY, 
+    ax.plot([eye_x + 1.2, eye_x + 1.2], [1.3, 6.6], color=AMBER_HONEY, 
             linewidth=2, linestyle='--', alpha=0.6)
 
-    # Arrow through observation
-    ax.add_patch(FancyArrowPatch((5.3, eye_y), (10.7, eye_y),
+    # ===== ARROWS: Both paths converge through observation =====
+    # Top path arrow
+    ax.add_patch(FancyArrowPatch((4.6, top_y), (6.7, eye_y + 0.3),
+                                 arrowstyle='-|>', mutation_scale=14,
+                                 linewidth=2, color=AMBER_HONEY, alpha=0.9,
+                                 connectionstyle="arc3,rad=-0.15"))
+    
+    # Bottom path arrow
+    ax.add_patch(FancyArrowPatch((4.8, bottom_y), (6.7, eye_y - 0.3),
+                                 arrowstyle='-|>', mutation_scale=14,
+                                 linewidth=2, color=AMBER_HONEY, alpha=0.9,
+                                 connectionstyle="arc3,rad=0.15"))
+    
+    # Arrow from observation to compromised state
+    ax.add_patch(FancyArrowPatch((9.3, eye_y), (10.5, eye_y),
                                  arrowstyle='-|>', mutation_scale=16,
-                                 linewidth=2, color=AMBER_HONEY, alpha=0.9))
+                                 linewidth=2.5, color=AMBER_HONEY, alpha=0.9))
 
-    # Right: "dissolved" particles (simulate collapse)
+    # ===== RIGHT: "dissolved" particles (compromised state) =====
     rng = np.random.default_rng(7)
     n = 1400
-    xs = rng.normal(12.5, 0.7, n)
-    ys = rng.normal(eye_y, 0.45, n)
+    xs = rng.normal(12.8, 0.7, n)
+    ys = rng.normal(eye_y, 0.5, n)
     # fade rightward
     alphas = np.clip(1.1 - (xs - 10.5)/3.0, 0.0, 0.55)
     ax.scatter(xs, ys, s=8, c=COFFEE_BEAN, alpha=alphas, linewidths=0)
 
-    ax.text(12.5, 2.8, "Compromised State", ha="center", va="center",
+    ax.text(12.8, eye_y - 1.8, "Compromised State", ha="center", va="center",
             fontsize=20, color=COFFEE_BEAN, fontweight="bold", fontname=FONT_FAMILY)
 
     # Bottom quote box (narrower)
-    draw_quote_box(ax, W/2, 1.2, "Observation deletes logic", 
-                   width=5.5, height=0.9)
+    draw_quote_box(ax, W/2, 0.6, "Observation deletes logic", 
+                   width=5.5, height=0.7)
 
     fig.savefig("slide4_breakthrough.png", transparent=False)
     plt.close(fig)
