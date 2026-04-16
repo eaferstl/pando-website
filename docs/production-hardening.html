@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Harden PandoCore for production: resource limits, namespace exclusions, failure policies, and rollout discipline.">
+    <title>Production Hardening | PandoCore Docs</title>
+    <link rel="icon" type="image/png" href="../images/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/docs.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a href="../index.html" class="logo">
+                    <img src="../images/logoTransparency.png" alt="Pando Logo">
+                    <div class="logo-text-wrapper">
+                        <span class="logo-text">PandoCore</span>
+                    </div>
+                </a>
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div class="nav-overlay"></div>
+                <ul class="nav-links">
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="../product.html">Product</a></li>
+                    <li><a href="../pricing.html">Pricing</a></li>
+                    <li><a href="../about.html">About</a></li>
+                    <li><a href="index.html" class="active">Docs</a></li>
+                    <li><a href="../contact.html" class="nav-contact">Contact</a></li>
+                    <li><a href="https://portal.pandocore.xyz/signup" class="nav-signup">Sign Up</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Docs Hero -->
+    <section class="docs-hero">
+        <div class="container">
+            <h1>Production Hardening</h1>
+            <p>Checklist for running PandoCore in production with confidence.</p>
+        </div>
+    </section>
+
+    <!-- Documentation Layout -->
+    <div class="docs-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="docs-sidebar">
+            <h3>Documentation</h3>
+            <ul class="docs-nav">
+                <li><a href="index.html">Overview</a></li>
+                <li><a href="getting-started.html">Getting Started</a></li>
+                <li><a href="webhook.html">Admission Webhook</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="configuration.html">Configuration</a></li>
+                <li><a href="policy.html">CRD Policy</a></li>
+                <li><a href="operating-modes.html">Operating Modes</a></li>
+                <li><a href="production-hardening.html" class="active">Production Hardening</a></li>
+                <li><a href="upgrading.html">Upgrading</a></li>
+                <li><a href="troubleshooting.html">Troubleshooting</a></li>
+                <li><a href="emergency.html">Emergency Procedures</a></li>
+                <li><a href="evidence-format.html">Evidence Format</a></li>
+                <li><a href="faq.html">FAQ</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="docs-content">
+            <div class="docs-breadcrumb">
+                <a href="index.html">Docs</a>
+                <span>/</span>
+                Production Hardening
+            </div>
+
+            <h1>Production Hardening</h1>
+
+            <p>A default PandoCore install is production-safe, but a few tweaks are worth making before you turn on enforcement at scale. This page walks through the ones that actually matter.</p>
+
+            <h2>1. Run in Monitor Mode First</h2>
+
+            <p>The single most important hardening step is discipline, not config: run each workload in <code>monitor</code> for at least a week before flipping it to <code>alert</code>, and another week in <code>alert</code> before <code>enforce</code>. This is how you validate that the baseline captures your workload's real behavior without killing any pods.</p>
+
+            <p>New installs default to <code>monitor</code>. Don't set <code>defaultMode=enforce</code> on day one. See <a href="operating-modes.html">Operating Modes</a> for the full escalation model.</p>
+
+            <h2>2. Set Resource Limits</h2>
+
+            <p>The sidecar ships with conservative defaults (25Mi request, 50Mi limit, 50m / 100m CPU), sized for a typical web app. High-throughput services, heavy runtimes, or workloads that churn a lot of processes may need more headroom.</p>
+
+            <pre><code># Raise sidecar limits cluster-wide
+helm upgrade pando-webhook \
+  oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-webhook \
+  --namespace pando-system --reuse-values \
+  --set sidecar.resources.requests.memory=64Mi \
+  --set sidecar.resources.limits.memory=128Mi \
+  --set sidecar.resources.requests.cpu=100m \
+  --set sidecar.resources.limits.cpu=200m</code></pre>
+
+            <p>Check sidecar memory usage via <code>kubectl top pod</code> after a week in production. If you see OOM kills on the <code>pando-sidecar</code> container, raise the limit. If usage is steady at 30-40% of the limit, you're fine.</p>
+
+            <h2>3. Exclude System Namespaces</h2>
+
+            <p>By default the webhook already excludes <code>kube-system</code> and <code>pando-system</code>. Add any other namespaces you don't want the webhook touching: cert-manager, istio-system, your own infra namespaces, service meshes, CI runners, and so on.</p>
+
+            <pre><code>helm upgrade pando-webhook \
+  oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-webhook \
+  --namespace pando-system --reuse-values \
+  --set-string excludedNamespaces="{kube-system,pando-system,cert-manager,istio-system,kube-public}"</code></pre>
+
+            <p>Excluded namespaces are skipped entirely by the webhook's <code>namespaceSelector</code>. Pods in them can't be labeled for protection. If you need to protect a workload in one of these namespaces later, remove it from the exclusion list first.</p>
+
+            <h2>4. Pin Sidecar Image Versions</h2>
+
+            <p>The webhook's default sidecar tag is whatever shipped with the chart version you installed. For production, pin it explicitly so an accidental chart bump can't roll out a new sidecar without you knowing:</p>
+
+            <pre><code>helm upgrade pando-webhook \
+  oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-webhook \
+  --namespace pando-system --reuse-values \
+  --set sidecar.image.tag=v0.5.2</code></pre>
+
+            <p>Changing the tag and running <code>helm upgrade</code> is now a deliberate, reviewable action.</p>
+
+            <h2>5. Choose a failurePolicy</h2>
+
+            <p>The mutating webhook's <code>failurePolicy</code> decides what happens if the webhook itself is unavailable when a pod tries to start. Two options:</p>
+
+            <ul>
+                <li><strong><code>Ignore</code> (default)</strong>: if the webhook is down, pods are admitted without sidecar injection. No protection for that pod until it restarts later, but the cluster keeps running. Safer for availability.</li>
+                <li><strong><code>Fail</code></strong>: if the webhook is down, pod creation is blocked cluster-wide. Stronger security posture, but a webhook outage becomes a cluster outage. Only use this if you've already invested in webhook HA (multiple replicas, PodDisruptionBudget, etc).</li>
+            </ul>
+
+            <pre><code>helm upgrade pando-webhook \
+  oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-webhook \
+  --namespace pando-system --reuse-values \
+  --set failurePolicy=Fail</code></pre>
+
+            <p>Most teams stay on <code>Ignore</code> in production and rely on the portal dashboard to flag any pods that started without a sidecar. That's the right default unless you have a compliance reason to force-fail.</p>
+
+            <h2>6. Run the Webhook with Multiple Replicas</h2>
+
+            <p>A single webhook replica is a single point of failure for pod admission. Run at least two in production:</p>
+
+            <pre><code>helm upgrade pando-webhook \
+  oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-webhook \
+  --namespace pando-system --reuse-values \
+  --set webhook.replicaCount=2</code></pre>
+
+            <p>This is essentially free and removes a class of failure modes (webhook pod rescheduling during node drain, OOM kill, etc) from your incident surface.</p>
+
+            <h2>7. Back Up the License Signing State</h2>
+
+            <p>The license Secret (<code>pando-license</code> in <code>pando-system</code>) is the only thing you need to reissue from scratch after a cluster wipe. Back it up along with the rest of your cluster state:</p>
+
+            <pre><code>kubectl get secret pando-license -n pando-system -o yaml &gt; pando-license-backup.yaml</code></pre>
+
+            <p>Store this alongside your other Kubernetes secret backups (encrypted, access-controlled). You can always request a fresh license from the portal if you lose this, but having a copy makes disaster recovery a one-liner.</p>
+
+            <div class="docs-callout info">
+                <div class="docs-callout-title">Profiles don't need backup</div>
+                <p>Each sidecar builds its operational profile on startup, so there's nothing stateful to back up. This is intentional: the profile should reflect the currently-running process, not a stale snapshot.</p>
+            </div>
+
+            <h2>8. Wire Alerts to Somewhere Humans Watch</h2>
+
+            <p>Detections without a consumer are just log entries. Point <code>slackWebhookURL</code> at a channel that your oncall actually watches, or forward evidence to your SIEM via <code>PANDO_EVIDENCE_WEBHOOK_URL</code>. See <a href="evidence-format.html">Evidence Format</a>.</p>
+
+            <p>Test the path before an incident: trigger a detection manually (drop an unusual process into a protected pod, or lower <code>PANDO_SENSITIVITY</code> temporarily) and confirm the alert lands where you expect.</p>
+
+            <h2>9. Use CRD Policy for Anything Non-Trivial</h2>
+
+            <p>Configuring a handful of deployments via annotations is fine. Managing dozens of services across multiple namespaces via <code>kubectl annotate</code> is not. Commit a <code>PandoCorePolicy</code> resource to your GitOps repo so mode, sensitivity, and response chains are version-controlled alongside everything else.</p>
+
+            <p>See <a href="policy.html">CRD Policy</a> for the schema and examples.</p>
+
+            <h2>Production Hardening Checklist</h2>
+
+            <ul>
+                <li>Workloads ran in <code>monitor</code> for at least a week before enabling <code>alert</code></li>
+                <li>Sidecar resource limits sized to observed usage, not defaults</li>
+                <li>Infra namespaces (cert-manager, istio-system, CI) added to <code>excludedNamespaces</code></li>
+                <li>Sidecar image tag pinned explicitly via <code>sidecar.image.tag</code></li>
+                <li><code>failurePolicy</code> chosen deliberately (<code>Ignore</code> for availability, <code>Fail</code> for strict compliance)</li>
+                <li>Webhook running with <code>replicaCount &gt;= 2</code></li>
+                <li><code>pando-license</code> Secret included in your Kubernetes backup process</li>
+                <li>Alerts (Slack or evidence webhook) wired to a destination your team watches</li>
+                <li>Configuration managed via <code>PandoCorePolicy</code> CRD in GitOps, not ad-hoc annotations</li>
+                <li>Emergency procedures documented and tested (see <a href="emergency.html">Emergency Procedures</a>)</li>
+            </ul>
+
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2026 PandoCore Inc. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Get started with PandoCore - Deploy runtime protection for your Kubernetes workloads in under 5 minutes.">
+    <meta name="description" content="Get started with PandoCore. Deploy runtime protection for your Kubernetes workloads in under 5 minutes with a 2-command install.">
     <title>Getting Started | PandoCore Docs</title>
     <link rel="icon" type="image/png" href="../images/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -32,9 +32,11 @@
                 <ul class="nav-links">
                     <li><a href="../index.html">Home</a></li>
                     <li><a href="../product.html">Product</a></li>
+                    <li><a href="../pricing.html">Pricing</a></li>
                     <li><a href="../about.html">About</a></li>
                     <li><a href="index.html" class="active">Docs</a></li>
                     <li><a href="../contact.html" class="nav-contact">Contact</a></li>
+                    <li><a href="https://portal.pandocore.xyz/signup" class="nav-signup">Sign Up</a></li>
                 </ul>
             </div>
         </div>
@@ -44,7 +46,7 @@
     <section class="docs-hero">
         <div class="container">
             <h1>Getting Started</h1>
-            <p>Deploy PandoCore in your Kubernetes cluster in under 5 minutes.</p>
+            <p>Two commands to a protected cluster. Expand from there at your own pace.</p>
         </div>
     </section>
 
@@ -61,6 +63,9 @@
                 <li><a href="configuration.html">Configuration</a></li>
                 <li><a href="policy.html">CRD Policy</a></li>
                 <li><a href="operating-modes.html">Operating Modes</a></li>
+                <li><a href="production-hardening.html">Production Hardening</a></li>
+                <li><a href="upgrading.html">Upgrading</a></li>
+                <li><a href="troubleshooting.html">Troubleshooting</a></li>
                 <li><a href="emergency.html">Emergency Procedures</a></li>
                 <li><a href="evidence-format.html">Evidence Format</a></li>
                 <li><a href="faq.html">FAQ</a></li>
@@ -76,148 +81,185 @@
             </div>
 
             <h1>Getting Started</h1>
-            
-            <p>This guide will help you deploy PandoCore to protect your Kubernetes workloads. The entire process takes about 5 minutes.</p>
+
+            <p>PandoCore ships as a Kubernetes admission webhook that injects a behavioral monitoring sidecar into labeled pods. No application code changes, no SDK, no rules to write.</p>
 
             <div class="docs-callout info">
-                <div class="docs-callout-title">ℹ️ Prerequisites</div>
-                <p>You'll need:</p>
+                <div class="docs-callout-title">Prerequisites</div>
                 <ul>
-                    <li>A Kubernetes cluster (1.25+)</li>
-                    <li>Helm 3.0+ installed</li>
-                    <li>kubectl configured for your cluster</li>
-                    <li>Your PandoCore license key (from <a href="https://portal.pandocore.xyz">portal.pandocore.xyz</a>)</li>
+                    <li>Kubernetes 1.25+ with <code>kubectl</code> configured</li>
+                    <li>Helm 3.0+</li>
+                    <li>A PandoCore license key and registry credentials from <a href="https://portal.pandocore.xyz">portal.pandocore.xyz</a></li>
                 </ul>
             </div>
 
-            <h2>Step 1: Add the Helm Repository</h2>
+            <h2>2-Command Install</h2>
 
-            <p>First, authenticate with the PandoCore Helm registry (credentials available in your customer portal):</p>
+            <p>This is the minimum path to a protected workload. Grab the <code>helm install</code> line from your portal dashboard (it comes pre-filled with your license key), then label a deployment.</p>
 
-            <pre><code># Authenticate with the PandoCore registry
-helm registry login us-central1-docker.pkg.dev \
-  --username _json_key \
-  --password "$(cat your-credentials.json)"</code></pre>
-
-            <h2>Step 2: Install the Admission Webhook</h2>
-
-            <p>Install the PandoCore webhook. This is a one-time, cluster-wide install that enables automatic sidecar injection:</p>
-
-            <pre><code># Install the PandoCore admission webhook
+            <pre><code># 1. Install the admission webhook (one-time, cluster-wide)
 helm install pando-webhook \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-webhook \
-  --namespace pando-system \
-  --create-namespace \
-  --set licenseKey="YOUR_LICENSE_KEY"</code></pre>
+  --namespace pando-system --create-namespace \
+  --set licenseKey="YOUR_LICENSE_KEY"
 
-            <div class="docs-callout warning">
-                <div class="docs-callout-title">License Key</div>
-                <p>Replace <code>YOUR_LICENSE_KEY</code> with the license key from your customer portal. Keep this value secure.</p>
-            </div>
-
-            <h2>Step 3: Protect a Deployment</h2>
-
-            <p>Add one label to any deployment to enable PandoCore protection. The webhook automatically injects the sidecar on the next pod creation:</p>
-
-            <pre><code># Label your deployment
+# 2. Protect a deployment
 kubectl label deployment your-app pandocore.xyz/protect=true
-
-# Restart to trigger injection
 kubectl rollout restart deployment/your-app</code></pre>
 
-            <p>That's it. The webhook handles sidecar injection, shared process namespace, service account, environment variables, probes, and resource limits automatically.</p>
+            <p>The webhook injects the sidecar on the next pod start. Run <code>kubectl get pods</code> and you'll see <code>2/2</code> containers.</p>
 
-            <div class="docs-callout info">
-                <div class="docs-callout-title">Per-Namespace Setup</div>
-                <p>Each namespace with protected pods needs a <code>pando-sidecar</code> ServiceAccount and a copy of the license Secret. The Helm NOTES output includes the exact commands. See <a href="webhook.html">Webhook Reference</a> for details.</p>
+            <div class="docs-callout warning">
+                <div class="docs-callout-title">One-time setup per app namespace</div>
+                <p>The webhook itself runs in <code>pando-system</code>, but your protected workloads live in their own namespaces. For each namespace where you'll protect apps, you need a copy of the license Secret and a <code>pando-sidecar</code> ServiceAccount. Run this once per app namespace:</p>
+                <pre><code>NS=your-app-namespace
+
+# Copy the license secret into the app namespace
+kubectl get secret pando-license -n pando-system -o yaml \
+  | sed "s/namespace: pando-system/namespace: $NS/" \
+  | kubectl apply -f -
+
+# Create the sidecar service account + role binding
+kubectl create serviceaccount pando-sidecar -n $NS
+kubectl create rolebinding pando-sidecar \
+  --clusterrole=pando-sidecar \
+  --serviceaccount=$NS:pando-sidecar -n $NS</code></pre>
+                <p>Then label the deployment as normal. See <a href="webhook.html">Webhook Reference</a> for details.</p>
             </div>
 
-            <h2>Step 4: Verify the Installation</h2>
+            <h2>What Just Happened</h2>
 
-            <p>Check that the sidecar was injected and is running:</p>
+            <p>After step 1, you have a mutating admission webhook watching for pods with the <code>pandocore.xyz/protect=true</code> label. When one starts:</p>
 
-            <pre><code># Check pods — you should see 2/2 containers
-kubectl get pods -n your-namespace -l app=your-app
-
-# View sidecar logs
-kubectl logs -n your-namespace &lt;pod-name&gt; -c pando-sidecar
-
-# Check sidecar status
-kubectl exec -n your-namespace &lt;pod-name&gt; -c pando-sidecar \
-  -- wget -qO- http://localhost:9090/status</code></pre>
+            <ol>
+                <li>The webhook injects a <code>pando-sidecar</code> container alongside your app container</li>
+                <li>The sidecar attaches to the shared process namespace and runs a short <strong>learning window</strong> (30 minutes by default) to build a per-workload operational profile</li>
+                <li>Once learning is complete, the sidecar begins detecting and (depending on mode) alerting or enforcing</li>
+            </ol>
 
             <div class="docs-callout success">
-                <div class="docs-callout-title">Learning Phase</div>
-                <p>When the sidecar starts, it enters a learning phase to establish a baseline of your application's normal behavior. The <code>/readyz</code> endpoint returns 503 during learning and 200 once complete. Default learning duration is 10 minutes.</p>
+                <div class="docs-callout-title">Safe by default</div>
+                <p>New installs ship in <strong>monitor</strong> mode. The sidecar observes and logs but never terminates pods until you explicitly opt into enforcement. This lets you validate on real workloads with zero production risk.</p>
             </div>
 
-            <h2>Step 5: View Metrics (Optional)</h2>
+            <h2>Verify It's Working</h2>
 
-            <p>PandoCore exposes Prometheus-compatible metrics. If you have Prometheus installed, add a scrape config:</p>
+            <pre><code># Confirm sidecar injected (should show 2/2)
+kubectl get pods -l app=your-app
 
-            <pre><code>- job_name: 'pando-sidecar'
-  kubernetes_sd_configs:
-    - role: pod
-  relabel_configs:
-    - source_labels: [__meta_kubernetes_pod_container_name]
-      regex: pando-sidecar
-      action: keep
-    - source_labels: [__meta_kubernetes_pod_container_port_name]
-      regex: metrics
-      action: keep</code></pre>
+# Watch the sidecar come up
+kubectl logs -f &lt;pod-name&gt; -c pando-sidecar
 
-            <h2>Step 6: Configure Slack Alerts (Optional)</h2>
+# Check readiness (503 during learning, 200 after)
+kubectl exec &lt;pod-name&gt; -c pando-sidecar -- wget -qO- http://localhost:9090/readyz
 
-            <p>Get real-time Slack notifications when PandoCore detects anomalous behavior. Set the operating mode to <code>alert</code> or <code>enforce</code> and provide a Slack incoming webhook URL:</p>
+# Detection metrics
+kubectl exec &lt;pod-name&gt; -c pando-sidecar -- wget -qO- http://localhost:9090/metrics</code></pre>
 
-            <pre><code># Upgrade the webhook with Slack alerts enabled
+            <p>If the sidecar doesn't inject or the logs show license errors, see <a href="troubleshooting.html">Troubleshooting</a>.</p>
+
+            <hr>
+
+            <h2>Progressive Rollout</h2>
+
+            <p>Everything above gets you to "installed and observing." The sections below walk you from passive monitoring to full production hardening, in the order most teams adopt them. Apply as much as matches your comfort level.</p>
+
+            <h3>1. Enable Enforcement</h3>
+
+            <p>Once you've watched a workload in monitor mode for a few days and are satisfied with the detections, flip it to <code>enforce</code> mode. The sidecar will now terminate pods on enforcement-level detections.</p>
+
+            <pre><code># Per-deployment: annotation overrides cluster default
+kubectl annotate deployment your-app pandocore.xyz/mode=enforce --overwrite
+kubectl rollout restart deployment/your-app
+
+# Or cluster-wide: change the default for newly-created pods
 helm upgrade pando-webhook \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-webhook \
-  --namespace pando-system \
-  --set licenseKey="YOUR_LICENSE_KEY" \
+  --namespace pando-system --reuse-values \
+  --set defaultMode=enforce</code></pre>
+
+            <p>Most teams run <strong>monitor → alert → enforce</strong> over the course of a few weeks per workload. See <a href="operating-modes.html">Operating Modes</a> for the full escalation model.</p>
+
+            <h3>2. Wire Up Slack Alerts</h3>
+
+            <p>Real-time notifications on detection. Set <code>PANDO_MODE=alert</code> or <code>enforce</code> and provide a Slack incoming webhook URL:</p>
+
+            <pre><code>helm upgrade pando-webhook \
+  oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-webhook \
+  --namespace pando-system --reuse-values \
   --set defaultMode=alert \
   --set slackWebhookURL="https://hooks.slack.com/services/T.../B.../xxx"</code></pre>
 
-            <p>Or configure per-deployment via environment variable:</p>
+            <p>Alerts are color-coded by severity (critical, high, warning, info) and include pod name, severity, and the action taken.</p>
+
+            <h3>3. Tune Sensitivity</h3>
+
+            <p>Most workloads don't need any tuning. When they do, the single lever is <code>PANDO_SENSITIVITY</code>. Higher = more permissive, lower = more sensitive.</p>
+
+            <pre><code># Workload is too chatty, reduce false positives
+kubectl set env deployment/your-app -c pando-sidecar PANDO_SENSITIVITY=3.0
+
+# Workload is tightly deterministic, catch subtler anomalies
+kubectl set env deployment/your-app -c pando-sidecar PANDO_SENSITIVITY=1.5</code></pre>
+
+            <p>The webhook also applies runtime-aware defaults for common runtime families. See <a href="configuration.html">Configuration Reference</a>.</p>
+
+            <h3>4. Graduated Response</h3>
+
+            <p>Instead of jumping straight to pod termination, configure a response chain that isolates the pod first (via an emergency <code>NetworkPolicy</code>) and only terminates if detection persists.</p>
+
+            <pre><code># Alert, then isolate, then escalate to terminate if the pod doesn't recover
+kubectl set env deployment/your-app -c pando-sidecar \
+  PANDO_RESPONSE_ACTIONS="alert,isolate,terminate"</code></pre>
+
+            <p>If the pod returns to baseline during the recovery window, isolation is lifted automatically. See <a href="operating-modes.html">Operating Modes</a>.</p>
+
+            <h3>5. GitOps via CRD Policy</h3>
+
+            <p>For anything beyond a handful of deployments, manage configuration declaratively with the <code>PandoCorePolicy</code> CRD. One YAML file in your GitOps repo controls mode, sensitivity, and response chains across multiple namespaces.</p>
+
+            <pre><code>apiVersion: pandocore.xyz/v1alpha1
+kind: PandoCorePolicy
+metadata:
+  name: default
+  namespace: production
+spec:
+  mode: enforce
+  sensitivity: medium
+  response:
+    actions: [alert, isolate, terminate]
+  integrations:
+    slack: https://hooks.slack.com/services/...</code></pre>
+
+            <p>See <a href="policy.html">CRD Policy</a> for the full schema.</p>
+
+            <h3>6. SIEM / Evidence Pipeline</h3>
+
+            <p>Every detection emits a structured JSON evidence envelope. By default it's posted to the PandoCore portal, but you can point the webhook at any endpoint that accepts JSON POSTs: SIEM, incident management, custom pipeline, whatever.</p>
 
             <pre><code>kubectl set env deployment/your-app -c pando-sidecar \
-  PANDO_MODE=alert \
-  PANDO_SLACK_WEBHOOK_URL="https://hooks.slack.com/services/T.../B.../xxx"</code></pre>
+  PANDO_EVIDENCE_WEBHOOK_URL="https://your-siem.example.com/ingest"</code></pre>
 
-            <p>Alerts are color-coded by severity (critical, high, warning, info) and include pod name, drift score, and action taken. See <a href="operating-modes.html">Operating Modes</a> for the full Monitor → Alert → Enforce escalation model.</p>
+            <p>See <a href="evidence-format.html">Evidence Format</a> for the full schema.</p>
 
-            <h2 id="manual-injection">Alternative: Manual Injection</h2>
+            <hr>
 
-            <p>For environments where the admission webhook cannot be installed, use the injection script:</p>
+            <h2>Alternative: Manual Injection</h2>
 
-            <pre><code># Install sidecar infrastructure only (no webhook)
+            <p>If you can't install the admission webhook (restricted clusters, air-gapped environments), use the standalone injection script:</p>
+
+            <pre><code># Install sidecar infrastructure only
 helm install pando \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-sidecar \
-  --namespace pando-system \
-  --create-namespace \
+  --namespace pando-system --create-namespace \
   --set licenseKey="YOUR_LICENSE_KEY"
 
-# Inject sidecar into a specific deployment
+# Inject into a specific deployment
 PANDO_LICENSE_KEY="YOUR_LICENSE_KEY" \
   ./inject-pandocore.sh your-app your-namespace</code></pre>
 
-            <h2>What Happens Next</h2>
-            
-            <p>Once deployed, PandoCore will:</p>
-            
-            <ol>
-                <li><strong>Learn</strong> your application's normal behavioral patterns (configurable duration)</li>
-                <li><strong>Monitor</strong> continuously for deviations from the baseline</li>
-                <li><strong>Respond</strong> according to the configured operating mode (monitor, alert, or enforce)</li>
-            </ol>
-
-            <div class="docs-callout info">
-                <div class="docs-callout-title">ℹ️ Default Mode: Monitor</div>
-                <p>By default, PandoCore runs in <strong>monitor mode</strong>, which detects and logs anomalies without terminating pods. This is recommended for initial deployment. See <a href="operating-modes.html">Operating Modes</a> for details on enabling enforcement.</p>
-            </div>
-
             <h2>Quick Reference</h2>
-            
+
             <table>
                 <thead>
                     <tr>
@@ -235,8 +277,8 @@ PANDO_LICENSE_KEY="YOUR_LICENSE_KEY" \
                         <td><code>kubectl exec &lt;pod&gt; -c pando-sidecar -- wget -qO- http://localhost:9090/healthz</code></td>
                     </tr>
                     <tr>
-                        <td>View current drift</td>
-                        <td><code>kubectl exec &lt;pod&gt; -c pando-sidecar -- wget -qO- http://localhost:9090/metrics | grep pando_drift</code></td>
+                        <td>View metrics</td>
+                        <td><code>kubectl exec &lt;pod&gt; -c pando-sidecar -- wget -qO- http://localhost:9090/metrics</code></td>
                     </tr>
                     <tr>
                         <td>Switch to enforce mode</td>
@@ -246,17 +288,24 @@ PANDO_LICENSE_KEY="YOUR_LICENSE_KEY" \
                         <td>Trigger re-learning</td>
                         <td><code>kubectl exec &lt;pod&gt; -c pando-sidecar -- wget -qO- --post-data='' http://localhost:9090/relearn</code></td>
                     </tr>
+                    <tr>
+                        <td>Disable for a pod</td>
+                        <td><code>kubectl label pod &lt;name&gt; pandocore.xyz/protect-</code></td>
+                    </tr>
                 </tbody>
             </table>
 
             <h2>Next Steps</h2>
 
             <ul>
-                <li><a href="webhook.html">Webhook Reference</a> — How automatic injection works</li>
-                <li><a href="configuration.html">Configuration Reference</a> — All available settings</li>
-                <li><a href="operating-modes.html">Operating Modes</a> — Understanding monitor vs enforce</li>
-                <li><a href="evidence-format.html">Evidence Format</a> — Integrate with your SIEM</li>
-                <li><a href="emergency.html">Emergency Procedures</a> — Quick disable if needed</li>
+                <li><a href="operating-modes.html">Operating Modes</a>: Monitor → Alert → Enforce escalation model</li>
+                <li><a href="configuration.html">Configuration Reference</a>: Every environment variable with defaults and ranges</li>
+                <li><a href="policy.html">CRD Policy</a>: Declarative GitOps configuration</li>
+                <li><a href="production-hardening.html">Production Hardening</a>: Resource limits, namespace exclusions, backup</li>
+                <li><a href="upgrading.html">Upgrading</a>: How to bump sidecar and webhook versions</li>
+                <li><a href="troubleshooting.html">Troubleshooting</a>: Sidecar not injecting, license errors, false positives</li>
+                <li><a href="evidence-format.html">Evidence Format</a>: Integrate with your SIEM</li>
+                <li><a href="emergency.html">Emergency Procedures</a>: Quick disable if needed</li>
             </ul>
 
         </main>

@@ -25,7 +25,7 @@ HEIGHT = 2532
 # === Content ===
 NAME = "Eliot Ferstl"
 TITLE = "Founder @ PandoCore"
-TAGLINE = "The Execution Security Primitive"
+TAGLINE = "Autonomous Runtime Security"
 
 def load_font(size, bold=False):
     """Load Inter font with fallbacks for macOS/Linux/Windows"""

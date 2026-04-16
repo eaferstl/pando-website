@@ -32,9 +32,11 @@
                 <ul class="nav-links">
                     <li><a href="../index.html">Home</a></li>
                     <li><a href="../product.html">Product</a></li>
+                    <li><a href="../pricing.html">Pricing</a></li>
                     <li><a href="../about.html">About</a></li>
                     <li><a href="index.html" class="active">Docs</a></li>
                     <li><a href="../contact.html" class="nav-contact">Contact</a></li>
+                    <li><a href="https://portal.pandocore.xyz/signup" class="nav-signup">Sign Up</a></li>
                 </ul>
             </div>
         </div>
@@ -61,6 +63,9 @@
                 <li><a href="configuration.html">Configuration</a></li>
                 <li><a href="policy.html">CRD Policy</a></li>
                 <li><a href="operating-modes.html">Operating Modes</a></li>
+                <li><a href="production-hardening.html">Production Hardening</a></li>
+                <li><a href="upgrading.html">Upgrading</a></li>
+                <li><a href="troubleshooting.html">Troubleshooting</a></li>
                 <li><a href="emergency.html">Emergency Procedures</a></li>
                 <li><a href="evidence-format.html">Evidence Format</a></li>
                 <li><a href="faq.html">FAQ</a></li>
@@ -83,7 +88,7 @@
 
             <ul>
                 <li>The <code>pando-sidecar</code> container with health probes, resource limits, and security context</li>
-                <li><code>shareProcessNamespace: true</code> (required for /proc-based entropy collection)</li>
+                <li><code>shareProcessNamespace: true</code> (required for sidecar observation)</li>
                 <li>The <code>pando-sidecar</code> service account reference</li>
                 <li>License key from a Kubernetes Secret (not inline)</li>
                 <li>Downward API environment variables (<code>POD_NAME</code>, <code>POD_NAMESPACE</code>)</li>

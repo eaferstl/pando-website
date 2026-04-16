@@ -32,9 +32,11 @@
                 <ul class="nav-links">
                     <li><a href="../index.html">Home</a></li>
                     <li><a href="../product.html">Product</a></li>
+                    <li><a href="../pricing.html">Pricing</a></li>
                     <li><a href="../about.html">About</a></li>
                     <li><a href="index.html" class="active">Docs</a></li>
                     <li><a href="../contact.html" class="nav-contact">Contact</a></li>
+                    <li><a href="https://portal.pandocore.xyz/signup" class="nav-signup">Sign Up</a></li>
                 </ul>
             </div>
         </div>
@@ -61,6 +63,9 @@
                 <li><a href="configuration.html">Configuration</a></li>
                 <li><a href="policy.html">CRD Policy</a></li>
                 <li><a href="operating-modes.html">Operating Modes</a></li>
+                <li><a href="production-hardening.html">Production Hardening</a></li>
+                <li><a href="upgrading.html">Upgrading</a></li>
+                <li><a href="troubleshooting.html">Troubleshooting</a></li>
                 <li><a href="emergency.html">Emergency Procedures</a></li>
                 <li><a href="evidence-format.html">Evidence Format</a></li>
                 <li><a href="faq.html" class="active">FAQ</a></li>
@@ -116,7 +121,7 @@
             </table>
 
             <h3>Does PandoCore replace my firewall/WAF/scanner?</h3>
-            <p>No. PandoCore complements your existing security infrastructure. It focuses specifically on runtime execution integrity — detecting issues that occur while code runs. Use PandoCore alongside your existing preventive security measures (firewalls, WAFs, vulnerability scanners, etc.).</p>
+            <p>No. PandoCore complements your existing security infrastructure. It focuses specifically on runtime execution integrity, detecting issues that occur while code runs. Use PandoCore alongside your existing preventive security measures (firewalls, WAFs, vulnerability scanners, etc.).</p>
 
             <h2>Deployment</h2>
 
@@ -153,7 +158,7 @@
             </table>
 
             <h3>Does PandoCore require code changes?</h3>
-            <p>No. PandoCore deploys as a sidecar container alongside your existing application. You add the sidecar to your deployment manifest — no changes to your application code are required.</p>
+            <p>No. PandoCore deploys as a sidecar container alongside your existing application. You add the sidecar to your deployment manifest. No changes to your application code are required.</p>
 
             <h3>How long does deployment take?</h3>
             <p>Initial deployment (Helm install + adding sidecar to first deployment) typically takes under 5 minutes. See our <a href="getting-started.html">Getting Started guide</a>.</p>
@@ -161,11 +166,11 @@
             <h2>Operations</h2>
 
             <h3>What is the "learning phase"?</h3>
-            <p>When a pod starts with PandoCore, the sidecar enters a learning phase where it observes your application's normal behavior and establishes a baseline. During this phase:</p>
+            <p>When a pod starts with PandoCore, the sidecar spends a short window building a per-workload operational profile before it begins detection. During this phase:</p>
             <ul>
                 <li>The <code>/readyz</code> endpoint returns 503</li>
-                <li>Detection occurs but no enforcement (even in enforce mode)</li>
-                <li>Duration is configurable (default: 10 minutes)</li>
+                <li>No enforcement occurs, even in enforce mode</li>
+                <li>Duration is configurable via <code>PANDO_LEARNING_DURATION_SECONDS</code> (default: 30 minutes)</li>
             </ul>
             <p>After learning completes, <code>/readyz</code> returns 200 and full monitoring begins.</p>
 
@@ -180,8 +185,8 @@ kubectl exec &lt;pod&gt; -c pando-sidecar -- wget -qO- http://localhost:9090/hea
 # Learning complete (returns 200)
 kubectl exec &lt;pod&gt; -c pando-sidecar -- wget -qO- http://localhost:9090/readyz
 
-# View current drift scores
-kubectl exec &lt;pod&gt; -c pando-sidecar -- wget -qO- http://localhost:9090/metrics | grep pando_drift</code></pre>
+# View detection metrics
+kubectl exec &lt;pod&gt; -c pando-sidecar -- wget -qO- http://localhost:9090/metrics | grep pando_</code></pre>
 
             <h3>What happens if the sidecar crashes?</h3>
             <p>If the PandoCore sidecar crashes, your application container continues running unprotected. Kubernetes will automatically restart the sidecar container based on its restartPolicy. The new sidecar instance will re-establish a baseline through the learning phase.</p>
@@ -200,46 +205,18 @@ kubectl exec &lt;pod&gt; -c pando-sidecar -- wget -qO- http://localhost:9090/met
                     <pre><code>kubectl set env deployment/NAME -c pando-sidecar PANDO_MODE=monitor</code></pre>
                 </li>
                 <li><strong>Review the evidence:</strong> Check logs to understand what triggered the detection</li>
-                <li><strong>Adjust thresholds:</strong> Your workload may have legitimate behavioral variance that requires higher thresholds</li>
+                <li><strong>Adjust sensitivity:</strong> Your workload may have legitimate behavioral variance that requires a more permissive setting</li>
                 <li><strong>Trigger re-learning:</strong> If your application behavior has legitimately changed</li>
             </ol>
             <p>See <a href="emergency.html">Emergency Procedures</a> for detailed steps.</p>
 
             <h3>How do I tune the detection sensitivity?</h3>
-            <p>Adjust these environment variables:</p>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Variable</th>
-                        <th>Default</th>
-                        <th>Effect</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><code>PANDO_THRESHOLD_INCREMENTAL</code></td>
-                        <td>0.15</td>
-                        <td>Lower = more sensitive to sudden changes</td>
-                    </tr>
-                    <tr>
-                        <td><code>PANDO_THRESHOLD_CUMULATIVE</code></td>
-                        <td>0.45</td>
-                        <td>Lower = more sensitive to gradual drift</td>
-                    </tr>
-                </tbody>
-            </table>
-            <p>Start with monitor mode, observe detection events, then tune thresholds before enabling enforcement.</p>
+            <p>Use <code>PANDO_SENSITIVITY</code> (default <code>2.0</code>, or <code>3.0</code> for JIT and database runtimes the webhook auto-detects). Raise it for noisy workloads, lower it to catch subtler anomalies. Start in monitor mode before enabling enforcement.</p>
 
             <h2>Detection</h2>
 
             <h3>What does PandoCore detect?</h3>
-            <p>PandoCore monitors multiple dimensions of workload behavior and detects significant deviations from established baselines:</p>
-            <ul>
-                <li><strong>Memory anomalies:</strong> Unusual heap growth, allocation patterns</li>
-                <li><strong>Process anomalies:</strong> Thread count changes, file descriptor anomalies, unexpected child processes</li>
-                <li><strong>Timing anomalies:</strong> Unusual execution patterns</li>
-                <li><strong>System anomalies:</strong> CPU and I/O pattern deviations</li>
-            </ul>
+            <p>PandoCore detects runtime behavioral anomalies indicative of compromise: deviations from a workload's learned operational profile that signature-based tools typically miss. It complements, rather than replaces, your existing prevention stack.</p>
 
             <h3>What doesn't PandoCore detect?</h3>
             <p>PandoCore focuses on runtime execution integrity. It does <strong>not</strong> detect:</p>
@@ -250,12 +227,12 @@ kubectl exec &lt;pod&gt; -c pando-sidecar -- wget -qO- http://localhost:9090/met
             </ul>
 
             <h3>Can PandoCore cause false positives?</h3>
-            <p>PandoCore is designed to minimize false positives through adaptive learning. The learning phase establishes a baseline specific to your workload's normal behavior. However, legitimate behavioral changes (new deployments, load spikes, batch jobs) may trigger detections.</p>
+            <p>PandoCore is designed to minimize false positives by profiling each workload individually. Legitimate behavioral changes (new deployments, load spikes, batch jobs) may still trigger detections.</p>
             <p>Best practices to avoid false positives:</p>
             <ul>
                 <li>Run in monitor mode for at least one week before enabling enforcement</li>
                 <li>Trigger re-learning after deployments that significantly change behavior</li>
-                <li>Tune thresholds based on your workload's characteristics</li>
+                <li>Adjust sensitivity based on your workload's characteristics</li>
             </ul>
 
             <h2>Security</h2>
@@ -284,9 +261,9 @@ kubectl exec &lt;pod&gt; -c pando-sidecar -- wget -qO- http://localhost:9090/met
             <h2>Troubleshooting</h2>
 
             <h3>Sidecar logs show "learning" for a long time</h3>
-            <p>The default learning phase is 10 minutes. During this time, the sidecar is in monitor-only mode. If you need to shorten this for testing, you can reduce the learning duration (not recommended for production).</p>
+            <p>The default learning phase is 30 minutes. During this time, the sidecar is in monitor-only mode. For slow-warmup workloads you can extend the window with <code>PANDO_LEARNING_DURATION_SECONDS</code> and <code>PANDO_LEARNING_MIN_SAMPLES</code>.</p>
 
-            <h3>Drift scores are high but no termination</h3>
+            <h3>Detections happening but pods not terminating</h3>
             <p>Check the operating mode:</p>
             <pre><code>kubectl get pod &lt;pod&gt; -o jsonpath='{.spec.containers[?(@.name=="pando-sidecar")].env}' | jq .</code></pre>
             <p>If <code>PANDO_MODE=monitor</code> or <code>alert</code>, PandoCore detects but does not enforce. Change to <code>enforce</code> for active protection.</p>
@@ -303,7 +280,7 @@ kubectl exec &lt;pod&gt; -c pando-sidecar -- wget -qO- http://localhost:9090/met
             <ol>
                 <li>Evidence JSON from the detection event</li>
                 <li>What your workload was doing at the time</li>
-                <li>Your current threshold settings</li>
+                <li>Your current sensitivity setting</li>
                 <li>Sidecar logs from around the time of the issue</li>
             </ol>
 

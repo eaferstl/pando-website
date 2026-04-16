@@ -32,9 +32,11 @@
                 <ul class="nav-links">
                     <li><a href="../index.html">Home</a></li>
                     <li><a href="../product.html">Product</a></li>
+                    <li><a href="../pricing.html">Pricing</a></li>
                     <li><a href="../about.html">About</a></li>
                     <li><a href="index.html" class="active">Docs</a></li>
                     <li><a href="../contact.html" class="nav-contact">Contact</a></li>
+                    <li><a href="https://portal.pandocore.xyz/signup" class="nav-signup">Sign Up</a></li>
                 </ul>
             </div>
         </div>
@@ -61,6 +63,9 @@
                 <li><a href="configuration.html">Configuration</a></li>
                 <li><a href="policy.html">CRD Policy</a></li>
                 <li><a href="operating-modes.html">Operating Modes</a></li>
+                <li><a href="production-hardening.html">Production Hardening</a></li>
+                <li><a href="upgrading.html">Upgrading</a></li>
+                <li><a href="troubleshooting.html">Troubleshooting</a></li>
                 <li><a href="emergency.html">Emergency Procedures</a></li>
                 <li><a href="evidence-format.html">Evidence Format</a></li>
                 <li><a href="faq.html">FAQ</a></li>
@@ -94,7 +99,7 @@
 
             <h2>What PandoCore Does</h2>
             
-            <p>PandoCore deploys as a sidecar container within your Kubernetes pods. It monitors the behavioral characteristics of your running workloads and detects when execution patterns deviate significantly from established baselines. When drift is detected, PandoCore can:</p>
+            <p>PandoCore deploys as a sidecar container within your Kubernetes pods. It monitors the behavioral characteristics of your running workloads and detects when execution patterns deviate significantly from established baselines. On detection, PandoCore can:</p>
             
             <ul>
                 <li><strong>Monitor:</strong> Detect anomalies and emit evidence without taking action</li>
@@ -154,42 +159,11 @@
             <p>When a pod starts with PandoCore:</p>
             
             <ol>
-                <li><strong>Learning Phase:</strong> PandoCore observes your application's normal behavior and establishes a baseline (configurable duration)</li>
-                <li><strong>Monitoring Phase:</strong> Continuous behavioral monitoring begins, comparing current state against the baseline</li>
-                <li><strong>Detection:</strong> When significant deviation is detected, PandoCore evaluates the drift against configured thresholds</li>
-                <li><strong>Response:</strong> Based on operating mode, PandoCore logs the event (monitor), sends alerts (alert), or executes a graduated response -- alert, network isolation, and terminate (enforce)</li>
+                <li><strong>Learning Window:</strong> PandoCore builds a per-workload operational profile during a short startup window (configurable duration)</li>
+                <li><strong>Monitoring:</strong> Once the profile is ready, the sidecar begins detecting runtime behavioral anomalies</li>
+                <li><strong>Detection:</strong> Anomalies are classified by severity</li>
+                <li><strong>Response:</strong> Based on operating mode, PandoCore logs the event (monitor), sends alerts (alert), or executes a graduated response: alert, network isolation, and terminate (enforce)</li>
             </ol>
-
-            <h2>What PandoCore Monitors</h2>
-            
-            <p>PandoCore observes multiple dimensions of your workload's execution:</p>
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th>Dimension</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Memory</strong></td>
-                        <td>Heap usage, allocation patterns, memory growth trends</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Process</strong></td>
-                        <td>Thread count, file descriptors, child processes</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Temporal</strong></td>
-                        <td>Execution timing patterns and scheduling characteristics</td>
-                    </tr>
-                    <tr>
-                        <td><strong>System</strong></td>
-                        <td>CPU utilization and I/O patterns</td>
-                    </tr>
-                </tbody>
-            </table>
 
             <h2>Integration with Your Stack</h2>
             
@@ -209,7 +183,7 @@
 
             <div class="docs-callout info">
                 <div class="docs-callout-title">Validated Results</div>
-                <p>PandoCore has been validated across 5 real-world workloads (nginx, PostgreSQL, Express.js, Spring PetClinic, FastAPI) over 693 pod-hours with <strong>zero false positives</strong>. See the <a href="../product.html#validation">full validation results</a>.</p>
+                <p>PandoCore has been validated across 10+ real-world workloads over 1,000+ pod-hours with <strong>zero false positives</strong>. See the <a href="../product.html#validation">full validation results</a>.</p>
             </div>
 
             <h2>Requirements</h2>

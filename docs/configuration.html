@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="PandoCore Configuration Reference - Complete guide to Helm values and environment variables.">
+    <meta name="description" content="PandoCore Configuration Reference - Helm values and sidecar settings for production deployments.">
     <title>Configuration | PandoCore Docs</title>
     <link rel="icon" type="image/png" href="../images/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -32,9 +32,11 @@
                 <ul class="nav-links">
                     <li><a href="../index.html">Home</a></li>
                     <li><a href="../product.html">Product</a></li>
+                    <li><a href="../pricing.html">Pricing</a></li>
                     <li><a href="../about.html">About</a></li>
                     <li><a href="index.html" class="active">Docs</a></li>
                     <li><a href="../contact.html" class="nav-contact">Contact</a></li>
+                    <li><a href="https://portal.pandocore.xyz/signup" class="nav-signup">Sign Up</a></li>
                 </ul>
             </div>
         </div>
@@ -44,7 +46,7 @@
     <section class="docs-hero">
         <div class="container">
             <h1>Configuration Reference</h1>
-            <p>Complete guide to all Helm values and environment variables.</p>
+            <p>The knobs that matter, and the defaults you should leave alone.</p>
         </div>
     </section>
 
@@ -61,6 +63,9 @@
                 <li><a href="configuration.html" class="active">Configuration</a></li>
                 <li><a href="policy.html">CRD Policy</a></li>
                 <li><a href="operating-modes.html">Operating Modes</a></li>
+                <li><a href="production-hardening.html">Production Hardening</a></li>
+                <li><a href="upgrading.html">Upgrading</a></li>
+                <li><a href="troubleshooting.html">Troubleshooting</a></li>
                 <li><a href="emergency.html">Emergency Procedures</a></li>
                 <li><a href="evidence-format.html">Evidence Format</a></li>
                 <li><a href="faq.html">FAQ</a></li>
@@ -76,12 +81,12 @@
             </div>
 
             <h1>Configuration Reference</h1>
-            
-            <p>PandoCore can be configured via Helm values during installation or environment variables at runtime. This reference covers all available options.</p>
 
-            <h2>Webhook Configuration</h2>
+            <p>PandoCore is designed to be boring to configure. Most workloads need nothing beyond picking an operating mode. This page covers the common knobs. Additional advanced options exist for specialized workloads and are available through support.</p>
 
-            <p>The admission webhook (<code>pando-webhook</code> Helm chart) controls automatic sidecar injection cluster-wide:</p>
+            <h2>Webhook Helm Values</h2>
+
+            <p>Set at <code>helm install</code> / <code>helm upgrade</code> time:</p>
 
             <table>
                 <thead>
@@ -95,317 +100,84 @@
                     <tr>
                         <td><code>licenseKey</code></td>
                         <td><em>(required)</em></td>
-                        <td>License key stored as Secret and injected into sidecars</td>
+                        <td>License key from your portal account.</td>
                     </tr>
                     <tr>
                         <td><code>defaultMode</code></td>
                         <td><code>monitor</code></td>
-                        <td>Default operating mode for injected sidecars</td>
+                        <td><code>monitor</code>, <code>alert</code>, or <code>enforce</code>.</td>
+                    </tr>
+                    <tr>
+                        <td><code>slackWebhookURL</code></td>
+                        <td><em>(empty)</em></td>
+                        <td>Slack incoming webhook for alert notifications.</td>
                     </tr>
                     <tr>
                         <td><code>excludedNamespaces</code></td>
                         <td><code>[kube-system, kube-public, kube-node-lease]</code></td>
-                        <td>Namespaces where injection is always skipped</td>
+                        <td>Namespaces skipped by injection. Add your infra namespaces.</td>
                     </tr>
                     <tr>
-                        <td><code>sidecar.image</code></td>
-                        <td>Latest from registry</td>
-                        <td>Sidecar container image to inject</td>
+                        <td><code>failurePolicy</code></td>
+                        <td><code>Ignore</code></td>
+                        <td><code>Ignore</code> admits pods if the webhook is down; <code>Fail</code> blocks them. See <a href="production-hardening.html">Production Hardening</a>.</td>
                     </tr>
                     <tr>
                         <td><code>replicas</code></td>
                         <td><code>2</code></td>
-                        <td>Webhook server replicas (2 for HA)</td>
+                        <td>Webhook server replicas. Keep at 2+ in production.</td>
                     </tr>
                     <tr>
-                        <td><code>tls.certManager</code></td>
-                        <td><code>false</code></td>
-                        <td>Use cert-manager for TLS (otherwise self-signed)</td>
+                        <td><code>sidecar.image</code></td>
+                        <td>Chart appVersion</td>
+                        <td>Pin explicitly in production (see <a href="upgrading.html">Upgrading</a>).</td>
                     </tr>
-                </tbody>
-            </table>
-
-            <p>Per-pod overrides are available via annotations. See <a href="webhook.html">Admission Webhook</a> for details.</p>
-
-            <h2>Portal Integration</h2>
-
-            <p>Detection events are automatically streamed from sidecars to your PandoCore Portal dashboard. This is enabled by default.</p>
-
-            <table>
-                <thead>
                     <tr>
-                        <th>Helm Value</th>
-                        <th>Default</th>
-                        <th>Description</th>
+                        <td><code>sidecar.resources</code></td>
+                        <td>25Mi / 50Mi, 50m / 100m</td>
+                        <td>Injected sidecar CPU/memory (request / limit). Raise if you see OOM kills on high-throughput workloads.</td>
                     </tr>
-                </thead>
-                <tbody>
+                    <tr>
+                        <td><code>responseActions</code></td>
+                        <td><em>(unset)</em></td>
+                        <td>Comma-separated response chain override, e.g. <code>alert,isolate,terminate</code>. Empty uses per-detection defaults.</td>
+                    </tr>
+                    <tr>
+                        <td><code>escalationTimeoutSecs</code></td>
+                        <td><code>120</code></td>
+                        <td>Seconds to wait after isolation before escalating to terminate.</td>
+                    </tr>
+                    <tr>
+                        <td><code>recoveryTimeoutSecs</code></td>
+                        <td><code>60</code></td>
+                        <td>Seconds of clean samples after isolation before lifting isolation.</td>
+                    </tr>
                     <tr>
                         <td><code>portalWebhook.enabled</code></td>
                         <td><code>true</code></td>
-                        <td>Send detection events to the PandoCore Portal</td>
+                        <td>Send detection events to the PandoCore portal for the cluster dashboard.</td>
                     </tr>
                     <tr>
                         <td><code>portalWebhook.url</code></td>
                         <td><code>https://portal.pandocore.xyz/api/events/ingest</code></td>
-                        <td>Portal ingestion endpoint (override for staging/custom deployments)</td>
+                        <td>Portal event endpoint. Override for staging.</td>
+                    </tr>
+                    <tr>
+                        <td><code>crd.enabled</code></td>
+                        <td><code>true</code></td>
+                        <td>Install the <code>PandoCorePolicy</code> CRD. See <a href="policy.html">CRD Policy</a>.</td>
                     </tr>
                 </tbody>
             </table>
 
-            <p>When enabled, the webhook sets <code>PANDO_EVIDENCE_WEBHOOK_URL</code> on each sidecar, authenticated via the license key. Events appear in your <a href="https://portal.pandocore.xyz/dashboard">portal dashboard</a>.</p>
+            <p>Per-pod overrides via deployment annotations. See <a href="webhook.html">Admission Webhook</a>.</p>
 
-            <h2>Alert Integration</h2>
+            <h2>Sidecar Runtime Settings</h2>
 
-            <p>PandoCore can send real-time Slack alerts when detections occur. Alerts fire in both <strong>alert</strong> and <strong>enforce</strong> modes.</p>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Helm Value</th>
-                        <th>Default</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><code>slackWebhookURL</code></td>
-                        <td><em>(empty)</em></td>
-                        <td>Slack incoming webhook URL for alert notifications</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <p>To set up Slack alerts:</p>
-            <ol>
-                <li>Create a <a href="https://api.slack.com/messaging/webhooks">Slack incoming webhook</a> for your channel</li>
-                <li>Set <code>slackWebhookURL</code> in your Helm values</li>
-                <li>Set <code>defaultMode</code> to <code>alert</code> or <code>enforce</code></li>
-            </ol>
-
-            <pre><code># values.yaml
-slackWebhookURL: "https://hooks.slack.com/services/T.../B.../xxx"
-defaultMode: alert</code></pre>
-
-            <h2>In-Cluster Dashboard Configuration</h2>
-
-            <p>The optional in-cluster dashboard provides real-time debugging visibility. See <a href="dashboard.html">Dashboard</a> for full documentation.</p>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Helm Value</th>
-                        <th>Default</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><code>dashboard.enabled</code></td>
-                        <td><code>false</code></td>
-                        <td>Enable the in-cluster dashboard deployment</td>
-                    </tr>
-                    <tr>
-                        <td><code>dashboard.pollInterval</code></td>
-                        <td><code>"30s"</code></td>
-                        <td>How often to poll sidecar <code>/status</code> endpoints</td>
-                    </tr>
-                    <tr>
-                        <td><code>dashboard.maxEvents</code></td>
-                        <td><code>10000</code></td>
-                        <td>Maximum events stored in memory</td>
-                    </tr>
-                    <tr>
-                        <td><code>dashboard.resources</code></td>
-                        <td>50m CPU / 64Mi mem</td>
-                        <td>Resource limits for the dashboard pod</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h2>Sidecar Helm Values</h2>
-            
-            <p>These values are set during <code>helm install</code> or in a <code>values.yaml</code> file:</p>
-
-            <h3>Required Values</h3>
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th>Value</th>
-                        <th>Description</th>
-                        <th>Example</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><code>licenseKey</code></td>
-                        <td>Your PandoCore license key from the customer portal</td>
-                        <td><code>pando_live_abc123...</code></td>
-                    </tr>
-                    <tr>
-                        <td><code>imagePullSecret</code></td>
-                        <td>Base64-encoded Docker config for registry access</td>
-                        <td>Provided in customer portal</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h3>Image Settings</h3>
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th>Value</th>
-                        <th>Default</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><code>image.repository</code></td>
-                        <td><code>us-central1-docker.pkg.dev/pandocore-prod/sidecar/pando-sidecar</code></td>
-                        <td>Container image repository</td>
-                    </tr>
-                    <tr>
-                        <td><code>image.tag</code></td>
-                        <td>Chart appVersion</td>
-                        <td>Image tag to deploy</td>
-                    </tr>
-                    <tr>
-                        <td><code>image.pullPolicy</code></td>
-                        <td><code>IfNotPresent</code></td>
-                        <td>Image pull policy</td>
-                    </tr>
-                </tbody>
-            </table>
+            <p>Change these on live workloads with <code>kubectl set env</code>, or via a <code>PandoCorePolicy</code> (<a href="policy.html">CRD Policy</a>).</p>
 
             <h3>Operating Mode</h3>
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th>Value</th>
-                        <th>Default</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><code>mode</code></td>
-                        <td><code>monitor</code></td>
-                        <td><code>monitor</code>, <code>alert</code>, <code>enforce</code>, or <code>debug</code></td>
-                    </tr>
-                </tbody>
-            </table>
 
-            <h3>Detection Thresholds</h3>
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th>Value</th>
-                        <th>Default</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><code>thresholds.incremental</code></td>
-                        <td><code>0.15</code></td>
-                        <td>Threshold for sudden behavioral changes (0.0-1.0). Lower = more sensitive.</td>
-                    </tr>
-                    <tr>
-                        <td><code>thresholds.cumulative</code></td>
-                        <td><code>0.45</code></td>
-                        <td>Threshold for gradual drift accumulation (0.0-1.0). Lower = more sensitive.</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h3>Sampling</h3>
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th>Value</th>
-                        <th>Default</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><code>sampling.intervalMs</code></td>
-                        <td><code>100</code></td>
-                        <td>How often behavioral data is collected (milliseconds)</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h3>Logging</h3>
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th>Value</th>
-                        <th>Default</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><code>logging.level</code></td>
-                        <td><code>info</code></td>
-                        <td>Log level: <code>trace</code>, <code>debug</code>, <code>info</code>, <code>warn</code>, <code>error</code></td>
-                    </tr>
-                    <tr>
-                        <td><code>logging.json</code></td>
-                        <td><code>true</code></td>
-                        <td>Enable JSON-structured logging for SIEM integration</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h3>Resources</h3>
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th>Value</th>
-                        <th>Default</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><code>resources.limits.cpu</code></td>
-                        <td><code>100m</code></td>
-                        <td>CPU limit for sidecar container</td>
-                    </tr>
-                    <tr>
-                        <td><code>resources.limits.memory</code></td>
-                        <td><code>50Mi</code></td>
-                        <td>Memory limit for sidecar container</td>
-                    </tr>
-                    <tr>
-                        <td><code>resources.requests.cpu</code></td>
-                        <td><code>50m</code></td>
-                        <td>CPU request for sidecar container</td>
-                    </tr>
-                    <tr>
-                        <td><code>resources.requests.memory</code></td>
-                        <td><code>25Mi</code></td>
-                        <td>Memory request for sidecar container</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h2>Environment Variables</h2>
-            
-            <p>These can be set directly on the sidecar container to override Helm values:</p>
-
-            <h3>Core Settings</h3>
-            
             <table>
                 <thead>
                     <tr>
@@ -415,40 +187,18 @@ defaultMode: alert</code></pre>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td><code>PANDO_LICENSE_KEY</code></td>
-                        <td>—</td>
-                        <td>License key (required)</td>
-                    </tr>
                     <tr>
                         <td><code>PANDO_MODE</code></td>
                         <td><code>monitor</code></td>
-                        <td>Operating mode: <code>monitor</code>, <code>enforce</code>, <code>debug</code></td>
-                    </tr>
-                    <tr>
-                        <td><code>POD_NAME</code></td>
-                        <td>—</td>
-                        <td>Pod name (set via fieldRef)</td>
-                    </tr>
-                    <tr>
-                        <td><code>POD_NAMESPACE</code></td>
-                        <td>—</td>
-                        <td>Pod namespace (set via fieldRef)</td>
-                    </tr>
-                    <tr>
-                        <td><code>PANDO_TARGET_CONTAINER</code></td>
-                        <td>Auto-detect</td>
-                        <td>Name of the container to monitor. Auto-injected by webhook (first non-sidecar container). Override via <code>pandocore.xyz/target-container</code> annotation.</td>
-                    </tr>
-                    <tr>
-                        <td><code>PANDO_TARGET_PID</code></td>
-                        <td><code>0</code> (auto)</td>
-                        <td>Explicit PID to monitor. Overrides container-based resolution. Use only for debugging.</td>
+                        <td><code>monitor</code>, <code>alert</code>, or <code>enforce</code>. See <a href="operating-modes.html">Operating Modes</a>.</td>
                     </tr>
                 </tbody>
             </table>
 
-            <h3>Alert Settings</h3>
+            <pre><code>kubectl set env deployment/your-app -c pando-sidecar PANDO_MODE=enforce
+kubectl rollout restart deployment/your-app</code></pre>
+
+            <h3>Sensitivity</h3>
 
             <table>
                 <thead>
@@ -460,24 +210,65 @@ defaultMode: alert</code></pre>
                 </thead>
                 <tbody>
                     <tr>
-                        <td><code>PANDO_SLACK_WEBHOOK_URL</code></td>
-                        <td>—</td>
-                        <td>Slack incoming webhook URL for alert notifications</td>
-                    </tr>
-                    <tr>
-                        <td><code>PANDO_ALERT_TIMEOUT_SECONDS</code></td>
-                        <td><code>5</code></td>
-                        <td>Timeout for alert delivery requests</td>
+                        <td><code>PANDO_SENSITIVITY</code></td>
+                        <td><code>2.0</code></td>
+                        <td>Higher = more permissive, lower = catches subtler anomalies.</td>
                     </tr>
                 </tbody>
             </table>
 
-            <h3>Graduated Response</h3>
+            <p>The single tuning lever you should ever need. If a workload is chatty, raise it. If it's quiet, lower it. The webhook auto-applies runtime-aware defaults for common runtime families, so most workloads never need to touch this.</p>
 
-            <p>By default, drift detections follow a graduated response chain: <strong>alert &rarr; isolate &rarr; terminate</strong>.
-            Network isolation denies all egress except DNS (port 53), preventing data exfiltration while keeping
-            the pod reachable for health checks. If drift persists past the escalation timeout, the pod is terminated.
-            If drift subsides, isolation is automatically removed.</p>
+            <h3>Runtime Profile</h3>
+
+            <p>The webhook auto-detects common runtime families (JVM/Node/.NET, databases) and applies a slightly higher default sensitivity for their naturally variable behavior. Override it only if auto-detection picks the wrong profile.</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Variable</th>
+                        <th>Default</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>PANDO_RUNTIME_PROFILE</code></td>
+                        <td><em>(auto-detected)</em></td>
+                        <td><code>default</code>, <code>jit</code>, or <code>database</code>. Explicit override of the runtime profile.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Learning Window</h3>
+
+            <p>Each sidecar builds a per-workload operational profile during a startup learning window before it begins detecting. The defaults suit most workloads. Only extend the window if your app has a long, variable warmup (slow JVM startup, bulk-import containers, batch jobs).</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Variable</th>
+                        <th>Default</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>PANDO_LEARNING_DURATION_SECONDS</code></td>
+                        <td><code>1800</code> (30 min)</td>
+                        <td>Minimum length of the learning window.</td>
+                    </tr>
+                    <tr>
+                        <td><code>PANDO_LEARNING_MIN_SAMPLES</code></td>
+                        <td><code>900</code></td>
+                        <td>Minimum samples required before learning can complete.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3>Response Chain</h3>
+
+            <p>In <code>enforce</code> mode, detections walk a response chain: alert, isolate, terminate.</p>
 
             <table>
                 <thead>
@@ -490,32 +281,25 @@ defaultMode: alert</code></pre>
                 <tbody>
                     <tr>
                         <td><code>PANDO_RESPONSE_ACTIONS</code></td>
-                        <td>Per-detection type</td>
-                        <td>Comma-separated response chain: <code>alert</code>, <code>isolate</code>, <code>terminate</code></td>
+                        <td><code>alert,isolate,terminate</code></td>
+                        <td>Comma-separated chain. Valid: <code>alert</code>, <code>isolate</code>, <code>terminate</code>.</td>
                     </tr>
                     <tr>
                         <td><code>PANDO_ESCALATION_TIMEOUT_SECS</code></td>
                         <td><code>120</code></td>
-                        <td>Seconds after isolation before escalating to terminate</td>
+                        <td>Seconds to wait after isolation before escalating to terminate.</td>
                     </tr>
                     <tr>
                         <td><code>PANDO_RECOVERY_TIMEOUT_SECS</code></td>
                         <td><code>60</code></td>
-                        <td>Seconds of clean samples after isolation before removing isolation</td>
+                        <td>Seconds of clean samples after isolation before de-escalating and lifting isolation.</td>
                     </tr>
                 </tbody>
             </table>
 
-            <p>Default chains by detection type:</p>
-            <ul>
-                <li><strong>Drift threshold exceeded:</strong> alert &rarr; isolate &rarr; terminate</li>
-                <li><strong>ML anomaly:</strong> alert &rarr; isolate &rarr; terminate</li>
-                <li><strong>Integrity violation:</strong> alert &rarr; terminate (immediate, no isolation)</li>
-                <li><strong>Deadman timeout:</strong> alert &rarr; terminate</li>
-                <li><strong>Internal error:</strong> alert only</li>
-            </ul>
+            <p>Isolation applies a <code>NetworkPolicy</code> denying all egress except DNS. If the pod recovers, isolation is lifted automatically. See <a href="operating-modes.html">Operating Modes</a>.</p>
 
-            <h3>Detection Thresholds</h3>
+            <h3>Slack Alerts</h3>
 
             <table>
                 <thead>
@@ -527,126 +311,19 @@ defaultMode: alert</code></pre>
                 </thead>
                 <tbody>
                     <tr>
-                        <td><code>PANDO_THRESHOLD_INCREMENTAL</code></td>
-                        <td><code>0.15</code></td>
-                        <td>Threshold for sudden changes (sample-to-sample drift)</td>
-                    </tr>
-                    <tr>
-                        <td><code>PANDO_THRESHOLD_CUMULATIVE</code></td>
-                        <td><code>0.45</code></td>
-                        <td>Threshold for total drift from baseline</td>
-                    </tr>
-                    <tr>
-                        <td><code>PANDO_SAMPLE_INTERVAL_MS</code></td>
-                        <td><code>100</code></td>
-                        <td>Sampling interval in milliseconds</td>
+                        <td><code>PANDO_SLACK_WEBHOOK_URL</code></td>
+                        <td><em>(empty)</em></td>
+                        <td>Per-workload override for the cluster-wide <code>slackWebhookURL</code>.</td>
                     </tr>
                 </tbody>
             </table>
 
-            <h3>Sliding Window (Adaptive Baseline)</h3>
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th>Variable</th>
-                        <th>Default</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><code>PANDO_WINDOW_DURATION_SECONDS</code></td>
-                        <td><code>600</code></td>
-                        <td>Duration of the sliding window (10 minutes)</td>
-                    </tr>
-                    <tr>
-                        <td><code>PANDO_WINDOW_MIN_SAMPLES</code></td>
-                        <td><code>60</code></td>
-                        <td>Minimum samples for a valid window</td>
-                    </tr>
-                    <tr>
-                        <td><code>PANDO_WINDOW_MAX_SAMPLES</code></td>
-                        <td><code>6000</code></td>
-                        <td>Maximum samples to retain in window</td>
-                    </tr>
-                </tbody>
-            </table>
+            <pre><code>kubectl set env deployment/your-app -c pando-sidecar \
+  PANDO_SLACK_WEBHOOK_URL="https://hooks.slack.com/services/T.../B.../xxx"</code></pre>
 
-            <h3>Learning Phase (Threshold Calibration)</h3>
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th>Variable</th>
-                        <th>Default</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><code>PANDO_LEARNING_DURATION_SECONDS</code></td>
-                        <td><code>600</code></td>
-                        <td>Learning phase duration (10 minutes)</td>
-                    </tr>
-                    <tr>
-                        <td><code>PANDO_LEARNING_MIN_SAMPLES</code></td>
-                        <td><code>300</code></td>
-                        <td>Minimum samples for threshold calibration</td>
-                    </tr>
-                    <tr>
-                        <td><code>PANDO_SKIP_LEARNING</code></td>
-                        <td><code>false</code></td>
-                        <td>Skip learning phase (not recommended)</td>
-                    </tr>
-                    <tr>
-                        <td><code>PANDO_SENSITIVITY</code></td>
-                        <td><code>2.0</code></td>
-                        <td>Threshold sensitivity multiplier. Higher = fewer false positives. Range: 0.5&ndash;10.0</td>
-                    </tr>
-                    <tr>
-                        <td><code>PANDO_RUNTIME_PROFILE</code></td>
-                        <td><code>default</code></td>
-                        <td>Runtime profile: <code>default</code> (sensitivity 2.0), <code>jit</code> (sensitivity 3.0, for Java/Node.js/.NET), or <code>database</code> (sensitivity 3.0, for PostgreSQL/MySQL/Redis/MongoDB). Auto-detected by the webhook.</td>
-                    </tr>
-                </tbody>
-            </table>
+            <h3>Evidence Delivery</h3>
 
-            <div class="docs-callout info">
-                <div class="docs-callout-title">Automatic Runtime Detection</div>
-                <p>The admission webhook automatically detects runtime families from container images and sets the appropriate <code>PANDO_RUNTIME_PROFILE</code>:</p>
-                <ul>
-                    <li><strong><code>jit</code></strong> &mdash; Java (OpenJDK, Temurin, Corretto, Spring, Tomcat, Quarkus), Node.js, .NET. JIT runtimes produce higher ambient drift due to tiered compilation and GC heap reorganization.</li>
-                    <li><strong><code>database</code></strong> &mdash; PostgreSQL, MySQL/MariaDB, Redis, MongoDB, Cassandra, CockroachDB, Elasticsearch. Databases exhibit cyclical memory entropy shifts from buffer pool pressure, WAL activity, and connection pool churn.</li>
-                </ul>
-                <p>Both profiles raise sensitivity to 3.0, preventing false positives without reducing detection capability. You can override with an explicit <code>PANDO_SENSITIVITY</code> value.</p>
-            </div>
-
-            <h3>Integrity Checks</h3>
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th>Variable</th>
-                        <th>Default</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><code>PANDO_CHECK_TRACED_STATE</code></td>
-                        <td><code>true</code></td>
-                        <td>Enable detection of debugger attachment</td>
-                    </tr>
-                    <tr>
-                        <td><code>PANDO_INTEGRITY_CHECK_INTERVAL_SECS</code></td>
-                        <td><code>30</code></td>
-                        <td>Interval between integrity checks</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h3>ML Anomaly Detection</h3>
+            <p>Every detection emits a structured JSON envelope. By default it's posted to the PandoCore portal; you can redirect to any endpoint that accepts JSON POSTs (SIEM, incident pipeline, etc.).</p>
 
             <table>
                 <thead>
@@ -658,25 +335,27 @@ defaultMode: alert</code></pre>
                 </thead>
                 <tbody>
                     <tr>
-                        <td><code>PANDO_ML_ENABLED</code></td>
-                        <td><code>true</code></td>
-                        <td>Enable ML-based anomaly detection</td>
+                        <td><code>PANDO_EVIDENCE_WEBHOOK_URL</code></td>
+                        <td><em>(set by webhook)</em></td>
+                        <td>Override per-workload to redirect evidence.</td>
                     </tr>
                     <tr>
-                        <td><code>PANDO_ML_THRESHOLD</code></td>
-                        <td><code>0.7</code></td>
-                        <td>ML anomaly score threshold (0.0-1.0)</td>
+                        <td><code>PANDO_EVIDENCE_WEBHOOK_TIMEOUT_SECONDS</code></td>
+                        <td><code>5</code></td>
+                        <td>Per-request timeout for evidence delivery.</td>
                     </tr>
                     <tr>
-                        <td><code>PANDO_ML_INFERENCE_INTERVAL_SECS</code></td>
-                        <td><code>60</code></td>
-                        <td>Seconds between ML inference runs</td>
+                        <td><code>PANDO_EVIDENCE_WEBHOOK_MAX_RETRIES</code></td>
+                        <td><code>3</code></td>
+                        <td>Retry attempts on failure (exponential backoff).</td>
                     </tr>
                 </tbody>
             </table>
 
-            <h3>Logging Settings</h3>
-            
+            <p>See <a href="evidence-format.html">Evidence Format</a>.</p>
+
+            <h3>Logging</h3>
+
             <table>
                 <thead>
                     <tr>
@@ -689,106 +368,55 @@ defaultMode: alert</code></pre>
                     <tr>
                         <td><code>PANDO_LOG_LEVEL</code></td>
                         <td><code>info</code></td>
-                        <td>Log level: <code>trace</code>, <code>debug</code>, <code>info</code>, <code>warn</code>, <code>error</code></td>
+                        <td><code>trace</code>, <code>debug</code>, <code>info</code>, <code>warn</code>, <code>error</code>.</td>
                     </tr>
                     <tr>
                         <td><code>PANDO_LOG_JSON</code></td>
                         <td><code>true</code></td>
-                        <td>Enable JSON-formatted logs for SIEM integration</td>
+                        <td>JSON-structured logs for SIEM ingestion.</td>
                     </tr>
                 </tbody>
             </table>
 
+            <h2>What You Can't Configure</h2>
+
+            <p>Detection internals are managed automatically and not user-tunable. If sensitivity isn't solving your problem, <a href="../contact.html">contact support</a>.</p>
+
             <h2>Configuration Examples</h2>
 
-            <h3>Production Deployment</h3>
-            
-            <p>Recommended settings for production workloads:</p>
+            <h3>Production Install</h3>
 
             <pre><code># values-production.yaml
 licenseKey: "your-license-key"
-imagePullSecret: "your-pull-secret"
+defaultMode: monitor
+slackWebhookURL: "https://hooks.slack.com/services/T.../B.../xxx"
+failurePolicy: Ignore
+excludedNamespaces:
+  - kube-system
+  - kube-public
+  - kube-node-lease
+  - cert-manager
+  - istio-system
+webhook:
+  replicaCount: 2
+sidecar:
+  image: us-central1-docker.pkg.dev/pandocore-prod/sidecar/pando-sidecar:v0.5.2
+replicas: 2</code></pre>
 
-mode: enforce
+            <h3>Per-Workload Override</h3>
 
-thresholds:
-  incremental: 0.15
-  cumulative: 0.45
-
-logging:
-  level: info
-  json: true
-
-resources:
-  limits:
-    cpu: 100m
-    memory: 50Mi
-  requests:
-    cpu: 50m
-    memory: 25Mi</code></pre>
-
-            <h3>Initial Evaluation</h3>
-            
-            <p>Settings for initial deployment and tuning:</p>
-
-            <pre><code># values-evaluation.yaml
-licenseKey: "your-license-key"
-imagePullSecret: "your-pull-secret"
-
-mode: monitor  # Detect only, don't enforce
-
-thresholds:
-  incremental: 0.20  # Less sensitive during evaluation
-  cumulative: 0.55
-
-logging:
-  level: debug  # More verbose for tuning
-  json: true</code></pre>
-
-            <h3>High-Sensitivity Workloads</h3>
-            
-            <p>For workloads requiring tighter monitoring:</p>
-
-            <pre><code># values-high-sensitivity.yaml
-licenseKey: "your-license-key"
-imagePullSecret: "your-pull-secret"
-
-mode: enforce
-
-thresholds:
-  incremental: 0.10  # More sensitive
-  cumulative: 0.35
-
-sampling:
-  intervalMs: 50  # Faster sampling</code></pre>
-
-            <h2>Tuning Thresholds</h2>
-            
-            <p>If you're seeing too many or too few detections, adjust the thresholds:</p>
-
-            <div class="docs-callout info">
-                <div class="docs-callout-title">ℹ️ Tuning Tips</div>
-                <ul>
-                    <li><strong>Too many detections:</strong> Increase threshold values (e.g., 0.20, 0.55)</li>
-                    <li><strong>Missing real issues:</strong> Decrease threshold values (e.g., 0.10, 0.35)</li>
-                    <li><strong>Spiky workloads:</strong> Focus on increasing <code>incremental</code> threshold</li>
-                    <li><strong>Gradual drift issues:</strong> Focus on adjusting <code>cumulative</code> threshold</li>
-                </ul>
-            </div>
-
-            <h3>Runtime Threshold Adjustment</h3>
-            
-            <pre><code># Adjust thresholds without redeployment
-kubectl set env deployment/your-app -c pando-sidecar \
-  PANDO_THRESHOLD_INCREMENTAL=0.20 \
-  PANDO_THRESHOLD_CUMULATIVE=0.55</code></pre>
+            <pre><code>kubectl set env deployment/critical-api -c pando-sidecar \
+  PANDO_MODE=enforce \
+  PANDO_SENSITIVITY=1.5
+kubectl rollout restart deployment/critical-api</code></pre>
 
             <h2>Next Steps</h2>
-            
+
             <ul>
-                <li><a href="operating-modes.html">Operating Modes</a> — Understand monitor vs enforce</li>
-                <li><a href="evidence-format.html">Evidence Format</a> — Structure of detection events</li>
-                <li><a href="faq.html">FAQ</a> — Common configuration questions</li>
+                <li><a href="operating-modes.html">Operating Modes</a></li>
+                <li><a href="policy.html">CRD Policy</a></li>
+                <li><a href="production-hardening.html">Production Hardening</a></li>
+                <li><a href="evidence-format.html">Evidence Format</a></li>
             </ul>
 
         </main>

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Upgrade PandoCore sidecar and admission webhook versions via Helm with zero-downtime rollouts.">
+    <title>Upgrading | PandoCore Docs</title>
+    <link rel="icon" type="image/png" href="../images/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/docs.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a href="../index.html" class="logo">
+                    <img src="../images/logoTransparency.png" alt="Pando Logo">
+                    <div class="logo-text-wrapper">
+                        <span class="logo-text">PandoCore</span>
+                    </div>
+                </a>
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div class="nav-overlay"></div>
+                <ul class="nav-links">
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="../product.html">Product</a></li>
+                    <li><a href="../pricing.html">Pricing</a></li>
+                    <li><a href="../about.html">About</a></li>
+                    <li><a href="index.html" class="active">Docs</a></li>
+                    <li><a href="../contact.html" class="nav-contact">Contact</a></li>
+                    <li><a href="https://portal.pandocore.xyz/signup" class="nav-signup">Sign Up</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Docs Hero -->
+    <section class="docs-hero">
+        <div class="container">
+            <h1>Upgrading</h1>
+            <p>Bump sidecar and webhook versions without disrupting protected workloads.</p>
+        </div>
+    </section>
+
+    <!-- Documentation Layout -->
+    <div class="docs-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="docs-sidebar">
+            <h3>Documentation</h3>
+            <ul class="docs-nav">
+                <li><a href="index.html">Overview</a></li>
+                <li><a href="getting-started.html">Getting Started</a></li>
+                <li><a href="webhook.html">Admission Webhook</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="configuration.html">Configuration</a></li>
+                <li><a href="policy.html">CRD Policy</a></li>
+                <li><a href="operating-modes.html">Operating Modes</a></li>
+                <li><a href="production-hardening.html">Production Hardening</a></li>
+                <li><a href="upgrading.html" class="active">Upgrading</a></li>
+                <li><a href="troubleshooting.html">Troubleshooting</a></li>
+                <li><a href="emergency.html">Emergency Procedures</a></li>
+                <li><a href="evidence-format.html">Evidence Format</a></li>
+                <li><a href="faq.html">FAQ</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="docs-content">
+            <div class="docs-breadcrumb">
+                <a href="index.html">Docs</a>
+                <span>/</span>
+                Upgrading
+            </div>
+
+            <h1>Upgrading</h1>
+
+            <p>PandoCore ships two things: the admission <strong>webhook</strong> (cluster-wide, installed once) and the <strong>sidecar</strong> image (injected into each protected pod). They version independently. This page covers how to upgrade both safely.</p>
+
+            <div class="docs-callout info">
+                <div class="docs-callout-title">Check your current version first</div>
+                <pre><code># Webhook version
+helm list -n pando-system
+
+# Sidecar version running in a specific pod
+kubectl get pod &lt;pod&gt; -o jsonpath='{.spec.containers[?(@.name=="pando-sidecar")].image}'
+
+# Latest available version from the portal
+curl -s https://portal.pandocore.xyz/api/version</code></pre>
+                <p>The portal dashboard also shows "Latest vs Your Deployment" for each protected workload.</p>
+            </div>
+
+            <h2>Upgrade the Admission Webhook</h2>
+
+            <p>Webhook upgrades are done with <code>helm upgrade</code>. The chart is versioned and pinned in the OCI registry.</p>
+
+            <pre><code># Latest
+helm upgrade pando-webhook \
+  oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-webhook \
+  --namespace pando-system --reuse-values
+
+# Or pin to a specific version
+helm upgrade pando-webhook \
+  oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-webhook \
+  --version 0.5.2 \
+  --namespace pando-system --reuse-values</code></pre>
+
+            <p><code>--reuse-values</code> preserves your existing <code>licenseKey</code>, <code>slackWebhookURL</code>, and other overrides so you don't have to re-pass them on every upgrade. If you need to change a value at the same time, use <code>--reuse-values</code> plus additional <code>--set</code> flags.</p>
+
+            <h3>What happens during a webhook upgrade</h3>
+
+            <ol>
+                <li>Helm applies the new chart to the <code>pando-system</code> namespace.</li>
+                <li>The webhook Deployment does a rolling update. The new pod comes up, passes its readiness probe, and the old pod is terminated.</li>
+                <li>Existing protected pods are <strong>not affected</strong>. The webhook only runs at pod admission time; already-running pods keep running with whatever sidecar version they started with.</li>
+                <li>Any pod that restarts after the upgrade will get the new sidecar image (because the webhook's default sidecar tag is now updated).</li>
+            </ol>
+
+            <div class="docs-callout warning">
+                <div class="docs-callout-title">Webhook downtime window</div>
+                <p>The webhook's <code>failurePolicy</code> is <code>Ignore</code> by default, so during the brief rolling-update window, any pods that start will be admitted <em>without</em> sidecar injection. They won't be protected until their next restart. If you need zero injection gaps, set <code>failurePolicy: Fail</code> (in which case pod creation blocks if the webhook is down, so tradeoff accordingly).</p>
+            </div>
+
+            <h2>Upgrade Sidecars in Protected Pods</h2>
+
+            <p>Sidecar upgrades happen on pod restart. There are two ways to trigger this:</p>
+
+            <h3>Option A: Rolling restart per workload</h3>
+
+            <p>Restart the deployment. The webhook injects the new sidecar image on each new pod:</p>
+
+            <pre><code>kubectl rollout restart deployment/your-app</code></pre>
+
+            <p>This is the standard approach. Kubernetes handles the rolling update with your deployment's existing <code>maxSurge</code>/<code>maxUnavailable</code> settings. Zero downtime if your app has more than one replica.</p>
+
+            <h3>Option B: Pin a specific sidecar version per workload</h3>
+
+            <p>If you want a specific workload on an older or newer sidecar than the cluster default, override via annotation:</p>
+
+            <pre><code>kubectl annotate deployment your-app \
+  pandocore.xyz/sidecar-image=us-central1-docker.pkg.dev/pandocore-prod/sidecar/pando-sidecar:v0.5.1 \
+  --overwrite
+kubectl rollout restart deployment/your-app</code></pre>
+
+            <p>Useful for canarying a new sidecar version on one workload before rolling it out cluster-wide.</p>
+
+            <h2>Baseline Considerations</h2>
+
+            <p>Each sidecar builds its own operational profile on startup. When a pod restarts with a new sidecar version, it runs a fresh learning window against the new process. This means:</p>
+
+            <ul>
+                <li><strong>Expect a 30-minute learning window (503s)</strong> after each sidecar restart. The pod's main container is ready; the sidecar's <code>/readyz</code> endpoint returns 503 until the profile is built. If you're using the sidecar's readiness for load balancer health, factor this in.</li>
+                <li><strong>Profiles are not persisted across upgrades by default.</strong> Every new sidecar starts fresh. This is intentional: detection logic evolves between versions and reusing old state would conflict with new scoring.</li>
+                <li><strong>Stagger upgrades for critical workloads.</strong> Don't restart every protected deployment in the same minute. Rolling them one at a time (or letting Kubernetes do it via <code>rollout restart</code>) keeps enough baselined pods in service to handle traffic.</li>
+            </ul>
+
+            <h2>Version Skew</h2>
+
+            <p>Sidecar and webhook versions don't need to match exactly, but the webhook's chart version defines the <em>default</em> sidecar image tag it injects. Within a major version, mixing sidecar versions across pods is supported. Across major versions, upgrade the webhook first, then restart workloads to pick up the new sidecar.</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Scenario</th>
+                        <th>Supported?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Webhook v0.5.x, sidecars mixed v0.5.0-v0.5.2</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Webhook v0.5.x, some sidecars still v0.4.x</td>
+                        <td>Yes (restart those pods to upgrade)</td>
+                    </tr>
+                    <tr>
+                        <td>Webhook v0.4.x with v0.5.x sidecars</td>
+                        <td>Not recommended, upgrade webhook first</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>Rollback</h2>
+
+            <p>If an upgrade causes problems, roll back the webhook first, then restart affected workloads:</p>
+
+            <pre><code># Roll back the most recent webhook upgrade
+helm rollback pando-webhook -n pando-system
+
+# Restart a workload to pick up the previous sidecar version
+kubectl rollout restart deployment/your-app</code></pre>
+
+            <p>If the issue is severe enough that you need to unblock pod creation immediately, see <a href="emergency.html">Emergency Procedures</a> for disabling PandoCore cluster-wide.</p>
+
+            <h2>Upgrade Checklist</h2>
+
+            <ul>
+                <li>Read the release notes for the version you're targeting</li>
+                <li>Upgrade in staging or a test cluster first</li>
+                <li><code>helm upgrade pando-webhook ... --reuse-values</code></li>
+                <li>Verify the new webhook pod reaches ready state</li>
+                <li>Restart a single non-critical workload and confirm the new sidecar injects and learns cleanly</li>
+                <li>Watch the portal for unexpected spikes in drift alerts on that workload</li>
+                <li>Roll out to remaining workloads in batches, most critical last</li>
+            </ul>
+
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2026 PandoCore Inc. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

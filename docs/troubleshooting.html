@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Troubleshoot PandoCore: sidecar not injecting, license errors, false positives, and common operational issues.">
+    <title>Troubleshooting | PandoCore Docs</title>
+    <link rel="icon" type="image/png" href="../images/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/docs.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a href="../index.html" class="logo">
+                    <img src="../images/logoTransparency.png" alt="Pando Logo">
+                    <div class="logo-text-wrapper">
+                        <span class="logo-text">PandoCore</span>
+                    </div>
+                </a>
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div class="nav-overlay"></div>
+                <ul class="nav-links">
+                    <li><a href="../index.html">Home</a></li>
+                    <li><a href="../product.html">Product</a></li>
+                    <li><a href="../pricing.html">Pricing</a></li>
+                    <li><a href="../about.html">About</a></li>
+                    <li><a href="index.html" class="active">Docs</a></li>
+                    <li><a href="../contact.html" class="nav-contact">Contact</a></li>
+                    <li><a href="https://portal.pandocore.xyz/signup" class="nav-signup">Sign Up</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Docs Hero -->
+    <section class="docs-hero">
+        <div class="container">
+            <h1>Troubleshooting</h1>
+            <p>Common issues and how to diagnose them.</p>
+        </div>
+    </section>
+
+    <!-- Documentation Layout -->
+    <div class="docs-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="docs-sidebar">
+            <h3>Documentation</h3>
+            <ul class="docs-nav">
+                <li><a href="index.html">Overview</a></li>
+                <li><a href="getting-started.html">Getting Started</a></li>
+                <li><a href="webhook.html">Admission Webhook</a></li>
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="configuration.html">Configuration</a></li>
+                <li><a href="policy.html">CRD Policy</a></li>
+                <li><a href="operating-modes.html">Operating Modes</a></li>
+                <li><a href="production-hardening.html">Production Hardening</a></li>
+                <li><a href="upgrading.html">Upgrading</a></li>
+                <li><a href="troubleshooting.html" class="active">Troubleshooting</a></li>
+                <li><a href="emergency.html">Emergency Procedures</a></li>
+                <li><a href="evidence-format.html">Evidence Format</a></li>
+                <li><a href="faq.html">FAQ</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="docs-content">
+            <div class="docs-breadcrumb">
+                <a href="index.html">Docs</a>
+                <span>/</span>
+                Troubleshooting
+            </div>
+
+            <h1>Troubleshooting</h1>
+
+            <p>Most issues fall into three buckets: the sidecar never injected, the sidecar injected but crash-looped, or the sidecar is running but producing more alerts than you expect. Each section below starts with how to diagnose, then lists the usual causes.</p>
+
+            <h2>Sidecar Not Injecting</h2>
+
+            <p>Symptom: you labeled a deployment and restarted it, but <code>kubectl get pods</code> still shows <code>1/1</code> instead of <code>2/2</code>.</p>
+
+            <pre><code># Check that the webhook is registered and healthy
+kubectl get mutatingwebhookconfiguration pando-webhook
+kubectl get pods -n pando-system -l app=pando-webhook
+
+# Look at webhook logs for the rejected/ignored admission request
+kubectl logs -n pando-system -l app=pando-webhook --tail=100
+
+# Confirm the label is actually on the pod template, not just the deployment
+kubectl get deployment your-app -o jsonpath='{.spec.template.metadata.labels}'</code></pre>
+
+            <h3>Common causes</h3>
+
+            <ul>
+                <li><strong>Label on deployment only, not pod template.</strong> <code>kubectl label deployment</code> adds the label to the deployment object. The webhook matches on pod labels. Use <code>kubectl patch</code> or edit the deployment directly if <code>kubectl rollout restart</code> didn't propagate. The label must be on <code>spec.template.metadata.labels</code>.</li>
+                <li><strong>Namespace excluded by webhook.</strong> The webhook skips <code>kube-system</code>, <code>pando-system</code>, and any namespace in <code>excludedNamespaces</code>. Check the <code>MutatingWebhookConfiguration</code>'s <code>namespaceSelector</code>.</li>
+                <li><strong>Missing ServiceAccount or license Secret in target namespace.</strong> If you're protecting workloads outside <code>pando-system</code>, each target namespace needs its own <code>pando-sidecar</code> ServiceAccount and a copy of the license Secret. Without these, the webhook logs an injection error and admits the pod unmodified. See <a href="getting-started.html">Getting Started</a> for the copy commands.</li>
+                <li><strong>Webhook cert expired.</strong> The webhook uses a self-signed cert that rotates via cert-manager or the install hook. If the webhook pod logs show TLS errors, reinstall or run <code>helm upgrade</code>.</li>
+                <li><strong>failurePolicy=Ignore swallowed the error.</strong> Production installs ship with <code>failurePolicy: Ignore</code> so a broken webhook doesn't brick your cluster. That also means injection failures are silent. Always check webhook logs when something didn't inject.</li>
+            </ul>
+
+            <h2>Sidecar Crash-Looping</h2>
+
+            <p>Symptom: the pod shows <code>2/2</code> briefly then drops to <code>1/2</code>, or the pando-sidecar container reports <code>CrashLoopBackOff</code>.</p>
+
+            <pre><code># Logs from the previous crashed instance
+kubectl logs &lt;pod&gt; -c pando-sidecar --previous
+
+# Current logs
+kubectl logs &lt;pod&gt; -c pando-sidecar
+
+# Describe pod for events and exit codes
+kubectl describe pod &lt;pod&gt;</code></pre>
+
+            <h3>License errors</h3>
+
+            <p>The sidecar validates the license on startup. If validation fails, it exits immediately with a log line starting with <code>license:</code>.</p>
+
+            <ul>
+                <li><strong><code>license: signature invalid</code></strong>: the license was signed with a key that doesn't match the sidecar's embedded public key. Usually means you're running a sidecar image from a different environment (staging sidecar with prod license, or vice versa). Reinstall with the matching chart.</li>
+                <li><strong><code>license: expired</code></strong>: the <code>expiry</code> field is in the past. Log in to the portal and request a renewal.</li>
+                <li><strong><code>license: max_nodes exceeded</code></strong>: you're running more protected pods than your license allows. Either upgrade your plan in the portal or unlabel some deployments.</li>
+                <li><strong><code>license: secret not found</code></strong>: the <code>pando-license</code> Secret is missing from the target namespace. See the per-namespace setup in <a href="getting-started.html">Getting Started</a>.</li>
+            </ul>
+
+            <h3>Process namespace errors</h3>
+
+            <p>The sidecar attaches to the shared process namespace of its pod. If the pod doesn't have <code>shareProcessNamespace: true</code> set (the webhook adds this automatically), the sidecar can't see the target process and exits with <code>process namespace not shared</code>. This only happens if a PodSecurityPolicy or admission controller stripped the field after the webhook set it. Check your cluster's admission chain.</p>
+
+            <h3>Memory pressure</h3>
+
+            <p>The sidecar defaults to a 50Mi memory limit, sized for a typical web app. Heavy runtimes or high-throughput services can push it over. Raise the limit via Helm:</p>
+
+            <pre><code>helm upgrade pando-webhook \
+  oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-webhook \
+  --namespace pando-system --reuse-values \
+  --set sidecar.resources.limits.memory=128Mi</code></pre>
+
+            <h2>Too Many Alerts (False Positives)</h2>
+
+            <p>Symptom: the sidecar is tripping on normal workload behavior during batch jobs, traffic bursts, or other legitimate variance.</p>
+
+            <p>Before tuning, confirm the workload has completed its learning window. The first 30 minutes after pod start are the learning phase (tunable via <code>PANDO_LEARNING_DURATION_SECONDS</code>) and any detections during that window are meaningless. Check readiness:</p>
+
+            <pre><code>kubectl exec &lt;pod&gt; -c pando-sidecar -- wget -qO- http://localhost:9090/readyz</code></pre>
+
+            <p>If that returns 200, learning is complete. If 503, wait it out.</p>
+
+            <h3>Tuning options, in order of preference</h3>
+
+            <ol>
+                <li><strong>Raise <code>PANDO_SENSITIVITY</code>.</strong> The single knob for most workloads. Default is 2.0 (3.0 for JIT and database runtimes); try bumping by 0.5&ndash;1.0 for noisy services. Higher values make the sidecar more permissive without disabling detection entirely.
+                    <pre><code>kubectl set env deployment/your-app -c pando-sidecar PANDO_SENSITIVITY=3.0</code></pre>
+                </li>
+                <li><strong>Trigger a re-learn.</strong> If the workload's traffic pattern changed (deploy, config rollout, customer onboarding), the old baseline no longer reflects normal. Re-learn rebuilds it from the current state:
+                    <pre><code>kubectl exec &lt;pod&gt; -c pando-sidecar -- wget -qO- --post-data='' http://localhost:9090/relearn</code></pre>
+                </li>
+                <li><strong>Drop back to monitor mode.</strong> If you're still calibrating, there's no shame in running in <code>monitor</code> for another week. Evidence still flows to the portal; no pods get killed.</li>
+                <li><strong>Contact support.</strong> If sensitivity and re-learning don't settle the workload, reach out. We'd rather debug it with you than let you chase it alone.</li>
+            </ol>
+
+            <div class="docs-callout info">
+                <div class="docs-callout-title">Noisy runtimes</div>
+                <p>The webhook auto-applies a higher sensitivity default for a handful of well-known runtime families whose legitimate behavior is inherently variable. If your workload runs a custom base image the detection didn't match, explicitly set <code>PANDO_SENSITIVITY=3.0</code>.</p>
+            </div>
+
+            <h2>Sidecar Running but No Metrics</h2>
+
+            <p>Symptom: the sidecar pod is ready, but <code>/metrics</code> returns nothing or the portal dashboard shows no activity.</p>
+
+            <pre><code># Hit the metrics endpoint directly
+kubectl exec &lt;pod&gt; -c pando-sidecar -- wget -qO- http://localhost:9090/metrics
+
+# Confirm the portal URL the sidecar is talking to
+kubectl exec &lt;pod&gt; -c pando-sidecar -- env | grep PANDO_PORTAL_URL</code></pre>
+
+            <ul>
+                <li><strong>Metrics endpoint empty</strong>: the sidecar hasn't completed learning yet, or the target process hasn't been sampled. Wait for <code>/readyz</code> to return 200.</li>
+                <li><strong>Portal dashboard empty</strong>: the sidecar posts evidence + heartbeats to <code>PANDO_PORTAL_URL</code>. If this is unset or pointing at the wrong environment, the portal won't receive anything. Re-run the Helm install with the correct portal URL.</li>
+                <li><strong>Egress blocked</strong>: your cluster's NetworkPolicy or firewall may be blocking outbound calls to the portal. Check sidecar logs for HTTP errors.</li>
+            </ul>
+
+            <h2>Pod Terminated Unexpectedly</h2>
+
+            <p>Symptom: a protected pod was killed and you need to understand why.</p>
+
+            <p>Every termination ships with a structured evidence envelope to the portal. Start there:</p>
+
+            <ol>
+                <li>Open the portal dashboard, find the pod in the Events tab, and read the detection reason and severity.</li>
+                <li>If you don't have portal access at the moment, the sidecar's own logs include the full decision path. The logs are still available on the node's container runtime for a short window after termination.</li>
+                <li>Check whether the pod was in <code>enforce</code> mode. If you expected it to only alert, confirm your mode setting with <code>kubectl get deployment your-app -o jsonpath='{.spec.template.metadata.annotations}'</code>. Deployment annotations override the cluster default.</li>
+            </ol>
+
+            <p>If the termination was clearly a false positive, see the <a href="#too-many-alerts-false-positives">false positives</a> section above. If you need to pause enforcement immediately while you investigate, see <a href="emergency.html">Emergency Procedures</a>.</p>
+
+            <h2>Getting Help</h2>
+
+            <p>If none of the above fixes your issue, collect the following before reaching out:</p>
+
+            <ul>
+                <li><code>kubectl version</code> and the sidecar image tag</li>
+                <li><code>kubectl logs &lt;pod&gt; -c pando-sidecar</code> (last 200 lines)</li>
+                <li><code>kubectl describe pod &lt;pod&gt;</code></li>
+                <li><code>kubectl get mutatingwebhookconfiguration pando-webhook -o yaml</code></li>
+                <li>Relevant portal evidence envelope if there was a termination</li>
+            </ul>
+
+            <p>Send to <a href="../contact.html">support</a> or reply to your onboarding email thread.</p>
+
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2026 PandoCore Inc. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+</body>
+</html>

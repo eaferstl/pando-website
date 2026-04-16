@@ -31,9 +31,11 @@
                 <ul class="nav-links">
                     <li><a href="index.html">Home</a></li>
                     <li><a href="product.html" class="active">Product</a></li>
+                    <li><a href="pricing.html">Pricing</a></li>
                     <li><a href="about.html">About</a></li>
                     <li><a href="docs/index.html">Docs</a></li>
                     <li><a href="contact.html" class="nav-contact">Contact</a></li>
+                    <li><a href="https://portal.pandocore.xyz/signup" class="nav-signup">Sign Up</a></li>
                 </ul>
             </div>
         </div>
@@ -85,7 +87,7 @@
                         <span style="color: var(--sage-green); font-size: 1.5rem; flex-shrink: 0;">✓</span>
                         <div>
                             <span style="font-weight: 600;">Minimal Overhead</span>
-                            <p style="margin: 0; font-size: 0.9rem; color: var(--charcoal); opacity: 0.8;">6-17Mi memory footprint, validated across 693 pod-hours</p>
+                            <p style="margin: 0; font-size: 0.9rem; color: var(--charcoal); opacity: 0.8;">6-17Mi memory footprint, validated across 1,000+ pod-hours</p>
                         </div>
                     </div>
                 </div>
@@ -390,7 +392,7 @@
                             </svg>
                         </div>
                         <h3>Validated Performance</h3>
-                        <p>Validated across 5 real-world workloads over 693 pod-hours with zero false positives. Every capability is backed by measured results from continuous soak testing against diverse production-representative applications.</p>
+                        <p>Validated across 10+ real-world workloads over 1,000+ pod-hours with zero false positives. Every capability is backed by measured results from continuous soak testing against diverse production-representative applications.</p>
                     </div>
                 </div>
                 
@@ -435,11 +437,11 @@
         <div class="container">
             <h2 style="text-align: center; color: var(--black-forest); margin-bottom: var(--spacing-lg); position: relative; z-index: 1;">Validated Against Real Workloads</h2>
             <div class="content-wrapper" style="max-width: var(--container-max-width);">
-                <p style="text-align: center; margin-bottom: var(--spacing-lg); max-width: 100%; margin-left: auto; margin-right: auto;">PandoCore was deployed alongside 5 real-world workload types in a Kubernetes cluster for 7 continuous days. No manual configuration or tuning was performed -- all workloads ran with default settings.</p>
+                <p style="text-align: center; margin-bottom: var(--spacing-lg); max-width: 100%; margin-left: auto; margin-right: auto;">PandoCore has been deployed alongside 10+ real-world workload types across extended continuous soak tests. No manual configuration or tuning was performed. All workloads ran with default settings.</p>
 
                 <div class="validation-grid">
                     <div>
-                        <div style="font-size: 2.2rem; font-weight: 700; color: var(--black-forest);">693</div>
+                        <div style="font-size: 2.2rem; font-weight: 700; color: var(--black-forest);">1,000+</div>
                         <div style="font-size: 0.9rem; color: var(--charcoal); opacity: 0.8;">Pod-Hours</div>
                     </div>
                     <div>
@@ -447,11 +449,11 @@
                         <div style="font-size: 0.9rem; color: var(--charcoal); opacity: 0.8;">False Positives</div>
                     </div>
                     <div>
-                        <div style="font-size: 2.2rem; font-weight: 700; color: var(--black-forest);">~25M</div>
+                        <div style="font-size: 2.2rem; font-weight: 700; color: var(--black-forest);">25M+</div>
                         <div style="font-size: 0.9rem; color: var(--charcoal); opacity: 0.8;">Samples Collected</div>
                     </div>
                     <div>
-                        <div style="font-size: 2.2rem; font-weight: 700; color: var(--black-forest);">247,725</div>
+                        <div style="font-size: 2.2rem; font-weight: 700; color: var(--black-forest);">250k+</div>
                         <div style="font-size: 0.9rem; color: var(--charcoal); opacity: 0.8;">Attestation Checks Passed</div>
                     </div>
                     <div>
@@ -459,36 +461,12 @@
                         <div style="font-size: 0.9rem; color: var(--charcoal); opacity: 0.8;">Memory Overhead</div>
                     </div>
                     <div>
-                        <div style="font-size: 2.2rem; font-weight: 700; color: var(--black-forest);">5</div>
+                        <div style="font-size: 2.2rem; font-weight: 700; color: var(--black-forest);">10+</div>
                         <div style="font-size: 0.9rem; color: var(--charcoal); opacity: 0.8;">Workload Types</div>
                     </div>
                 </div>
 
-                <h3 style="text-align: center; color: var(--black-forest); margin-bottom: var(--spacing-md);">Workloads Tested</h3>
-                <div class="workloads-grid">
-                    <div>
-                        <div style="font-weight: 600;">nginx</div>
-                        <div style="font-size: 0.85rem; color: var(--charcoal); opacity: 0.8;">Web Server</div>
-                    </div>
-                    <div>
-                        <div style="font-weight: 600;">PostgreSQL</div>
-                        <div style="font-size: 0.85rem; color: var(--charcoal); opacity: 0.8;">Database</div>
-                    </div>
-                    <div>
-                        <div style="font-weight: 600;">Express.js</div>
-                        <div style="font-size: 0.85rem; color: var(--charcoal); opacity: 0.8;">Node.js API</div>
-                    </div>
-                    <div>
-                        <div style="font-weight: 600;">Spring PetClinic</div>
-                        <div style="font-size: 0.85rem; color: var(--charcoal); opacity: 0.8;">Java Application</div>
-                    </div>
-                    <div>
-                        <div style="font-weight: 600;">FastAPI</div>
-                        <div style="font-size: 0.85rem; color: var(--charcoal); opacity: 0.8;">Python API</div>
-                    </div>
-                </div>
-
-                <p style="text-align: center; margin-top: var(--spacing-lg); max-width: 100%; margin-left: auto; margin-right: auto; font-size: 0.95rem; color: var(--charcoal);">Zero false positives means PandoCore can run in enforce mode without disrupting legitimate workloads. The behavioral learning adapted to each workload type automatically -- from static web servers to JIT-compiled Java applications -- with no manual tuning required.</p>
+                <p style="text-align: center; margin-top: var(--spacing-lg); max-width: 100%; margin-left: auto; margin-right: auto; font-size: 0.95rem; color: var(--charcoal);">Zero false positives means PandoCore can run in enforce mode without disrupting legitimate workloads. The sidecar profiles each workload automatically across web servers, databases, and JIT and interpreted runtimes, with no manual tuning required.</p>
             </div>
         </div>
     </section>
@@ -519,7 +497,7 @@
                         <li>CRD-based policy (PandoCorePolicy) for declarative GitOps configuration</li>
                         <li>Graduated response: alert, network isolation (NetworkPolicy), terminate</li>
                         <li>Slack integration and portal dashboard</li>
-                        <li>7-day soak test: 5 workloads, 693 pod-hours, 0 false positives</li>
+                        <li>Extended soak testing: 10+ workloads, 1,000+ pod-hours, 0 false positives</li>
                     </ul>
                 </div>
 

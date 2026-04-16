@@ -32,9 +32,11 @@
                 <ul class="nav-links">
                     <li><a href="../index.html">Home</a></li>
                     <li><a href="../product.html">Product</a></li>
+                    <li><a href="../pricing.html">Pricing</a></li>
                     <li><a href="index.html" class="active">Docs</a></li>
                     <li><a href="../about.html">About</a></li>
                     <li><a href="../contact.html" class="nav-contact">Contact</a></li>
+                    <li><a href="https://portal.pandocore.xyz/signup" class="nav-signup">Sign Up</a></li>
                 </ul>
             </div>
         </div>
@@ -61,6 +63,9 @@
                 <li><a href="configuration.html">Configuration</a></li>
                 <li><a href="policy.html">CRD Policy</a></li>
                 <li><a href="operating-modes.html" class="active">Operating Modes</a></li>
+                <li><a href="production-hardening.html">Production Hardening</a></li>
+                <li><a href="upgrading.html">Upgrading</a></li>
+                <li><a href="troubleshooting.html">Troubleshooting</a></li>
                 <li><a href="emergency.html">Emergency Procedures</a></li>
                 <li><a href="evidence-format.html">Evidence Format</a></li>
                 <li><a href="faq.html">FAQ</a></li>
@@ -77,7 +82,7 @@
 
             <h1>Operating Modes</h1>
             
-            <p>PandoCore uses a three-tier escalation model — <strong>Monitor → Alert → Enforce</strong> — controlling how it responds when anomalous behavior is detected. Choose the mode that matches your deployment stage and risk tolerance.</p>
+            <p>PandoCore uses a three-tier escalation model (<strong>Monitor → Alert → Enforce</strong>) controlling how it responds when anomalous behavior is detected. Choose the mode that matches your deployment stage and risk tolerance.</p>
 
             <h2>Mode Comparison</h2>
 
@@ -145,7 +150,7 @@
                 <li>Continuously monitors workload behavior</li>
                 <li>Logs detection events to stdout (JSON format)</li>
                 <li>Emits Kubernetes events for detections</li>
-                <li>Updates Prometheus metrics with drift scores</li>
+                <li>Updates Prometheus metrics for detection activity</li>
                 <li><strong>Does not terminate pods</strong></li>
             </ul>
 
@@ -153,20 +158,19 @@
             
             <ul>
                 <li><strong>Initial deployment:</strong> Understand your workload's normal behavior patterns</li>
-                <li><strong>Threshold tuning:</strong> Observe detection events and adjust thresholds</li>
+                <li><strong>Tuning:</strong> Observe detection events and adjust sensitivity</li>
                 <li><strong>Evaluation:</strong> Test PandoCore before enabling enforcement</li>
                 <li><strong>Compliance requirements:</strong> When you need detection without automated response</li>
             </ul>
 
             <h3>Example Output</h3>
-            
+
             <pre><code>{
   "level": "warn",
   "timestamp": "2026-03-16T14:30:00Z",
-  "message": "drift_detected",
+  "message": "anomaly_detected",
   "mode": "monitor",
-  "drift_score": 0.67,
-  "threshold_exceeded": "cumulative",
+  "severity": "high",
   "action": "logged_only"
 }</code></pre>
 
@@ -174,7 +178,7 @@
 
             <p><strong>Set via:</strong> <code>PANDO_MODE=alert</code></p>
 
-            <p>Alert mode adds real-time notifications to monitoring. When anomalous behavior is detected, PandoCore sends alerts to Slack (and other configured destinations) so your team is notified immediately — but pods are <strong>not</strong> terminated.</p>
+            <p>Alert mode adds real-time notifications to monitoring. When anomalous behavior is detected, PandoCore sends alerts to Slack (and other configured destinations) so your team is notified immediately, but pods are <strong>not</strong> terminated.</p>
 
             <div class="docs-callout info">
                 <div class="docs-callout-title">Requires Configuration</div>
@@ -186,7 +190,7 @@
             <ul>
                 <li>Everything in Monitor mode, plus:</li>
                 <li>Sends color-coded Slack alerts on each detection event</li>
-                <li>Alerts include pod name, namespace, drift score, severity, and timestamp</li>
+                <li>Alerts include pod name, namespace, severity, and timestamp</li>
                 <li><strong>Does not terminate pods</strong></li>
             </ul>
 
@@ -202,28 +206,28 @@
 
             <p>Slack alerts are color-coded by severity:</p>
             <ul>
-                <li><strong>Critical</strong> (red) — enforcement triggered</li>
-                <li><strong>High</strong> (orange) — drift score &ge; 0.6</li>
-                <li><strong>Warning</strong> (yellow) — drift score &ge; 0.3</li>
-                <li><strong>Info</strong> (green) — low drift detection</li>
+                <li><strong>Critical</strong> (red): enforcement triggered</li>
+                <li><strong>High</strong> (orange): significant anomaly detected</li>
+                <li><strong>Warning</strong> (yellow): detection below enforcement threshold</li>
+                <li><strong>Info</strong> (green): low-severity detection</li>
             </ul>
 
             <h2>Enforce Mode</h2>
 
             <p><strong>Set via:</strong> <code>PANDO_MODE=enforce</code></p>
 
-            <p>Enforce mode provides active protection. When anomalous behavior is detected and exceeds configured thresholds, PandoCore generates evidence, sends alerts, and terminates the compromised pod.</p>
+            <p>Enforce mode provides active protection. When anomalous behavior is detected, PandoCore generates evidence, sends alerts, and terminates the compromised pod.</p>
 
             <div class="docs-callout warning">
                 <div class="docs-callout-title">⚠️ Production Use</div>
-                <p>Before enabling enforce mode, run in monitor mode for at least one week in staging to ensure thresholds are appropriately tuned for your workload.</p>
+                <p>Before enabling enforce mode, run in monitor mode for at least one week in staging to validate detection behavior for your workload.</p>
             </div>
 
             <h3>Behavior</h3>
-            
+
             <ul>
                 <li>Continuously monitors workload behavior</li>
-                <li>Generates and externalizes evidence when thresholds are exceeded</li>
+                <li>Generates and externalizes evidence on detection</li>
                 <li>Emits Kubernetes events before pod termination</li>
                 <li><strong>Terminates the pod</strong> via Kubernetes API</li>
                 <li>Kubernetes automatically restarts the pod (assuming RestartPolicy allows)</li>
@@ -232,12 +236,12 @@
             <h3>Response Sequence</h3>
 
             <ol>
-                <li><strong>Detection:</strong> Drift exceeds configured threshold</li>
+                <li><strong>Detection:</strong> Anomalous behavior identified</li>
                 <li><strong>Evidence generation:</strong> Structured evidence record created</li>
                 <li><strong>Evidence externalization:</strong> Written to logs, K8s events, webhooks</li>
                 <li><strong>Alert dispatch:</strong> Slack notification sent (if configured)</li>
                 <li><strong>Network isolation:</strong> NetworkPolicy applied to restrict pod egress traffic</li>
-                <li><strong>Escalation:</strong> If anomalous behavior persists past configurable timer, escalate to termination</li>
+                <li><strong>Escalation:</strong> If anomalous behavior persists, escalate to termination</li>
                 <li><strong>Pod termination:</strong> Kubernetes API DELETE call</li>
                 <li><strong>Pod restart:</strong> Kubernetes scheduler creates new pod</li>
                 <li><strong>Fresh baseline:</strong> New sidecar establishes clean baseline</li>
@@ -258,8 +262,7 @@
   "timestamp": "2026-03-16T14:30:00Z",
   "message": "enforcement_triggered",
   "mode": "enforce",
-  "drift_score": 0.67,
-  "threshold_exceeded": "cumulative",
+  "severity": "high",
   "action": "pod_terminated",
   "evidence_id": "abc123-def456"
 }</code></pre>
@@ -276,20 +279,17 @@
             </div>
 
             <h3>Behavior</h3>
-            
+
             <ul>
                 <li>Same as monitor mode (no pod termination)</li>
-                <li>Logs detailed information about every sample</li>
-                <li>Outputs baseline establishment progress</li>
-                <li>Shows threshold calculation details</li>
-                <li>Provides drift component breakdowns</li>
+                <li>Logs detailed information about detection activity and learning-window progress</li>
             </ul>
 
             <h3>When to Use</h3>
-            
+
             <ul>
                 <li><strong>Troubleshooting:</strong> Understanding why detections are or aren't occurring</li>
-                <li><strong>Threshold tuning:</strong> Seeing exactly what triggers detections</li>
+                <li><strong>Sensitivity tuning:</strong> Seeing detection activity in context</li>
                 <li><strong>Development:</strong> Testing PandoCore integration</li>
                 <li><strong>Support requests:</strong> Gathering detailed logs for analysis</li>
             </ul>
@@ -322,9 +322,9 @@
             <h2>Recommended Deployment Path</h2>
 
             <ol>
-                <li><strong>Week 1-2: Monitor mode</strong> — Deploy to staging with <code>PANDO_MODE=monitor</code>. Observe detections, tune thresholds if needed.</li>
-                <li><strong>Week 3-4: Alert mode</strong> — Switch to <code>PANDO_MODE=alert</code> in production. Your team gets notified on detections without enforcement.</li>
-                <li><strong>Week 5+: Enforce mode</strong> — Enable <code>PANDO_MODE=enforce</code> for full active protection with alerts and pod termination.</li>
+                <li><strong>Week 1-2: Monitor mode.</strong> Deploy to staging with <code>PANDO_MODE=monitor</code>. Observe detections, adjust sensitivity if needed.</li>
+                <li><strong>Week 3-4: Alert mode.</strong> Switch to <code>PANDO_MODE=alert</code> in production. Your team gets notified on detections without enforcement.</li>
+                <li><strong>Week 5+: Enforce mode.</strong> Enable <code>PANDO_MODE=enforce</code> for full active protection with alerts and pod termination.</li>
             </ol>
 
             <h2>Mode-Specific Metrics</h2>
@@ -356,12 +356,12 @@ pando_enforcements_total{pod="your-pod"} 3</code></pre>
                     <tr>
                         <td><code>/healthz</code></td>
                         <td>GET</td>
-                        <td>Health check — returns 200 if healthy, 503 if unhealthy</td>
+                        <td>Health check: returns 200 if healthy, 503 if unhealthy</td>
                     </tr>
                     <tr>
                         <td><code>/readyz</code></td>
                         <td>GET</td>
-                        <td>Readiness check — returns 200 when ready to serve</td>
+                        <td>Readiness check: 503 while the learning window is in progress, 200 once the sidecar is actively detecting. Wire this into load balancer readiness gates to hold traffic until learning completes.</td>
                     </tr>
                     <tr>
                         <td><code>/metrics</code></td>
@@ -371,17 +371,12 @@ pando_enforcements_total{pod="your-pod"} 3</code></pre>
                     <tr>
                         <td><code>/relearn</code></td>
                         <td>POST</td>
-                        <td>Trigger re-learning phase to recalibrate thresholds</td>
-                    </tr>
-                    <tr>
-                        <td><code>/approve-model-refresh</code></td>
-                        <td>POST</td>
-                        <td>Approve pending ML model refresh (if approval required)</td>
+                        <td>Trigger re-learning phase to rebuild the baseline</td>
                     </tr>
                     <tr>
                         <td><code>/status</code></td>
                         <td>GET</td>
-                        <td>JSON summary of sidecar state: version, mode, uptime, drift, detection counts</td>
+                        <td>JSON summary of sidecar state: version, mode, uptime, detection counts</td>
                     </tr>
                 </tbody>
             </table>
@@ -401,16 +396,15 @@ kubectl exec -it POD_NAME -c pando-sidecar -- \
             <p>Re-learning is useful when:</p>
             <ul>
                 <li>Application behavior has legitimately changed (new release)</li>
-                <li>Thresholds need recalibration after initial tuning</li>
                 <li>Baseline was established during unusual conditions</li>
             </ul>
 
             <h2>Next Steps</h2>
-            
+
             <ul>
-                <li><a href="configuration.html">Configuration</a> — Tune thresholds for your workload</li>
-                <li><a href="emergency.html">Emergency Procedures</a> — How to disable quickly</li>
-                <li><a href="evidence-format.html">Evidence Format</a> — Understand detection output</li>
+                <li><a href="configuration.html">Configuration</a>: Settings reference</li>
+                <li><a href="emergency.html">Emergency Procedures</a>: How to disable quickly</li>
+                <li><a href="evidence-format.html">Evidence Format</a>: Understand detection output</li>
             </ul>
 
         </main>

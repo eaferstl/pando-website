@@ -32,9 +32,11 @@
                 <ul class="nav-links">
                     <li><a href="../index.html">Home</a></li>
                     <li><a href="../product.html">Product</a></li>
+                    <li><a href="../pricing.html">Pricing</a></li>
                     <li><a href="../about.html">About</a></li>
                     <li><a href="index.html" class="active">Docs</a></li>
                     <li><a href="../contact.html" class="nav-contact">Contact</a></li>
+                    <li><a href="https://portal.pandocore.xyz/signup" class="nav-signup">Sign Up</a></li>
                 </ul>
             </div>
         </div>
@@ -61,6 +63,9 @@
                 <li><a href="configuration.html">Configuration</a></li>
                 <li><a href="policy.html">CRD Policy</a></li>
                 <li><a href="operating-modes.html">Operating Modes</a></li>
+                <li><a href="production-hardening.html">Production Hardening</a></li>
+                <li><a href="upgrading.html">Upgrading</a></li>
+                <li><a href="troubleshooting.html">Troubleshooting</a></li>
                 <li><a href="emergency.html" class="active">Emergency Procedures</a></li>
                 <li><a href="evidence-format.html">Evidence Format</a></li>
                 <li><a href="faq.html">FAQ</a></li>
@@ -117,7 +122,7 @@ kubectl set env deployment/YOUR_DEPLOYMENT -c pando-sidecar PANDO_MODE=monitor</
 
             <div class="docs-callout success">
                 <div class="docs-callout-title">✓ Safe and Reversible</div>
-                <p>This triggers a rolling restart. New pods will still run PandoCore, but it will only observe and log — it will <strong>not</strong> terminate pods. Evidence is still generated for review.</p>
+                <p>This triggers a rolling restart. New pods will still run PandoCore, but it will only observe and log. It will <strong>not</strong> terminate pods. Evidence is still generated for review.</p>
             </div>
 
             <h3>For Multiple Deployments</h3>
@@ -188,19 +193,14 @@ kubectl delete namespace pando-system</code></pre>
             
             <pre><code># View the most recent detection event
 kubectl logs -n YOUR_NAMESPACE YOUR_POD -c pando-sidecar --previous | \
-  grep "enforcement_triggered\|drift_detected" | tail -5</code></pre>
+  grep "enforcement_triggered\|anomaly_detected" | tail -5</code></pre>
 
             <h3>View Kubernetes Events</h3>
-            
+
             <pre><code>kubectl get events -n YOUR_NAMESPACE --sort-by='.lastTimestamp' | grep -i pando</code></pre>
 
-            <h3>Check Current Drift Score</h3>
-            
-            <pre><code>kubectl exec YOUR_POD -c pando-sidecar -- \
-  wget -qO- http://localhost:9090/metrics | grep pando_drift</code></pre>
-
             <h2>Common Causes and Solutions</h2>
-            
+
             <table>
                 <thead>
                     <tr>
@@ -217,38 +217,30 @@ kubectl logs -n YOUR_NAMESPACE YOUR_POD -c pando-sidecar --previous | \
                     </tr>
                     <tr>
                         <td>Termination during autoscaling</td>
-                        <td>Memory/process spike from load</td>
-                        <td>Raise thresholds: <code>PANDO_THRESHOLD_INCREMENTAL=0.20</code></td>
+                        <td>Load spike outside learned baseline</td>
+                        <td>Raise sensitivity: <code>PANDO_SENSITIVITY=2.0</code></td>
                     </tr>
                     <tr>
                         <td>Termination during CronJob</td>
                         <td>Periodic batch processing</td>
-                        <td>Raise cumulative threshold: <code>PANDO_THRESHOLD_CUMULATIVE=0.55</code></td>
+                        <td>Raise sensitivity: <code>PANDO_SENSITIVITY=2.0</code></td>
                     </tr>
                     <tr>
                         <td>Repeated terminations</td>
                         <td>Workload is inherently variable</td>
-                        <td>Run in monitor mode longer, then tune thresholds</td>
+                        <td>Run in monitor mode longer, then adjust sensitivity</td>
                     </tr>
                 </tbody>
             </table>
 
-            <h2>Threshold Adjustment</h2>
-            
-            <p>If PandoCore is responding to legitimate workload behavior, adjust thresholds instead of disabling:</p>
+            <h2>Sensitivity Adjustment</h2>
 
-            <pre><code># Make less sensitive to sudden spikes
-kubectl set env deployment/YOUR_DEPLOYMENT -c pando-sidecar \
-  PANDO_THRESHOLD_INCREMENTAL=0.20
+            <p>If PandoCore is responding to legitimate workload behavior, raise sensitivity instead of disabling:</p>
 
-# Make less sensitive to gradual drift
+            <pre><code># Make the sidecar more permissive
 kubectl set env deployment/YOUR_DEPLOYMENT -c pando-sidecar \
-  PANDO_THRESHOLD_CUMULATIVE=0.55
-
-# Apply both
-kubectl set env deployment/YOUR_DEPLOYMENT -c pando-sidecar \
-  PANDO_THRESHOLD_INCREMENTAL=0.20 \
-  PANDO_THRESHOLD_CUMULATIVE=0.55</code></pre>
+  PANDO_SENSITIVITY=2.0
+kubectl rollout restart deployment/YOUR_DEPLOYMENT</code></pre>
 
             <h2>Trigger Re-Learning</h2>
             
@@ -270,7 +262,7 @@ kubectl exec YOUR_POD -c pando-sidecar -- \
             <ol>
                 <li>The evidence JSON from the detection event</li>
                 <li>What your workload was doing at the time</li>
-                <li>Your current threshold settings</li>
+                <li>Your current sensitivity setting</li>
                 <li>Sidecar logs from around the time of the issue</li>
             </ol>
 
@@ -284,8 +276,8 @@ kubectl set env deployment/NAME -c pando-sidecar PANDO_MODE=monitor
 # TRIGGER RE-LEARN
 kubectl exec POD -c pando-sidecar -- wget -qO- --post-data='' http://localhost:9090/relearn
 
-# RAISE THRESHOLDS
-kubectl set env deployment/NAME -c pando-sidecar PANDO_THRESHOLD_INCREMENTAL=0.20
+# RAISE SENSITIVITY
+kubectl set env deployment/NAME -c pando-sidecar PANDO_SENSITIVITY=2.0
 
 # VIEW RECENT EVENTS
 kubectl logs POD -c pando-sidecar --previous | grep enforcement_triggered</code></pre>

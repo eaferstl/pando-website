@@ -32,9 +32,11 @@
                 <ul class="nav-links">
                     <li><a href="../index.html">Home</a></li>
                     <li><a href="../product.html">Product</a></li>
+                    <li><a href="../pricing.html">Pricing</a></li>
                     <li><a href="../about.html">About</a></li>
                     <li><a href="index.html" class="active">Docs</a></li>
                     <li><a href="../contact.html" class="nav-contact">Contact</a></li>
+                    <li><a href="https://portal.pandocore.xyz/signup" class="nav-signup">Sign Up</a></li>
                 </ul>
             </div>
         </div>
@@ -61,6 +63,9 @@
                 <li><a href="configuration.html">Configuration</a></li>
                 <li><a href="policy.html" class="active">CRD Policy</a></li>
                 <li><a href="operating-modes.html">Operating Modes</a></li>
+                <li><a href="production-hardening.html">Production Hardening</a></li>
+                <li><a href="upgrading.html">Upgrading</a></li>
+                <li><a href="troubleshooting.html">Troubleshooting</a></li>
                 <li><a href="emergency.html">Emergency Procedures</a></li>
                 <li><a href="evidence-format.html">Evidence Format</a></li>
                 <li><a href="faq.html">FAQ</a></li>
@@ -84,7 +89,7 @@
                 <ol>
                     <li>Create a <code>pando-policy.yaml</code> file</li>
                     <li>Run <code>kubectl apply -f pando-policy.yaml</code></li>
-                    <li>Done &mdash; sidecars pick up the policy within 30 seconds</li>
+                    <li>Done. Sidecars pick up the policy within 30 seconds.</li>
                 </ol>
             </div>
 
@@ -119,14 +124,13 @@ default   enforce   high          5s</code></pre>
             <pre><code>apiVersion: pandocore.xyz/v1alpha1
 kind: PandoCorePolicy
 metadata:
-  name: default            # must be "default" &mdash; one policy per namespace
+  name: default            # must be "default", one policy per namespace
   namespace: production
 spec:
   # Operating mode
   mode: enforce            # monitor | alert | enforce | debug
 
-  # Sensitivity preset (maps to threshold multipliers)
-  # Ignored if explicit thresholds are set below
+  # Sensitivity (higher = more permissive)
   sensitivity: medium      # low | medium | high
 
   # Graduated response chain
@@ -136,17 +140,6 @@ spec:
       - isolate
       - terminate
     escalationDelaySec: 60
-
-  # Explicit drift thresholds (override sensitivity preset)
-  thresholds:
-    incremental: 0.15      # sample-to-sample drift (0.0&ndash;1.0)
-    cumulative: 0.45       # total drift from baseline (0.0&ndash;1.0)
-
-  # Feature toggles
-  features:
-    mlDetection: true
-    networkAudit: true
-    attestation: true
 
   # Alert integrations
   integrations:
@@ -160,43 +153,6 @@ spec:
       - monitoring
     labels:
       pandocore.xyz/skip: "true"</code></pre>
-
-            <h2>Sensitivity Presets</h2>
-
-            <p>Sensitivity presets map to threshold values, making it easy to tune detection without specifying exact numbers:</p>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Preset</th>
-                        <th>Incremental Threshold</th>
-                        <th>Cumulative Threshold</th>
-                        <th>Use Case</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><code>low</code></td>
-                        <td>0.25</td>
-                        <td>0.60</td>
-                        <td>Noisy workloads, batch jobs</td>
-                    </tr>
-                    <tr>
-                        <td><code>medium</code></td>
-                        <td>0.15</td>
-                        <td>0.45</td>
-                        <td>General-purpose (default)</td>
-                    </tr>
-                    <tr>
-                        <td><code>high</code></td>
-                        <td>0.10</td>
-                        <td>0.30</td>
-                        <td>Security-critical services</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <p>Setting explicit <code>thresholds</code> overrides the sensitivity preset entirely.</p>
 
             <h2>Precedence</h2>
 
@@ -245,7 +201,7 @@ spec:
                 <tbody>
                     <tr>
                         <td><code>monitor</code></td>
-                        <td>Detect and log only &mdash; no enforcement action</td>
+                        <td>Detect and log only. No enforcement action.</td>
                     </tr>
                     <tr>
                         <td><code>alert</code></td>
@@ -261,6 +217,33 @@ spec:
                     </tr>
                 </tbody>
             </table>
+
+            <h3>sensitivity</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Value</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>low</code></td>
+                        <td>Strictest. Catches subtler deviations. Use after a workload has been running cleanly for weeks.</td>
+                    </tr>
+                    <tr>
+                        <td><code>medium</code></td>
+                        <td>Default. Balanced for typical production workloads.</td>
+                    </tr>
+                    <tr>
+                        <td><code>high</code></td>
+                        <td>Most permissive. Good starting point for chatty workloads (JVMs, databases, batch jobs).</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>For finer numeric control on individual workloads, use the <code>PANDO_SENSITIVITY</code> environment variable (see <a href="configuration.html">Configuration</a>).</p>
 
             <h3>response</h3>
 
@@ -282,35 +265,6 @@ spec:
                         <td><code>escalationDelaySec</code></td>
                         <td>integer (0&ndash;3600)</td>
                         <td>Seconds after isolation before escalating to terminate</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h3>features</h3>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Field</th>
-                        <th>Type</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><code>mlDetection</code></td>
-                        <td>boolean</td>
-                        <td>Enable ML-based anomaly detection</td>
-                    </tr>
-                    <tr>
-                        <td><code>networkAudit</code></td>
-                        <td>boolean</td>
-                        <td>Enable network connection auditing</td>
-                    </tr>
-                    <tr>
-                        <td><code>attestation</code></td>
-                        <td>boolean</td>
-                        <td>Enable periodic attestation checks</td>
                     </tr>
                 </tbody>
             </table>
@@ -350,13 +304,10 @@ metadata:
   namespace: production
 spec:
   mode: enforce
-  sensitivity: high
+  sensitivity: medium
   response:
     actions: [alert, isolate, terminate]
     escalationDelaySec: 60
-  features:
-    mlDetection: true
-    networkAudit: true
   integrations:
     slack: "https://hooks.slack.com/services/T.../B.../xxx"</code></pre>
 
@@ -369,23 +320,7 @@ metadata:
   namespace: staging
 spec:
   mode: monitor
-  sensitivity: low</code></pre>
-
-            <h3>Custom Thresholds</h3>
-
-            <pre><code>apiVersion: pandocore.xyz/v1alpha1
-kind: PandoCorePolicy
-metadata:
-  name: default
-  namespace: payments
-spec:
-  mode: enforce
-  thresholds:
-    incremental: 0.12
-    cumulative: 0.35
-  response:
-    actions: [alert, terminate]
-    escalationDelaySec: 30</code></pre>
+  sensitivity: high</code></pre>
 
             <h2>Verifying</h2>
 
@@ -406,6 +341,11 @@ spec:
             <pre><code>PandoCorePolicy CRD found  namespace=production name=default
 Applied PandoCorePolicy  mode=enforce resource_version="12345"</code></pre>
 
+            <div class="docs-callout info">
+                <div class="docs-callout-title">Advanced fields</div>
+                <p>The CRD accepts additional fields for specialized deployments (fine-grained threshold overrides, feature toggles, workload-specific tuning). These are intentionally not documented here. The fields above cover every workload we've seen in production. If you need more, <a href="../contact.html">talk to support</a>.</p>
+            </div>
+
             <h2>Polling Interval</h2>
 
             <p>The sidecar polls for policy changes every 30 seconds by default. To customize, set <code>PANDO_POLICY_POLL_INTERVAL_SECS</code> on the sidecar container.</p>
@@ -424,9 +364,9 @@ Applied PandoCorePolicy  mode=enforce resource_version="12345"</code></pre>
             <h2>Next Steps</h2>
 
             <ul>
-                <li><a href="configuration.html">Configuration</a> &mdash; Full env var and Helm reference</li>
-                <li><a href="operating-modes.html">Operating Modes</a> &mdash; Understand monitor vs enforce</li>
-                <li><a href="webhook.html">Admission Webhook</a> &mdash; Per-pod annotation overrides</li>
+                <li><a href="configuration.html">Configuration</a>:Full env var and Helm reference</li>
+                <li><a href="operating-modes.html">Operating Modes</a>:Understand monitor vs enforce</li>
+                <li><a href="webhook.html">Admission Webhook</a>:Per-pod annotation overrides</li>
             </ul>
 
         </main>

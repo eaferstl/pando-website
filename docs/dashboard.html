@@ -32,9 +32,11 @@
                 <ul class="nav-links">
                     <li><a href="../index.html">Home</a></li>
                     <li><a href="../product.html">Product</a></li>
+                    <li><a href="../pricing.html">Pricing</a></li>
                     <li><a href="../about.html">About</a></li>
                     <li><a href="index.html" class="active">Docs</a></li>
                     <li><a href="../contact.html" class="nav-contact">Contact</a></li>
+                    <li><a href="https://portal.pandocore.xyz/signup" class="nav-signup">Sign Up</a></li>
                 </ul>
             </div>
         </div>
@@ -61,6 +63,9 @@
                 <li><a href="configuration.html">Configuration</a></li>
                 <li><a href="policy.html">CRD Policy</a></li>
                 <li><a href="operating-modes.html">Operating Modes</a></li>
+                <li><a href="production-hardening.html">Production Hardening</a></li>
+                <li><a href="upgrading.html">Upgrading</a></li>
+                <li><a href="troubleshooting.html">Troubleshooting</a></li>
                 <li><a href="emergency.html">Emergency Procedures</a></li>
                 <li><a href="evidence-format.html">Evidence Format</a></li>
                 <li><a href="faq.html">FAQ</a></li>
@@ -80,8 +85,8 @@
             <p>PandoCore provides two ways to view detection events:</p>
 
             <ol>
-                <li><strong>Portal Dashboard</strong> (recommended) &mdash; Detection events are streamed from sidecars to your PandoCore Portal at <code>portal.pandocore.xyz</code>, stored in Firestore, and displayed in your authenticated customer dashboard. This is the primary way to view events and requires no additional setup beyond the Helm install.</li>
-                <li><strong>In-cluster Dashboard</strong> (optional) &mdash; A lightweight dashboard that runs entirely within your cluster for real-time debugging. No data leaves your environment.</li>
+                <li><strong>Portal Dashboard</strong> (recommended): Detection events are streamed from sidecars to your PandoCore Portal at <code>portal.pandocore.xyz</code>, stored in Firestore, and displayed in your authenticated customer dashboard. This is the primary way to view events and requires no additional setup beyond the Helm install.</li>
+                <li><strong>In-cluster Dashboard</strong> (optional): A lightweight dashboard that runs entirely within your cluster for real-time debugging. No data leaves your environment.</li>
             </ol>
 
             <div class="docs-callout info">
@@ -94,16 +99,16 @@
             <p>The portal dashboard is available at <a href="https://portal.pandocore.xyz/dashboard">portal.pandocore.xyz/dashboard</a> after signing in. It shows:</p>
 
             <ul>
-                <li><strong>Event Stats</strong> &mdash; events in last 24h and 7 days, enforcements, and "would have killed" counts</li>
-                <li><strong>Recent Events</strong> &mdash; chronological list of detection events with drift scores, severity, and actions taken</li>
-                <li><strong>Namespace Breakdown</strong> &mdash; which namespaces are generating events</li>
+                <li><strong>Event Stats</strong>:events in last 24h and 7 days, enforcements, and "would have killed" counts</li>
+                <li><strong>Recent Events</strong>:chronological list of detection events with severity and actions taken</li>
+                <li><strong>Namespace Breakdown</strong>:which namespaces are generating events</li>
             </ul>
 
             <p>Events are automatically streamed from sidecars to the portal when <code>portalWebhook.enabled=true</code> (the default). No additional configuration is needed.</p>
 
             <h3>Event Data Flow</h3>
             <ol>
-                <li>Sidecar detects drift or threshold exceedance</li>
+                <li>Sidecar detects anomalous behavior</li>
                 <li>Evidence is POSTed to <code>portal.pandocore.xyz/api/events/ingest</code> (authenticated via license key)</li>
                 <li>Portal stores the event in Firestore under your customer account</li>
                 <li>Dashboard displays events with severity classification and action details</li>
@@ -117,23 +122,23 @@
 
             <h3>Overview</h3>
             <ul>
-                <li><strong>Protected Deployments</strong> &mdash; count of deployments with the PandoCore sidecar</li>
-                <li><strong>Protected Pods</strong> &mdash; total running pods under protection</li>
-                <li><strong>Events (24h / 7d)</strong> &mdash; detection events in the last day and week</li>
-                <li><strong>Trips (24h)</strong> &mdash; threshold-exceeding detections</li>
-                <li><strong>Pod Status</strong> &mdash; how many pods are in learning, monitoring, or enforcing phase</li>
+                <li><strong>Protected Deployments</strong>:count of deployments with the PandoCore sidecar</li>
+                <li><strong>Protected Pods</strong>:total running pods under protection</li>
+                <li><strong>Events (24h / 7d)</strong>:detection events in the last day and week</li>
+                <li><strong>Trips (24h)</strong>:enforcement-level detections</li>
+                <li><strong>Pod Status</strong>:how many pods are in learning, monitoring, or enforcing phase</li>
             </ul>
 
             <h3>Event Timeline</h3>
             <p>A chronological list of detection events, filterable by:</p>
             <ul>
-                <li><strong>Type</strong> &mdash; drift detected, trip executed, attestation failed</li>
-                <li><strong>Severity</strong> &mdash; info, warning, critical</li>
-                <li><strong>Namespace</strong> &mdash; filter to a specific namespace</li>
+                <li><strong>Type</strong>:anomaly detected, trip executed</li>
+                <li><strong>Severity</strong>:info, warning, critical</li>
+                <li><strong>Namespace</strong>:filter to a specific namespace</li>
             </ul>
 
             <h3>"What Would Have Happened"</h3>
-            <p>In <strong>monitor mode</strong>, PandoCore detects but does not terminate pods. The dashboard shows which pods <em>would have been killed</em> if enforcement were enabled, along with the drift score and reason. This lets you validate PandoCore's behavior before switching to enforce mode.</p>
+            <p>In <strong>monitor mode</strong>, PandoCore detects but does not terminate pods. The dashboard shows which pods <em>would have been killed</em> if enforcement were enabled, along with the severity and reason. This lets you validate PandoCore's behavior before switching to enforce mode.</p>
 
             <table>
                 <thead>
@@ -145,11 +150,11 @@
                 <tbody>
                     <tr>
                         <td>Monitor</td>
-                        <td><strong>WOULD HAVE KILLED</strong> &mdash; trip threshold exceeded, but no action taken</td>
+                        <td><strong>WOULD HAVE KILLED</strong>:enforcement-level detection, but no action taken</td>
                     </tr>
                     <tr>
                         <td>Enforce</td>
-                        <td><strong>POD TERMINATED</strong> &mdash; pod was killed and evidence emitted</td>
+                        <td><strong>POD TERMINATED</strong>:pod was killed and evidence emitted</td>
                     </tr>
                 </tbody>
             </table>
@@ -235,7 +240,7 @@
                     </tr>
                     <tr>
                         <td><code>GET /api/deployments</code></td>
-                        <td>List of protected deployments with status and drift scores</td>
+                        <td>List of protected deployments with status</td>
                     </tr>
                     <tr>
                         <td><code>GET /api/events?page=1&amp;limit=50</code></td>
@@ -249,8 +254,8 @@
             <p>The dashboard is a single Go binary running as a Deployment in <code>pando-system</code>. It collects data from two sources:</p>
 
             <ol>
-                <li><strong>Kubernetes Events</strong> &mdash; watches for events with label <code>pando.io/event-type=collapse</code> (created by sidecars on trip/detection)</li>
-                <li><strong>Sidecar <code>/status</code> endpoints</strong> &mdash; polls each protected pod's sidecar on port 9090 at the configured interval</li>
+                <li><strong>Kubernetes Events</strong>:watches for events with label <code>pando.io/event-type=collapse</code> (created by sidecars on trip/detection)</li>
+                <li><strong>Sidecar <code>/status</code> endpoints</strong>:polls each protected pod's sidecar on port 9090 at the configured interval</li>
             </ol>
 
             <p>Events are stored in an in-memory ring buffer (configurable size, default 10,000 events). The dashboard has <strong>read-only</strong> RBAC permissions: it can list/watch events and list pods, but cannot modify any resources.</p>
