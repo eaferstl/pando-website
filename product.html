@@ -100,8 +100,159 @@
         <div class="container">
             <h2 style="text-align: center; color: var(--black-forest); margin-bottom: var(--spacing-lg); position: relative; z-index: 1;">Complements Your Security Stack</h2>
             <div class="content-wrapper" style="max-width: var(--container-max-width);">
-                <p style="text-align: center; margin-bottom: var(--spacing-lg); max-width: 100%; margin-left: auto; margin-right: auto;">PandoCore deploys as a sidecar container within the same Kubernetes pod as your application.</p>
-                
+                <p style="text-align: center; margin-bottom: var(--spacing-lg); max-width: 100%; margin-left: auto; margin-right: auto;">PandoCore installs an admission webhook in its own namespace and injects a sidecar only into the pods you label, leaving the rest of your cluster untouched.</p>
+
+                <!-- K8s Cluster-level Visual -->
+                <div class="k8s-cluster-visual">
+                    <div class="cluster-container">
+                        <div class="cluster-header">
+                            <svg class="k8s-icon" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M16 2L4 8v16l12 6 12-6V8L16 2zm0 2.18l9.5 4.75-9.5 4.75-9.5-4.75L16 4.18zM5.5 9.82l9.5 4.75v9.5l-9.5-4.75v-9.5zm21 0v9.5l-9.5 4.75v-9.5l9.5-4.75z" fill="currentColor"/>
+                            </svg>
+                            <span class="cluster-label">Your Kubernetes Cluster</span>
+                        </div>
+
+                        <div class="cluster-contents">
+                            <!-- pando-system namespace -->
+                            <div class="namespace-box system-ns">
+                                <div class="ns-header">
+                                    <span class="ns-name">pando-system</span>
+                                    <span class="ns-tag">control</span>
+                                </div>
+                                <div class="ns-pods">
+                                    <div class="system-pod">
+                                        <span class="system-pod-title">Admission Webhook</span>
+                                        <span class="system-pod-sub">2 replicas (HA)</span>
+                                    </div>
+                                    <div class="system-pod">
+                                        <span class="system-pod-title">Dashboard</span>
+                                        <span class="system-pod-sub">polls /status</span>
+                                    </div>
+                                    <div class="system-pod">
+                                        <span class="system-pod-title">License Secret</span>
+                                        <span class="system-pod-sub">&amp; PandoCorePolicy CRD</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- User workload namespace -->
+                            <div class="namespace-box user-ns">
+                                <div class="ns-header">
+                                    <span class="ns-name">production</span>
+                                    <span class="ns-tag user-tag">your workload</span>
+                                </div>
+                                <div class="ns-pods">
+                                    <div class="mini-pod protected">
+                                        <div class="mini-pod-label">pandocore.xyz/protect=true</div>
+                                        <div class="mini-pod-containers">
+                                            <span class="mini-container mini-app">App</span>
+                                            <span class="mini-container mini-sidecar">Sidecar</span>
+                                        </div>
+                                    </div>
+                                    <div class="mini-pod protected">
+                                        <div class="mini-pod-label">pandocore.xyz/protect=true</div>
+                                        <div class="mini-pod-containers">
+                                            <span class="mini-container mini-app">App</span>
+                                            <span class="mini-container mini-sidecar">Sidecar</span>
+                                        </div>
+                                    </div>
+                                    <div class="mini-pod unprotected">
+                                        <div class="mini-pod-label dim">no label</div>
+                                        <div class="mini-pod-containers">
+                                            <span class="mini-container mini-app">App</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Excluded kube-system -->
+                            <div class="namespace-box excluded-ns">
+                                <div class="ns-header">
+                                    <span class="ns-name">kube-system</span>
+                                    <span class="ns-tag excluded-tag">excluded</span>
+                                </div>
+                                <div class="ns-empty">sidecar injection skipped</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Flow arrow to external portal -->
+                    <div class="cluster-egress">
+                        <svg class="egress-arrow" viewBox="0 0 80 20" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+                            <defs>
+                                <marker id="egress-head" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+                                    <polygon points="0 0, 8 3, 0 6" fill="var(--black-forest)"/>
+                                </marker>
+                            </defs>
+                            <line x1="2" y1="10" x2="70" y2="10" stroke="var(--black-forest)" stroke-width="1.5" marker-end="url(#egress-head)" opacity="0.6" stroke-dasharray="4 4"/>
+                        </svg>
+                        <span class="egress-label">evidence</span>
+                    </div>
+
+                    <!-- External destinations -->
+                    <div class="external-destinations">
+                        <div class="destination-card primary-dest">
+                            <div class="dest-icon">
+                                <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" class="inline-icon">
+                                    <rect width="32" height="32" rx="6" fill="var(--amber-honey)"/>
+                                    <circle cx="16" cy="16" r="7" stroke="var(--coffee-bean)" stroke-width="2" fill="none"/>
+                                    <path d="M9 16h14M16 9v14" stroke="var(--coffee-bean)" stroke-width="1.5" opacity="0.7"/>
+                                    <ellipse cx="16" cy="16" rx="7" ry="3" stroke="var(--coffee-bean)" stroke-width="1.5" fill="none" opacity="0.7"/>
+                                </svg>
+                            </div>
+                            <div class="dest-text">
+                                <span class="dest-title">portal.pandocore.xyz</span>
+                                <span class="dest-sub">evidence &amp; heartbeat</span>
+                            </div>
+                        </div>
+                        <div class="destination-card">
+                            <div class="dest-icon">
+                                <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" class="inline-icon" aria-label="Slack">
+                                    <rect width="32" height="32" rx="6" fill="var(--black-forest)"/>
+                                    <g fill="var(--floral-white)">
+                                        <rect x="8" y="13" width="3" height="3" rx="1.5"/>
+                                        <rect x="13" y="8" width="3" height="3" rx="1.5"/>
+                                        <rect x="16" y="13" width="8" height="3" rx="1.5"/>
+                                        <rect x="21" y="16" width="3" height="8" rx="1.5"/>
+                                        <rect x="16" y="21" width="3" height="3" rx="1.5"/>
+                                        <rect x="13" y="16" width="3" height="8" rx="1.5"/>
+                                        <rect x="8" y="16" width="3" height="3" rx="1.5"/>
+                                        <rect x="13" y="13" width="3" height="3" rx="1.5"/>
+                                    </g>
+                                </svg>
+                            </div>
+                            <div class="dest-text">
+                                <span class="dest-title">Slack</span>
+                                <span class="dest-sub">real-time alerts</span>
+                            </div>
+                            <span class="dest-optional">optional</span>
+                        </div>
+                        <div class="destination-card">
+                            <div class="dest-icon">
+                                <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" class="inline-icon">
+                                    <rect width="32" height="32" rx="6" fill="var(--black-forest)"/>
+                                    <path d="M10 16h12M10 16l4-4M10 16l4 4" stroke="var(--floral-white)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="translate(0,0)"/>
+                                    <path d="M22 10v12" stroke="var(--floral-white)" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+                            <div class="dest-text">
+                                <span class="dest-title">Your Webhook</span>
+                                <span class="dest-sub">SIEM / custom</span>
+                            </div>
+                            <span class="dest-optional">optional</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Flow callouts -->
+                <div class="cluster-flow-callouts">
+                    <div class="callout-item"><span class="callout-num">1</span>Webhook watches every pod create in the API server</div>
+                    <div class="callout-item"><span class="callout-num">2</span>Sidecar is injected <em>only</em> into pods you label</div>
+                    <div class="callout-item"><span class="callout-num">3</span>Evidence streams to the portal, Slack, or your webhook</div>
+                </div>
+
+                <h3 class="zoom-heading">Zoom in: inside a protected pod</h3>
+
                 <!-- K8s Pod Sidecar Visual -->
                 <div class="k8s-pod-visual">
                     <!-- Pod Container -->

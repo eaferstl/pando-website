@@ -1810,6 +1810,400 @@ ul {
 }
 
 /* ===================================
+   Cluster-level K8s Visual
+   Wide shot showing namespaces, labeled/unlabeled pods, and portal
+   =================================== */
+
+.k8s-cluster-visual {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: stretch;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.cluster-container {
+    flex: 1;
+    background: linear-gradient(135deg, var(--floral-white) 0%, var(--azure-mist) 100%);
+    border: 3px dashed var(--black-forest);
+    border-radius: 16px;
+    padding: var(--spacing-md);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.cluster-header {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+    padding-bottom: var(--spacing-sm);
+    border-bottom: 1px solid rgba(0, 56, 11, 0.15);
+}
+
+.cluster-label {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--black-forest);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.cluster-contents {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr 0.8fr;
+    gap: var(--spacing-sm);
+    flex: 1;
+}
+
+.namespace-box {
+    background: var(--white);
+    border: 2px solid rgba(0, 56, 11, 0.2);
+    border-radius: 10px;
+    padding: var(--spacing-sm);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    transition: all 0.3s ease;
+}
+
+.namespace-box:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(0, 56, 11, 0.12);
+}
+
+.system-ns {
+    border-color: var(--black-forest);
+    background: linear-gradient(180deg, var(--white) 0%, rgba(0, 56, 11, 0.03) 100%);
+}
+
+.user-ns {
+    border-color: rgba(0, 56, 11, 0.25);
+}
+
+.excluded-ns {
+    border-color: rgba(0, 56, 11, 0.15);
+    border-style: dashed;
+    background: rgba(0, 56, 11, 0.02);
+    opacity: 0.7;
+}
+
+.ns-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-xs);
+    padding-bottom: var(--spacing-xs);
+    border-bottom: 1px solid rgba(0, 56, 11, 0.1);
+}
+
+.ns-name {
+    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--black-forest);
+}
+
+.ns-tag {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: var(--black-forest);
+    color: var(--floral-white);
+}
+
+.ns-tag.user-tag {
+    background: var(--amber-honey);
+    color: var(--coffee-bean);
+}
+
+.ns-tag.excluded-tag {
+    background: rgba(0, 56, 11, 0.15);
+    color: var(--coffee-bean);
+}
+
+.ns-pods {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.system-pod {
+    background: rgba(0, 56, 11, 0.04);
+    border: 1px solid rgba(0, 56, 11, 0.1);
+    border-radius: 6px;
+    padding: 8px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.system-pod-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--black-forest);
+}
+
+.system-pod-sub {
+    font-size: 0.7rem;
+    color: var(--coffee-bean);
+    opacity: 0.7;
+}
+
+.mini-pod {
+    border: 2px solid rgba(0, 56, 11, 0.2);
+    border-radius: 8px;
+    padding: 6px 8px;
+    background: var(--white);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.mini-pod.protected {
+    border-color: var(--black-forest);
+}
+
+.mini-pod.unprotected {
+    border-style: dashed;
+    border-color: rgba(0, 56, 11, 0.25);
+    background: rgba(0, 56, 11, 0.02);
+}
+
+.mini-pod-label {
+    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+    font-size: 0.65rem;
+    color: var(--black-forest);
+    background: rgba(223, 159, 21, 0.2);
+    border-radius: 4px;
+    padding: 2px 6px;
+    align-self: flex-start;
+    font-weight: 600;
+}
+
+.mini-pod-label.dim {
+    background: rgba(0, 56, 11, 0.06);
+    color: var(--coffee-bean);
+    opacity: 0.65;
+    font-style: italic;
+}
+
+.mini-pod-containers {
+    display: flex;
+    gap: 6px;
+}
+
+.mini-container {
+    flex: 1;
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 6px;
+    border-radius: 4px;
+}
+
+.mini-container.mini-app {
+    background: rgba(0, 56, 11, 0.08);
+    color: var(--black-forest);
+}
+
+.mini-container.mini-sidecar {
+    background: var(--black-forest);
+    color: var(--floral-white);
+}
+
+.ns-empty {
+    font-size: 0.75rem;
+    color: var(--coffee-bean);
+    opacity: 0.6;
+    font-style: italic;
+    text-align: center;
+    padding: var(--spacing-sm) 0;
+}
+
+.cluster-egress {
+    flex: 0 0 90px;
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.egress-arrow {
+    width: 80px;
+    height: 20px;
+    display: block;
+}
+
+.egress-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--coffee-bean);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.75;
+}
+
+.external-destinations {
+    flex: 0 0 200px;
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.destination-card {
+    background: var(--white);
+    border: 2px solid rgba(0, 56, 11, 0.2);
+    border-radius: 10px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.destination-card:hover {
+    transform: translateX(2px);
+    box-shadow: 0 4px 12px rgba(0, 56, 11, 0.12);
+}
+
+.destination-card.primary-dest {
+    border-color: var(--amber-honey);
+    box-shadow: 0 4px 14px rgba(223, 159, 21, 0.18);
+}
+
+.dest-icon .inline-icon {
+    width: 28px;
+    height: 28px;
+    display: block;
+}
+
+.dest-text {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+    flex: 1;
+}
+
+.dest-title {
+    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--black-forest);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dest-sub {
+    font-size: 0.68rem;
+    color: var(--coffee-bean);
+    opacity: 0.7;
+}
+
+.dest-optional {
+    font-size: 0.6rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 6px;
+    border-radius: 8px;
+    background: rgba(0, 56, 11, 0.08);
+    color: var(--coffee-bean);
+    opacity: 0.65;
+}
+
+.cluster-flow-callouts {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-xl);
+    padding: var(--spacing-md);
+    background: rgba(0, 56, 11, 0.03);
+    border-radius: 10px;
+}
+
+.callout-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 0.85rem;
+    color: var(--coffee-bean);
+    line-height: 1.4;
+}
+
+.callout-num {
+    flex: 0 0 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--black-forest);
+    color: var(--floral-white);
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.zoom-heading {
+    text-align: center;
+    color: var(--black-forest);
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: var(--spacing-md);
+    opacity: 0.75;
+}
+
+/* Mobile: stack namespaces vertically, move portal below cluster */
+@media (max-width: 900px) {
+    .k8s-cluster-visual {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .cluster-contents {
+        grid-template-columns: 1fr;
+    }
+
+    .cluster-egress {
+        flex: 0 0 auto;
+        width: 100%;
+        flex-direction: row;
+        gap: var(--spacing-xs);
+        justify-content: center;
+    }
+
+    .egress-arrow {
+        display: none;
+    }
+
+    .egress-label::after {
+        content: " \2193";
+    }
+
+    .external-destinations {
+        flex: 0 0 auto;
+        align-self: center;
+        width: 100%;
+        max-width: 320px;
+    }
+
+    .cluster-flow-callouts {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ===================================
    ALTERNATIVE LAYOUT 5: Split Focus Cards
    Two-column emphasis for key differentiators
    =================================== */
