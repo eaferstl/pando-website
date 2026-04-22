@@ -164,14 +164,12 @@
             <p>The dashboard is an optional component of the <code>pando-webhook</code> Helm chart:</p>
 
             <pre><code>helm install pando-webhook oci://&lt;registry&gt;/charts/pando-webhook \
-  --namespace pando-system \
   --set licenseKey="&lt;your-key&gt;" \
   --set dashboard.enabled=true</code></pre>
 
             <p>Or enable it on an existing installation:</p>
 
             <pre><code>helm upgrade pando-webhook oci://&lt;registry&gt;/charts/pando-webhook \
-  --namespace pando-system \
   --reuse-values \
   --set dashboard.enabled=true</code></pre>
 

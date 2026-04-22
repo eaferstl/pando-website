@@ -97,7 +97,7 @@
             <pre><code># Raise sidecar limits cluster-wide
 helm upgrade pando-webhook \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-webhook \
-  --namespace pando-system --reuse-values \
+  --reuse-values \
   --set sidecar.resources.requests.memory=64Mi \
   --set sidecar.resources.limits.memory=128Mi \
   --set sidecar.resources.requests.cpu=100m \
@@ -111,7 +111,7 @@ helm upgrade pando-webhook \
 
             <pre><code>helm upgrade pando-webhook \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-webhook \
-  --namespace pando-system --reuse-values \
+  --reuse-values \
   --set-string excludedNamespaces="{kube-system,pando-system,cert-manager,istio-system,kube-public}"</code></pre>
 
             <p>Excluded namespaces are skipped entirely by the webhook's <code>namespaceSelector</code>. Pods in them can't be labeled for protection. If you need to protect a workload in one of these namespaces later, remove it from the exclusion list first.</p>
@@ -122,7 +122,7 @@ helm upgrade pando-webhook \
 
             <pre><code>helm upgrade pando-webhook \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-webhook \
-  --namespace pando-system --reuse-values \
+  --reuse-values \
   --set sidecar.image.tag=v0.5.2</code></pre>
 
             <p>Changing the tag and running <code>helm upgrade</code> is now a deliberate, reviewable action.</p>
@@ -138,7 +138,7 @@ helm upgrade pando-webhook \
 
             <pre><code>helm upgrade pando-webhook \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-webhook \
-  --namespace pando-system --reuse-values \
+  --reuse-values \
   --set failurePolicy=Fail</code></pre>
 
             <p>Most teams stay on <code>Ignore</code> in production and rely on the portal dashboard to flag any pods that started without a sidecar. That's the right default unless you have a compliance reason to force-fail.</p>
@@ -149,7 +149,7 @@ helm upgrade pando-webhook \
 
             <pre><code>helm upgrade pando-webhook \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-webhook \
-  --namespace pando-system --reuse-values \
+  --reuse-values \
   --set webhook.replicaCount=2</code></pre>
 
             <p>This is essentially free and removes a class of failure modes (webhook pod rescheduling during node drain, OOM kill, etc) from your incident surface.</p>

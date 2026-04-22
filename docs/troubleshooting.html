@@ -142,7 +142,7 @@ kubectl describe pod &lt;pod&gt;</code></pre>
 
             <pre><code>helm upgrade pando-webhook \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-webhook \
-  --namespace pando-system --reuse-values \
+  --reuse-values \
   --set sidecar.resources.limits.memory=128Mi</code></pre>
 
             <h2>Too Many Alerts (False Positives)</h2>

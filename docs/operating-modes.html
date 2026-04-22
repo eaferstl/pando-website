@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="PandoCore Operating Modes - Understand monitor, alert, enforce, and debug modes for runtime protection.">
+    <meta name="description" content="PandoCore Operating Modes - Understand monitor, alert, isolate, enforce, and debug modes for runtime protection.">
     <title>Operating Modes | PandoCore Docs</title>
     <link rel="icon" type="image/png" href="../images/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -46,7 +46,7 @@
     <section class="docs-hero">
         <div class="container">
             <h1>Operating Modes</h1>
-            <p>Understand monitor, alert, enforce, and debug modes for runtime protection.</p>
+            <p>A four-step ladder — monitor, alert, isolate, enforce — plus a debug mode. Each step adds one response action to the one below it.</p>
         </div>
     </section>
 
@@ -81,8 +81,13 @@
             </div>
 
             <h1>Operating Modes</h1>
-            
-            <p>PandoCore uses a three-tier escalation model (<strong>Monitor → Alert → Enforce</strong>) controlling how it responds when anomalous behavior is detected. Choose the mode that matches your deployment stage and risk tolerance.</p>
+
+            <p>PandoCore uses a four-step ladder — <strong>Monitor → Alert → Isolate → Enforce</strong> — controlling how it responds when anomalous behavior is detected. Modes layer additively: each step does everything the step below it does, plus one additional action. Pick the step that matches your deployment stage and risk tolerance. A separate <strong>Debug</strong> mode exists for troubleshooting.</p>
+
+            <div class="docs-callout info">
+                <div class="docs-callout-title">ℹ️ Layered ladder</div>
+                <p>Everything Alert does, Isolate also does. Everything Isolate does, Enforce also does. One knob (<code>PANDO_MODE</code>), four values, monotonic intensity.</p>
+            </div>
 
             <h2>Mode Comparison</h2>
 
@@ -92,7 +97,8 @@
                         <th>Mode</th>
                         <th>Detection</th>
                         <th>Evidence</th>
-                        <th>Alerts (Slack)</th>
+                        <th>Alerts (Slack + portal)</th>
+                        <th>NetworkPolicy isolation</th>
                         <th>Pod Termination</th>
                         <th>Use Case</th>
                     </tr>
@@ -104,6 +110,7 @@
                         <td>✓</td>
                         <td>✗</td>
                         <td>✗</td>
+                        <td>✗</td>
                         <td>Initial deployment, tuning, evaluation</td>
                     </tr>
                     <tr>
@@ -112,10 +119,21 @@
                         <td>✓</td>
                         <td>✓</td>
                         <td>✗</td>
-                        <td>Production visibility without enforcement</td>
+                        <td>✗</td>
+                        <td>Production visibility with human-in-the-loop triage</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Isolate</strong></td>
+                        <td>✓</td>
+                        <td>✓</td>
+                        <td>✓</td>
+                        <td>✓</td>
+                        <td>✗</td>
+                        <td>Contain suspicious pods without pod termination risk</td>
                     </tr>
                     <tr>
                         <td><strong>Enforce</strong></td>
+                        <td>✓</td>
                         <td>✓</td>
                         <td>✓</td>
                         <td>✓</td>
@@ -128,7 +146,8 @@
                         <td>✓</td>
                         <td>✗</td>
                         <td>✗</td>
-                        <td>Troubleshooting, development</td>
+                        <td>✗</td>
+                        <td>Troubleshooting, development (verbose logs)</td>
                     </tr>
                 </tbody>
             </table>
@@ -212,15 +231,54 @@
                 <li><strong>Info</strong> (green): low-severity detection</li>
             </ul>
 
+            <h2>Isolate Mode</h2>
+
+            <p><strong>Set via:</strong> <code>PANDO_MODE=isolate</code></p>
+
+            <p>Isolate mode adds automated network containment on top of Alert mode. When anomalous behavior is detected, PandoCore generates evidence, sends alerts, and applies a <strong>NetworkPolicy</strong> to the compromised pod that blocks all egress traffic except DNS. Pods are <strong>not terminated</strong>.</p>
+
+            <div class="docs-callout info">
+                <div class="docs-callout-title">Why isolate instead of terminate?</div>
+                <p>Isolation contains the blast radius of an in-progress attack (preventing lateral movement, data exfiltration, C2 callbacks) while preserving the running pod for forensic inspection. If the drift signal subsides within the recovery window, the NetworkPolicy is removed automatically and the pod is released. This is the right mode for stateful workloads where pod restart is expensive.</p>
+            </div>
+
+            <h3>Behavior</h3>
+
+            <ul>
+                <li>Everything in Alert mode, plus:</li>
+                <li>Creates a <code>pando-isolate-{pod-name}</code> NetworkPolicy that denies egress except DNS (UDP 53)</li>
+                <li>Starts a recovery timer — after <code>recoveryTimeoutSecs</code> (default 60s) of clean samples, the NetworkPolicy is removed and the pod is released</li>
+                <li>Does NOT terminate the pod; the escalation-to-terminate path is only active in Enforce mode</li>
+            </ul>
+
+            <h3>When to Use</h3>
+
+            <ul>
+                <li><strong>Stateful workloads:</strong> Databases, caches, message queues where pod restart causes downtime or data loss</li>
+                <li><strong>Forensic-first security posture:</strong> Contain first, preserve the pod for inspection, then decide</li>
+                <li><strong>Graduated rollout:</strong> A middle step between Alert (notify only) and Enforce (terminate). Confirm alerts are accurate, then confirm the NetworkPolicy doesn't disrupt legitimate traffic, then enable termination.</li>
+            </ul>
+
+            <h3>Example Output</h3>
+
+            <pre><code>{
+  "level": "info",
+  "timestamp": "2026-04-22T19:13:21Z",
+  "message": "Pod isolated via NetworkPolicy — egress denied except DNS",
+  "action": "isolated_pending_escalation",
+  "policy": "pando-isolate-nginx-b8f89948c-l8spl",
+  "recovery_timeout_secs": 60
+}</code></pre>
+
             <h2>Enforce Mode</h2>
 
             <p><strong>Set via:</strong> <code>PANDO_MODE=enforce</code></p>
 
-            <p>Enforce mode provides active protection. When anomalous behavior is detected, PandoCore generates evidence, sends alerts, and terminates the compromised pod.</p>
+            <p>Enforce mode provides active protection. When anomalous behavior is detected, PandoCore runs the full graduated-response chain: alert → network isolation → escalation timer → pod termination.</p>
 
             <div class="docs-callout warning">
                 <div class="docs-callout-title">⚠️ Production Use</div>
-                <p>Before enabling enforce mode, run in monitor mode for at least one week in staging to validate detection behavior for your workload.</p>
+                <p>Before enabling enforce mode, run in monitor mode for at least one week in staging to validate detection behavior for your workload. Consider stepping through Alert and Isolate first — the mode ladder is designed to let you promote gradually.</p>
             </div>
 
             <h3>Behavior</h3>
@@ -238,14 +296,19 @@
             <ol>
                 <li><strong>Detection:</strong> Anomalous behavior identified</li>
                 <li><strong>Evidence generation:</strong> Structured evidence record created</li>
-                <li><strong>Evidence externalization:</strong> Written to logs, K8s events, webhooks</li>
-                <li><strong>Alert dispatch:</strong> Slack notification sent (if configured)</li>
-                <li><strong>Network isolation:</strong> NetworkPolicy applied to restrict pod egress traffic</li>
-                <li><strong>Escalation:</strong> If anomalous behavior persists, escalate to termination</li>
-                <li><strong>Pod termination:</strong> Kubernetes API DELETE call</li>
+                <li><strong>Evidence externalization:</strong> Written to logs, K8s events, webhooks — <em>before</em> pod deletion, so it survives</li>
+                <li><strong>Alert dispatch:</strong> Slack + portal notifications sent</li>
+                <li><strong>Network isolation:</strong> NetworkPolicy applied (egress denied except DNS)</li>
+                <li><strong>Escalation timer:</strong> Runs for <code>escalationTimeoutSecs</code> (default 120s). If drift subsides and <code>recoveryTimeoutSecs</code> clean samples (default 60s) accumulate first, the NetworkPolicy is removed and the pod is released.</li>
+                <li><strong>Pod termination:</strong> If drift persists past the escalation window, Kubernetes API DELETE call fires; a second <code>PandoCollapse</code> K8s event records the escalation</li>
                 <li><strong>Pod restart:</strong> Kubernetes scheduler creates new pod</li>
                 <li><strong>Fresh baseline:</strong> New sidecar establishes clean baseline</li>
             </ol>
+
+            <div class="docs-callout info">
+                <div class="docs-callout-title">Graduated response favors recovery for brief attacks</div>
+                <p>With default timers (<code>escalationTimeoutSecs=120</code>, <code>recoveryTimeoutSecs=60</code>), short attacks are contained via NetworkPolicy and then released when drift subsides — the pod is not killed. To demonstrate termination quickly in a lab, lower <code>escalationTimeoutSecs</code> or use a sustained attack longer than the escalation window.</p>
+            </div>
 
             <h3>When to Use</h3>
             
@@ -306,6 +369,10 @@
 
             <pre><code>kubectl set env deployment/your-app -c pando-sidecar PANDO_MODE=alert</code></pre>
 
+            <h3>Switch to Isolate Mode</h3>
+
+            <pre><code>kubectl set env deployment/your-app -c pando-sidecar PANDO_MODE=isolate</code></pre>
+
             <h3>Switch to Enforce Mode</h3>
 
             <pre><code>kubectl set env deployment/your-app -c pando-sidecar PANDO_MODE=enforce</code></pre>
@@ -323,8 +390,9 @@
 
             <ol>
                 <li><strong>Week 1-2: Monitor mode.</strong> Deploy to staging with <code>PANDO_MODE=monitor</code>. Observe detections, adjust sensitivity if needed.</li>
-                <li><strong>Week 3-4: Alert mode.</strong> Switch to <code>PANDO_MODE=alert</code> in production. Your team gets notified on detections without enforcement.</li>
-                <li><strong>Week 5+: Enforce mode.</strong> Enable <code>PANDO_MODE=enforce</code> for full active protection with alerts and pod termination.</li>
+                <li><strong>Week 3-4: Alert mode.</strong> Switch to <code>PANDO_MODE=alert</code> in production. Your team gets notified on detections without any automated response.</li>
+                <li><strong>Week 5-6: Isolate mode.</strong> Switch to <code>PANDO_MODE=isolate</code>. Tripped pods get a NetworkPolicy that blocks egress (except DNS); the policy is removed automatically once drift subsides. This is the right durable mode for stateful workloads.</li>
+                <li><strong>Week 7+: Enforce mode.</strong> Enable <code>PANDO_MODE=enforce</code> for full active protection with alerts, network isolation, and pod termination for drift that persists past the escalation window.</li>
             </ol>
 
             <h2>Mode-Specific Metrics</h2>

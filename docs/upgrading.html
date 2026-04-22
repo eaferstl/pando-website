@@ -104,13 +104,13 @@ curl -s https://portal.pandocore.xyz/api/version</code></pre>
             <pre><code># Latest
 helm upgrade pando-webhook \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-webhook \
-  --namespace pando-system --reuse-values
+  --reuse-values
 
 # Or pin to a specific version
 helm upgrade pando-webhook \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-webhook \
   --version 0.5.2 \
-  --namespace pando-system --reuse-values</code></pre>
+  --reuse-values</code></pre>
 
             <p><code>--reuse-values</code> preserves your existing <code>licenseKey</code>, <code>slackWebhookURL</code>, and other overrides so you don't have to re-pass them on every upgrade. If you need to change a value at the same time, use <code>--reuse-values</code> plus additional <code>--set</code> flags.</p>
 

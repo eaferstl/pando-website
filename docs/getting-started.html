@@ -100,7 +100,6 @@
             <pre><code># 1. Install the admission webhook (one-time, cluster-wide)
 helm install pando-webhook \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-webhook \
-  --namespace pando-system --create-namespace \
   --set licenseKey="YOUR_LICENSE_KEY"
 
 # 2. Protect a deployment
@@ -175,10 +174,17 @@ kubectl rollout restart deployment/your-app
 # Or cluster-wide: change the default for newly-created pods
 helm upgrade pando-webhook \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-webhook \
-  --namespace pando-system --reuse-values \
+  --reuse-values \
   --set defaultMode=enforce</code></pre>
 
-            <p>Most teams run <strong>monitor → alert → enforce</strong> over the course of a few weeks per workload. See <a href="operating-modes.html">Operating Modes</a> for the full escalation model.</p>
+            <p>Most teams run <strong>monitor → alert → isolate → enforce</strong> over the course of a few weeks per workload — each step adds one automated response action on top of the prior. See <a href="operating-modes.html">Operating Modes</a> for the full mode ladder.</p>
+
+            <div class="docs-callout info">
+                <div class="docs-callout-title">Intermediate step: Isolate mode</div>
+                <p>Before flipping straight to <code>enforce</code>, consider <code>isolate</code>. On a trip, PandoCore applies a NetworkPolicy that blocks pod egress (except DNS) — contains the attack without killing the pod. If drift subsides, the policy is removed automatically. This is the right durable mode for stateful workloads (databases, caches, queues) where pod restart is expensive.</p>
+                <pre><code>kubectl annotate deployment your-app pandocore.xyz/mode=isolate --overwrite
+kubectl rollout restart deployment/your-app</code></pre>
+            </div>
 
             <h3>2. Wire Up Slack Alerts</h3>
 
@@ -186,7 +192,7 @@ helm upgrade pando-webhook \
 
             <pre><code>helm upgrade pando-webhook \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-webhook \
-  --namespace pando-system --reuse-values \
+  --reuse-values \
   --set defaultMode=alert \
   --set slackWebhookURL="https://hooks.slack.com/services/T.../B.../xxx"</code></pre>
 
@@ -251,7 +257,6 @@ spec:
             <pre><code># Install sidecar infrastructure only
 helm install pando \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-sidecar \
-  --namespace pando-system --create-namespace \
   --set licenseKey="YOUR_LICENSE_KEY"
 
 # Inject into a specific deployment

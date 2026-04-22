@@ -127,8 +127,8 @@ metadata:
   name: default            # must be "default", one policy per namespace
   namespace: production
 spec:
-  # Operating mode
-  mode: enforce            # monitor | alert | enforce | debug
+  # Operating mode (modes layer additively — each does everything the prior mode does)
+  mode: enforce            # monitor | alert | isolate | enforce | debug
 
   # Sensitivity (higher = more permissive)
   sensitivity: medium      # low | medium | high
@@ -201,19 +201,23 @@ spec:
                 <tbody>
                     <tr>
                         <td><code>monitor</code></td>
-                        <td>Detect and log only. No enforcement action.</td>
+                        <td>Detect and log only. No alerts, no network action, no termination.</td>
                     </tr>
                     <tr>
                         <td><code>alert</code></td>
-                        <td>Detect, log, and send alerts to integrations</td>
+                        <td>Everything in <code>monitor</code>, plus Slack / portal alerts on trip.</td>
+                    </tr>
+                    <tr>
+                        <td><code>isolate</code></td>
+                        <td>Everything in <code>alert</code>, plus a NetworkPolicy that blocks pod egress (except DNS) on trip. No pod termination. Policy is removed automatically once drift subsides.</td>
                     </tr>
                     <tr>
                         <td><code>enforce</code></td>
-                        <td>Full response chain: alert &rarr; isolate &rarr; terminate</td>
+                        <td>Full response chain: alert &rarr; NetworkPolicy &rarr; escalation timer &rarr; pod terminate if drift persists past the escalation window.</td>
                     </tr>
                     <tr>
                         <td><code>debug</code></td>
-                        <td>Verbose logging for troubleshooting</td>
+                        <td>Verbose logging for troubleshooting. No response actions.</td>
                     </tr>
                 </tbody>
             </table>
@@ -365,7 +369,7 @@ Applied PandoCorePolicy  mode=enforce resource_version="12345"</code></pre>
 
             <ul>
                 <li><a href="configuration.html">Configuration</a>:Full env var and Helm reference</li>
-                <li><a href="operating-modes.html">Operating Modes</a>:Understand monitor vs enforce</li>
+                <li><a href="operating-modes.html">Operating Modes</a>:The monitor &rarr; alert &rarr; isolate &rarr; enforce ladder</li>
                 <li><a href="webhook.html">Admission Webhook</a>:Per-pod annotation overrides</li>
             </ul>
 

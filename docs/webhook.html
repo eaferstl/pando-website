@@ -117,11 +117,34 @@
                     <tr>
                         <td><code>pandocore.xyz/mode</code></td>
                         <td>Annotation</td>
-                        <td><code>"monitor"</code>, <code>"alert"</code>, <code>"enforce"</code>, <code>"debug"</code></td>
-                        <td>Overrides the default operating mode for this pod</td>
+                        <td><code>"monitor"</code>, <code>"alert"</code>, <code>"isolate"</code>, <code>"enforce"</code>, <code>"debug"</code></td>
+                        <td>Overrides the default operating mode for this pod. See <a href="operating-modes.html">Operating Modes</a>.</td>
+                    </tr>
+                    <tr>
+                        <td><code>pandocore.xyz/profile</code></td>
+                        <td>Annotation</td>
+                        <td><code>"http-server"</code></td>
+                        <td>Marks the workload as an HTTP server regardless of image name or CMD. Applies HTTP-tuned detection behavior and sensitivity. Use this when your framework (Django, FastAPI, Flask, Express, Rails, etc.) runs on a language base image or inside a shell-wrapped entrypoint.</td>
                     </tr>
                 </tbody>
             </table>
+
+            <h3>HTTP-server auto-detection</h3>
+
+            <p>The webhook sets <code>PANDO_HTTP_SERVER=true</code> automatically from any of three signals — you rarely need to set the profile annotation by hand:</p>
+
+            <ol>
+                <li><strong>Image-pattern match.</strong> Purpose-built web-server images: <code>nginx</code>, <code>caddy</code>, <code>apache</code>, <code>traefik</code>, <code>envoy</code>, <code>haproxy</code>, <code>lighttpd</code>, <code>openresty</code>, <code>httpd</code>.</li>
+                <li><strong>CMD/args basename match.</strong> Common Python, Node, and Ruby framework server entrypoints running on language base images (<code>python:*</code>, <code>node:*</code>, etc.) are auto-tagged by the webhook.</li>
+                <li><strong>Profile annotation.</strong> <code>pandocore.xyz/profile: http-server</code> on the pod template.</li>
+            </ol>
+
+            <div class="docs-callout info">
+                <div class="docs-callout-title">Shell-wrapped entrypoints</div>
+                <p>CMD/args basename matching looks at <code>command[0]</code>. If your Dockerfile or Helm chart uses <code>sh -c "exec uvicorn main:app --host 0.0.0.0"</code>, the webhook sees <code>sh</code>, not <code>uvicorn</code>, and will not auto-tag. Add <code>pandocore.xyz/profile: http-server</code> to the pod template to cover this case.</p>
+            </div>
+
+            <p>Workloads that are <em>not</em> HTTP servers (Celery workers, ETL jobs, Jupyter notebooks, ML batch jobs) should be left untagged — the default profile is tuned for their behavior, and incorrectly marking them would mistune sensitivity.</p>
 
             <h2>Configuration</h2>
 
@@ -144,7 +167,7 @@
                     <tr>
                         <td><code>defaultMode</code></td>
                         <td><code>monitor</code></td>
-                        <td>Default operating mode for injected sidecars</td>
+                        <td>Default operating mode for injected sidecars. One of <code>monitor</code>, <code>alert</code>, <code>isolate</code>, <code>enforce</code>.</td>
                     </tr>
                     <tr>
                         <td><code>excludedNamespaces</code></td>
@@ -192,7 +215,6 @@ kubectl create secret generic pando-license \
             <pre><code># Upgrade the webhook (picks up new sidecar image + webhook config)
 helm upgrade pando-webhook \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-webhook \
-  --namespace pando-system \
   --set licenseKey="YOUR_LICENSE_KEY"
 
 # Existing pods are NOT affected. To inject the new sidecar version,
