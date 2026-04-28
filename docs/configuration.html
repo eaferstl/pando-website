@@ -167,6 +167,16 @@
                         <td><code>true</code></td>
                         <td>Install the <code>PandoCorePolicy</code> CRD. See <a href="policy.html">CRD Policy</a>.</td>
                     </tr>
+                    <tr>
+                        <td><code>networkAudit.enabled</code></td>
+                        <td><code>false</code></td>
+                        <td>Cluster-wide default for the network connection audit. When on, the sidecar baselines the set of remote IPs during learning and emits attestation evidence on connections to addresses outside the baseline + allowlist. Per-pod override via the <code>pandocore.xyz/audit-network</code> annotation.</td>
+                    </tr>
+                    <tr>
+                        <td><code>networkAudit.allowlistCIDRs</code></td>
+                        <td><code>"10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,127.0.0.0/8,fd00::/8"</code></td>
+                        <td>Comma-separated CIDRs never flagged as unexpected. Default covers RFC1918, loopback, and ULA. Per-pod override via the <code>pandocore.xyz/network-allowlist</code> annotation.</td>
+                    </tr>
                 </tbody>
             </table>
 

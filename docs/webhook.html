@@ -126,6 +126,18 @@
                         <td><code>"http-server"</code></td>
                         <td>Marks the workload as an HTTP server regardless of image name or CMD. Applies HTTP-tuned detection behavior and sensitivity. Use this when your framework (Django, FastAPI, Flask, Express, Rails, etc.) runs on a language base image or inside a shell-wrapped entrypoint.</td>
                     </tr>
+                    <tr>
+                        <td><code>pandocore.xyz/audit-network</code></td>
+                        <td>Annotation</td>
+                        <td><code>"true"</code> or <code>"false"</code></td>
+                        <td>Per-pod override for the cluster-wide <code>networkAudit.enabled</code> Helm value. When enabled, the sidecar baselines the set of remote IPs during learning and emits attestation evidence on connections to addresses outside the baseline + allowlist. Detects in-process exfil beacons and C2 callbacks that entropy drift alone cannot disambiguate.</td>
+                    </tr>
+                    <tr>
+                        <td><code>pandocore.xyz/network-allowlist</code></td>
+                        <td>Annotation</td>
+                        <td>Comma-separated CIDRs</td>
+                        <td>Per-pod override for <code>networkAudit.allowlistCIDRs</code>. Connections to addresses inside any allowlisted CIDR are never flagged. Example: <code>"10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"</code>.</td>
+                    </tr>
                 </tbody>
             </table>
 
@@ -188,6 +200,16 @@
                         <td><code>tls.certManager</code></td>
                         <td><code>false</code></td>
                         <td>Use cert-manager for TLS (otherwise self-signed)</td>
+                    </tr>
+                    <tr>
+                        <td><code>networkAudit.enabled</code></td>
+                        <td><code>false</code></td>
+                        <td>Cluster-wide default for the network connection audit (Phase H5.2). Per-pod override via the <code>pandocore.xyz/audit-network</code> annotation.</td>
+                    </tr>
+                    <tr>
+                        <td><code>networkAudit.allowlistCIDRs</code></td>
+                        <td><code>"10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,127.0.0.0/8,fd00::/8"</code></td>
+                        <td>Comma-separated CIDRs that are never flagged as unexpected. Default covers RFC1918, loopback, and ULA. Per-pod override via the <code>pandocore.xyz/network-allowlist</code> annotation.</td>
                     </tr>
                 </tbody>
             </table>
