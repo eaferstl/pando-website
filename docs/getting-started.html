@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Get started with PandoCore. Deploy runtime protection for your Kubernetes workloads in under 5 minutes with a 2-command install.">
     <title>Getting Started | PandoCore Docs</title>
-    <link rel="canonical" href="https://pandocore.io/docs/getting-started.html">
+    <link rel="canonical" href="https://pandocore.io/docs/getting-started">
     <link rel="icon" type="image/png" href="../images/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,7 +18,7 @@
     <nav class="navbar">
         <div class="container">
             <div class="nav-wrapper">
-                <a href="../index.html" class="logo">
+                <a href="/" class="logo">
                     <img src="../images/logoTransparency.png" alt="Pando Logo">
                     <div class="logo-text-wrapper">
                         <span class="logo-text">PandoCore</span>
@@ -31,12 +31,12 @@
                 </button>
                 <div class="nav-overlay"></div>
                 <ul class="nav-links">
-                    <li><a href="../index.html">Home</a></li>
-                    <li><a href="../product.html">Product</a></li>
-                    <li><a href="../pricing.html">Pricing</a></li>
-                    <li><a href="../about.html">About</a></li>
-                    <li><a href="index.html" class="active">Docs</a></li>
-                    <li><a href="../contact.html" class="nav-contact">Contact</a></li>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/product">Product</a></li>
+                    <li><a href="/pricing">Pricing</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/docs/" class="active">Docs</a></li>
+                    <li><a href="/contact" class="nav-contact">Contact</a></li>
                     <li><a href="https://portal.pandocore.io/signup" class="nav-signup">Sign Up</a></li>
                 </ul>
             </div>
@@ -57,26 +57,26 @@
         <aside class="docs-sidebar">
             <h3>Documentation</h3>
             <ul class="docs-nav">
-                <li><a href="index.html">Overview</a></li>
-                <li><a href="getting-started.html" class="active">Getting Started</a></li>
-                <li><a href="webhook.html">Admission Webhook</a></li>
-                <li><a href="dashboard.html">Dashboard</a></li>
-                <li><a href="configuration.html">Configuration</a></li>
-                <li><a href="policy.html">CRD Policy</a></li>
-                <li><a href="operating-modes.html">Operating Modes</a></li>
-                <li><a href="production-hardening.html">Production Hardening</a></li>
-                <li><a href="upgrading.html">Upgrading</a></li>
-                <li><a href="troubleshooting.html">Troubleshooting</a></li>
-                <li><a href="emergency.html">Emergency Procedures</a></li>
-                <li><a href="evidence-format.html">Evidence Format</a></li>
-                <li><a href="faq.html">FAQ</a></li>
+                <li><a href="/docs/">Overview</a></li>
+                <li><a href="/docs/getting-started" class="active">Getting Started</a></li>
+                <li><a href="/docs/webhook">Admission Webhook</a></li>
+                <li><a href="/docs/dashboard">Dashboard</a></li>
+                <li><a href="/docs/configuration">Configuration</a></li>
+                <li><a href="/docs/policy">CRD Policy</a></li>
+                <li><a href="/docs/operating-modes">Operating Modes</a></li>
+                <li><a href="/docs/production-hardening">Production Hardening</a></li>
+                <li><a href="/docs/upgrading">Upgrading</a></li>
+                <li><a href="/docs/troubleshooting">Troubleshooting</a></li>
+                <li><a href="/docs/emergency">Emergency Procedures</a></li>
+                <li><a href="/docs/evidence-format">Evidence Format</a></li>
+                <li><a href="/docs/faq">FAQ</a></li>
             </ul>
         </aside>
 
         <!-- Main Content -->
         <main class="docs-content">
             <div class="docs-breadcrumb">
-                <a href="index.html">Docs</a>
+                <a href="/docs/">Docs</a>
                 <span>/</span>
                 Getting Started
             </div>
@@ -124,7 +124,7 @@ kubectl create serviceaccount pando-sidecar -n $NS
 kubectl create rolebinding pando-sidecar \
   --clusterrole=pando-sidecar \
   --serviceaccount=$NS:pando-sidecar -n $NS</code></pre>
-                <p>Then label the deployment as normal. See <a href="webhook.html">Webhook Reference</a> for details.</p>
+                <p>Then label the deployment as normal. See <a href="/docs/webhook">Webhook Reference</a> for details.</p>
             </div>
 
             <h2>What Just Happened</h2>
@@ -156,7 +156,7 @@ kubectl exec &lt;pod-name&gt; -c pando-sidecar -- wget -qO- http://localhost:909
 # Detection metrics
 kubectl exec &lt;pod-name&gt; -c pando-sidecar -- wget -qO- http://localhost:9090/metrics</code></pre>
 
-            <p>If the sidecar doesn't inject or the logs show license errors, see <a href="troubleshooting.html">Troubleshooting</a>.</p>
+            <p>If the sidecar doesn't inject or the logs show license errors, see <a href="/docs/troubleshooting">Troubleshooting</a>.</p>
 
             <hr>
 
@@ -178,7 +178,7 @@ helm upgrade pando-webhook \
   --reuse-values \
   --set defaultMode=enforce</code></pre>
 
-            <p>Most teams run <strong>monitor → alert → isolate → enforce</strong> over the course of a few weeks per workload — each step adds one automated response action on top of the prior. See <a href="operating-modes.html">Operating Modes</a> for the full mode ladder.</p>
+            <p>Most teams run <strong>monitor → alert → isolate → enforce</strong> over the course of a few weeks per workload — each step adds one automated response action on top of the prior. See <a href="/docs/operating-modes">Operating Modes</a> for the full mode ladder.</p>
 
             <div class="docs-callout info">
                 <div class="docs-callout-title">Intermediate step: Isolate mode</div>
@@ -209,7 +209,7 @@ kubectl set env deployment/your-app -c pando-sidecar PANDO_SENSITIVITY=3.0
 # Workload is tightly deterministic, catch subtler anomalies
 kubectl set env deployment/your-app -c pando-sidecar PANDO_SENSITIVITY=1.5</code></pre>
 
-            <p>The webhook also applies runtime-aware defaults for common runtime families. See <a href="configuration.html">Configuration Reference</a>.</p>
+            <p>The webhook also applies runtime-aware defaults for common runtime families. See <a href="/docs/configuration">Configuration Reference</a>.</p>
 
             <h3>4. Graduated Response</h3>
 
@@ -219,7 +219,7 @@ kubectl set env deployment/your-app -c pando-sidecar PANDO_SENSITIVITY=1.5</code
 kubectl set env deployment/your-app -c pando-sidecar \
   PANDO_RESPONSE_ACTIONS="alert,isolate,terminate"</code></pre>
 
-            <p>If the pod returns to baseline during the recovery window, isolation is lifted automatically. See <a href="operating-modes.html">Operating Modes</a>.</p>
+            <p>If the pod returns to baseline during the recovery window, isolation is lifted automatically. See <a href="/docs/operating-modes">Operating Modes</a>.</p>
 
             <h3>5. GitOps via CRD Policy</h3>
 
@@ -238,7 +238,7 @@ spec:
   integrations:
     slack: https://hooks.slack.com/services/...</code></pre>
 
-            <p>See <a href="policy.html">CRD Policy</a> for the full schema.</p>
+            <p>See <a href="/docs/policy">CRD Policy</a> for the full schema.</p>
 
             <h3>6. SIEM / Evidence Pipeline</h3>
 
@@ -247,7 +247,7 @@ spec:
             <pre><code>kubectl set env deployment/your-app -c pando-sidecar \
   PANDO_EVIDENCE_WEBHOOK_URL="https://your-siem.example.com/ingest"</code></pre>
 
-            <p>See <a href="evidence-format.html">Evidence Format</a> for the full schema.</p>
+            <p>See <a href="/docs/evidence-format">Evidence Format</a> for the full schema.</p>
 
             <hr>
 
@@ -304,14 +304,14 @@ PANDO_LICENSE_KEY="YOUR_LICENSE_KEY" \
             <h2>Next Steps</h2>
 
             <ul>
-                <li><a href="operating-modes.html">Operating Modes</a>: Monitor → Alert → Enforce escalation model</li>
-                <li><a href="configuration.html">Configuration Reference</a>: Every environment variable with defaults and ranges</li>
-                <li><a href="policy.html">CRD Policy</a>: Declarative GitOps configuration</li>
-                <li><a href="production-hardening.html">Production Hardening</a>: Resource limits, namespace exclusions, backup</li>
-                <li><a href="upgrading.html">Upgrading</a>: How to bump sidecar and webhook versions</li>
-                <li><a href="troubleshooting.html">Troubleshooting</a>: Sidecar not injecting, license errors, false positives</li>
-                <li><a href="evidence-format.html">Evidence Format</a>: Integrate with your SIEM</li>
-                <li><a href="emergency.html">Emergency Procedures</a>: Quick disable if needed</li>
+                <li><a href="/docs/operating-modes">Operating Modes</a>: Monitor → Alert → Enforce escalation model</li>
+                <li><a href="/docs/configuration">Configuration Reference</a>: Every environment variable with defaults and ranges</li>
+                <li><a href="/docs/policy">CRD Policy</a>: Declarative GitOps configuration</li>
+                <li><a href="/docs/production-hardening">Production Hardening</a>: Resource limits, namespace exclusions, backup</li>
+                <li><a href="/docs/upgrading">Upgrading</a>: How to bump sidecar and webhook versions</li>
+                <li><a href="/docs/troubleshooting">Troubleshooting</a>: Sidecar not injecting, license errors, false positives</li>
+                <li><a href="/docs/evidence-format">Evidence Format</a>: Integrate with your SIEM</li>
+                <li><a href="/docs/emergency">Emergency Procedures</a>: Quick disable if needed</li>
             </ul>
 
         </main>

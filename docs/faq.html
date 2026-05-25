@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="PandoCore FAQ - Frequently asked questions about runtime protection, deployment, and operations.">
     <title>FAQ | PandoCore Docs</title>
-    <link rel="canonical" href="https://pandocore.io/docs/faq.html">
+    <link rel="canonical" href="https://pandocore.io/docs/faq">
     <link rel="icon" type="image/png" href="../images/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,7 +18,7 @@
     <nav class="navbar">
         <div class="container">
             <div class="nav-wrapper">
-                <a href="../index.html" class="logo">
+                <a href="/" class="logo">
                     <img src="../images/logoTransparency.png" alt="Pando Logo">
                     <div class="logo-text-wrapper">
                         <span class="logo-text">PandoCore</span>
@@ -31,12 +31,12 @@
                 </button>
                 <div class="nav-overlay"></div>
                 <ul class="nav-links">
-                    <li><a href="../index.html">Home</a></li>
-                    <li><a href="../product.html">Product</a></li>
-                    <li><a href="../pricing.html">Pricing</a></li>
-                    <li><a href="../about.html">About</a></li>
-                    <li><a href="index.html" class="active">Docs</a></li>
-                    <li><a href="../contact.html" class="nav-contact">Contact</a></li>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/product">Product</a></li>
+                    <li><a href="/pricing">Pricing</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/docs/" class="active">Docs</a></li>
+                    <li><a href="/contact" class="nav-contact">Contact</a></li>
                     <li><a href="https://portal.pandocore.io/signup" class="nav-signup">Sign Up</a></li>
                 </ul>
             </div>
@@ -57,26 +57,26 @@
         <aside class="docs-sidebar">
             <h3>Documentation</h3>
             <ul class="docs-nav">
-                <li><a href="index.html">Overview</a></li>
-                <li><a href="getting-started.html">Getting Started</a></li>
-                <li><a href="webhook.html">Admission Webhook</a></li>
-                <li><a href="dashboard.html">Dashboard</a></li>
-                <li><a href="configuration.html">Configuration</a></li>
-                <li><a href="policy.html">CRD Policy</a></li>
-                <li><a href="operating-modes.html">Operating Modes</a></li>
-                <li><a href="production-hardening.html">Production Hardening</a></li>
-                <li><a href="upgrading.html">Upgrading</a></li>
-                <li><a href="troubleshooting.html">Troubleshooting</a></li>
-                <li><a href="emergency.html">Emergency Procedures</a></li>
-                <li><a href="evidence-format.html">Evidence Format</a></li>
-                <li><a href="faq.html" class="active">FAQ</a></li>
+                <li><a href="/docs/">Overview</a></li>
+                <li><a href="/docs/getting-started">Getting Started</a></li>
+                <li><a href="/docs/webhook">Admission Webhook</a></li>
+                <li><a href="/docs/dashboard">Dashboard</a></li>
+                <li><a href="/docs/configuration">Configuration</a></li>
+                <li><a href="/docs/policy">CRD Policy</a></li>
+                <li><a href="/docs/operating-modes">Operating Modes</a></li>
+                <li><a href="/docs/production-hardening">Production Hardening</a></li>
+                <li><a href="/docs/upgrading">Upgrading</a></li>
+                <li><a href="/docs/troubleshooting">Troubleshooting</a></li>
+                <li><a href="/docs/emergency">Emergency Procedures</a></li>
+                <li><a href="/docs/evidence-format">Evidence Format</a></li>
+                <li><a href="/docs/faq" class="active">FAQ</a></li>
             </ul>
         </aside>
 
         <!-- Main Content -->
         <main class="docs-content">
             <div class="docs-breadcrumb">
-                <a href="index.html">Docs</a>
+                <a href="/docs/">Docs</a>
                 <span>/</span>
                 FAQ
             </div>
@@ -162,7 +162,7 @@
             <p>No. PandoCore deploys as a sidecar container alongside your existing application. You add the sidecar to your deployment manifest. No changes to your application code are required.</p>
 
             <h3>How long does deployment take?</h3>
-            <p>Initial deployment (Helm install + adding sidecar to first deployment) typically takes under 5 minutes. See our <a href="getting-started.html">Getting Started guide</a>.</p>
+            <p>Initial deployment (Helm install + adding sidecar to first deployment) typically takes under 5 minutes. See our <a href="/docs/getting-started">Getting Started guide</a>.</p>
 
             <h2>Operations</h2>
 
@@ -209,7 +209,7 @@ kubectl exec &lt;pod&gt; -c pando-sidecar -- wget -qO- http://localhost:9090/met
                 <li><strong>Adjust sensitivity:</strong> Your workload may have legitimate behavioral variance that requires a more permissive setting</li>
                 <li><strong>Trigger re-learning:</strong> If your application behavior has legitimately changed</li>
             </ol>
-            <p>See <a href="emergency.html">Emergency Procedures</a> for detailed steps.</p>
+            <p>See <a href="/docs/emergency">Emergency Procedures</a> for detailed steps.</p>
 
             <h3>How do I tune the detection sensitivity?</h3>
             <p>Use <code>PANDO_SENSITIVITY</code> (default <code>2.0</code>, or <code>3.0</code> for JIT and database runtimes the webhook auto-detects). Raise it for noisy workloads, lower it to catch subtler anomalies. Start in monitor mode before enabling enforcement.</p>
@@ -287,7 +287,7 @@ kubectl exec &lt;pod&gt; -c pando-sidecar -- wget -qO- http://localhost:9090/met
 
             <h2>Still Have Questions?</h2>
             
-            <p>If your question isn't answered here, <a href="../contact.html">contact us</a> and we'll be happy to help.</p>
+            <p>If your question isn't answered here, <a href="/contact">contact us</a> and we'll be happy to help.</p>
 
         </main>
     </div>

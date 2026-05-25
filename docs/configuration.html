@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="PandoCore Configuration Reference - Helm values and sidecar settings for production deployments.">
     <title>Configuration | PandoCore Docs</title>
-    <link rel="canonical" href="https://pandocore.io/docs/configuration.html">
+    <link rel="canonical" href="https://pandocore.io/docs/configuration">
     <link rel="icon" type="image/png" href="../images/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,7 +18,7 @@
     <nav class="navbar">
         <div class="container">
             <div class="nav-wrapper">
-                <a href="../index.html" class="logo">
+                <a href="/" class="logo">
                     <img src="../images/logoTransparency.png" alt="Pando Logo">
                     <div class="logo-text-wrapper">
                         <span class="logo-text">PandoCore</span>
@@ -31,12 +31,12 @@
                 </button>
                 <div class="nav-overlay"></div>
                 <ul class="nav-links">
-                    <li><a href="../index.html">Home</a></li>
-                    <li><a href="../product.html">Product</a></li>
-                    <li><a href="../pricing.html">Pricing</a></li>
-                    <li><a href="../about.html">About</a></li>
-                    <li><a href="index.html" class="active">Docs</a></li>
-                    <li><a href="../contact.html" class="nav-contact">Contact</a></li>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/product">Product</a></li>
+                    <li><a href="/pricing">Pricing</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/docs/" class="active">Docs</a></li>
+                    <li><a href="/contact" class="nav-contact">Contact</a></li>
                     <li><a href="https://portal.pandocore.io/signup" class="nav-signup">Sign Up</a></li>
                 </ul>
             </div>
@@ -57,26 +57,26 @@
         <aside class="docs-sidebar">
             <h3>Documentation</h3>
             <ul class="docs-nav">
-                <li><a href="index.html">Overview</a></li>
-                <li><a href="getting-started.html">Getting Started</a></li>
-                <li><a href="webhook.html">Admission Webhook</a></li>
-                <li><a href="dashboard.html">Dashboard</a></li>
-                <li><a href="configuration.html" class="active">Configuration</a></li>
-                <li><a href="policy.html">CRD Policy</a></li>
-                <li><a href="operating-modes.html">Operating Modes</a></li>
-                <li><a href="production-hardening.html">Production Hardening</a></li>
-                <li><a href="upgrading.html">Upgrading</a></li>
-                <li><a href="troubleshooting.html">Troubleshooting</a></li>
-                <li><a href="emergency.html">Emergency Procedures</a></li>
-                <li><a href="evidence-format.html">Evidence Format</a></li>
-                <li><a href="faq.html">FAQ</a></li>
+                <li><a href="/docs/">Overview</a></li>
+                <li><a href="/docs/getting-started">Getting Started</a></li>
+                <li><a href="/docs/webhook">Admission Webhook</a></li>
+                <li><a href="/docs/dashboard">Dashboard</a></li>
+                <li><a href="/docs/configuration" class="active">Configuration</a></li>
+                <li><a href="/docs/policy">CRD Policy</a></li>
+                <li><a href="/docs/operating-modes">Operating Modes</a></li>
+                <li><a href="/docs/production-hardening">Production Hardening</a></li>
+                <li><a href="/docs/upgrading">Upgrading</a></li>
+                <li><a href="/docs/troubleshooting">Troubleshooting</a></li>
+                <li><a href="/docs/emergency">Emergency Procedures</a></li>
+                <li><a href="/docs/evidence-format">Evidence Format</a></li>
+                <li><a href="/docs/faq">FAQ</a></li>
             </ul>
         </aside>
 
         <!-- Main Content -->
         <main class="docs-content">
             <div class="docs-breadcrumb">
-                <a href="index.html">Docs</a>
+                <a href="/docs/">Docs</a>
                 <span>/</span>
                 Configuration
             </div>
@@ -106,7 +106,7 @@
                     <tr>
                         <td><code>defaultMode</code></td>
                         <td><code>monitor</code></td>
-                        <td><code>monitor</code>, <code>alert</code>, <code>isolate</code>, or <code>enforce</code>. Modes layer additively — each does everything the prior mode does, plus one response action. See <a href="operating-modes.html">Operating Modes</a>.</td>
+                        <td><code>monitor</code>, <code>alert</code>, <code>isolate</code>, or <code>enforce</code>. Modes layer additively — each does everything the prior mode does, plus one response action. See <a href="/docs/operating-modes">Operating Modes</a>.</td>
                     </tr>
                     <tr>
                         <td><code>slackWebhookURL</code></td>
@@ -121,7 +121,7 @@
                     <tr>
                         <td><code>failurePolicy</code></td>
                         <td><code>Ignore</code></td>
-                        <td><code>Ignore</code> admits pods if the webhook is down; <code>Fail</code> blocks them. See <a href="production-hardening.html">Production Hardening</a>.</td>
+                        <td><code>Ignore</code> admits pods if the webhook is down; <code>Fail</code> blocks them. See <a href="/docs/production-hardening">Production Hardening</a>.</td>
                     </tr>
                     <tr>
                         <td><code>replicas</code></td>
@@ -131,7 +131,7 @@
                     <tr>
                         <td><code>sidecar.image</code></td>
                         <td>Chart appVersion</td>
-                        <td>Pin explicitly in production (see <a href="upgrading.html">Upgrading</a>).</td>
+                        <td>Pin explicitly in production (see <a href="/docs/upgrading">Upgrading</a>).</td>
                     </tr>
                     <tr>
                         <td><code>sidecar.resources</code></td>
@@ -166,7 +166,7 @@
                     <tr>
                         <td><code>crd.enabled</code></td>
                         <td><code>true</code></td>
-                        <td>Install the <code>PandoCorePolicy</code> CRD. See <a href="policy.html">CRD Policy</a>.</td>
+                        <td>Install the <code>PandoCorePolicy</code> CRD. See <a href="/docs/policy">CRD Policy</a>.</td>
                     </tr>
                     <tr>
                         <td><code>networkAudit.enabled</code></td>
@@ -181,11 +181,11 @@
                 </tbody>
             </table>
 
-            <p>Per-pod overrides via deployment annotations. See <a href="webhook.html">Admission Webhook</a>.</p>
+            <p>Per-pod overrides via deployment annotations. See <a href="/docs/webhook">Admission Webhook</a>.</p>
 
             <h2>Sidecar Runtime Settings</h2>
 
-            <p>Change these on live workloads with <code>kubectl set env</code>, or via a <code>PandoCorePolicy</code> (<a href="policy.html">CRD Policy</a>).</p>
+            <p>Change these on live workloads with <code>kubectl set env</code>, or via a <code>PandoCorePolicy</code> (<a href="/docs/policy">CRD Policy</a>).</p>
 
             <h3>Operating Mode</h3>
 
@@ -201,7 +201,7 @@
                     <tr>
                         <td><code>PANDO_MODE</code></td>
                         <td><code>monitor</code></td>
-                        <td><code>monitor</code>, <code>alert</code>, <code>isolate</code>, or <code>enforce</code>. See <a href="operating-modes.html">Operating Modes</a>.</td>
+                        <td><code>monitor</code>, <code>alert</code>, <code>isolate</code>, or <code>enforce</code>. See <a href="/docs/operating-modes">Operating Modes</a>.</td>
                     </tr>
                 </tbody>
             </table>
@@ -308,7 +308,7 @@ kubectl rollout restart deployment/your-app</code></pre>
                 </tbody>
             </table>
 
-            <p>Isolation applies a <code>NetworkPolicy</code> denying all egress except DNS. If the pod recovers, isolation is lifted automatically. See <a href="operating-modes.html">Operating Modes</a>.</p>
+            <p>Isolation applies a <code>NetworkPolicy</code> denying all egress except DNS. If the pod recovers, isolation is lifted automatically. See <a href="/docs/operating-modes">Operating Modes</a>.</p>
 
             <h3>Slack Alerts</h3>
 
@@ -363,7 +363,7 @@ kubectl rollout restart deployment/your-app</code></pre>
                 </tbody>
             </table>
 
-            <p>See <a href="evidence-format.html">Evidence Format</a>.</p>
+            <p>See <a href="/docs/evidence-format">Evidence Format</a>.</p>
 
             <h3>Logging</h3>
 
@@ -391,7 +391,7 @@ kubectl rollout restart deployment/your-app</code></pre>
 
             <h2>What You Can't Configure</h2>
 
-            <p>Detection internals are managed automatically and not user-tunable. If sensitivity isn't solving your problem, <a href="../contact.html">contact support</a>.</p>
+            <p>Detection internals are managed automatically and not user-tunable. If sensitivity isn't solving your problem, <a href="/contact">contact support</a>.</p>
 
             <h2>Configuration Examples</h2>
 
@@ -424,10 +424,10 @@ kubectl rollout restart deployment/critical-api</code></pre>
             <h2>Next Steps</h2>
 
             <ul>
-                <li><a href="operating-modes.html">Operating Modes</a></li>
-                <li><a href="policy.html">CRD Policy</a></li>
-                <li><a href="production-hardening.html">Production Hardening</a></li>
-                <li><a href="evidence-format.html">Evidence Format</a></li>
+                <li><a href="/docs/operating-modes">Operating Modes</a></li>
+                <li><a href="/docs/policy">CRD Policy</a></li>
+                <li><a href="/docs/production-hardening">Production Hardening</a></li>
+                <li><a href="/docs/evidence-format">Evidence Format</a></li>
             </ul>
 
         </main>
