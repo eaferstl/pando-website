@@ -104,7 +104,7 @@ helm install pando-webhook \
   --set licenseKey="YOUR_LICENSE_KEY"
 
 # 2. Protect a deployment
-kubectl label deployment your-app pandocore.xyz/protect=true
+kubectl label deployment your-app pandocore.io/protect=true
 kubectl rollout restart deployment/your-app</code></pre>
 
             <p>The webhook injects the sidecar on the next pod start. Run <code>kubectl get pods</code> and you'll see <code>2/2</code> containers.</p>
@@ -129,7 +129,7 @@ kubectl create rolebinding pando-sidecar \
 
             <h2>What Just Happened</h2>
 
-            <p>After step 1, you have a mutating admission webhook watching for pods with the <code>pandocore.xyz/protect=true</code> label. When one starts:</p>
+            <p>After step 1, you have a mutating admission webhook watching for pods with the <code>pandocore.io/protect=true</code> label. When one starts:</p>
 
             <ol>
                 <li>The webhook injects a <code>pando-sidecar</code> container alongside your app container</li>
@@ -169,7 +169,7 @@ kubectl exec &lt;pod-name&gt; -c pando-sidecar -- wget -qO- http://localhost:909
             <p>Once you've watched a workload in monitor mode for a few days and are satisfied with the detections, flip it to <code>enforce</code> mode. The sidecar will now terminate pods on enforcement-level detections.</p>
 
             <pre><code># Per-deployment: annotation overrides cluster default
-kubectl annotate deployment your-app pandocore.xyz/mode=enforce --overwrite
+kubectl annotate deployment your-app pandocore.io/mode=enforce --overwrite
 kubectl rollout restart deployment/your-app
 
 # Or cluster-wide: change the default for newly-created pods
@@ -183,7 +183,7 @@ helm upgrade pando-webhook \
             <div class="docs-callout info">
                 <div class="docs-callout-title">Intermediate step: Isolate mode</div>
                 <p>Before flipping straight to <code>enforce</code>, consider <code>isolate</code>. On a trip, PandoCore applies a NetworkPolicy that blocks pod egress (except DNS) — contains the attack without killing the pod. If drift subsides, the policy is removed automatically. This is the right durable mode for stateful workloads (databases, caches, queues) where pod restart is expensive.</p>
-                <pre><code>kubectl annotate deployment your-app pandocore.xyz/mode=isolate --overwrite
+                <pre><code>kubectl annotate deployment your-app pandocore.io/mode=isolate --overwrite
 kubectl rollout restart deployment/your-app</code></pre>
             </div>
 
@@ -225,7 +225,7 @@ kubectl set env deployment/your-app -c pando-sidecar \
 
             <p>For anything beyond a handful of deployments, manage configuration declaratively with the <code>PandoCorePolicy</code> CRD. One YAML file in your GitOps repo controls mode, sensitivity, and response chains across multiple namespaces.</p>
 
-            <pre><code>apiVersion: pandocore.xyz/v1alpha1
+            <pre><code>apiVersion: pandocore.io/v1alpha1
 kind: PandoCorePolicy
 metadata:
   name: default
@@ -296,7 +296,7 @@ PANDO_LICENSE_KEY="YOUR_LICENSE_KEY" \
                     </tr>
                     <tr>
                         <td>Disable for a pod</td>
-                        <td><code>kubectl label pod &lt;name&gt; pandocore.xyz/protect-</code></td>
+                        <td><code>kubectl label pod &lt;name&gt; pandocore.io/protect-</code></td>
                     </tr>
                 </tbody>
             </table>

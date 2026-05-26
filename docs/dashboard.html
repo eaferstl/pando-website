@@ -284,7 +284,7 @@
 
             <h3>Dashboard shows 0 protected pods</h3>
             <ol>
-                <li>Verify pods have the label: <code>kubectl get pods -l pandocore.xyz/protect=true --all-namespaces</code></li>
+                <li>Verify pods have the label: <code>kubectl get pods -l pandocore.io/protect=true --all-namespaces</code></li>
                 <li>Verify the sidecar container is running (2/2 Ready)</li>
                 <li>Check the dashboard logs: <code>kubectl logs -n pando-system -l app.kubernetes.io/name=pando-dashboard</code></li>
             </ol>

@@ -98,7 +98,7 @@
 
             <p>Create a file called <code>pando-policy.yaml</code>:</p>
 
-            <pre><code>apiVersion: pandocore.xyz/v1alpha1
+            <pre><code>apiVersion: pandocore.io/v1alpha1
 kind: PandoCorePolicy
 metadata:
   name: default
@@ -122,7 +122,7 @@ default   enforce   high          5s</code></pre>
 
             <p>Every field is optional. The sidecar falls back to environment variables (or built-in defaults) for any field not specified.</p>
 
-            <pre><code>apiVersion: pandocore.xyz/v1alpha1
+            <pre><code>apiVersion: pandocore.io/v1alpha1
 kind: PandoCorePolicy
 metadata:
   name: default            # must be "default", one policy per namespace
@@ -153,7 +153,7 @@ spec:
       - kube-system
       - monitoring
     labels:
-      pandocore.xyz/skip: "true"</code></pre>
+      pandocore.io/skip: "true"</code></pre>
 
             <h2>Precedence</h2>
 
@@ -302,7 +302,7 @@ spec:
 
             <h3>Production Namespace</h3>
 
-            <pre><code>apiVersion: pandocore.xyz/v1alpha1
+            <pre><code>apiVersion: pandocore.io/v1alpha1
 kind: PandoCorePolicy
 metadata:
   name: default
@@ -318,7 +318,7 @@ spec:
 
             <h3>Staging Namespace (Monitor Only)</h3>
 
-            <pre><code>apiVersion: pandocore.xyz/v1alpha1
+            <pre><code>apiVersion: pandocore.io/v1alpha1
 kind: PandoCorePolicy
 metadata:
   name: default
@@ -331,7 +331,7 @@ spec:
 
             <p>Check that the CRD is registered:</p>
 
-            <pre><code>kubectl get crd pandocorepolicies.pandocore.xyz</code></pre>
+            <pre><code>kubectl get crd pandocorepolicies.pandocore.io</code></pre>
 
             <p>List policies across namespaces:</p>
 

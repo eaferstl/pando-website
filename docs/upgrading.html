@@ -131,26 +131,11 @@ helm upgrade pando-webhook \
 
             <h2>Upgrade Sidecars in Protected Pods</h2>
 
-            <p>Sidecar upgrades happen on pod restart. There are two ways to trigger this:</p>
-
-            <h3>Option A: Rolling restart per workload</h3>
-
-            <p>Restart the deployment. The webhook injects the new sidecar image on each new pod:</p>
+            <p>Sidecar upgrades happen on pod restart. Restart the deployment and the webhook injects the new sidecar image on each new pod:</p>
 
             <pre><code>kubectl rollout restart deployment/your-app</code></pre>
 
             <p>This is the standard approach. Kubernetes handles the rolling update with your deployment's existing <code>maxSurge</code>/<code>maxUnavailable</code> settings. Zero downtime if your app has more than one replica.</p>
-
-            <h3>Option B: Pin a specific sidecar version per workload</h3>
-
-            <p>If you want a specific workload on an older or newer sidecar than the cluster default, override via annotation:</p>
-
-            <pre><code>kubectl annotate deployment your-app \
-  pandocore.xyz/sidecar-image=us-central1-docker.pkg.dev/pandocore-prod/sidecar/pando-sidecar:v0.5.1 \
-  --overwrite
-kubectl rollout restart deployment/your-app</code></pre>
-
-            <p>Useful for canarying a new sidecar version on one workload before rolling it out cluster-wide.</p>
 
             <h2>Baseline Considerations</h2>
 

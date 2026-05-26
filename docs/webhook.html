@@ -85,7 +85,7 @@
 
             <p>The PandoCore admission webhook uses Kubernetes' <a href="https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#mutatingadmissionwebhook">MutatingAdmissionWebhook</a> API to automatically inject the PandoCore sidecar into pods at creation time.</p>
 
-            <p>When a pod is created with the label <code>pandocore.xyz/protect: "true"</code>, the webhook intercepts the request and adds:</p>
+            <p>When a pod is created with the label <code>pandocore.io/protect: "true"</code>, the webhook intercepts the request and adds:</p>
 
             <ul>
                 <li>The <code>pando-sidecar</code> container with health probes, resource limits, and security context</li>
@@ -110,31 +110,31 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td><code>pandocore.xyz/protect</code></td>
+                        <td><code>pandocore.io/protect</code></td>
                         <td>Label</td>
                         <td><code>"true"</code></td>
                         <td>Enables sidecar injection for pods with this label</td>
                     </tr>
                     <tr>
-                        <td><code>pandocore.xyz/mode</code></td>
+                        <td><code>pandocore.io/mode</code></td>
                         <td>Annotation</td>
                         <td><code>"monitor"</code>, <code>"alert"</code>, <code>"isolate"</code>, <code>"enforce"</code>, <code>"debug"</code></td>
                         <td>Overrides the default operating mode for this pod. See <a href="/docs/operating-modes">Operating Modes</a>.</td>
                     </tr>
                     <tr>
-                        <td><code>pandocore.xyz/profile</code></td>
+                        <td><code>pandocore.io/profile</code></td>
                         <td>Annotation</td>
                         <td><code>"http-server"</code></td>
                         <td>Marks the workload as an HTTP server regardless of image name or CMD. Applies HTTP-tuned detection behavior and sensitivity. Use this when your framework (Django, FastAPI, Flask, Express, Rails, etc.) runs on a language base image or inside a shell-wrapped entrypoint.</td>
                     </tr>
                     <tr>
-                        <td><code>pandocore.xyz/audit-network</code></td>
+                        <td><code>pandocore.io/audit-network</code></td>
                         <td>Annotation</td>
                         <td><code>"true"</code> or <code>"false"</code></td>
                         <td>Per-pod override for the cluster-wide <code>networkAudit.enabled</code> Helm value. When enabled, the sidecar baselines the set of remote IPs during learning and emits attestation evidence on connections to addresses outside the baseline + allowlist. Detects in-process exfil beacons and C2 callbacks that entropy drift alone cannot disambiguate.</td>
                     </tr>
                     <tr>
-                        <td><code>pandocore.xyz/network-allowlist</code></td>
+                        <td><code>pandocore.io/network-allowlist</code></td>
                         <td>Annotation</td>
                         <td>Comma-separated CIDRs</td>
                         <td>Per-pod override for <code>networkAudit.allowlistCIDRs</code>. Connections to addresses inside any allowlisted CIDR are never flagged. Example: <code>"10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"</code>.</td>
@@ -149,12 +149,12 @@
             <ol>
                 <li><strong>Image-pattern match.</strong> Purpose-built web-server images: <code>nginx</code>, <code>caddy</code>, <code>apache</code>, <code>traefik</code>, <code>envoy</code>, <code>haproxy</code>, <code>lighttpd</code>, <code>openresty</code>, <code>httpd</code>.</li>
                 <li><strong>CMD/args basename match.</strong> Common Python, Node, and Ruby framework server entrypoints running on language base images (<code>python:*</code>, <code>node:*</code>, etc.) are auto-tagged by the webhook.</li>
-                <li><strong>Profile annotation.</strong> <code>pandocore.xyz/profile: http-server</code> on the pod template.</li>
+                <li><strong>Profile annotation.</strong> <code>pandocore.io/profile: http-server</code> on the pod template.</li>
             </ol>
 
             <div class="docs-callout info">
                 <div class="docs-callout-title">Shell-wrapped entrypoints</div>
-                <p>CMD/args basename matching looks at <code>command[0]</code>. If your Dockerfile or Helm chart uses <code>sh -c "exec uvicorn main:app --host 0.0.0.0"</code>, the webhook sees <code>sh</code>, not <code>uvicorn</code>, and will not auto-tag. Add <code>pandocore.xyz/profile: http-server</code> to the pod template to cover this case.</p>
+                <p>CMD/args basename matching looks at <code>command[0]</code>. If your Dockerfile or Helm chart uses <code>sh -c "exec uvicorn main:app --host 0.0.0.0"</code>, the webhook sees <code>sh</code>, not <code>uvicorn</code>, and will not auto-tag. Add <code>pandocore.io/profile: http-server</code> to the pod template to cover this case.</p>
             </div>
 
             <p>Workloads that are <em>not</em> HTTP servers (Celery workers, ETL jobs, Jupyter notebooks, ML batch jobs) should be left untagged — the default profile is tuned for their behavior, and incorrectly marking them would mistune sensitivity.</p>
@@ -205,12 +205,12 @@
                     <tr>
                         <td><code>networkAudit.enabled</code></td>
                         <td><code>false</code></td>
-                        <td>Cluster-wide default for the network connection audit (Phase H5.2). Per-pod override via the <code>pandocore.xyz/audit-network</code> annotation.</td>
+                        <td>Cluster-wide default for the network connection audit (Phase H5.2). Per-pod override via the <code>pandocore.io/audit-network</code> annotation.</td>
                     </tr>
                     <tr>
                         <td><code>networkAudit.allowlistCIDRs</code></td>
                         <td><code>"10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,127.0.0.0/8,fd00::/8"</code></td>
-                        <td>Comma-separated CIDRs that are never flagged as unexpected. Default covers RFC1918, loopback, and ULA. Per-pod override via the <code>pandocore.xyz/network-allowlist</code> annotation.</td>
+                        <td>Comma-separated CIDRs that are never flagged as unexpected. Default covers RFC1918, loopback, and ULA. Per-pod override via the <code>pandocore.io/network-allowlist</code> annotation.</td>
                     </tr>
                 </tbody>
             </table>
