@@ -2914,6 +2914,37 @@ ul {
     fill: currentColor;
 }
 
+.contact-section .book-now-link,
+.page-hero .book-now-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    height: 70px;
+    padding: 0 var(--spacing-lg);
+    background-color: var(--amber-honey);
+    color: var(--white);
+    border-radius: 35px;
+    font-weight: 600;
+    font-size: 1.05rem;
+    text-decoration: none;
+    transition: all var(--transition-speed);
+}
+
+.contact-section .book-now-link:hover,
+.page-hero .book-now-link:hover {
+    background-color: var(--coffee-bean);
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 6px 16px rgba(223, 159, 21, 0.4);
+    opacity: 1;
+}
+
+.contact-section .book-now-link svg,
+.page-hero .book-now-link svg {
+    width: 26px;
+    height: 26px;
+    fill: currentColor;
+}
+
 .contact-form .form-group {
     margin-bottom: var(--spacing-xs);
 }
@@ -3520,6 +3551,13 @@ textarea:focus {
     opacity: 0.7;
     font-size: 1rem;
     margin-left: 4px;
+}
+
+.pricing-price-prefix {
+    color: var(--charcoal);
+    opacity: 0.7;
+    font-size: 1rem;
+    margin-right: 4px;
 }
 
 .pricing-meta {
