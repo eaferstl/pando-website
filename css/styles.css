@@ -3461,7 +3461,9 @@ textarea:focus {
 
 .pricing-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    /* minmax(0, 1fr) lets the four columns shrink to fit instead of overflowing
+       on narrower desktop widths — keeps all tiers on a single row. */
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: var(--spacing-lg);
     max-width: var(--container-max-width);
     margin: 0 auto;
@@ -3619,17 +3621,19 @@ textarea:focus {
     line-height: 1.6;
 }
 
-@media (max-width: 1024px) {
+/* Keep all four tiers on one row across desktop/laptop widths; only collapse
+   to two columns on tablets and one on phones. */
+@media (max-width: 900px) {
     .pricing-grid {
         grid-template-columns: repeat(2, 1fr);
-        max-width: 720px;
+        max-width: 560px;
     }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 560px) {
     .pricing-grid {
         grid-template-columns: 1fr;
-        max-width: 480px;
+        max-width: 360px;
     }
 
     .pricing-card-featured {
