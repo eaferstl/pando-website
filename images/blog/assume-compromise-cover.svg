@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Assume compromise cover">
+    <rect width="1200" height="675" fill="#1F1102"/>
+    <rect x="0" y="0" width="1200" height="675" fill="#002707" opacity="0.35"/>
+    <polyline points="300,470 300,300 420,220 600,220" fill="none" stroke="#DF9F15" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+    <polyline points="900,470 900,300 780,220 600,220" fill="none" stroke="#E1F0F4" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.7"/>
+    <circle cx="600" cy="220" r="16" fill="#DF9F15"/>
+    <circle cx="300" cy="470" r="12" fill="#E1F0F4" opacity="0.8"/>
+    <circle cx="900" cy="470" r="12" fill="#E1F0F4" opacity="0.8"/>
+    <text x="600" y="560" font-family="Inter, sans-serif" font-size="40" font-weight="700" fill="#F7F4EB" text-anchor="middle">Assume Compromise</text>
+</svg>

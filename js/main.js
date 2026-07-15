@@ -29,7 +29,129 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize mobile menu
     initializeMobileMenu();
+
+    // Render blog cards (only runs on the blog index page)
+    initializeBlogIndex();
 });
+
+/**
+ * Populate the blog grid from the posts.json manifest.
+ * Runs only where a .blog-grid element exists; inert on every other page.
+ */
+function initializeBlogIndex() {
+    const grid = document.querySelector('.blog-grid');
+    if (!grid) return;
+
+    fetch('/blog/posts.json')
+        .then(function(response) {
+            if (!response.ok) throw new Error('Failed to load posts');
+            return response.json();
+        })
+        .then(function(posts) {
+            // Hide posts dated in the future so they can be scheduled ahead of
+            // time; each appears automatically once its publish date arrives.
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            posts = posts.filter(function(post) {
+                const published = new Date(post.date + 'T00:00:00');
+                return isNaN(published.getTime()) || published <= today;
+            });
+
+            posts.sort(function(a, b) {
+                return String(b.date).localeCompare(String(a.date));
+            });
+
+            grid.textContent = '';
+
+            if (!posts.length) {
+                showBlogMessage(grid, 'No posts yet. Check back soon.');
+                return;
+            }
+
+            posts.forEach(function(post) {
+                grid.appendChild(buildBlogCard(post));
+            });
+        })
+        .catch(function() {
+            showBlogMessage(grid, 'Posts are unavailable right now. Please try again later.');
+        });
+}
+
+/**
+ * Build a single blog card element from a manifest entry.
+ * User-supplied text is assigned via textContent to avoid HTML injection.
+ */
+function buildBlogCard(post) {
+    const card = document.createElement('a');
+    card.className = 'blog-card';
+    card.href = post.url;
+
+    if (post.image) {
+        const img = document.createElement('img');
+        img.className = 'blog-card-image';
+        img.src = post.image;
+        img.alt = post.title || '';
+        img.loading = 'lazy';
+        card.appendChild(img);
+    }
+
+    const body = document.createElement('div');
+    body.className = 'blog-card-body';
+
+    if (post.date) {
+        const meta = document.createElement('p');
+        meta.className = 'blog-card-meta';
+        meta.textContent = formatBlogDate(post.date);
+        body.appendChild(meta);
+    }
+
+    const title = document.createElement('h3');
+    title.className = 'blog-card-title';
+    title.textContent = post.title || 'Untitled';
+    body.appendChild(title);
+
+    if (post.excerpt) {
+        const excerpt = document.createElement('p');
+        excerpt.className = 'blog-card-excerpt';
+        excerpt.textContent = post.excerpt;
+        body.appendChild(excerpt);
+    }
+
+    if (post.author) {
+        const author = document.createElement('p');
+        author.className = 'blog-card-author';
+        author.textContent = 'By ' + post.author;
+        body.appendChild(author);
+    }
+
+    card.appendChild(body);
+    return card;
+}
+
+/**
+ * Format an ISO date (YYYY-MM-DD) as e.g. "July 15, 2026".
+ * Falls back to the raw string if it can't be parsed.
+ */
+function formatBlogDate(value) {
+    const date = new Date(value + 'T00:00:00');
+    if (isNaN(date.getTime())) return value;
+    return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+}
+
+/**
+ * Show a centered status message inside the blog grid.
+ */
+function showBlogMessage(grid, message) {
+    grid.textContent = '';
+    const el = document.createElement('p');
+    el.className = 'blog-empty';
+    el.textContent = message;
+    grid.appendChild(el);
+}
 
 /**
  * Initialize mobile hamburger menu functionality

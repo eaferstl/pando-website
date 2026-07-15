@@ -4,23 +4,42 @@ Professional website for Pando - advancing security and reliability for traditio
 
 ## Overview
 
-This is a static website built with HTML, CSS, and vanilla JavaScript. It features three main pages:
+This is a static website built with HTML, CSS, and vanilla JavaScript. It features these main pages:
 - **Home/Landing Page** (`index.html`) - Core value proposition and overview
+- **Product Page** (`product.html`) - How the product works
+- **Pricing Page** (`pricing.html`) - Plans and pricing tiers
 - **About Page** (`about.html`) - Team background, mission, and approach
+- **Blog** (`blog/`) - Posts rendered from the `blog/posts.json` manifest (see below)
 - **Contact Page** (`contact.html`) - Professional contact form for inquiries
+
+### Publishing a blog post
+
+1. Copy `blog/_template.html` to `blog/<your-slug>.html` and fill in the marked `<!-- EDIT -->` regions (title, date, author, `og:` tags, and the article body).
+2. Add the cover image to `images/blog/` and reference it with a root-absolute path (e.g. `/images/blog/<your-slug>-cover.jpg`).
+3. Add one entry to `blog/posts.json` (`title`, `author`, `date`, `excerpt`, `image`, `url`).
+
+The card grid at `/blog/` rebuilds itself from `posts.json` (newest first) — no need to edit the index by hand.
 
 ## File Structure
 
 ```
 pandoWebsite/
 ├── index.html              # Landing page
+├── product.html            # Product page
+├── pricing.html            # Pricing page
 ├── about.html              # About page
 ├── contact.html            # Contact form page
+├── blog/
+│   ├── index.html          # Blog landing (renders cards from posts.json)
+│   ├── _template.html      # Copy this to start a new post
+│   ├── posts.json          # Post manifest (one entry per post)
+│   └── *.html              # Individual post pages
 ├── css/
 │   └── styles.css         # Main stylesheet
 ├── js/
 │   └── main.js            # JavaScript for forms and interactions
 ├── images/
+│   ├── blog/              # Blog cover images
 │   ├── logoHeader.png     # Logo for navigation
 │   └── logoNew.png        # Additional branding assets
 ├── docs/                  # Documentation (design specs, content guidelines)

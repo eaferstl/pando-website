@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Prevention and perimeter tools stop known threats at the door. The harder problem lives at runtime, after workloads start doing real work.">
+    <title>PandoCore | Runtime Is the New Security Frontier</title>
+    <link rel="canonical" href="https://pandocore.io/blog/runtime-frontier">
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Runtime Is the New Security Frontier">
+    <meta property="og:description" content="Prevention and perimeter tools stop known threats at the door. The harder problem lives at runtime, after workloads start doing real work.">
+    <meta property="og:image" content="https://pandocore.io/images/blog/runtime-frontier-cover.svg">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <link rel="icon" type="image/png" href="/images/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a href="/" class="logo">
+                    <img src="/images/logoTransparency.png" alt="Pando Logo">
+                    <div class="logo-text-wrapper">
+                        <span class="logo-text">PandoCore</span>
+                    </div>
+                </a>
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div class="nav-overlay"></div>
+                <ul class="nav-links">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/product">Product</a></li>
+                    <li><a href="/pricing">Pricing</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/blog/" class="active">Blog</a></li>
+                    <li><a href="/docs/">Docs</a></li>
+                    <li><a href="/contact" class="nav-contact">Contact</a></li>
+                    <li><a href="https://portal.pandocore.io/signup" class="nav-signup">Sign Up</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Post header -->
+    <section class="page-hero">
+        <div class="wave-container">
+            <div class="wave wave-layer-1"></div>
+            <div class="wave wave-layer-2"></div>
+        </div>
+        <div class="container">
+            <h1>Runtime Is the New Security Frontier</h1>
+            <p class="page-subtitle">July 15, 2026 &middot; By Eliot Ferstl</p>
+        </div>
+    </section>
+
+    <!-- Post body -->
+    <section class="content-section">
+        <div class="container">
+            <img class="blog-cover" src="/images/blog/runtime-frontier-cover.svg" alt="A runtime workload connected to its surrounding environment">
+
+            <article class="blog-article">
+                <p>Most security tooling makes its decisions before a workload ever runs: scan the image, check the policy, verify the signature, admit or reject. That work matters, and it stops a lot of bad things at the door. But all of it happens while the system is still just an idea, before it becomes a running process handling real traffic and real data.</p>
+
+                <p>The harder problem shows up a moment later, once everything has been admitted and is doing exactly what it was allowed to do. Right up until it isn't.</p>
+
+                <h2>Prevention answers a different question</h2>
+                <p>Prevention asks, &ldquo;Should this be allowed to start?&rdquo; Runtime security asks a question you can only answer while the system is live: &ldquo;Is this still behaving the way it should?&rdquo; Those aren't the same question, and passing the first tells you very little about the second.</p>
+                <p>A workload can be built from a clean image, pass every admission check, and still drift into behavior nobody intended. Maybe a dependency got compromised upstream. Maybe a credential leaked. Maybe an operator was tricked. None of that shows up before the process is running.</p>
+
+                <h2>Why this gap keeps widening</h2>
+                <ul>
+                    <li>Systems are more distributed, so there are more moving parts and more places for behavior to drift from intent.</li>
+                    <li>Workloads are more dynamic, so a static rule written last quarter rarely describes what &ldquo;normal&rdquo; looks like today.</li>
+                    <li>Sensitive work increasingly runs in environments you should assume are already partly compromised.</li>
+                </ul>
+
+                <blockquote>Security that only inspects a workload before it runs is inspecting the one moment it is least likely to misbehave.</blockquote>
+
+                <h2>What good runtime defense looks like</h2>
+                <p>The bar is simple to state, even if it's hard to meet: understand what a workload normally does, notice when it stops doing that, and hand a person evidence they can actually investigate. Not a wall of alerts, but a clear account of what changed and why it was worth surfacing.</p>
+                <p>That's the frontier we're focused on. Prevention will always have its place at the door. The interesting, unsolved work is what happens after the door closes.</p>
+            </article>
+
+            <p class="blog-back">
+                <a href="/blog/" class="btn btn-secondary">&larr; Back to all posts</a>
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2026 PandoCore Inc. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/main.js"></script>
+</body>
+</html>

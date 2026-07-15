@@ -1,0 +1,18 @@
+[
+    {
+        "title": "Runtime Is the New Security Frontier",
+        "author": "Eliot Ferstl",
+        "date": "2026-07-15",
+        "excerpt": "Prevention and perimeter tools stop known threats at the door. The harder problem lives at runtime, after workloads start doing real work.",
+        "image": "/images/blog/runtime-frontier-cover.svg",
+        "url": "/blog/runtime-frontier.html"
+    },
+    {
+        "title": "Building Defense That Assumes Compromise",
+        "author": "Eliot Ferstl",
+        "date": "2026-07-22",
+        "excerpt": "Designing for a world where compromise is assumed changes what you build — it means planning for the moment defenses are already inside the perimeter.",
+        "image": "/images/blog/assume-compromise-cover.svg",
+        "url": "/blog/assume-compromise.html"
+    }
+]
