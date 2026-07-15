@@ -1,0 +1,8 @@
+# Always revalidate shared assets so updated code and new blog posts are
+# picked up immediately instead of being served stale from browser cache.
+/css/styles.css
+  Cache-Control: no-cache
+/js/main.js
+  Cache-Control: no-cache
+/blog/posts.json
+  Cache-Control: no-cache
