@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PandoCore Trust Center: what the sidecar collects, what leaves your cluster, how it fails, evidence integrity, supply chain, disclosure policy, and our compliance roadmap.">
+    <title>PandoCore | Trust Center</title>
+    <link rel="canonical" href="https://trust.pandocore.io/">
+    <link rel="icon" type="image/png" href="/images/favicon.png">
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="PandoCore Trust Center">
+    <meta property="og:description" content="What the sidecar collects, what leaves your cluster, how it fails, evidence integrity, supply chain, disclosure, and our compliance roadmap.">
+    <meta property="og:url" content="https://trust.pandocore.io/">
+    <meta property="og:image" content="https://pandocore.io/images/logoTransparency.png">
+    <meta name="twitter:card" content="summary">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css?v=2">
+</head>
+<body>
+    <div class="trust-page">
+        <a href="https://pandocore.io/" class="trust-wordmark">PandoCore</a>
+
+        <h1>Trust Center</h1>
+        <p class="trust-meta">Last updated July 17, 2026</p>
+
+        <p>PandoCore runs inside your Kubernetes pods, so you should know exactly what it does with your data, how it behaves when things break, and where we stand on formal compliance. Here is the honest picture.</p>
+
+        <section>
+            <h2>What we collect, and what leaves your cluster</h2>
+            <p>The sidecar reads only kernel-exposed counters about your workload's own processes (memory, process, and network statistics from the pod's <code>/proc</code> filesystem), then turns them into normalized drift signals. It does not read your application's data, memory contents, network payloads, environment variables, or secrets.</p>
+            <p><strong>Stays in your cluster.</strong> Every detection produces a structured evidence record written to the sidecar's stdout, visible in your own pod logs. The optional network audit that records remote IP addresses is off by default.</p>
+            <p><strong>Goes to PandoCore (<code>portal.pandocore.io</code>).</strong> Two things reach us on a default install:</p>
+            <ul>
+                <li>A licensing and billing heartbeat, roughly weekly, plus a one-time cluster registration. These carry your license key, generated pod and cluster identifiers, and the sidecar version, but no detection data.</li>
+                <li>Detection evidence. By default the sidecar forwards evidence records to the portal. You can turn this off completely with a single Helm value (<code>portalWebhook.enabled: false</code>), or leave forwarding on but tell the portal not to store it. Either way, concrete identifiers inside a record (file paths, remote IPs, image digests) can be redacted before the record ever leaves the pod.</li>
+            </ul>
+            <p><strong>Goes only where you point it.</strong> Beyond the portal, evidence is delivered to the destinations you configure: your SIEM (Splunk, Elastic, Datadog, syslog), a Slack channel, or your own webhook. Nothing is sent to a third party you did not set up.</p>
+        </section>
+
+        <section>
+            <h2>Failure modes</h2>
+            <p>Out of the box the sidecar runs in monitor mode: it observes and records, and does not block, isolate, or delete anything. Enforcement is something you opt into.</p>
+            <p>It is designed to fail open. If the portal is unreachable, if its Kubernetes permissions are missing, or if the sidecar itself crashes, your workload keeps running. The sidecar sits alongside your application, not in the path of its traffic, so it cannot take your app down with it.</p>
+            <p>The stronger responses, isolating a pod with a NetworkPolicy or terminating it, are opt-in modes that act out of band through the Kubernetes API. Nothing intercepts your syscalls or network traffic inline. The sidecar is resource-capped (25Mi memory and 50m CPU requested, 50Mi and 100m limits), so its footprint is bounded.</p>
+        </section>
+
+        <section>
+            <h2>Evidence integrity</h2>
+            <p>Each evidence record carries a SHA-256 digest over its full contents, along with the previous record's hash and a sequence number. Together these form an append-only chain: altering or reordering any record changes its digest and breaks the link, so tampering is detectable and the chain is independently verifiable.</p>
+            <p>Every record is also signed with an Ed25519 key that the sidecar generates inside the pod. The private half of that key never leaves the process. It is never written to disk or logged, and nothing is provisioned from outside, so there is no signing key to distribute or leak, and a compromised pod exposes only its own key.</p>
+            <p>To let anyone check those signatures, the portal attests each pod's public key against your license, using the same key that verifies PandoCore licenses. A third party can then verify a record with a key they already trust. Verification is anchored to the moment each record was written, so archived evidence stays verifiable long after the short-lived attestation that covered it has rotated.</p>
+            <p>Signing happens immediately and unconditionally; the portal attestation attaches once the sidecar can reach the portal, and this too is fail-open: during an outage, evidence keeps flowing, signed but not yet attested. Because attestation is independent of evidence forwarding, you can stop sending us evidence entirely and still get the full cryptographic guarantee.</p>
+            <p>Elsewhere, the sidecar uses SHA-256 to baseline process integrity, and verifies license, provenance, and SIEM-configuration artifacts against Ed25519 signatures.</p>
+        </section>
+
+        <section>
+            <h2>Supply chain</h2>
+            <p>Release container images are signed with cosign using keyless Sigstore signing, and every release ships a software bill of materials in both SPDX and CycloneDX formats, generated with syft and attached as an attestation. Images are scanned with Trivy, and a release is blocked if it carries critical or high-severity vulnerabilities. You can verify any image and pull its SBOM yourself with <code>cosign verify</code> and <code>cosign download sbom</code>.</p>
+        </section>
+
+        <section>
+            <h2>Reporting a vulnerability</h2>
+            <p>If you find a security issue, email <a href="mailto:eliot@pandocore.io">eliot@pandocore.io</a>. We welcome good-faith security research and will not pursue action against researchers who act in good faith, avoid privacy violations and service disruption, and give us a reasonable chance to fix an issue before disclosing it publicly. We are a small team, so we cannot promise a formal SLA, but we will acknowledge your report quickly and keep you posted. We do not run a paid bug bounty yet.</p>
+        </section>
+
+        <section>
+            <h2>Compliance roadmap</h2>
+            <p>We will be straight about this: PandoCore does not hold SOC 2 or any third-party security attestation today. We are targeting a SOC 2 Type 1 report in Q4 2027, with a Type 2 to follow shortly after.</p>
+            <p>In the meantime, the practices above are how we operate: least-privilege, namespace-scoped Kubernetes permissions; a signed container supply chain with published SBOMs; a fail-open, monitor-by-default posture; and evidence egress you control. Our detection has been validated through extended, continuous soak testing across a range of real, production-representative workloads.</p>
+        </section>
+
+        <p class="trust-footer">Questions? <a href="mailto:eliot@pandocore.io">eliot@pandocore.io</a> &middot; &copy; 2026 PandoCore Inc.</p>
+    </div>
+</body>
+</html>

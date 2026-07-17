@@ -11,6 +11,7 @@ This is a static website built with HTML, CSS, and vanilla JavaScript. It featur
 - **About Page** (`about.html`) - Team background, mission, and approach
 - **Blog** (`blog/`) - Posts rendered from the `blog/posts.json` manifest (see below)
 - **Contact Page** (`contact.html`) - Professional contact form for inquiries
+- **Trust Center** (`trust/index.html`) - Single-page security/data-handling overview; served at `trust.pandocore.io` and linked in every page footer
 
 ### Publishing a blog post
 
@@ -34,6 +35,8 @@ pandoWebsite/
 │   ├── _template.html      # Copy this to start a new post
 │   ├── posts.json          # Post manifest (one entry per post)
 │   └── *.html              # Individual post pages
+├── trust/
+│   └── index.html          # Trust Center (served at trust.pandocore.io)
 ├── css/
 │   └── styles.css         # Main stylesheet
 ├── js/
