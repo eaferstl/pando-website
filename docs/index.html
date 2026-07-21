@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="../css/docs.css">
 </head>
 <body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
     <!-- Navigation -->
     <nav class="navbar">
         <div class="container">
@@ -35,6 +36,7 @@
                     <li><a href="/product">Product</a></li>
                     <li><a href="/pricing">Pricing</a></li>
                     <li><a href="/about">About</a></li>
+                    <li><a href="/blog/">Blog</a></li>
                     <li><a href="/docs/" class="active">Docs</a></li>
                     <li><a href="/contact" class="nav-contact">Contact</a></li>
                     <li><a href="https://portal.pandocore.io/signup" class="nav-signup">Sign Up</a></li>
@@ -46,7 +48,7 @@
     <!-- Docs Hero -->
     <section class="docs-hero">
         <div class="container">
-            <h1>PandoCore Documentation</h1>
+            <h2>PandoCore Documentation</h2>
             <p>Everything you need to deploy, configure, and operate PandoCore runtime protection.</p>
         </div>
     </section>
@@ -74,7 +76,7 @@
         </aside>
 
         <!-- Main Content -->
-        <main class="docs-content">
+        <main class="docs-content" id="main-content" tabindex="-1">
             <h1>Overview</h1>
             
             <p>PandoCore is a runtime execution-integrity security system for Kubernetes. It continuously monitors your containerized workloads and responds instantly when anomalous behavior is detected, providing an additional layer of protection that operates during execution.</p>
@@ -184,7 +186,7 @@
 
             <div class="docs-callout info">
                 <div class="docs-callout-title">Validated Results</div>
-                <p>PandoCore has been validated across 10+ real-world workloads over 5,000+ pod-hours with a <strong>sub-0.005% false positive rate</strong>. See the <a href="/product#validation">full validation results</a>.</p>
+                <p>PandoCore has been validated across 10+ real-world workloads over 5,000+ pod-hours with <strong>under 5 false positives per day</strong>. See the <a href="/product#validation">full validation results</a>.</p>
             </div>
 
             <h2>Requirements</h2>

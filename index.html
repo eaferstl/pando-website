@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
     <!-- Navigation -->
     <nav class="navbar">
         <div class="container">
@@ -44,7 +45,7 @@
     </nav>
 
     <!-- Hero Section -->
-    <section class="hero">
+    <section id="main-content" tabindex="-1" class="hero">
         <div class="wave-container">
             <div class="wave wave-layer-1"></div>
             <div class="wave wave-layer-2"></div>
@@ -53,37 +54,97 @@
             <div class="hero-split">
                 <div class="hero-content-left">
                     <h1>Autonomous Runtime Defense</h1>
-                    <p class="hero-subtitle">A Kubernetes sidecar that learns your workload's normal behavior and detects when something changes.<br>No rules to write.<br>No policies to configure.</p>
+                    <p class="hero-subtitle">A Kubernetes sidecar that learns your workload's normal behavior, detects when something changes, and responds autonomously.</p>
                     <div class="hero-buttons">
-                        <a href="https://portal.pandocore.io/signup" class="btn btn-primary">Get Access</a>
-                        <a href="/product" class="btn btn-secondary">How It Works</a>
+                        <a href="https://portal.pandocore.io/signup" class="btn btn-primary">Get Started</a>
+                        <a href="/contact" class="btn btn-secondary">Get In Touch</a>
                     </div>
                 </div>
                 <div class="hero-visual">
-                    <svg viewBox="0 0 400 400" class="superposition-graphic">
-                        <!-- Entropy monitoring - shimmer boundary -->
-                        <circle cx="200" cy="200" r="180" class="entropy-boundary" />
-                        
-                        <!-- Entropy monitoring - wave pulse effects -->
-                        <circle cx="200" cy="200" r="30" class="entropy-wave entropy-wave-1" />
-                        <circle cx="200" cy="200" r="30" class="entropy-wave entropy-wave-2" />
-                        <circle cx="200" cy="200" r="30" class="entropy-wave entropy-wave-3" />
-                        
-                        <!-- Central nucleus representing the function -->
-                        <circle cx="200" cy="200" r="30" class="nucleus" />
-                        
-                        <!-- Superposition states - multiple orbiting execution paths -->
-                        <ellipse cx="200" cy="200" rx="120" ry="80" class="orbit orbit-1" />
-                        <ellipse cx="200" cy="200" rx="120" ry="80" class="orbit orbit-2" transform="rotate(60 200 200)" />
-                        <ellipse cx="200" cy="200" rx="120" ry="80" class="orbit orbit-3" transform="rotate(120 200 200)" />
-                        
-                        <!-- Data flow lines radiating from nucleus -->
-                        <line x1="200" y1="200" x2="200" y2="100" class="data-flow data-flow-1" />
-                        <line x1="200" y1="200" x2="280" y2="140" class="data-flow data-flow-2" />
-                        <line x1="200" y1="200" x2="280" y2="260" class="data-flow data-flow-3" />
-                        <line x1="200" y1="200" x2="200" y2="300" class="data-flow data-flow-4" />
-                        <line x1="200" y1="200" x2="120" y2="260" class="data-flow data-flow-5" />
-                        <line x1="200" y1="200" x2="120" y2="140" class="data-flow data-flow-6" />
+                    <svg viewBox="5 4 311 193" class="grove-graphic" role="img" aria-label="Thirteen autonomous workload sidecars, each learning its own normal behavior independently — no central control.">
+                        <g class="grove-link">
+                            <path d="M121,49 Q87,36 50,41" />
+                            <path d="M121,49 Q119,79 134,105" />
+                            <path d="M121,49 Q149,47 171,29" />
+                            <path d="M50,103 Q41,72 50,41" />
+                            <path d="M50,103 Q32,126 31,155" />
+                            <path d="M193,155 Q160,166 126,159" />
+                            <path d="M193,155 Q211,125 241,108" />
+                            <path d="M295,116 Q269,89 259,53" />
+                            <path d="M295,116 Q274,137 268,167" />
+                            <path d="M295,116 Q267,121 241,108" />
+                            <path d="M192,84 Q173,60 171,29" />
+                            <path d="M192,84 Q213,104 241,108" />
+                            <path d="M259,53 Q259,83 241,108" />
+                            <path d="M134,105 Q121,131 126,159" />
+                            <path d="M126,159 Q78,166 31,155" />
+                            <path d="M268,167 Q263,134 241,108" />
+                        </g>
+                        <g class="grove-node gp0">
+                            <circle cx="121" cy="49" r="13" class="grove-halo" />
+                            <circle cx="121" cy="49" r="13" class="grove-halo-ring" />
+                            <circle cx="121" cy="49" r="5" class="grove-core" />
+                        </g>
+                        <g class="grove-node gp1">
+                            <circle cx="50" cy="103" r="18" class="grove-halo" />
+                            <circle cx="50" cy="103" r="18" class="grove-halo-ring" />
+                            <circle cx="50" cy="103" r="5" class="grove-core" />
+                        </g>
+                        <g class="grove-node gp2">
+                            <circle cx="193" cy="155" r="16" class="grove-halo" />
+                            <circle cx="193" cy="155" r="16" class="grove-halo-ring" />
+                            <circle cx="193" cy="155" r="5" class="grove-core" />
+                        </g>
+                        <g class="grove-node gp3">
+                            <circle cx="50" cy="41" r="20" class="grove-halo" />
+                            <circle cx="50" cy="41" r="20" class="grove-halo-ring" />
+                            <circle cx="50" cy="41" r="5" class="grove-core" />
+                        </g>
+                        <g class="grove-node gp4">
+                            <circle cx="295" cy="116" r="13" class="grove-halo" />
+                            <circle cx="295" cy="116" r="13" class="grove-halo-ring" />
+                            <circle cx="295" cy="116" r="5" class="grove-core" />
+                        </g>
+                        <g class="grove-node gp5">
+                            <circle cx="192" cy="84" r="16" class="grove-halo" />
+                            <circle cx="192" cy="84" r="16" class="grove-halo-ring" />
+                            <circle cx="192" cy="84" r="5" class="grove-core" />
+                        </g>
+                        <g class="grove-node gp0">
+                            <circle cx="259" cy="53" r="16" class="grove-halo" />
+                            <circle cx="259" cy="53" r="16" class="grove-halo-ring" />
+                            <circle cx="259" cy="53" r="5" class="grove-core" />
+                        </g>
+                        <g class="grove-node gp1">
+                            <circle cx="134" cy="105" r="14" class="grove-halo" />
+                            <circle cx="134" cy="105" r="14" class="grove-halo-ring" />
+                            <circle cx="134" cy="105" r="5" class="grove-core" />
+                        </g>
+                        <g class="grove-node gp2">
+                            <circle cx="126" cy="159" r="20" class="grove-halo" />
+                            <circle cx="126" cy="159" r="20" class="grove-halo-ring" />
+                            <circle cx="126" cy="159" r="5" class="grove-core" />
+                        </g>
+                        <g class="grove-node gp3">
+                            <circle cx="268" cy="167" r="22" class="grove-halo" />
+                            <circle cx="268" cy="167" r="22" class="grove-halo-ring" />
+                            <circle cx="268" cy="167" r="5" class="grove-core" />
+                        </g>
+                        <g class="grove-node gp4">
+                            <circle cx="31" cy="155" r="18" class="grove-halo" />
+                            <circle cx="31" cy="155" r="18" class="grove-halo-ring" />
+                            <circle cx="31" cy="155" r="5" class="grove-core" />
+                        </g>
+                        <g class="grove-node gp5">
+                            <circle cx="171" cy="29" r="17" class="grove-halo" />
+                            <circle cx="171" cy="29" r="17" class="grove-halo-ring" />
+                            <circle cx="171" cy="29" r="5" class="grove-core" />
+                        </g>
+                        <g class="grove-node gp0">
+                            <circle cx="241" cy="108" r="13" class="grove-halo" />
+                            <circle cx="241" cy="108" r="13" class="grove-halo-ring" />
+                            <circle cx="241" cy="108" r="5" class="grove-core" />
+                        </g>
                     </svg>
                 </div>
             </div>
@@ -94,16 +155,16 @@
     <section class="problem-section">
         <div class="container">
             <h2>The Problem</h2>
-            <div class="problem-grid">
-                <div class="problem-card">
+            <div class="problem-list">
+                <div class="problem-item">
                     <h3>Rules can't cover everything.</h3>
                     <p>Rule-based runtime tools require you to anticipate every attack. If you don't write the rule, you miss the threat.</p>
                 </div>
-                <div class="problem-card">
+                <div class="problem-item">
                     <h3>Runtime threats evolve.</h3>
                     <p>Attackers adapt faster than static policies. You need monitoring that adapts to your workload automatically.</p>
                 </div>
-                <div class="problem-card">
+                <div class="problem-item">
                     <h3>Alert fatigue kills response.</h3>
                     <p>Generic detection generates false positives. Real threats get buried. You need detection tuned to your specific workload behavior.</p>
                 </div>
@@ -118,76 +179,88 @@
             <div class="vision-content">
                 <p>PandoCore takes a fundamentally different approach to runtime security. Instead of requiring you to write detection rules for every possible threat, PandoCore learns what normal looks like for each of your workloads and flags when behavior deviates. Deploy it with one label, and it starts working immediately.</p>
                 <div class="checkmarks-grid-simple">
-                    <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
-                        <span style="color: var(--sage-green); font-size: 1.5rem;">✓</span>
-                        <span style="font-weight: 600;">Zero configuration required</span>
+                    <div class="check-row-center">
+                        <span class="check-mark">✓</span>
+                        <span class="fw-600">Zero configuration required</span>
                     </div>
-                    <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
-                        <span style="color: var(--sage-green); font-size: 1.5rem;">✓</span>
-                        <span style="font-weight: 600;">No application code changes</span>
+                    <div class="check-row-center">
+                        <span class="check-mark">✓</span>
+                        <span class="fw-600">No application code changes</span>
                     </div>
-                    <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
-                        <span style="color: var(--sage-green); font-size: 1.5rem;">✓</span>
-                        <span style="font-weight: 600;">Kubernetes-native sidecar deployment</span>
+                    <div class="check-row-center">
+                        <span class="check-mark">✓</span>
+                        <span class="fw-600">Kubernetes-native sidecar deployment</span>
                     </div>
-                    <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
-                        <span style="color: var(--sage-green); font-size: 1.5rem;">✓</span>
-                        <span style="font-weight: 600;">Works on existing infrastructure</span>
+                    <div class="check-row-center">
+                        <span class="check-mark">✓</span>
+                        <span class="fw-600">Works on existing infrastructure</span>
                     </div>
-                    <div class="checkmark-span-row" style="display: flex; align-items: center; gap: var(--spacing-sm); grid-column: span 2; justify-content: center;">
-                        <span style="color: var(--sage-green); font-size: 1.5rem;">✓</span>
-                        <span style="font-weight: 600;">Validated: 5,000+ pod-hours, sub-0.005% false positive rate</span>
+                    <div class="checkmark-span-row">
+                        <span class="check-mark">✓</span>
+                        <span class="fw-600">Validated: 5,000+ pod-hours, under 5 false positives per day</span>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Who Needs This Section -->
+    <!-- What It Solves Section -->
     <section class="use-cases-section">
         <div class="container">
-            <h2>Who Needs This</h2>
-            <div class="minimal-cards-grid" style="max-width: 1200px; margin-left: auto; margin-right: auto;">
-                <div class="minimal-card">
-                    <div class="card-icon">
-                        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-                            <rect width="64" height="64" rx="16" class="icon-bg"/>
-                            <circle cx="32" cy="32" r="4" class="icon-shape"/>
-                            <circle cx="20" cy="20" r="3" class="icon-shape"/>
-                            <circle cx="44" cy="20" r="3" class="icon-shape"/>
-                            <circle cx="20" cy="44" r="3" class="icon-shape"/>
-                            <circle cx="44" cy="44" r="3" class="icon-shape"/>
-                            <line x1="32" y1="28" x2="22" y2="22" stroke="white" stroke-width="2" class="icon-shape"/>
-                            <line x1="32" y1="28" x2="42" y2="22" stroke="white" stroke-width="2" class="icon-shape"/>
-                            <line x1="32" y1="36" x2="22" y2="42" stroke="white" stroke-width="2" class="icon-shape"/>
-                            <line x1="32" y1="36" x2="42" y2="42" stroke="white" stroke-width="2" class="icon-shape"/>
-                        </svg>
+            <h2>What It Solves</h2>
+            <div class="feature-rows">
+                <div class="feature-row">
+                    <div class="feature-visual">
+                        <div class="card-icon">
+                            <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="64" height="64" rx="16" class="icon-bg"/>
+                                <circle cx="32" cy="32" r="4" class="icon-shape"/>
+                                <circle cx="20" cy="20" r="3" class="icon-shape"/>
+                                <circle cx="44" cy="20" r="3" class="icon-shape"/>
+                                <circle cx="20" cy="44" r="3" class="icon-shape"/>
+                                <circle cx="44" cy="44" r="3" class="icon-shape"/>
+                                <line x1="32" y1="28" x2="22" y2="22" stroke="white" stroke-width="2" class="icon-shape"/>
+                                <line x1="32" y1="28" x2="42" y2="22" stroke="white" stroke-width="2" class="icon-shape"/>
+                                <line x1="32" y1="36" x2="22" y2="42" stroke="white" stroke-width="2" class="icon-shape"/>
+                                <line x1="32" y1="36" x2="42" y2="42" stroke="white" stroke-width="2" class="icon-shape"/>
+                            </svg>
+                        </div>
                     </div>
-                    <h3>For Platform Teams</h3>
-                    <p style="font-weight: 600; margin-bottom: var(--spacing-md);">"One label. Every service monitored."</p>
-                    <p>Add runtime anomaly detection across all your services with a single Kubernetes label. No per-service configuration needed. PandoCore learns each workload's behavior independently and works out of the box.</p>
+                    <div class="feature-content">
+                        <h3>Kill the alert fatigue</h3>
+                        <p class="feature-quote">"Signal, not noise."</p>
+                        <p>Rule-based tools fire on everything they can't rule out, and real threats get buried. PandoCore learns each workload's normal behavior, so you get under 5 false positives per day — alerts your team won't learn to ignore.</p>
+                    </div>
                 </div>
-                <div class="minimal-card">
-                    <div class="card-icon">
-                        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-                            <rect width="64" height="64" rx="16" class="icon-bg"/>
-                            <path d="M32 16l-16 12v2h32v-2l-16-12zm-14 16v14h4v-14h-4zm6 0v14h4v-14h-4zm6 0v14h4v-14h-4zm6 0v14h4v-14h-4zm6 0v14h4v-14h-4zm-26 16v2h32v-2h-32z" class="icon-shape"/>
-                        </svg>
+                <div class="feature-row">
+                    <div class="feature-visual">
+                        <div class="card-icon">
+                            <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="64" height="64" rx="16" class="icon-bg"/>
+                                <path d="M32 16l-16 12v2h32v-2l-16-12zm-14 16v14h4v-14h-4zm6 0v14h4v-14h-4zm6 0v14h4v-14h-4zm6 0v14h4v-14h-4zm6 0v14h4v-14h-4zm-26 16v2h32v-2h-32z" class="icon-shape"/>
+                            </svg>
+                        </div>
                     </div>
-                    <h3>For Security Teams</h3>
-                    <p style="font-weight: 600; margin-bottom: var(--spacing-md);">"Catch what rules-based tools miss."</p>
-                    <p>PandoCore detects runtime anomalies that policy-based tools can't catch without custom rules: unexpected process changes, behavioral shifts, and subtle deviations. Complements your existing Falco, OPA, or network policy stack.</p>
+                    <div class="feature-content">
+                        <h3>Cut your MTTR</h3>
+                        <p class="feature-quote">"Know what changed, and when."</p>
+                        <p>Every detection ships with structured evidence and forensic context. Your on-call spends less time reconstructing what happened and more time resolving it.</p>
+                    </div>
                 </div>
-                <div class="minimal-card">
-                    <div class="card-icon">
-                        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-                            <rect width="64" height="64" rx="16" class="icon-bg"/>
-                            <path d="M32 18c-4.4 0-8 3.6-8 8v4h-2c-1.1 0-2 0.9-2 2v12c0 1.1 0.9 2 2 2h20c1.1 0 2-0.9 2-2V32c0-1.1-0.9-2-2-2h-2v-4c0-4.4-3.6-8-8-8zm0 3c2.8 0 5 2.2 5 5v4h-10v-4c0-2.8 2.2-5 5-5zm0 15c-1.7 0-3 1.3-3 3s1.3 3 3 3 3-1.3 3-3-1.3-3-3-3z" class="icon-shape"/>
-                        </svg>
+                <div class="feature-row">
+                    <div class="feature-visual">
+                        <div class="card-icon">
+                            <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                                <rect width="64" height="64" rx="16" class="icon-bg"/>
+                                <path d="M32 18c-4.4 0-8 3.6-8 8v4h-2c-1.1 0-2 0.9-2 2v12c0 1.1 0.9 2 2 2h20c1.1 0 2-0.9 2-2V32c0-1.1-0.9-2-2-2h-2v-4c0-4.4-3.6-8-8-8zm0 3c2.8 0 5 2.2 5 5v4h-10v-4c0-2.8 2.2-5 5-5zm0 15c-1.7 0-3 1.3-3 3s1.3 3 3 3 3-1.3 3-3-1.3-3-3-3z" class="icon-shape"/>
+                            </svg>
+                        </div>
                     </div>
-                    <h3>For Compliance-Sensitive Workloads</h3>
-                    <p style="font-weight: 600; margin-bottom: var(--spacing-md);">"Continuous monitoring with a full audit trail."</p>
-                    <p>Every detection generates structured evidence with forensic context. Monitor mode gives you visibility. Alert mode notifies your team. Enforce mode responds automatically. All with complete, auditable records.</p>
+                    <div class="feature-content">
+                        <h3>Catch novel threats</h3>
+                        <p class="feature-quote">"See what no rule anticipated."</p>
+                        <p>Because it flags deviations from each workload's learned-normal behavior, PandoCore surfaces unexpected process and behavioral changes that signature- and policy-based tools miss — no custom rules to write.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -202,9 +275,10 @@
             <div class="cta-content">
                 <h2>See It In Action</h2>
                 <p>Whether you're securing critical workloads or exploring runtime monitoring for your Kubernetes clusters, we want to hear from you.</p>
-                
+
                 <div class="cta-actions">
-                    <a href="/contact" class="btn btn-primary">Get In Touch</a>
+                    <a href="https://portal.pandocore.io/signup" class="btn btn-primary">Get Started</a>
+                    <a href="/contact" class="btn btn-secondary">Get In Touch</a>
                     
                     <!-- Social Media Links -->
                     <div class="social-links">

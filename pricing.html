@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="PandoCore pricing: simple per-pod plans for Kubernetes runtime security. Team, Growth, and Enterprise tiers with transparent overage rates.">
+    <meta name="description" content="PandoCore pricing: simple per-pod plans for Kubernetes runtime security. Starter, Team, Growth, and Enterprise tiers with transparent per-pod rates.">
     <title>PandoCore | Pricing</title>
     <link rel="canonical" href="https://pandocore.io/pricing">
     <link rel="icon" type="image/png" href="images/favicon.png">
@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
     <!-- Navigation -->
     <nav class="navbar">
         <div class="container">
@@ -44,7 +45,7 @@
     </nav>
 
     <!-- Pricing Hero -->
-    <section class="page-hero">
+    <section id="main-content" tabindex="-1" class="page-hero">
         <div class="wave-container">
             <div class="wave wave-layer-1"></div>
             <div class="wave wave-layer-2"></div>
@@ -104,7 +105,8 @@
                 </div>
 
                 <!-- Growth -->
-                <div class="pricing-card">
+                <div class="pricing-card pricing-card-featured">
+                    <div class="pricing-badge">Recommended</div>
                     <div class="pricing-card-header">
                         <h3 class="pricing-tier-name">Growth</h3>
                         <p class="pricing-tier-tagline">For production clusters at scale</p>
@@ -132,20 +134,17 @@
                         <p class="pricing-tier-tagline">For regulated and multi-cluster fleets</p>
                     </div>
                     <div class="pricing-price">
-                        <span class="pricing-price-prefix">from</span>
-                        <span class="pricing-price-amount">$3,500</span>
-                        <span class="pricing-price-period">/month</span>
+                        <span class="pricing-price-amount">Custom</span>
                     </div>
                     <div class="pricing-meta">
-                        <div class="pricing-meta-row"><strong>500 pods</strong> included</div>
-                        <div class="pricing-meta-row"><strong>$5/pod</strong> overage</div>
+                        <div class="pricing-meta-row">Minimum <strong>500 pods</strong></div>
                     </div>
                     <ul class="pricing-features">
                         <li>Any number of clusters</li>
                         <li>All response modes (alert → isolate → enforce)</li>
                         <li>All integrations (SIEM, Slack, PagerDuty)</li>
                     </ul>
-                    <a href="https://portal.pandocore.io/signup" class="btn btn-primary pricing-cta">Get Started</a>
+                    <a href="/contact" class="btn btn-primary pricing-cta">Get In Touch</a>
                 </div>
             </div>
 
@@ -156,63 +155,63 @@
     <!-- What's Included Section -->
     <section class="content-section">
         <div class="container">
-            <h2 style="text-align: center; color: var(--black-forest); margin-bottom: var(--spacing-lg);">Every Plan Includes</h2>
-            <div class="content-wrapper" style="max-width: var(--container-max-width);">
+            <h2 class="section-title">Every Plan Includes</h2>
+            <div class="content-wrapper mw-container">
                 <div class="checkmarks-grid">
-                    <div style="display: flex; align-items: flex-start; gap: var(--spacing-sm);">
-                        <span style="color: var(--sage-green); font-size: 1.5rem; flex-shrink: 0;">✓</span>
+                    <div class="check-row">
+                        <span class="check-mark">✓</span>
                         <div>
-                            <span style="font-weight: 600;">Zero-Config Behavioral Learning</span>
-                            <p style="margin: 0; font-size: 0.9rem; color: var(--charcoal); opacity: 0.8;">Each workload learns its own normal. No rules to write.</p>
+                            <span class="fw-600">Zero-Config Behavioral Learning</span>
+                            <p class="detail-note">Each workload learns its own normal. No rules to write.</p>
                         </div>
                     </div>
-                    <div style="display: flex; align-items: flex-start; gap: var(--spacing-sm);">
-                        <span style="color: var(--sage-green); font-size: 1.5rem; flex-shrink: 0;">✓</span>
+                    <div class="check-row">
+                        <span class="check-mark">✓</span>
                         <div>
-                            <span style="font-weight: 600;">Admission Controller</span>
-                            <p style="margin: 0; font-size: 0.9rem; color: var(--charcoal); opacity: 0.8;">Automatic sidecar injection for labeled namespaces.</p>
+                            <span class="fw-600">Admission Controller</span>
+                            <p class="detail-note">Automatic sidecar injection for labeled namespaces.</p>
                         </div>
                     </div>
-                    <div style="display: flex; align-items: flex-start; gap: var(--spacing-sm);">
-                        <span style="color: var(--sage-green); font-size: 1.5rem; flex-shrink: 0;">✓</span>
+                    <div class="check-row">
+                        <span class="check-mark">✓</span>
                         <div>
-                            <span style="font-weight: 600;">Portal Dashboard</span>
-                            <p style="margin: 0; font-size: 0.9rem; color: var(--charcoal); opacity: 0.8;">Real-time pod inventory, usage tracking, and billing estimates.</p>
+                            <span class="fw-600">Portal Dashboard</span>
+                            <p class="detail-note">Real-time pod inventory, usage tracking, and billing estimates.</p>
                         </div>
                     </div>
-                    <div style="display: flex; align-items: flex-start; gap: var(--spacing-sm);">
-                        <span style="color: var(--sage-green); font-size: 1.5rem; flex-shrink: 0;">✓</span>
+                    <div class="check-row">
+                        <span class="check-mark">✓</span>
                         <div>
-                            <span style="font-weight: 600;">No Code Changes</span>
-                            <p style="margin: 0; font-size: 0.9rem; color: var(--charcoal); opacity: 0.8;">Deploy alongside existing workloads. No SDK, no instrumentation.</p>
+                            <span class="fw-600">No Code Changes</span>
+                            <p class="detail-note">Deploy alongside existing workloads. No SDK, no instrumentation.</p>
                         </div>
                     </div>
-                    <div style="display: flex; align-items: flex-start; gap: var(--spacing-sm);">
-                        <span style="color: var(--sage-green); font-size: 1.5rem; flex-shrink: 0;">✓</span>
+                    <div class="check-row">
+                        <span class="check-mark">✓</span>
                         <div>
-                            <span style="font-weight: 600;">Signed License</span>
-                            <p style="margin: 0; font-size: 0.9rem; color: var(--charcoal); opacity: 0.8;">Ed25519-signed license with pod entitlements and expiry.</p>
+                            <span class="fw-600">Signed License</span>
+                            <p class="detail-note">Ed25519-signed license with pod entitlements and expiry.</p>
                         </div>
                     </div>
-                    <div style="display: flex; align-items: flex-start; gap: var(--spacing-sm);">
-                        <span style="color: var(--sage-green); font-size: 1.5rem; flex-shrink: 0;">✓</span>
+                    <div class="check-row">
+                        <span class="check-mark">✓</span>
                         <div>
-                            <span style="font-weight: 600;">GitOps-Ready Policy</span>
-                            <p style="margin: 0; font-size: 0.9rem; color: var(--charcoal); opacity: 0.8;">Multi-namespace CRD-based configuration, declarative and versionable.</p>
+                            <span class="fw-600">GitOps-Ready Policy</span>
+                            <p class="detail-note">Multi-namespace CRD-based configuration, declarative and versionable.</p>
                         </div>
                     </div>
-                    <div style="display: flex; align-items: flex-start; gap: var(--spacing-sm);">
-                        <span style="color: var(--sage-green); font-size: 1.5rem; flex-shrink: 0;">✓</span>
+                    <div class="check-row">
+                        <span class="check-mark">✓</span>
                         <div>
-                            <span style="font-weight: 600;">Fleet-Wide Portal</span>
-                            <p style="margin: 0; font-size: 0.9rem; color: var(--charcoal); opacity: 0.8;">Pod inventory and detection events from your licensed clusters roll up into a single portal view. Unlimited clusters on Growth and up.</p>
+                            <span class="fw-600">Fleet-Wide Portal</span>
+                            <p class="detail-note">Pod inventory and detection events from your licensed clusters roll up into a single portal view. Unlimited clusters on Growth and up.</p>
                         </div>
                     </div>
-                    <div style="display: flex; align-items: flex-start; gap: var(--spacing-sm);">
-                        <span style="color: var(--sage-green); font-size: 1.5rem; flex-shrink: 0;">✓</span>
+                    <div class="check-row">
+                        <span class="check-mark">✓</span>
                         <div>
-                            <span style="font-weight: 600;">Direct Engineering Support</span>
-                            <p style="margin: 0; font-size: 0.9rem; color: var(--charcoal); opacity: 0.8;">Hands-on deployment help from the team that built the sidecar, on every plan.</p>
+                            <span class="fw-600">Direct Engineering Support</span>
+                            <p class="detail-note">Hands-on deployment help from the team that built the sidecar, on every plan.</p>
                         </div>
                     </div>
                 </div>
@@ -232,7 +231,7 @@
 
                 <div class="cta-actions">
                     <a href="https://portal.pandocore.io/signup" class="btn btn-primary">Get Started</a>
-                    <a href="/contact" class="btn btn-secondary">Talk to Sales</a>
+                    <a href="/contact" class="btn btn-secondary">Get In Touch</a>
                 </div>
             </div>
         </div>

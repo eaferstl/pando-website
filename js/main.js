@@ -366,7 +366,7 @@ function validateSubject(value) {
     const subjectError = document.getElementById('subjectError');
     
     if (!value || value === '') {
-        showError(subjectError, 'Please select a subject.');
+        showError(subjectError, 'Subject is required.');
         return false;
     }
     
@@ -405,7 +405,7 @@ function showError(errorElement, message) {
         // Add error styling to input
         const input = errorElement.previousElementSibling;
         if (input) {
-            input.style.borderColor = '#D32F2F';
+            input.style.borderColor = 'var(--error-red)';
         }
     }
 }
@@ -419,7 +419,7 @@ function clearError(input) {
         errorElement.textContent = '';
         errorElement.style.display = 'none';
     }
-    input.style.borderColor = '#e5dfd5';
+    input.style.borderColor = '';
 }
 
 /**
