@@ -2278,7 +2278,7 @@ ul {
 
 .timing-section {
     padding: var(--spacing-xl) 0;
-    background-color: var(--azure-mist);
+    background-color: var(--black-forest);
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -2287,7 +2287,7 @@ ul {
 .timing-section h2 {
     font-size: 2rem;
     margin-bottom: var(--spacing-md);
-    color: var(--black-forest);
+    color: var(--floral-white);
     position: relative;
     z-index: 1;
 }
@@ -2300,9 +2300,27 @@ ul {
 .timing-content p {
     font-size: 1.1rem;
     line-height: 1.8;
-    color: var(--coffee-bean);
+    color: var(--floral-white);
     max-width: 70ch;
     margin: 0 auto var(--spacing-lg) auto;
+}
+
+/* The default primary border is black forest, invisible on this band */
+.timing-section .btn-primary,
+.timing-section .btn-primary:hover {
+    border-color: var(--azure-mist);
+}
+
+.timing-section .btn-secondary {
+    background-color: var(--floral-white);
+    color: var(--black-forest);
+    border-color: var(--floral-white);
+}
+
+.timing-section .btn-secondary:hover {
+    background-color: var(--white);
+    color: var(--black-forest);
+    border-color: var(--white);
 }
 
 /* ===================================
@@ -3818,13 +3836,23 @@ textarea:focus {
     .footer,
     .hero-buttons,
     .cta-section,
+    .timing-section .cta-actions,
     .contact-form {
         display: none;
     }
-    
+
     body {
         color: black;
         background: white;
+    }
+
+    .timing-section {
+        background: white;
+    }
+
+    .timing-section h2,
+    .timing-content p {
+        color: black;
     }
     
     a {
