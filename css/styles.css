@@ -2273,6 +2273,39 @@ ul {
 }
 
 /* ===================================
+   Timing Section
+   =================================== */
+
+.timing-section {
+    padding: var(--spacing-xl) 0;
+    background-color: var(--azure-mist);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.timing-section h2 {
+    font-size: 2rem;
+    margin-bottom: var(--spacing-md);
+    color: var(--black-forest);
+    position: relative;
+    z-index: 1;
+}
+
+.timing-content {
+    position: relative;
+    z-index: 1;
+}
+
+.timing-content p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: var(--coffee-bean);
+    max-width: 70ch;
+    margin: 0 auto var(--spacing-lg) auto;
+}
+
+/* ===================================
    Team Section
    =================================== */
 

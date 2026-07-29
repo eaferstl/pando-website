@@ -86,13 +86,12 @@ Then visit `http://localhost:8000` in your browser.
 ### Design
 - **Responsive Design**: Mobile-first approach with breakpoints at 768px and 1024px
 - **Accessible**: WCAG 2.1 Level AA compliance goals
-- **Professional Branding**: Custom color palette with sage green, cream, and pastel pink
+- **Professional Branding**: Custom color palette built on black forest, floral white, and azure mist
 - **Modern UI**: Clean, minimal design with smooth transitions
 
 ### Functionality
-- **Contact Form**: Client-side validation with real-time feedback
+- **Contact Form**: Client-side validation with real-time feedback, submitted via EmailJS
 - **Smooth Scrolling**: Enhanced navigation experience
-- **Netlify Forms Ready**: Pre-configured for easy deployment with Netlify
 - **Cross-browser Compatible**: Tested on Chrome, Firefox, Safari, Edge
 
 ## Deployment
@@ -101,7 +100,7 @@ Then visit `http://localhost:8000` in your browser.
 
 1. **Sign up** at [netlify.com](https://netlify.com)
 2. **Deploy**: Drag and drop the entire project folder or connect your git repository
-3. **Configure**: The form is already set up with `data-netlify="true"`
+3. **Configure**: Set the `EMAILJS_PUBLIC_KEY`, `EMAILJS_SERVICE_ID`, and `EMAILJS_TEMPLATE_ID` environment variables so the contact form can send
 4. **Custom Domain**: Add your domain in Netlify settings
 
 ### Alternative Options
@@ -114,13 +113,14 @@ See `docs/DEPLOYMENT.md` for detailed deployment instructions.
 
 ## Contact Form
 
-The contact form is configured for Netlify Forms by default. Features include:
+The contact form submits through **EmailJS** (`emailjs.send()` in `js/main.js`), using the browser SDK loaded from a CDN in `contact.html`. Fields are Name, Email, Organization / Company, Subject, and Message. Features include:
 - Required field validation
 - Email format validation
-- Real-time error messages
-- Spam protection (honeypot)
+- Real-time error messages on blur
 
-To use a different form backend, update the `<form>` tag in `contact.html` with your preferred service (FormSpree, custom PHP, etc.).
+Credentials live in the `EMAILJS_CONFIG` object at the top of `js/main.js` and are intended to be replaced at build time via the Cloudflare Pages environment variables `EMAILJS_PUBLIC_KEY`, `EMAILJS_SERVICE_ID`, and `EMAILJS_TEMPLATE_ID`.
+
+To use a different form backend, replace the `emailjs.send()` call in the contact form's submit handler in `js/main.js`.
 
 ## Browser Support
 
@@ -175,11 +175,16 @@ Detailed documentation is available in the `docs/` directory:
 
 ## Color Palette
 
-- **Sage Green**: `#6B8E7F` - Primary brand color
-- **Cream**: `#F5F0E8` - Background and light sections
-- **Pastel Pink**: `#E8C5C1` - Accent color and CTAs
-- **Dark Charcoal**: `#2C3333` - Text color
-- **Light Gray**: `#F8F9FA` - Alternative backgrounds
+Defined as CSS variables in the `:root` block of `css/styles.css` — always reference the variable, never a raw hex value.
+
+- **Black Forest** (`--black-forest`): `#001C06` - Primary brand color; nav, headings, borders
+- **Floral White** (`--floral-white`): `#F7F4EB` - Warm background for alternating sections
+- **Amber Honey** (`--amber-honey`): `#DF9F15` - Accent color
+- **Coffee Bean** (`--coffee-bean`): `#1F1102` - Body text color
+- **Azure Mist** (`--azure-mist`): `#E1F0F4` - Primary button fill and CTA band backgrounds
+- **White** (`--white`): `#FFFFFF` - Default page and section background
+
+Also defined: `--error-red` and `--success-green` for form states, plus a `--charcoal` legacy alias still referenced in some markup. Spacing, typography, radius, and transition tokens live in the same `:root` block.
 
 ## Performance Optimization
 
