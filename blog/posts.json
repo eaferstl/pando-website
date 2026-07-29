@@ -14,5 +14,13 @@
         "excerpt": "Designing for a world where compromise is assumed changes what you build — it means planning for the moment defenses are already inside the perimeter.",
         "image": "/images/blog/assume-compromise-cover.svg",
         "url": "/blog/assume-compromise.html"
+    },
+    {
+        "title": "0.005% of What?",
+        "author": "Eliot Ferstl",
+        "date": "2026-07-29",
+        "excerpt": "Most published false positive rates in runtime security can't be verified by the reader. Here's how the same soak data produced two very different honest numbers.",
+        "image": "/images/blog/false-positive-denominator-cover.svg",
+        "url": "/blog/false-positive-denominator.html"
     }
 ]
