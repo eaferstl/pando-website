@@ -108,7 +108,7 @@
                     <tr>
                         <td><code>defaultMode</code></td>
                         <td><code>monitor</code></td>
-                        <td><code>monitor</code>, <code>alert</code>, <code>isolate</code>, or <code>enforce</code>. Modes layer additively — each does everything the prior mode does, plus one response action. See <a href="/docs/operating-modes">Operating Modes</a>.</td>
+                        <td><code>monitor</code>, <code>alert</code>, <code>isolate</code>, or <code>enforce</code>. Modes layer additively: each does everything the prior mode does, plus one response action. See <a href="/docs/operating-modes">Operating Modes</a>.</td>
                     </tr>
                     <tr>
                         <td><code>slackWebhookURL</code></td>
@@ -413,7 +413,7 @@ excludedNamespaces:
 webhook:
   replicaCount: 2
 sidecar:
-  image: us-central1-docker.pkg.dev/pandocore-prod/sidecar/pando-sidecar:v0.5.2
+  image: us-central1-docker.pkg.dev/pandocore-prod/sidecar/pando-sidecar:<version>
 replicas: 2</code></pre>
 
             <h3>Per-Workload Override</h3>

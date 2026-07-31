@@ -130,7 +130,7 @@ metadata:
   name: default            # must be "default", one policy per namespace
   namespace: production
 spec:
-  # Operating mode (modes layer additively — each does everything the prior mode does)
+  # Operating mode (modes layer additively, each does everything the prior mode does)
   mode: enforce            # monitor | alert | isolate | enforce | debug
 
   # Sensitivity (higher = more permissive)

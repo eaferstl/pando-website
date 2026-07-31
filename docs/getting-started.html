@@ -180,11 +180,11 @@ helm upgrade pando-webhook \
   --reuse-values \
   --set defaultMode=enforce</code></pre>
 
-            <p>Most teams run <strong>monitor → alert → isolate → enforce</strong> over the course of a few weeks per workload — each step adds one automated response action on top of the prior. See <a href="/docs/operating-modes">Operating Modes</a> for the full mode ladder.</p>
+            <p>Most teams run <strong>monitor → alert → isolate → enforce</strong> over the course of a few weeks per workload; each step adds one automated response action on top of the prior. See <a href="/docs/operating-modes">Operating Modes</a> for the full mode ladder.</p>
 
             <div class="docs-callout info">
                 <div class="docs-callout-title">Intermediate step: Isolate mode</div>
-                <p>Before flipping straight to <code>enforce</code>, consider <code>isolate</code>. On a trip, PandoCore applies a NetworkPolicy that blocks pod egress (except DNS) — contains the attack without killing the pod. If drift subsides, the policy is removed automatically. This is the right durable mode for stateful workloads (databases, caches, queues) where pod restart is expensive.</p>
+                <p>Before flipping straight to <code>enforce</code>, consider <code>isolate</code>. On a trip, PandoCore applies a NetworkPolicy that blocks pod egress (except DNS) and contains the attack without killing the pod. If drift subsides, the policy is removed automatically. This is the right durable mode for stateful workloads (databases, caches, queues) where pod restart is expensive.</p>
                 <pre><code>kubectl annotate deployment your-app pandocore.io/mode=isolate --overwrite
 kubectl rollout restart deployment/your-app</code></pre>
             </div>

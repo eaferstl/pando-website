@@ -92,7 +92,7 @@
                 </a>
                 <a href="/docs/operating-modes" class="docs-quick-link">
                     <h4>🔄 Operating Modes</h4>
-                    <p>Understand monitor, enforce, and debug modes.</p>
+                    <p>Understand monitor, alert, isolate, enforce, and debug modes.</p>
                 </a>
                 <a href="/docs/emergency" class="docs-quick-link">
                     <h4>🚨 Emergency Procedures</h4>
@@ -107,7 +107,8 @@
             <ul>
                 <li><strong>Monitor:</strong> Detect anomalies and emit evidence without taking action</li>
                 <li><strong>Alert:</strong> Detect anomalies and send real-time notifications (Slack, webhook) without enforcement</li>
-                <li><strong>Enforce:</strong> Detect, alert, and respond with graduated actions: network isolation and pod termination</li>
+                <li><strong>Isolate:</strong> Detect, alert, and contain the pod with a NetworkPolicy (egress denied except DNS), released automatically when behavior recovers, without terminating it</li>
+                <li><strong>Enforce:</strong> Detect, alert, isolate, and escalate to pod termination if the anomaly persists</li>
                 <li><strong>Debug:</strong> Provide verbose logging for troubleshooting and tuning</li>
             </ul>
 
@@ -165,7 +166,7 @@
                 <li><strong>Learning Window:</strong> PandoCore builds a per-workload operational profile during a short startup window (configurable duration)</li>
                 <li><strong>Monitoring:</strong> Once the profile is ready, the sidecar begins detecting runtime behavioral anomalies</li>
                 <li><strong>Detection:</strong> Anomalies are classified by severity</li>
-                <li><strong>Response:</strong> Based on operating mode, PandoCore logs the event (monitor), sends alerts (alert), or executes a graduated response: alert, network isolation, and terminate (enforce)</li>
+                <li><strong>Response:</strong> Based on operating mode, PandoCore logs the event (monitor), sends alerts (alert), contains the pod with a NetworkPolicy (isolate), or runs the full graduated response of alert, isolation, and pod termination (enforce)</li>
             </ol>
 
             <h2>Integration with Your Stack</h2>

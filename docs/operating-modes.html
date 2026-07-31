@@ -49,7 +49,7 @@
     <section class="docs-hero">
         <div class="container">
             <h2>Operating Modes</h2>
-            <p>A four-step ladder — monitor, alert, isolate, enforce — plus a debug mode. Each step adds one response action to the one below it.</p>
+            <p>A four-step ladder (monitor, alert, isolate, enforce) plus a debug mode. Each step adds one response action to the one below it.</p>
         </div>
     </section>
 
@@ -85,7 +85,7 @@
 
             <h1>Operating Modes</h1>
 
-            <p>PandoCore uses a four-step ladder — <strong>Monitor → Alert → Isolate → Enforce</strong> — controlling how it responds when anomalous behavior is detected. Modes layer additively: each step does everything the step below it does, plus one additional action. Pick the step that matches your deployment stage and risk tolerance. A separate <strong>Debug</strong> mode exists for troubleshooting.</p>
+            <p>PandoCore uses a four-step ladder, <strong>Monitor → Alert → Isolate → Enforce</strong>, controlling how it responds when anomalous behavior is detected. Modes layer additively: each step does everything the step below it does, plus one additional action. Pick the step that matches your deployment stage and risk tolerance. A separate <strong>Debug</strong> mode exists for troubleshooting.</p>
 
             <div class="docs-callout info">
                 <div class="docs-callout-title">ℹ️ Layered ladder</div>
@@ -250,7 +250,7 @@
             <ul>
                 <li>Everything in Alert mode, plus:</li>
                 <li>Creates a <code>pando-isolate-{pod-name}</code> NetworkPolicy that denies egress except DNS (UDP 53)</li>
-                <li>Starts a recovery timer — after <code>recoveryTimeoutSecs</code> (default 60s) of clean samples, the NetworkPolicy is removed and the pod is released</li>
+                <li>Starts a recovery timer; after <code>recoveryTimeoutSecs</code> (default 60s) of clean samples, the NetworkPolicy is removed and the pod is released</li>
                 <li>Does NOT terminate the pod; the escalation-to-terminate path is only active in Enforce mode</li>
             </ul>
 
@@ -267,7 +267,7 @@
             <pre><code>{
   "level": "info",
   "timestamp": "2026-04-22T19:13:21Z",
-  "message": "Pod isolated via NetworkPolicy — egress denied except DNS",
+  "message": "Pod isolated via NetworkPolicy: egress denied except DNS",
   "action": "isolated_pending_escalation",
   "policy": "pando-isolate-nginx-b8f89948c-l8spl",
   "recovery_timeout_secs": 60
@@ -281,7 +281,12 @@
 
             <div class="docs-callout warning">
                 <div class="docs-callout-title">⚠️ Production Use</div>
-                <p>Before enabling enforce mode, run in monitor mode for at least one week in staging to validate detection behavior for your workload. Consider stepping through Alert and Isolate first — the mode ladder is designed to let you promote gradually.</p>
+                <p>Before enabling enforce mode, run in monitor mode for at least one week in staging to validate detection behavior for your workload. Consider stepping through Alert and Isolate first; the mode ladder is designed to let you promote gradually.</p>
+            </div>
+
+            <div class="docs-callout info">
+                <div class="docs-callout-title">What can and can't terminate a pod</div>
+                <p>Termination is reserved for high-confidence signals. Behavioral drift and ML anomaly detections can alert and isolate, but on their own they never terminate a pod, even in enforce mode. Pod termination is limited to three things: a high-confidence execution-integrity violation (code executing that diverges from the workload's attested image), an operator or operational action (a manual request or a safety timeout), or a customer-authored rule that explicitly opts into deletion. This ceiling is enforced inside the sidecar, so an operator can dial a response down but never above the ceiling for a given signal class.</p>
             </div>
 
             <h3>Behavior</h3>
@@ -299,7 +304,7 @@
             <ol>
                 <li><strong>Detection:</strong> Anomalous behavior identified</li>
                 <li><strong>Evidence generation:</strong> Structured evidence record created</li>
-                <li><strong>Evidence externalization:</strong> Written to logs, K8s events, webhooks — <em>before</em> pod deletion, so it survives</li>
+                <li><strong>Evidence externalization:</strong> Written to logs, K8s events, and webhooks <em>before</em> pod deletion, so it survives</li>
                 <li><strong>Alert dispatch:</strong> Slack + portal notifications sent</li>
                 <li><strong>Network isolation:</strong> NetworkPolicy applied (egress denied except DNS)</li>
                 <li><strong>Escalation timer:</strong> Runs for <code>escalationTimeoutSecs</code> (default 120s). If drift subsides and <code>recoveryTimeoutSecs</code> clean samples (default 60s) accumulate first, the NetworkPolicy is removed and the pod is released.</li>
@@ -310,7 +315,7 @@
 
             <div class="docs-callout info">
                 <div class="docs-callout-title">Graduated response favors recovery for brief attacks</div>
-                <p>With default timers (<code>escalationTimeoutSecs=120</code>, <code>recoveryTimeoutSecs=60</code>), short attacks are contained via NetworkPolicy and then released when drift subsides — the pod is not killed. To demonstrate termination quickly in a lab, lower <code>escalationTimeoutSecs</code> or use a sustained attack longer than the escalation window.</p>
+                <p>With default timers (<code>escalationTimeoutSecs=120</code>, <code>recoveryTimeoutSecs=60</code>), short attacks are contained via NetworkPolicy and then released when drift subsides; the pod is not killed. To demonstrate termination quickly in a lab, lower <code>escalationTimeoutSecs</code> or use a sustained attack longer than the escalation window.</p>
             </div>
 
             <h3>When to Use</h3>
@@ -402,14 +407,13 @@
             
             <p>PandoCore exposes the current mode via Prometheus metrics:</p>
 
-            <pre><code># Current operating mode (1 = active)
-pando_mode_monitor{pod="your-pod"} 1
-pando_mode_alert{pod="your-pod"} 0
-pando_mode_enforce{pod="your-pod"} 0
-pando_mode_debug{pod="your-pod"} 0
+            <pre><code># Current operating mode (single gauge)
+# 0 = monitor, 1 = alert, 2 = isolate, 3 = enforce, 4 = debug
+pando_operating_mode{pod="your-pod"} 3
 
-# Enforcement events (only in enforce mode)
-pando_enforcements_total{pod="your-pod"} 3</code></pre>
+# Response activity (counters, present once an action has fired)
+pando_isolations_total{pod="your-pod"} 2
+pando_terminations_total{pod="your-pod"} 1</code></pre>
 
             <h2>HTTP Endpoints</h2>
             

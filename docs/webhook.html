@@ -146,7 +146,7 @@
 
             <h3>HTTP-server auto-detection</h3>
 
-            <p>The webhook sets <code>PANDO_HTTP_SERVER=true</code> automatically from any of three signals — you rarely need to set the profile annotation by hand:</p>
+            <p>The webhook sets <code>PANDO_HTTP_SERVER=true</code> automatically from any of three signals, so you rarely need to set the profile annotation by hand:</p>
 
             <ol>
                 <li><strong>Image-pattern match.</strong> Purpose-built web-server images: <code>nginx</code>, <code>caddy</code>, <code>apache</code>, <code>traefik</code>, <code>envoy</code>, <code>haproxy</code>, <code>lighttpd</code>, <code>openresty</code>, <code>httpd</code>.</li>
@@ -159,7 +159,7 @@
                 <p>CMD/args basename matching looks at <code>command[0]</code>. If your Dockerfile or Helm chart uses <code>sh -c "exec uvicorn main:app --host 0.0.0.0"</code>, the webhook sees <code>sh</code>, not <code>uvicorn</code>, and will not auto-tag. Add <code>pandocore.io/profile: http-server</code> to the pod template to cover this case.</p>
             </div>
 
-            <p>Workloads that are <em>not</em> HTTP servers (Celery workers, ETL jobs, Jupyter notebooks, ML batch jobs) should be left untagged — the default profile is tuned for their behavior, and incorrectly marking them would mistune sensitivity.</p>
+            <p>Workloads that are <em>not</em> HTTP servers (Celery workers, ETL jobs, Jupyter notebooks, ML batch jobs) should be left untagged; the default profile is tuned for their behavior, and incorrectly marking them would mistune sensitivity.</p>
 
             <h2>Configuration</h2>
 

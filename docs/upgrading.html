@@ -112,7 +112,7 @@ helm upgrade pando-webhook \
 # Or pin to a specific version
 helm upgrade pando-webhook \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-webhook \
-  --version 0.5.2 \
+  --version <version> \
   --reuse-values</code></pre>
 
             <p><code>--reuse-values</code> preserves your existing <code>licenseKey</code>, <code>slackWebhookURL</code>, and other overrides so you don't have to re-pass them on every upgrade. If you need to change a value at the same time, use <code>--reuse-values</code> plus additional <code>--set</code> flags.</p>
@@ -162,16 +162,16 @@ helm upgrade pando-webhook \
                 </thead>
                 <tbody>
                     <tr>
-                        <td>Webhook v0.5.x, sidecars mixed v0.5.0-v0.5.2</td>
+                        <td>Webhook and sidecars on the same minor version, patch versions mixed across pods</td>
                         <td>Yes</td>
                     </tr>
                     <tr>
-                        <td>Webhook v0.5.x, some sidecars still v0.4.x</td>
+                        <td>Webhook newer than some sidecars (a version or two behind)</td>
                         <td>Yes (restart those pods to upgrade)</td>
                     </tr>
                     <tr>
-                        <td>Webhook v0.4.x with v0.5.x sidecars</td>
-                        <td>Not recommended, upgrade webhook first</td>
+                        <td>Webhook older than the sidecars it injects</td>
+                        <td>Not recommended, upgrade the webhook first</td>
                     </tr>
                 </tbody>
             </table>

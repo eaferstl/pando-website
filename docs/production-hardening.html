@@ -126,7 +126,7 @@ helm upgrade pando-webhook \
             <pre><code>helm upgrade pando-webhook \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-webhook \
   --reuse-values \
-  --set sidecar.image.tag=v0.5.2</code></pre>
+  --set sidecar.image.tag=<version></code></pre>
 
             <p>Changing the tag and running <code>helm upgrade</code> is now a deliberate, reviewable action.</p>
 
@@ -182,6 +182,52 @@ helm upgrade pando-webhook \
 
             <p>See <a href="/docs/policy">CRD Policy</a> for the schema and examples.</p>
 
+            <h2>10. Choose the Sidecar Security Posture</h2>
+
+            <p>The injected sidecar runs with a hardened, least-privilege security context by default: non-root (UID 1000), all Linux capabilities dropped, no privilege escalation, and a read-only root filesystem. This is compatible with the restricted Pod Security Standard and GKE Autopilot, and it is the right default for most workloads.</p>
+
+            <p>Under this default, the sidecar reads a workload's behavior through the signals available to a same-user observer. When your application container runs as a <em>different</em> user than the sidecar (for example as root, or as a distinct service UID), a subset of the deeper behavioral signals cannot be read under least privilege and report as unavailable. Core detection still runs; the effect is reduced signal coverage on those workloads, not a blind sidecar.</p>
+
+            <p>To get full signal coverage on a workload whose application runs as a different user, opt that workload into one of two elevated postures with a pod annotation:</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Posture</th>
+                        <th>Security context</th>
+                        <th>Trade-off</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Default <em>(no annotation)</em></td>
+                        <td>Non-root, all capabilities dropped, read-only rootfs</td>
+                        <td>Least privilege. Compatible with the restricted Pod Security Standard and GKE Autopilot. Full signal coverage for same-user workloads only.</td>
+                    </tr>
+                    <tr>
+                        <td><code>pandocore.io/provenance-enforce: "true"</code></td>
+                        <td>Non-root, plus the <code>CAP_SYS_PTRACE</code> capability</td>
+                        <td>Full cross-user signal coverage without running as root. Satisfies the baseline Pod Security Standard, not restricted; not permitted on GKE Autopilot.</td>
+                    </tr>
+                    <tr>
+                        <td><code>pandocore.io/full-proc-signals: "true"</code></td>
+                        <td>Runs as root, all other capabilities dropped</td>
+                        <td>Full cross-user signal coverage. Satisfies the baseline Pod Security Standard, not restricted; not permitted on GKE Autopilot. Use only where a workload's own user model requires it.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>Prefer <code>provenance-enforce</code> when you need coverage: it stays non-root. Reach for <code>full-proc-signals</code> only when a workload's user model leaves no alternative.</p>
+
+            <div class="docs-callout info">
+                <div class="docs-callout-title">Confirm which signals are live</div>
+                <p>Two Prometheus metrics report per-workload signal availability, so you can verify coverage before relying on it: <code>pando_signal_unavailable</code> (non-zero when a cross-user signal could not be read under the current posture) and <code>pando_provenance_maps_readable</code>. Opt a workload into an elevated posture only when these show a gap you actually need to close.</p>
+            </div>
+
+            <pre><code># Opt one workload into the non-root elevated posture, then restart it
+kubectl annotate deployment your-app pandocore.io/provenance-enforce="true" --overwrite
+kubectl rollout restart deployment/your-app</code></pre>
+
             <h2>Production Hardening Checklist</h2>
 
             <ul>
@@ -194,6 +240,7 @@ helm upgrade pando-webhook \
                 <li><code>pando-license</code> Secret included in your Kubernetes backup process</li>
                 <li>Alerts (Slack or evidence webhook) wired to a destination your team watches</li>
                 <li>Configuration managed via <code>PandoCorePolicy</code> CRD in GitOps, not ad-hoc annotations</li>
+                <li>Sidecar security posture reviewed; elevated postures (<code>provenance-enforce</code> or <code>full-proc-signals</code>) applied only to workloads that need cross-user signal coverage</li>
                 <li>Emergency procedures documented and tested (see <a href="/docs/emergency">Emergency Procedures</a>)</li>
             </ul>
 
