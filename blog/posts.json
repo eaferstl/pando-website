@@ -22,5 +22,13 @@
         "excerpt": "Most published false positive rates in runtime security can't be verified by the reader. Here's how the same soak data produced two very different honest numbers.",
         "image": "/images/blog/false-positive-denominator-cover.svg",
         "url": "/blog/false-positive-denominator.html"
+    },
+    {
+        "title": "Three Silent Failures Between You and Sidecar Injection",
+        "author": "Eliot Ferstl",
+        "date": "2026-08-13",
+        "excerpt": "'kubectl label deployment' writes to the Deployment object's metadata, not to 'spec.template.metadata.labels', where pods actually get their labels. If your sidecar injection is label-selected, the command reports success and nothing happens. Here's why, and the fix.",
+        "image": "/images/blog/sidecar-injection-silent-failures-cover.svg",
+        "url": "/blog/sidecar-injection-silent-failures.html"
     }
 ]

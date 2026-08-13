@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="kubectl label deployment writes to the Deployment object's metadata, not to spec.template.metadata.labels, where pods actually get their labels. If your sidecar injection is label-selected, the command reports success and nothing happens. Here's why, and the fix.">
+    <title>PandoCore | Three Silent Failures Between You and Sidecar Injection</title>
+    <link rel="canonical" href="https://pandocore.io/blog/sidecar-injection-silent-failures">
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Three Silent Failures Between You and Sidecar Injection">
+    <meta property="og:description" content="kubectl label deployment writes to the Deployment object's metadata, not to spec.template.metadata.labels, where pods actually get their labels. If your sidecar injection is label-selected, the command reports success and nothing happens. Here's why, and the fix.">
+    <meta property="og:image" content="https://pandocore.io/images/blog/sidecar-injection-silent-failures-cover.svg">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <link rel="icon" type="image/png" href="/images/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css?v=2">
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a href="/" class="logo">
+                    <img src="/images/logoTransparency.png" alt="Pando Logo">
+                    <div class="logo-text-wrapper">
+                        <span class="logo-text">PandoCore</span>
+                    </div>
+                </a>
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div class="nav-overlay"></div>
+                <ul class="nav-links">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/product">Product</a></li>
+                    <li><a href="/pricing">Pricing</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/blog/" class="active">Blog</a></li>
+                    <li><a href="/docs/">Docs</a></li>
+                    <li><a href="/contact" class="nav-contact">Contact</a></li>
+                    <li><a href="https://portal.pandocore.io/signup" class="nav-signup">Sign Up</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Post header -->
+    <section id="main-content" tabindex="-1" class="page-hero">
+        <div class="wave-container">
+            <div class="wave wave-layer-1"></div>
+            <div class="wave wave-layer-2"></div>
+        </div>
+        <div class="container">
+            <h1>Three Silent Failures Between You and Sidecar Injection</h1>
+            <p class="page-subtitle">August 13, 2026 &middot; By Eliot Ferstl</p>
+        </div>
+    </section>
+
+    <!-- Post body -->
+    <section class="content-section">
+        <div class="container">
+            <img class="blog-cover" src="/images/blog/sidecar-injection-silent-failures-cover.svg" alt="A Deployment box carrying a label, with the path down to three running pods broken by an X">
+
+            <article class="blog-article">
+                <p>Running <code>kubectl label deployment my-app pandocore.io/inject=enabled</code> modifies the Deployment's top-level <code>metadata.labels</code>, not <code>spec.template.metadata.labels</code>. Those are two different things, and the difference is the bug.</p>
+
+                <p>Sidecar injection works through a mutating admission webhook that fires when a pod is created. The webhook matches on the pod's labels. Pods inherit their labels from exactly one place: the Deployment's pod template. Labels on the Deployment object itself never proagate down to pods. They exist so you can select the Deployment with things like <code>kubectl get deploy -l team=payments</code>.</p>
+
+                <p>So when you label the Deployment, three things go wrong at once, all silently. First, kubectl prints <code>deployment.apps/my-app labeled</code>. Success. Second, because the pod template didn't change, the Deployment controller sees nothing to do, so no rollout happens and no new pods are created. Third, even if pods were recreated, they wouldn't carry the label, so the webhook would never match them. There is no error at any layer. You check the Deployment, the label is right there, and every pod is still running 1/1 with no sidecar in sight.</p>
+
+                <p>We hit this while reviewing our own onboarding docs. The istruction looked correct, the command succeeded, and injection never happened. It's an easy mistake to ship because nothing anywhere tells you it didn't work.</p>
+
+                <p>The fix is to put the label where pods are actually born: the pod template.</p>
+
+<pre><code>kubectl patch deployment my-app --type merge \
+  -p '{"spec":{"template":{"metadata":{"labels":{"pandocore.io/inject":"enabled"}}}}}'</code></pre>
+
+                <p>Because this changes the pod template, it triggers a rollout on its own. The controller creates a new ReplicaSet, and every new pod comes up with the label and passes through the webhook. If you set the label some other way and aren't sure the template has changed, <code>kubectl rollout restart deployment my-app</code> forces fresh pods. Verify with <code>kubectl get pods -l pandocore.io/inject=enabled</code>. The containers column should now read 2/2.</p>
+
+                <p>Label the template, roll the pods, check the count. The Deployment's own labels were never going to do it.</p>
+            </article>
+
+            <p class="blog-back">
+                <a href="/blog/" class="btn btn-secondary">&larr; Back to all posts</a>
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p class="footer-links"><a href="https://trust.pandocore.io">Trust Center</a></p>
+                <p>&copy; 2026 PandoCore Inc. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/main.js?v=2"></script>
+</body>
+</html>

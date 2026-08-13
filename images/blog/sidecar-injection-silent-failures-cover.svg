@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Sidecar injection cover">
+    <rect width="1200" height="675" fill="#002707"/>
+    <circle cx="600" cy="180" r="260" fill="#DF9F15" opacity="0.06"/>
+
+    <rect x="330" y="80" width="540" height="130" rx="12" fill="none" stroke="#E1F0F4" stroke-width="3" opacity="0.7"/>
+    <text x="600" y="130" font-family="Inter, sans-serif" font-size="30" font-weight="600" fill="#F7F4EB" text-anchor="middle">Deployment</text>
+    <rect x="435" y="150" width="330" height="42" rx="21" fill="#DF9F15" opacity="0.9"/>
+    <text x="600" y="179" font-family="Inter, sans-serif" font-size="22" font-weight="600" fill="#002707" text-anchor="middle">metadata.labels</text>
+
+    <line x1="600" y1="230" x2="600" y2="300" stroke="#E1F0F4" stroke-width="4" stroke-linecap="round" stroke-dasharray="14 16" opacity="0.45"/>
+    <g stroke="#DF9F15" stroke-width="7" stroke-linecap="round">
+        <line x1="572" y1="337" x2="628" y2="393"/>
+        <line x1="628" y1="337" x2="572" y2="393"/>
+    </g>
+    <line x1="600" y1="430" x2="600" y2="500" stroke="#E1F0F4" stroke-width="4" stroke-linecap="round" stroke-dasharray="14 16" opacity="0.45"/>
+
+    <g fill="none" stroke="#E1F0F4" stroke-width="3" opacity="0.7">
+        <rect x="300" y="520" width="160" height="110" rx="10"/>
+        <rect x="520" y="520" width="160" height="110" rx="10"/>
+        <rect x="740" y="520" width="160" height="110" rx="10"/>
+    </g>
+    <g font-family="Inter, sans-serif" font-size="30" font-weight="700" fill="#F7F4EB" text-anchor="middle">
+        <text x="380" y="587">1/1</text>
+        <text x="600" y="587">1/1</text>
+        <text x="820" y="587">1/1</text>
+    </g>
+</svg>
