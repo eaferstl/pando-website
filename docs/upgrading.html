@@ -128,7 +128,7 @@ helm upgrade pando-webhook \
 
             <div class="docs-callout warning">
                 <div class="docs-callout-title">Webhook downtime window</div>
-                <p>The webhook's <code>failurePolicy</code> is <code>Ignore</code> by default, so during the brief rolling-update window, any pods that start will be admitted <em>without</em> sidecar injection. They won't be protected until their next restart. If you need zero injection gaps, set <code>failurePolicy: Fail</code> (in which case pod creation blocks if the webhook is down, so tradeoff accordingly).</p>
+                <p>The webhook's <code>failurePolicy</code> is <code>Ignore</code>, so if the webhook is briefly unreachable during the update, any pods that start will be admitted <em>without</em> sidecar injection. They won't be protected until their next restart. In practice the window is small: the chart runs two replicas with a PodDisruptionBudget and rolls them one at a time. Watch for <code>PandoUnprotectedPod</code> warning events and the <code>pando_webhook_unprotected_in_protected_ns_total</code> metric (port 9091) around upgrades to catch any pod that slipped through.</p>
             </div>
 
             <h2>Upgrade Sidecars in Protected Pods</h2>

@@ -130,32 +130,29 @@ helm upgrade pando-webhook \
 
             <p>Changing the tag and running <code>helm upgrade</code> is now a deliberate, reviewable action.</p>
 
-            <h2>5. Choose a failurePolicy</h2>
+            <h2>5. Understand the failurePolicy</h2>
 
-            <p>The mutating webhook's <code>failurePolicy</code> decides what happens if the webhook itself is unavailable when a pod tries to start. Two options:</p>
+            <p>The mutating webhook ships with <code>failurePolicy: Ignore</code>, fixed in the chart rather than exposed as a value. If the webhook is unavailable when a pod starts, the pod is admitted without sidecar injection and the cluster keeps running. This is deliberate: under <code>Fail</code>, a webhook outage would block pod creation cluster-wide, including workloads PandoCore doesn't protect and the components you'd need to recover. A monitoring component must not be able to take down the thing it monitors. The full rationale is written up in the repository's architecture docs (<code>docs/architecture/kubernetes.md</code>).</p>
+
+            <p>The cost of fail-open is that a webhook outage produces unprotected pods instead of errors. That cost is paid down with visibility, not by changing the policy:</p>
 
             <ul>
-                <li><strong><code>Ignore</code> (default)</strong>: if the webhook is down, pods are admitted without sidecar injection. No protection for that pod until it restarts later, but the cluster keeps running. Safer for availability.</li>
-                <li><strong><code>Fail</code></strong>: if the webhook is down, pod creation is blocked cluster-wide. Stronger security posture, but a webhook outage becomes a cluster outage. Only use this if you've already invested in webhook HA (multiple replicas, PodDisruptionBudget, etc).</li>
+                <li><strong>Warning events:</strong> a pod admitted without a sidecar into a namespace that already holds protected pods raises a <code>PandoUnprotectedPod</code> event, visible under <code>kubectl get events -n &lt;namespace&gt;</code>.</li>
+                <li><strong>Prometheus metrics</strong> on the webhook's plaintext metrics port (9091): <code>pando_webhook_admissions_total</code>, <code>pando_webhook_unprotected_in_protected_ns_total</code>, and <code>pando_webhook_protected_namespaces</code>.</li>
             </ul>
 
-            <pre><code>helm upgrade pando-webhook \
-  oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-webhook \
-  --reuse-values \
-  --set failurePolicy=Fail</code></pre>
-
-            <p>Most teams stay on <code>Ignore</code> in production and rely on the portal dashboard to flag any pods that started without a sidecar. That's the right default unless you have a compliance reason to force-fail.</p>
+            <p>The admission timeout is pinned explicitly to 10 seconds and tunable via <code>webhookTimeoutSeconds</code> (1 to 30). Because admission fails open, a timeout costs bounded pod-start latency during an outage; it never blocks a pod.</p>
 
             <h2>6. Run the Webhook with Multiple Replicas</h2>
 
-            <p>A single webhook replica is a single point of failure for pod admission. Run at least two in production:</p>
+            <p>A single webhook replica is a single point of failure for pod admission. The chart defaults to two; if you've overridden it down, restore it in production:</p>
 
             <pre><code>helm upgrade pando-webhook \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-webhook \
   --reuse-values \
-  --set webhook.replicaCount=2</code></pre>
+  --set replicas=2</code></pre>
 
-            <p>This is essentially free and removes a class of failure modes (webhook pod rescheduling during node drain, OOM kill, etc) from your incident surface.</p>
+            <p>With more than one replica the chart also ships a PodDisruptionBudget (<code>minAvailable: 1</code>) and preferred pod anti-affinity across nodes, so a node drain can't evict both replicas at once and the scheduler spreads them when it can. This is essentially free and removes a class of failure modes (webhook pod rescheduling during node drain, OOM kill, etc) from your incident surface.</p>
 
             <h2>7. Back Up the License Signing State</h2>
 
@@ -235,8 +232,8 @@ kubectl rollout restart deployment/your-app</code></pre>
                 <li>Sidecar resource limits sized to observed usage, not defaults</li>
                 <li>Infra namespaces (cert-manager, istio-system, CI) added to <code>excludedNamespaces</code></li>
                 <li>Sidecar image tag pinned explicitly via <code>sidecar.image.tag</code></li>
-                <li><code>failurePolicy</code> chosen deliberately (<code>Ignore</code> for availability, <code>Fail</code> for strict compliance)</li>
-                <li>Webhook running with <code>replicaCount &gt;= 2</code></li>
+                <li>Fail-open admission posture understood; <code>PandoUnprotectedPod</code> events and the port-9091 webhook metrics wired into monitoring</li>
+                <li>Webhook running with <code>replicas &gt;= 2</code> (keeps the default PodDisruptionBudget in effect)</li>
                 <li><code>pando-license</code> Secret included in your Kubernetes backup process</li>
                 <li>Alerts (Slack or evidence webhook) wired to a destination your team watches</li>
                 <li>Configuration managed via <code>PandoCorePolicy</code> CRD in GitOps, not ad-hoc annotations</li>

@@ -121,9 +121,9 @@
                         <td>Namespaces skipped by injection. Add your infra namespaces.</td>
                     </tr>
                     <tr>
-                        <td><code>failurePolicy</code></td>
-                        <td><code>Ignore</code></td>
-                        <td><code>Ignore</code> admits pods if the webhook is down; <code>Fail</code> blocks them. See <a href="/docs/production-hardening">Production Hardening</a>.</td>
+                        <td><code>webhookTimeoutSeconds</code></td>
+                        <td><code>10</code></td>
+                        <td>Admission webhook timeout, 1 to 30. Admission fails open, so a timeout admits the pod uninjected. See <a href="/docs/production-hardening">Production Hardening</a>.</td>
                     </tr>
                     <tr>
                         <td><code>replicas</code></td>
@@ -403,15 +403,12 @@ kubectl rollout restart deployment/your-app</code></pre>
 licenseKey: "your-license-key"
 defaultMode: monitor
 slackWebhookURL: "https://hooks.slack.com/services/T.../B.../xxx"
-failurePolicy: Ignore
 excludedNamespaces:
   - kube-system
   - kube-public
   - kube-node-lease
   - cert-manager
   - istio-system
-webhook:
-  replicaCount: 2
 sidecar:
   image: us-central1-docker.pkg.dev/pandocore-prod/sidecar/pando-sidecar:<version>
 replicas: 2</code></pre>
