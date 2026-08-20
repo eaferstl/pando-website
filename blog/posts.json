@@ -30,5 +30,13 @@
         "excerpt": "'kubectl label deployment' writes to the Deployment object's metadata, not to 'spec.template.metadata.labels', where pods actually get their labels. If your sidecar injection is label-selected, the command reports success and nothing happens. Here's why, and the fix.",
         "image": "/images/blog/sidecar-injection-silent-failures-cover.svg",
         "url": "/blog/sidecar-injection-silent-failures.html"
+    },
+    {
+        "title": "Why We Ship Our Security Webhook Fail-Open",
+        "author": "Eliot Ferstl",
+        "date": "2026-08-20",
+        "excerpt": "Anything that installs an admission webhook puts itself in the critical path of pod creation. One field, 'failurePolicy', decideds whether the vendor's outage becomes yours. The textbook answer is fail-closed. We ship the opposite, on purpose.",
+        "image": "/images/blog/fail-open-webhook-cover.svg",
+        "url": "/blog/fail-open-webhook.html"
     }
 ]
