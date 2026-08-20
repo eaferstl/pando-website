@@ -98,18 +98,30 @@
 
             <h2>2-Command Install</h2>
 
-            <p>This is the minimum path to a protected workload. Grab the <code>helm install</code> line from your portal dashboard (it comes pre-filled with your license key), then label a deployment.</p>
+            <p>This is the minimum path to a protected workload. Grab the <code>helm install</code> line from your portal dashboard (it comes pre-filled with your license key and your namespaces), then patch a deployment.</p>
 
             <pre><code># 1. Install the admission webhook (one-time, cluster-wide)
 helm install pando-webhook \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-webhook \
-  --set licenseKey="YOUR_LICENSE_KEY"
+  --namespace pando-system --create-namespace \
+  --set licenseKey="YOUR_LICENSE_KEY" \
+  --set 'protectedNamespaces={your-app-namespace}'
 
 # 2. Protect a deployment
-kubectl label deployment your-app pandocore.io/protect=true
-kubectl rollout restart deployment/your-app</code></pre>
+kubectl patch deployment your-app -n your-app-namespace \
+  -p '{"spec":{"template":{"metadata":{"labels":{"pandocore.io/protect":"true"}}}}}'</code></pre>
 
             <p>The webhook injects the sidecar on the next pod start. Run <code>kubectl get pods</code> and you'll see <code>2/2</code> containers.</p>
+
+            <div class="docs-callout warning">
+                <div class="docs-callout-title">Patch the pod template, not the Deployment</div>
+                <p>The label has to land on <code>spec.template.metadata.labels</code>, which is what the <code>patch</code> above does. <code>kubectl label deployment</code> sets it on the Deployment object instead, so no pod ever carries it, the webhook skips every one, and your pods come up <code>Ready</code> with no sidecar and <strong>no error message</strong>. The patch also triggers the rollout on its own, so no separate <code>rollout restart</code> is needed.</p>
+            </div>
+
+            <div class="docs-callout warning">
+                <div class="docs-callout-title">Don't omit <code>protectedNamespaces</code></div>
+                <p>It is the only thing that creates the cluster-scoped RoleBinding the sidecar needs to read the <code>kubernetes</code> Endpoints object. Without it, an isolation NetworkPolicy is written with no API-server exception, so an isolated pod cannot reach the API server to release itself and stays quarantined until the pod is deleted. The install otherwise looks completely healthy, which is what makes this one worth getting right up front.</p>
+            </div>
 
             <div class="docs-callout warning">
                 <div class="docs-callout-title">One-time setup per app namespace</div>
