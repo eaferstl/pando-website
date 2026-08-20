@@ -35,7 +35,7 @@
         "title": "Why We Ship Our Security Webhook Fail-Open",
         "author": "Eliot Ferstl",
         "date": "2026-08-20",
-        "excerpt": "Anything that installs an admission webhook puts itself in the critical path of pod creation. One field, 'failurePolicy', decideds whether the vendor's outage becomes yours. The textbook answer is fail-closed. We ship the opposite, on purpose.",
+        "excerpt": "Anything that installs an admission webhook puts itself in the critical path of pod creation. One field, 'failurePolicy', decides whether the vendor's outage becomes yours. The textbook answer is fail-closed. We ship the opposite, on purpose.",
         "image": "/images/blog/fail-open-webhook-cover.svg",
         "url": "/blog/fail-open-webhook.html"
     }
