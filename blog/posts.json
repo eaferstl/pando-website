@@ -38,5 +38,13 @@
         "excerpt": "Anything that installs an admission webhook puts itself in the critical path of pod creation. One field, 'failurePolicy', decides whether the vendor's outage becomes yours. The textbook answer is fail-closed. We ship the opposite, on purpose.",
         "image": "/images/blog/fail-open-webhook-cover.svg",
         "url": "/blog/fail-open-webhook.html"
+    },
+    {
+        "title": "The Rules We Use To Define False Positives",
+        "author": "Eliot Ferstl",
+        "date": "2026-08-26",
+        "excerpt": "Our largest false positive soak to date is still running: 94 pods, 14 namespaces, 7 days, 0 attacks. Before the results are published, here's exactly how they'll be scored: the definitions, thresholds, and denominators we can't quietly adjust after seeing the data.",
+        "image": "/images/blog/false-positive-scoring-rules-cover.svg",
+        "url": "/blog/false-positive-scoring-rules.html"
     }
 ]

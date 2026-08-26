@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Our largest false positive soak to date is still running: 94 pods, 14 namespaces, 7 days, 0 attacks. Before the results are published, here's exactly how they'll be scored: the definitions, thresholds, and denominators we can't quietly adjust after seeing the data.">
+    <title>PandoCore | The Rules We Use To Define False Positives</title>
+    <link rel="canonical" href="https://pandocore.io/blog/false-positive-scoring-rules">
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="The Rules We Use To Define False Positives">
+    <meta property="og:description" content="Our largest false positive soak to date is still running: 94 pods, 14 namespaces, 7 days, 0 attacks. Before the results are published, here's exactly how they'll be scored: the definitions, thresholds, and denominators we can't quietly adjust after seeing the data.">
+    <meta property="og:image" content="https://pandocore.io/images/blog/false-positive-scoring-rules-cover.svg">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <link rel="icon" type="image/png" href="/images/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css?v=2">
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a href="/" class="logo">
+                    <img src="/images/logoTransparency.png" alt="Pando Logo">
+                    <div class="logo-text-wrapper">
+                        <span class="logo-text">PandoCore</span>
+                    </div>
+                </a>
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div class="nav-overlay"></div>
+                <ul class="nav-links">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/product">Product</a></li>
+                    <li><a href="/pricing">Pricing</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/blog/" class="active">Blog</a></li>
+                    <li><a href="/docs/">Docs</a></li>
+                    <li><a href="/contact" class="nav-contact">Contact</a></li>
+                    <li><a href="https://portal.pandocore.io/signup" class="nav-signup">Sign Up</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Post header -->
+    <section id="main-content" tabindex="-1" class="page-hero">
+        <div class="wave-container">
+            <div class="wave wave-layer-1"></div>
+            <div class="wave wave-layer-2"></div>
+        </div>
+        <div class="container">
+            <h1>The Rules We Use To Define False Positives</h1>
+            <p class="page-subtitle">August 26, 2026 &middot; By Eliot Ferstl</p>
+        </div>
+    </section>
+
+    <!-- Post body -->
+    <section class="content-section">
+        <div class="container">
+            <img class="blog-cover" src="/images/blog/false-positive-scoring-rules-cover.svg" alt="Four separate counters, each with its own pass threshold marked above it, under the run's scope: 94 pods, 14 namespaces, 7 days, 0 attacks">
+
+            <article class="blog-article">
+                <p>A false positive rate without an event definition, a denominator, and a labeling method is marketing. We wrote that in <a href="/blog/false-positive-denominator.html">our first post</a>. This is the other half: our largest soak to date is running right now. 94 protected pods across 14 namespaces, seven days, mostly stock upstream images (nginx, Postgres, Mongo, Kafka, Elasticsearch, RabbitMQ, plus JVM, Go, Python, and Node services). The results aren't in. So we're publishing the scoring rules first. Whatever the numbers turn out to be, they get graded against what's written here, in a post that went out before we saw them.</p>
+
+                <p>The run deploys zero attacks. That's the entire labeling method: every trip in this window is by definition a false positive. No adjudication, no &ldquo;we reviewed each alert and determined.&rdquo; Nothing gets subtracted.</p>
+
+                <p>Four counters, never blended: a detector fired; a signed evidence record was produced; an isolation was actually applied; a pod was actually terminated. Those are different failures with different costs, so the pass bars sit on different counters. Alerting is judged on evidence, response is judged on actions. The bars: zero false terminations, at most 0.1 false evidence records per pod-hour on the statistical plane, at most 0.01 false isolations per pod-hour. One caveat stated up front: zero false terminations is partly structural. Statistical events are capped below termination by design, so part of that zero is architecture, not model quality.</p>
+
+                <p>The denominator is where FP numbers usually get flattered, so ours is strict: we count only pod-hours where the detection ensemble was actually online. Cold-start hours are excluded. The sidecar deliberately can't take action while warming, and counting hours where the measured event is impossible inflates the denominator. Churn is part of the campaign, not an excuse: every 12 hours the run recreates pods, kills pods, and restarts sidecars on a rotation, and every post-churn relearn window is excluded too. Both exclusions shrink the denominator. Both make our reported rate worse. That's the direction the arithmetic should err.</p>
+
+                <p>Also stated now, because it would be conspicuous later: part of the fleet runs out-of-the-box config and part runs with integrity baselining armed. Of the armed group, half needed a privilege grant most customers won't make, so those cohorts get reported separately. &ldquo;Armed&rdquo; doesn't mean &ldquo;default.&rdquo; And the measured build is the released chart plus a staging-signed sidecar carrying the same detector code as the release. Same code, different artifact.</p>
+
+                <p>The failure mode we worry about most on a clean run is a wrong zero. Deploy no attacks and a broken counter looks identical to a good result: mislabel one event class and it reads 0.000 forever, which looks like success. So the analyzer refuses unclaimed events. Every trip must be claimed by a named event class, and any remainder means the taxonomy has a hole, not that the product is clean. We have caught real mislabelings exactly this way. A zero we can't cross-check doesn't get published.</p>
+
+                <p>The numbers go out when the run completes, graded against this post. Per-workload spread included, ugly parts included. Until then: if a vendor hands you a false positive rate, ask for their event definition, their denominator, and how they'd know if their zero was wrong.</p>
+            </article>
+
+            <p class="blog-back">
+                <a href="/blog/" class="btn btn-secondary">&larr; Back to all posts</a>
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p class="footer-links"><a href="https://trust.pandocore.io">Trust Center</a></p>
+                <p>&copy; 2026 PandoCore Inc. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/main.js?v=2"></script>
+</body>
+</html>
