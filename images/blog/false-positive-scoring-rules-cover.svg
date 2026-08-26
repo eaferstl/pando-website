@@ -2,7 +2,7 @@
     <rect width="1200" height="675" fill="#002707"/>
     <circle cx="600" cy="240" r="290" fill="#DF9F15" opacity="0.06"/>
 
-    <text x="600" y="150" font-family="Inter, sans-serif" font-size="34" font-weight="600" fill="#F7F4EB" text-anchor="middle">94 pods &middot; 14 namespaces &middot; 7 days &middot; 0 attacks</text>
+    <text x="600" y="150" font-family="Inter, sans-serif" font-size="34" font-weight="600" fill="#F7F4EB" text-anchor="middle">94 pods &#183; 14 namespaces &#183; 7 days &#183; 0 attacks</text>
 
     <g fill="#E1F0F4" opacity="0.28">
         <rect x="425" y="470" width="130" height="90" rx="6"/>
