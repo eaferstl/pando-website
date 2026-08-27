@@ -131,7 +131,7 @@ kubectl describe pod &lt;pod&gt;</code></pre>
             <ul>
                 <li><strong><code>license: signature invalid</code></strong>: the license was signed with a key that doesn't match the sidecar's embedded public key. Usually means you're running a sidecar image from a different environment (staging sidecar with prod license, or vice versa). Reinstall with the matching chart.</li>
                 <li><strong><code>license: expired</code></strong>: the <code>expiry</code> field is in the past. Log in to the portal and request a renewal.</li>
-                <li><strong><code>license: max_nodes exceeded</code></strong>: you're running more protected pods than your license allows. Either upgrade your plan in the portal or unlabel some deployments.</li>
+                <li><strong><code>license: max_nodes exceeded</code></strong>: you're running more protected nodes than your license allows. Either upgrade your plan in the portal or unlabel some deployments.</li>
                 <li><strong><code>license: secret not found</code></strong>: the <code>pando-license</code> Secret is missing from the target namespace. See the per-namespace setup in <a href="/docs/getting-started">Getting Started</a>.</li>
             </ul>
 

@@ -36,7 +36,7 @@
             <p><strong>Stays in your cluster.</strong> Every detection produces a structured evidence record written to the sidecar's stdout, visible in your own pod logs. The optional network audit that records remote IP addresses is off by default.</p>
             <p><strong>Goes to PandoCore (<code>portal.pandocore.io</code>).</strong> Two things reach us on a default install:</p>
             <ul>
-                <li>A licensing and billing heartbeat, roughly weekly, plus a one-time cluster registration. These carry your license key, generated pod and cluster identifiers, and the sidecar version, but no detection data.</li>
+                <li>A licensing and billing heartbeat, roughly weekly, plus a one-time cluster registration. These carry your license key, generated node and cluster identifiers, and the sidecar version, but no detection data.</li>
                 <li>Detection evidence. By default the sidecar forwards evidence records to the portal. You can turn this off completely with a single Helm value (<code>portalWebhook.enabled: false</code>), or leave forwarding on but tell the portal not to store it. Either way, concrete identifiers inside a record (file paths, remote IPs, image digests) can be redacted before the record ever leaves the pod.</li>
             </ul>
             <p><strong>Goes only where you point it.</strong> Beyond the portal, evidence is delivered to the destinations you configure: your SIEM (Splunk, Elastic, Datadog, syslog), a Slack channel, or your own webhook. Nothing is sent to a third party you did not set up.</p>

@@ -90,7 +90,7 @@
                         <span class="check-mark">✓</span>
                         <div>
                             <span class="fw-600">Minimal Overhead</span>
-                            <p class="detail-note">6-17Mi memory footprint, validated across 5,000+ pod-hours</p>
+                            <p class="detail-note">~5-6 MiB memory footprint, measured across 20,000+ continuous pod-hours on GKE</p>
                         </div>
                     </div>
                 </div>
@@ -551,7 +551,7 @@
                         </div>
                         <div class="feature-content">
                             <h3>Validated Performance</h3>
-                            <p>Validated across 10+ real-world workloads over 5,000+ pod-hours with under 5 false positives per day. Every capability is backed by measured results from continuous soak testing against diverse production-representative applications.</p>
+                            <p>Validated across more than 20,000 continuous pod-hours on GKE, running production-representative synthetic workloads, with 2 false isolations and zero false terminations. Every capability is backed by measured results from continuous soak testing against diverse production-representative applications.</p>
                         </div>
                     </div>
                 </div>
@@ -601,12 +601,12 @@
 
                 <div class="validation-grid">
                     <div>
-                        <div class="stat-number">5,000+</div>
+                        <div class="stat-number">20,000+</div>
                         <div class="detail-note">Pod-Hours</div>
                     </div>
                     <div>
-                        <div class="stat-number">&lt;5 / day</div>
-                        <div class="detail-note">False Positives</div>
+                        <div class="stat-number">0</div>
+                        <div class="detail-note">False Terminations</div>
                     </div>
                     <div>
                         <div class="stat-number">100M+</div>
@@ -617,7 +617,7 @@
                         <div class="detail-note">Attestation Checks Passed</div>
                     </div>
                     <div>
-                        <div class="stat-number">~10 Mi</div>
+                        <div class="stat-number">~5-6 MiB</div>
                         <div class="detail-note">Memory Overhead</div>
                     </div>
                     <div>
@@ -626,7 +626,7 @@
                     </div>
                 </div>
 
-                <p class="section-note">Under 5 false positives per day means PandoCore can run in enforce mode without disrupting legitimate workloads. The sidecar profiles each workload automatically across web servers, databases, and JIT and interpreted runtimes, with no manual tuning required.</p>
+                <p class="section-note">Two false isolations and zero false terminations across more than 20,000 continuous pod-hours on GKE, against production-representative synthetic workloads rather than customer traffic, means PandoCore's automated responses can run without disrupting legitimate workloads. The sidecar profiles each workload automatically across web servers, databases, and JIT and interpreted runtimes, with no manual tuning required.</p>
             </div>
         </div>
     </section>

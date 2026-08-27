@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="PandoCore pricing: simple per-pod plans for Kubernetes runtime security. Starter, Team, Growth, and Enterprise tiers with transparent per-pod rates.">
+    <meta name="description" content="PandoCore pricing: simple per-node plans for Kubernetes runtime security. Starter, Growth, and Enterprise tiers with transparent per-node rates.">
     <title>PandoCore | Pricing</title>
     <link rel="canonical" href="https://pandocore.io/pricing">
     <link rel="icon" type="image/png" href="images/favicon.png">
@@ -51,8 +51,8 @@
             <div class="wave wave-layer-2"></div>
         </div>
         <div class="container">
-            <h1>Simple, Per-Pod Pricing</h1>
-            <p class="page-subtitle">Pay only for the pods you protect, not the nodes they run on. Pod-level billing ties your cost to actual attack surface, typically a fraction of node-priced runtime security.</p>
+            <h1>Simple, Per-Node Pricing</h1>
+            <p class="page-subtitle">Pay for the nodes you protect, and only those. Install PandoCore on every node in your fleet from day one. Monitor-only nodes are never billed, so your bill tracks the coverage you choose, not the size of your cluster.</p>
         </div>
     </section>
 
@@ -70,38 +70,17 @@
                         <span class="pricing-price-amount">Free</span>
                     </div>
                     <div class="pricing-meta">
-                        <div class="pricing-meta-row"><strong>15 pods</strong> included</div>
-                        <div class="pricing-meta-row">No overage, capped</div>
+                        <div class="pricing-meta-row"><strong>5 protected nodes</strong> included</div>
+                        <div class="pricing-meta-row">Additional nodes monitor-only, never billed</div>
                     </div>
                     <ul class="pricing-features">
                         <li>1 cluster</li>
-                        <li>Monitor mode only (detect &amp; log)</li>
+                        <li>Response modes up to autonomous isolation</li>
+                        <li>7-day event history</li>
                         <li>No alert integrations</li>
                         <li>Auto-issued on signup</li>
                     </ul>
                     <a href="https://portal.pandocore.io/signup" class="btn btn-primary pricing-cta">Start Free</a>
-                </div>
-
-                <!-- Team -->
-                <div class="pricing-card">
-                    <div class="pricing-card-header">
-                        <h3 class="pricing-tier-name">Team</h3>
-                        <p class="pricing-tier-tagline">For single-team clusters</p>
-                    </div>
-                    <div class="pricing-price">
-                        <span class="pricing-price-amount">$500</span>
-                        <span class="pricing-price-period">/month</span>
-                    </div>
-                    <div class="pricing-meta">
-                        <div class="pricing-meta-row"><strong>50 pods</strong> included</div>
-                        <div class="pricing-meta-row"><strong>$8/pod</strong> overage</div>
-                    </div>
-                    <ul class="pricing-features">
-                        <li>1 cluster</li>
-                        <li>All response modes (alert → isolate → enforce)</li>
-                        <li>All integrations (SIEM, Slack, PagerDuty)</li>
-                    </ul>
-                    <a href="https://portal.pandocore.io/signup" class="btn btn-primary pricing-cta">Get Started</a>
                 </div>
 
                 <!-- Growth -->
@@ -112,19 +91,20 @@
                         <p class="pricing-tier-tagline">For production clusters at scale</p>
                     </div>
                     <div class="pricing-price">
-                        <span class="pricing-price-amount">$1,200</span>
-                        <span class="pricing-price-period">/month</span>
+                        <span class="pricing-price-amount">$15</span>
+                        <span class="pricing-price-period">/node/month</span>
                     </div>
                     <div class="pricing-meta">
-                        <div class="pricing-meta-row"><strong>150 pods</strong> included</div>
-                        <div class="pricing-meta-row"><strong>$7/pod</strong> overage</div>
+                        <div class="pricing-meta-row">Up to <strong>150 protected nodes</strong></div>
+                        <div class="pricing-meta-row">Monitor-only nodes never billed</div>
                     </div>
                     <ul class="pricing-features">
                         <li>Any number of clusters</li>
-                        <li>All response modes (alert → isolate → enforce)</li>
+                        <li>All response modes, up to autonomous termination</li>
                         <li>All integrations (SIEM, Slack, PagerDuty)</li>
+                        <li>90-day event history</li>
                     </ul>
-                    <a href="https://portal.pandocore.io/signup" class="btn btn-primary pricing-cta">Get Started</a>
+                    <a href="https://calendar.proton.me/bookings#wchS9JFz7Sg34QFZ593-UxZnQx0lhS0q_JtB-zyAnTQ=" target="_blank" rel="noopener noreferrer" class="btn btn-primary pricing-cta">Contact Us</a>
                 </div>
 
                 <!-- Enterprise -->
@@ -137,18 +117,20 @@
                         <span class="pricing-price-amount">Custom</span>
                     </div>
                     <div class="pricing-meta">
-                        <div class="pricing-meta-row">Minimum <strong>500 pods</strong></div>
+                        <div class="pricing-meta-row">No node limits</div>
                     </div>
                     <ul class="pricing-features">
                         <li>Any number of clusters</li>
-                        <li>All response modes (alert → isolate → enforce)</li>
+                        <li>All response modes, up to autonomous termination</li>
                         <li>All integrations (SIEM, Slack, PagerDuty)</li>
+                        <li>1-year+ event history</li>
+                        <li>Compliance export</li>
                     </ul>
                     <a href="https://calendar.proton.me/bookings#wchS9JFz7Sg34QFZ593-UxZnQx0lhS0q_JtB-zyAnTQ=" target="_blank" rel="noopener noreferrer" class="btn btn-primary pricing-cta">Let's Talk</a>
                 </div>
             </div>
 
-            <p class="pricing-footnote">Billing is based on the second-highest pod count recorded in a calendar month, not the single monthly peak, so a new or unexpected pod spike never inflates your bill. Usage is measured via a weekly heartbeat from each sidecar: no agents to install, no reconciliation required. Need a different plan? Contact us and we'll move you over.</p>
+            <p class="pricing-footnote">Billing is based on the second-highest weekly protected-node count recorded in a calendar month, not the single monthly peak, and weeks with no heartbeat count as zero, so your worst week is free and one spike never inflates your bill. Billed monthly, no proration. Monitor-only nodes are never billed. Usage is measured via a weekly heartbeat from each sidecar: no agents to install, no reconciliation required. Need a different plan? Contact us and we'll move you over.</p>
         </div>
     </section>
 
@@ -176,7 +158,7 @@
                         <span class="check-mark">✓</span>
                         <div>
                             <span class="fw-600">Portal Dashboard</span>
-                            <p class="detail-note">Real-time pod inventory, usage tracking, and billing estimates.</p>
+                            <p class="detail-note">Real-time node inventory, usage tracking, and billing estimates.</p>
                         </div>
                     </div>
                     <div class="check-row">
@@ -190,7 +172,7 @@
                         <span class="check-mark">✓</span>
                         <div>
                             <span class="fw-600">Signed License</span>
-                            <p class="detail-note">Ed25519-signed license with pod entitlements and expiry.</p>
+                            <p class="detail-note">Ed25519-signed license with node entitlements and expiry.</p>
                         </div>
                     </div>
                     <div class="check-row">
@@ -204,7 +186,7 @@
                         <span class="check-mark">✓</span>
                         <div>
                             <span class="fw-600">Fleet-Wide Portal</span>
-                            <p class="detail-note">Pod inventory and detection events from your licensed clusters roll up into a single portal view. Unlimited clusters on Growth and up.</p>
+                            <p class="detail-note">Node inventory and detection events from your licensed clusters roll up into a single portal view. Unlimited clusters on Growth and up.</p>
                         </div>
                     </div>
                     <div class="check-row">
