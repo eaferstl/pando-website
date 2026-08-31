@@ -46,5 +46,13 @@
         "excerpt": "Our largest false positive soak to date is still running: 94 pods, 14 namespaces, 7 days, 0 attacks. Before the results are published, here's exactly how they'll be scored: the definitions, thresholds, and denominators we can't quietly adjust after seeing the data.",
         "image": "/images/blog/false-positive-scoring-rules-cover.svg",
         "url": "/blog/false-positive-scoring-rules.html"
+    },
+    {
+        "title": "One False Alert and Zero False Autonomous Actions in Over 15,000 Pod-Hours",
+        "author": "Eliot Ferstl",
+        "date": "2026-08-31",
+        "excerpt": "Our largest clean-run soak has closed: 94 pods, 14 namespaces, 7 days, 0 attacks. All four pre-registered bars passed. Here are the numbers and the coverage finding that constrains them.",
+        "image": "/images/blog/clean-run-soak-results-cover.svg",
+        "url": "/blog/clean-run-soak-results.html"
     }
 ]

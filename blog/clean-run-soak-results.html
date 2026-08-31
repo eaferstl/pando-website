@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Our largest clean-run soak has closed: 94 pods, 14 namespaces, 7 days, 0 attacks. All four pre-registered bars passed. Here are the numbers and the coverage finding that constrains them.">
+    <title>PandoCore | One False Alert and Zero False Autonomous Actions in Over 15,000 Pod-Hours</title>
+    <link rel="canonical" href="https://pandocore.io/blog/clean-run-soak-results">
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="One False Alert and Zero False Autonomous Actions in Over 15,000 Pod-Hours">
+    <meta property="og:description" content="Our largest clean-run soak has closed: 94 pods, 14 namespaces, 7 days, 0 attacks. All four pre-registered bars passed. Here are the numbers and the coverage finding that constrains them.">
+    <meta property="og:image" content="https://pandocore.io/images/blog/clean-run-soak-results-cover.svg">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <link rel="icon" type="image/png" href="/images/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css?v=2">
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a href="/" class="logo">
+                    <img src="/images/logoTransparency.png" alt="Pando Logo">
+                    <div class="logo-text-wrapper">
+                        <span class="logo-text">PandoCore</span>
+                    </div>
+                </a>
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div class="nav-overlay"></div>
+                <ul class="nav-links">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/product">Product</a></li>
+                    <li><a href="/pricing">Pricing</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/blog/" class="active">Blog</a></li>
+                    <li><a href="/docs/">Docs</a></li>
+                    <li><a href="/contact" class="nav-contact">Contact</a></li>
+                    <li><a href="https://portal.pandocore.io/signup" class="nav-signup">Sign Up</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Post header -->
+    <section id="main-content" tabindex="-1" class="page-hero">
+        <div class="wave-container">
+            <div class="wave wave-layer-1"></div>
+            <div class="wave wave-layer-2"></div>
+        </div>
+        <div class="container">
+            <h1>One False Alert and Zero False Autonomous Actions in Over 15,000 Pod-Hours</h1>
+            <p class="page-subtitle">August 31, 2026 &middot; By Eliot Ferstl</p>
+        </div>
+    </section>
+
+    <!-- Post body -->
+    <section class="content-section">
+        <div class="container">
+            <img class="blog-cover" src="/images/blog/clean-run-soak-results-cover.svg" alt="The measured evidence rate sitting near zero on a scale against its 0.1 ceiling, above three counters reading zero trips, zero isolations, zero terminations">
+
+            <article class="blog-article">
+                <p>Last week, we published <a href="/blog/false-positive-scoring-rules.html">the scoring rules for this soak</a> before we had any results. The run has closed. Here are the numbers, graded against that post.</p>
+
+                <p>7 days, 94 protected pods, 14 namespaces, 0 attacks deployed. 1 signed evidence record. 0 detector trips, 0 isolations, 0 terminations. Against the pre-registered bars: drift-plan evidence at 0.0000637 per pod-hour against a ceiling of 0.1, isolations and terminations at true zero, not rounded. All four bars passed, the evidence bar with roughly 1,570x margin.</p>
+
+                <p>The denominator is 15,690 online pod-hours out of 15,792 gross. We threw away 101 pod-hours of cold start and post-churn relearn, exactly as promised, because counting hours in which the sidecar deliberately cannot act inflates the denominator and flatters the rate. Churn was scored by observed effect rather than job success: pods recreated, pods killed, sidecars restarted on a 12-hour rotation, confirmed by counting distinct container ids instead of trusting that the cron reported healthy.</p>
+
+                <p>The single detection is worth reproducing. A redis pod tripped cumulative drift at 0.0792 against a learned threshold of 0.0351. It stayed inside the long-scale envelope, the ML plane returned normal, and the event was capped at alert: evidence emitted, no response chain, no trip counted. That is the two-factor gate doing on benign traffic exactly what it exists for.</p>
+
+                <p>Cohorts stayed separate, as promised. The out-of-the-box group logged 8,346 pod-hours with zero trips, the integrity-armed group 7,178, also zero. Of the six armed workloads, three needed a uid0 and SYS_PTRACE grant some customers will not make, so &ldquo;armed&rdquo; should not be read as &ldquo;default&rdquo;. The wrong-zero check also came back clean: every trip was claimed by a named event class and the residual was zero, meaning no events were hiding from the count under an unrecognized label.</p>
+
+                <p>One finding constrains all of it. Only 23 of 94 pods carried all five process-level signals live, and in the out-of-the-box configuration the executable-link signal was dark on every pod. Fewer live signals means fewer opportunities to fire, so reduced coverage biases the false positive rate downward. The zero is real, but it was measured on a fleet where most pods could not see much at the process layer.</p>
+
+                <p>Provenance is the same story in stronger form: it contributed zero because it was blind, not because it was quiet. Manifest presence and maps readability both read zero on all 14 workloads for the entire window, so that plane cannot be cited as a clean result at all. And as flagged in advance, the terminate zero is partly structural, since statistical events are capped below termination by design.</p>
+
+                <p>Two more things we said we would not bury. Sidecar CPU ran a median near 110 millicores per pod with memory around 5 MiB. And the one evidence record we produced has no durable storage anywhere in the product today: it was captured by hand before teardown, and its Kubernetes event aged out within the hour. A campaign that emits evidence it cannot keep has a numerator it cannot audit. That is now a work item.</p>
+
+                <p>The next run closes these in order: signal coverage first, then evidence durability. The numbers above are what a strict denominator and a partly blind fleet produced, and the definitions they were scored against were published before anyone here had seen them.</p>
+            </article>
+
+            <p class="blog-back">
+                <a href="/blog/" class="btn btn-secondary">&larr; Back to all posts</a>
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p class="footer-links"><a href="https://trust.pandocore.io">Trust Center</a></p>
+                <p>&copy; 2026 PandoCore Inc. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/main.js?v=2"></script>
+</body>
+</html>

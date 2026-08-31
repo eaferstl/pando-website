@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" role="img" aria-label="Clean-run soak results cover">
+    <rect width="1200" height="675" fill="#002707"/>
+    <circle cx="600" cy="300" r="300" fill="#DF9F15" opacity="0.06"/>
+
+    <text x="600" y="140" font-family="Inter, sans-serif" font-size="34" font-weight="600" fill="#F7F4EB" text-anchor="middle">15,690 online pod-hours</text>
+
+    <text x="180" y="290" font-family="Inter, sans-serif" font-size="26" font-weight="600" fill="#DF9F15" text-anchor="middle">0.0000637</text>
+    <text x="1030" y="290" font-family="Inter, sans-serif" font-size="26" font-weight="600" fill="#DF9F15" text-anchor="middle">0.1</text>
+
+    <line x1="150" y1="350" x2="1050" y2="350" stroke="#E1F0F4" stroke-width="3" opacity="0.35"/>
+    <circle cx="156" cy="350" r="8" fill="#DF9F15"/>
+    <line x1="1050" y1="310" x2="1050" y2="390" stroke="#DF9F15" stroke-width="8" stroke-linecap="round"/>
+
+    <g fill="none" stroke="#E1F0F4" stroke-width="3" opacity="0.75">
+        <rect x="320" y="450" width="160" height="100" rx="10"/>
+        <rect x="520" y="450" width="160" height="100" rx="10"/>
+        <rect x="720" y="450" width="160" height="100" rx="10"/>
+    </g>
+    <g font-family="Inter, sans-serif" font-size="44" font-weight="700" fill="#F7F4EB" text-anchor="middle">
+        <text x="400" y="517">0</text>
+        <text x="600" y="517">0</text>
+        <text x="800" y="517">0</text>
+    </g>
+    <g font-family="Inter, sans-serif" font-size="20" font-weight="500" fill="#E1F0F4" text-anchor="middle" opacity="0.7">
+        <text x="400" y="590">trips</text>
+        <text x="600" y="590">isolations</text>
+        <text x="800" y="590">terminations</text>
+    </g>
+</svg>
