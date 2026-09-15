@@ -29,13 +29,15 @@ the node agent. Note the four instances travel together; retiring one means reti
 
 ### Evidence retention, PCI DSS 5.3.4 and 10.5.1
 **Where:** `product.html` compliance table, rows 9 and 11
-**Status:** Published ahead of the build by decision, and **with no availability caveat on
-the page**. The dated note was removed on 2026-09-15 at the owner's direction, so these two
-rows now read as delivered. Roadmap decision 59 records that twelve-month retention already
-holds by absence of a delete path in the portal; what is missing is a query path, a
-deployment default, and a written policy an auditor can test. Estimated 13 to 20 working
-days. Until that lands, `product.html` is the only place a reader is told the retention is
-available, and nothing on the site qualifies it.
+**Status:** Published ahead of the build by decision, with a dated availability note under
+the table on `product.html` stating the retention is in build and roughly 3 to 4 weeks out.
+That note is load-bearing: it is the only place on the site where these two rows are
+qualified. Do not remove it before the retention work lands.
+
+Roadmap decision 59 records that twelve-month retention already holds by absence of a delete
+path in the portal; what is missing is a query path, a deployment default, and a written
+policy an auditor can test. Estimated 13 to 20 working days. When that lands, update or drop
+the note and the date.
 **Also flagged there and outside this repo:** the portal dashboard's plan card advertises
 "Long retention + compliance export" while no export endpoint exists.
 
