@@ -62,6 +62,7 @@
                 <li><a href="/docs/">Overview</a></li>
                 <li><a href="/docs/getting-started">Getting Started</a></li>
                 <li><a href="/docs/webhook">Admission Webhook</a></li>
+                <li><a href="/docs/controller">Controller</a></li>
                 <li><a href="/docs/dashboard">Dashboard</a></li>
                 <li><a href="/docs/configuration">Configuration</a></li>
                 <li><a href="/docs/policy">CRD Policy</a></li>
@@ -164,7 +165,7 @@
             <p>No. PandoCore deploys as a sidecar container alongside your existing application. You add the sidecar to your deployment manifest. No changes to your application code are required.</p>
 
             <h3>How long does deployment take?</h3>
-            <p>Initial deployment (Helm install + adding sidecar to first deployment) typically takes under 5 minutes. See our <a href="/docs/getting-started">Getting Started guide</a>.</p>
+            <p>Installing takes about 15 minutes: the Helm install, then labelling your first deployment. Detection does not begin at install time. See the learning phase question below for the warm-up, and our <a href="/docs/getting-started">Getting Started guide</a> for the steps.</p>
 
             <h2>Operations</h2>
 
@@ -175,7 +176,12 @@
                 <li>No enforcement occurs, even in enforce mode</li>
                 <li>Duration is configurable via <code>PANDO_LEARNING_DURATION_SECONDS</code> (default: 30 minutes)</li>
             </ul>
-            <p>After learning completes, <code>/readyz</code> returns 200 and full monitoring begins.</p>
+            <p>After learning completes, <code>/readyz</code> returns 200 and detection begins. Two behavioral scales keep warming past that point, and neither is controlled by <code>PANDO_LEARNING_DURATION_SECONDS</code>:</p>
+            <ul>
+                <li>The short scale needs roughly 100 minutes from a cold start</li>
+                <li>The long scale needs roughly 10 hours</li>
+            </ul>
+            <p>A scale that is not yet warm does not contribute, so the full detection envelope is in place around 10 hours after a pod first starts, not at install time.</p>
 
             <h3>How do I know if PandoCore is working?</h3>
             <p>Check these indicators:</p>
@@ -241,12 +247,15 @@ kubectl exec &lt;pod&gt; -c pando-sidecar -- wget -qO- http://localhost:9090/met
             <h2>Security</h2>
 
             <h3>What permissions does the sidecar need?</h3>
-            <p>The PandoCore sidecar requires minimal Kubernetes RBAC permissions:</p>
+            <p>Most of it is namespace-scoped. A <code>ClusterRole</code> named <code>pando-sidecar</code> is bound with a <code>RoleBinding</code> in each protected namespace, so those grants apply only inside that namespace:</p>
             <ul>
-                <li><code>get</code> on pods in its namespace (to read pod info)</li>
-                <li><code>delete</code> on pods in its namespace (to terminate compromised pods in enforce mode)</li>
+                <li><code>get</code>, <code>delete</code> on pods (read pod info; terminate a compromised pod in enforce mode)</li>
+                <li><code>create</code>, <code>delete</code>, <code>get</code> on networkpolicies (isolate a pod, then release it)</li>
+                <li><code>get</code>, <code>list</code> on services</li>
+                <li><code>create</code> on events</li>
+                <li><code>get</code>, <code>list</code>, <code>watch</code> on pandocorepolicies</li>
             </ul>
-            <p>These permissions are namespace-scoped. The sidecar cannot access resources in other namespaces.</p>
+            <p>A smaller set is genuinely cluster-wide, granted by one <code>ClusterRoleBinding</code> named <code>pando-sidecar-cluster</code>: <code>get</code> on endpoints and namespaces, and <code>list</code> on services. The isolation NetworkPolicy needs the <code>kubernetes</code> Endpoints object, otherwise an isolated pod cannot reach the API server to release itself.</p>
 
             <h3>Can an attacker disable PandoCore?</h3>
             <p>The sidecar runs in a separate container within the same pod. An attacker would need container escape capabilities to reach the sidecar. If they can escape the application container, PandoCore may detect the anomalous behavior (process/memory changes) before the attacker can disable protection.</p>
