@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="PandoCore - A Kubernetes sidecar that learns your workload's normal behavior and detects anomalies at runtime. Zero configuration. No code changes required.">
+    <meta name="description" content="PandoCore - Runtime threat detection for Kubernetes, with the audit evidence to prove it. Maps to SOC 2 CC7.2, ISO 27001 A.8.16 and PCI DSS 5.3.2.">
     <title>PandoCore | Product</title>
     <link rel="canonical" href="https://pandocore.io/product">
     <link rel="icon" type="image/png" href="images/favicon.png">
@@ -51,8 +51,8 @@
             <div class="wave wave-layer-2"></div>
         </div>
         <div class="container">
-            <h1>Autonomous Runtime Defense</h1>
-            <p class="page-subtitle">A Kubernetes sidecar that learns your workload's normal behavior and detects when something goes wrong. No rules. No configuration. Just deploy.</p>
+            <h1>Runtime threat detection for Kubernetes, with the audit evidence to prove it.</h1>
+            <p class="page-subtitle">Maps to SOC 2 CC7.2, ISO 27001 A.8.16, PCI DSS 5.3.2. Installed in 15 minutes, learning your workloads from the first sample. No security team required.</p>
         </div>
     </section>
 
@@ -90,7 +90,7 @@
                         <span class="check-mark">✓</span>
                         <div>
                             <span class="fw-600">Minimal Overhead</span>
-                            <p class="detail-note">~5-6 MiB memory footprint, measured across 20,000+ continuous pod-hours on GKE</p>
+                            <p class="detail-note">~5-6 MiB memory footprint per pod, measured across 20,000+ continuous pod-hours on GKE. Per-node figure pending re-measurement.</p>
                         </div>
                     </div>
                 </div>
@@ -103,7 +103,7 @@
         <div class="container">
             <h2 class="section-title">Complements Your Security Stack</h2>
             <div class="content-wrapper mw-container">
-                <p class="section-intro">PandoCore installs an admission webhook in its own namespace and injects a sidecar only into the pods you label, leaving the rest of your cluster untouched.</p>
+                <p class="section-intro">PandoCore runs as a node-level agent and a cluster controller in its own namespace. Nothing is injected into your pods, and your workloads are not modified or restarted to be protected.</p>
 
                 <!-- K8s Cluster-level Visual -->
                 <div class="k8s-cluster-visual">
@@ -124,12 +124,12 @@
                                 </div>
                                 <div class="ns-pods">
                                     <div class="system-pod">
-                                        <span class="system-pod-title">Admission Webhook</span>
-                                        <span class="system-pod-sub">2 replicas (HA)</span>
+                                        <span class="system-pod-title">Node Agent</span>
+                                        <span class="system-pod-sub">DaemonSet, one per node</span>
                                     </div>
                                     <div class="system-pod">
-                                        <span class="system-pod-title">Dashboard</span>
-                                        <span class="system-pod-sub">polls /status</span>
+                                        <span class="system-pod-title">Cluster Controller</span>
+                                        <span class="system-pod-sub">evidence &amp; response</span>
                                     </div>
                                     <div class="system-pod">
                                         <span class="system-pod-title">License Secret</span>
@@ -149,14 +149,14 @@
                                         <div class="mini-pod-label">pandocore.io/protect=true</div>
                                         <div class="mini-pod-containers">
                                             <span class="mini-container mini-app">App</span>
-                                            <span class="mini-container mini-sidecar">Sidecar</span>
+                                            <span class="mini-container mini-watched">watched</span>
                                         </div>
                                     </div>
                                     <div class="mini-pod protected">
                                         <div class="mini-pod-label">pandocore.io/protect=true</div>
                                         <div class="mini-pod-containers">
                                             <span class="mini-container mini-app">App</span>
-                                            <span class="mini-container mini-sidecar">Sidecar</span>
+                                            <span class="mini-container mini-watched">watched</span>
                                         </div>
                                     </div>
                                     <div class="mini-pod unprotected">
@@ -174,7 +174,7 @@
                                     <span class="ns-name">kube-system</span>
                                     <span class="ns-tag excluded-tag">excluded</span>
                                 </div>
-                                <div class="ns-empty">sidecar injection skipped</div>
+                                <div class="ns-empty">not monitored</div>
                             </div>
                         </div>
                     </div>
@@ -249,27 +249,25 @@
 
                 <!-- Flow callouts -->
                 <div class="cluster-flow-callouts">
-                    <div class="callout-item"><span class="callout-num">1</span>Webhook watches every pod create in the API server</div>
-                    <div class="callout-item"><span class="callout-num">2</span>Sidecar is injected <em>only</em> into pods you label</div>
+                    <div class="callout-item"><span class="callout-num">1</span>A node agent on each node watches <em>only</em> the workloads you label</div>
+                    <div class="callout-item"><span class="callout-num">2</span>The controller decides response and owns evidence delivery</div>
                     <div class="callout-item"><span class="callout-num">3</span>Evidence streams to the portal, Slack, or your webhook</div>
                 </div>
 
-                <h3 class="zoom-heading">Zoom in: inside a protected pod</h3>
+                <h3 class="zoom-heading">Zoom in: on a protected node</h3>
 
-                <!-- K8s Pod Sidecar Visual -->
+                <!-- Node-level Visual -->
                 <div class="k8s-pod-visual">
-                    <!-- Pod Container -->
                     <div class="pod-container">
                         <div class="pod-header">
                             <svg class="k8s-icon" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M16 2L4 8v16l12 6 12-6V8L16 2zm0 2.18l9.5 4.75-9.5 4.75-9.5-4.75L16 4.18zM5.5 9.82l9.5 4.75v9.5l-9.5-4.75v-9.5zm21 0v9.5l-9.5 4.75v-9.5l9.5-4.75z" fill="currentColor"/>
                             </svg>
-                            <span class="pod-label">Kubernetes Pod</span>
+                            <span class="pod-label">Kubernetes Node</span>
                         </div>
-                        
-                        <!-- Containers inside the pod -->
+
                         <div class="pod-contents">
-                            <!-- App Container -->
+                            <!-- Workloads on the node -->
                             <div class="container-box app-container">
                                 <div class="container-header">
                                     <span class="container-icon">
@@ -278,14 +276,14 @@
                                             <path d="M16 7l-8 4v10l8 4 8-4V11l-8-4zm0 2l5.5 2.75L16 14.5l-5.5-2.75L16 9zm-6 4.5l5 2.5v5.5l-5-2.5V13.5zm12 0v5.5l-5 2.5V16l5-2.5z" fill="var(--floral-white)"/>
                                         </svg>
                                     </span>
-                                    <span class="container-title">Your Application</span>
+                                    <span class="container-title">Your Workloads</span>
                                 </div>
                                 <div class="container-body">
                                     <div class="code-block">
-                                        <span class="code-comment"># Your code runs here</span>
-                                        <span class="code-line">process_data()</span>
-                                        <span class="code-line">run_inference()</span>
-                                        <span class="code-line">execute_logic()</span>
+                                        <span class="code-comment"># Unmodified, not restarted</span>
+                                        <span class="code-line">api-7d9f     Running</span>
+                                        <span class="code-line">worker-2b4c  Running</span>
+                                        <span class="code-line">cache-8e1a   Running</span>
                                     </div>
                                 </div>
                                 <div class="container-footer">
@@ -293,8 +291,8 @@
                                     <span>Running</span>
                                 </div>
                             </div>
-                            
-                            <!-- Shared Communication Arrow -->
+
+                            <!-- Observation arrow -->
                             <div class="shared-namespace">
                                 <div class="namespace-arrow">
                                     <svg viewBox="0 0 60 100" xmlns="http://www.w3.org/2000/svg">
@@ -310,12 +308,12 @@
                                         <line x1="50" y1="70" x2="10" y2="70" stroke="var(--black-forest)" stroke-width="2" marker-end="url(#arrowhead-left)" opacity="0.6"/>
                                     </svg>
                                 </div>
-                                <span class="namespace-label">Shared<br/>Namespace</span>
+                                <span class="namespace-label">Observed<br/>On Node</span>
                             </div>
-                            
-                            <!-- PandoCore Sidecar -->
-                            <div class="container-box sidecar-container">
-                                <div class="container-header sidecar-header">
+
+                            <!-- PandoCore Node Agent -->
+                            <div class="container-box agent-container">
+                                <div class="container-header agent-header">
                                     <span class="container-icon">
                                         <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" class="inline-icon">
                                             <rect width="32" height="32" rx="6" fill="var(--amber-honey)"/>
@@ -324,10 +322,9 @@
                                             <path d="M13 10c2 1 4 1 6 0M13 22c2-1 4-1 6 0" stroke="var(--amber-honey)" stroke-width="1" fill="none"/>
                                         </svg>
                                     </span>
-                                    <span class="container-title">PandoCore Sidecar</span>
-                                    <span class="new-badge">NEW</span>
+                                    <span class="container-title">PandoCore Node Agent</span>
                                 </div>
-                                <div class="container-body sidecar-body">
+                                <div class="container-body agent-body">
                                     <div class="protection-features">
                                         <div class="protection-item">
                                             <span class="protection-icon">
@@ -356,18 +353,18 @@
                                                     <circle cx="12" cy="12" r="1.5" fill="var(--floral-white)"/>
                                                 </svg>
                                             </span>
-                                            <span>Attack Detection</span>
+                                            <span>Signed Evidence</span>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="container-footer sidecar-footer">
+                                <div class="container-footer agent-footer">
                                     <span class="status-dot protected"></span>
                                     <span>Monitoring</span>
                                 </div>
                             </div>
                         </div>
-                        
-                        <!-- Pod Benefits -->
+
+                        <!-- Node-level properties -->
                         <div class="pod-benefits">
                             <div class="benefit-item">
                                 <span class="benefit-icon">
@@ -377,7 +374,7 @@
                                         <circle cx="12" cy="12" r="3" stroke="var(--floral-white)" stroke-width="1.5" fill="none"/>
                                     </svg>
                                 </span>
-                                <span>Same Lifecycle</span>
+                                <span>One Agent Per Node</span>
                             </div>
                             <div class="benefit-item">
                                 <span class="benefit-icon">
@@ -388,7 +385,7 @@
                                         <ellipse cx="12" cy="12" rx="5" ry="2" stroke="var(--floral-white)" stroke-width="1" fill="none" opacity="0.7"/>
                                     </svg>
                                 </span>
-                                <span>Shared Network</span>
+                                <span>No Injection</span>
                             </div>
                             <div class="benefit-item">
                                 <span class="benefit-icon">
@@ -398,7 +395,7 @@
                                         <path d="M6 9l6 3 6-3M12 12v6" stroke="var(--floral-white)" stroke-width="1.5"/>
                                     </svg>
                                 </span>
-                                <span>Shared Volumes</span>
+                                <span>Survives Pod Restarts</span>
                             </div>
                             <div class="benefit-item">
                                 <span class="benefit-icon">
@@ -414,7 +411,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Existing Security Stack (simplified) -->
                 <div class="existing-stack-section">
                     <h3 class="section-kicker">Works With Your Existing Security</h3>
@@ -488,13 +485,92 @@
                     </div>
                 </div>
                 
-                <p class="stack-summary">Not a replacement. No new tooling. PandoCore operates transparently alongside your existing stack, monitoring automatically at runtime.</p>
+                <p class="stack-summary">PandoCore is not a replacement for any of these. It adds a behavioral detection and response layer at runtime, alongside the controls you already run.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Compliance Section -->
+    <section class="content-section alt-bg" id="compliance">
+        <div class="container">
+            <h2 class="section-title">Compliance Controls</h2>
+            <p class="section-intro">PandoCore is a runtime threat detection control for Kubernetes. It does not make you compliant; your auditor decides that. It gives you a control that runs continuously and evidence that it ran.</p>
+
+            <table class="compliance-table" role="table">
+                <thead role="rowgroup">
+                    <tr role="row">
+                        <th scope="col" role="columnheader">Framework and control</th>
+                        <th scope="col" role="columnheader">What the control asks for</th>
+                        <th scope="col" role="columnheader">What PandoCore provides</th>
+                    </tr>
+                </thead>
+                <tbody role="rowgroup">
+                    <tr role="row">
+                        <th scope="row" role="rowheader" data-label="Control">SOC 2 CC7.2</th>
+                        <td role="cell" data-label="Asks for">Monitoring system components for anomalies that may indicate malicious activity</td>
+                        <td role="cell" data-label="PandoCore provides">Learns each workload's normal behavior and alerts on drift. Every detection produces a signed evidence record with alert history in the portal.</td>
+                    </tr>
+                    <tr role="row">
+                        <th scope="row" role="rowheader" data-label="Control">SOC 2 CC6.8</th>
+                        <td role="cell" data-label="Asks for">Detecting unauthorized or malicious software</td>
+                        <td role="cell" data-label="PandoCore provides">Detects unexpected process execution inside protected workloads, including cryptominers.</td>
+                    </tr>
+                    <tr role="row">
+                        <th scope="row" role="rowheader" data-label="Control">SOC 2 CC7.4</th>
+                        <td role="cell" data-label="Asks for">Containing security incidents</td>
+                        <td role="cell" data-label="PandoCore provides">Optional response actions: isolate a workload by network policy, or terminate it. Every action is logged with the evidence that triggered it. Your incident response plan stays yours.</td>
+                    </tr>
+                    <tr role="row">
+                        <th scope="row" role="rowheader" data-label="Control">ISO 27001 A.8.16</th>
+                        <td role="cell" data-label="Asks for">Monitoring for anomalous behavior and evaluating potential incidents</td>
+                        <td role="cell" data-label="PandoCore provides">Continuous behavioral monitoring with graded alerts and a record for each event.</td>
+                    </tr>
+                    <tr role="row">
+                        <th scope="row" role="rowheader" data-label="Control">ISO 27001 A.8.15</th>
+                        <td role="cell" data-label="Asks for">Producing, protecting, and retaining logs</td>
+                        <td role="cell" data-label="PandoCore provides">Evidence records are cryptographically signed (Ed25519), so tampering is detectable. Retained per plan.</td>
+                    </tr>
+                    <tr role="row">
+                        <th scope="row" role="rowheader" data-label="Control">ISO 27001 A.8.7</th>
+                        <td role="cell" data-label="Asks for">Protection against malware</td>
+                        <td role="cell" data-label="PandoCore provides">Unexpected process detection across protected workloads.</td>
+                    </tr>
+                    <tr role="row">
+                        <th scope="row" role="rowheader" data-label="Control">ISO 27001 A.5.26</th>
+                        <td role="cell" data-label="Asks for">Responding to security incidents per documented procedure</td>
+                        <td role="cell" data-label="PandoCore provides">Response actions execute your procedure and leave a signed record of what ran and why.</td>
+                    </tr>
+                    <tr role="row">
+                        <th scope="row" role="rowheader" data-label="Control">PCI DSS 5.3.2</th>
+                        <td role="cell" data-label="Asks for">Anti-malware that performs continuous behavioral analysis of systems or processes</td>
+                        <td role="cell" data-label="PandoCore provides">Continuous behavioral analysis is what PandoCore does. Per-workload baselines and full detection history.</td>
+                    </tr>
+                    <tr role="row">
+                        <th scope="row" role="rowheader" data-label="Control">PCI DSS 5.3.4</th>
+                        <td role="cell" data-label="Asks for">Anti-malware audit logs enabled and retained</td>
+                        <td role="cell" data-label="PandoCore provides">Detection logging is always on for protected workloads and retained per plan.</td>
+                    </tr>
+                    <tr role="row">
+                        <th scope="row" role="rowheader" data-label="Control">PCI DSS 10.3.2</th>
+                        <td role="cell" data-label="Asks for">Audit logs protected from modification</td>
+                        <td role="cell" data-label="PandoCore provides">Signed evidence chain. Tampering is detectable.</td>
+                    </tr>
+                    <tr role="row">
+                        <th scope="row" role="rowheader" data-label="Control">PCI DSS 10.5.1</th>
+                        <td role="cell" data-label="Asks for">12 months of audit log history, 3 months immediately available</td>
+                        <td role="cell" data-label="PandoCore provides">Enterprise plans retain evidence for 12+ months, available in the portal. Growth retains 90 days.</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="content-wrapper">
+                <p class="section-note">Detection, signing and response are live today. PandoCore holds no third-party security attestation yet; the <a href="/trust">trust center</a> states where we stand and what we target.</p>
             </div>
         </div>
     </section>
 
     <!-- Security Principles Section -->
-    <section class="content-section alt-bg">
+    <section class="content-section">
         <div class="container">
             <h2 class="section-title">Security Principles</h2>
             <div class="content-wrapper mw-container">
@@ -563,8 +639,10 @@
         </div>
     </section>
 
-    <!-- Developer Experience Section -->
-    <section class="content-section">
+    <!-- Developer Experience Section: temporarily disabled, trialling a shorter page.
+         To restore, uncomment this block AND flip the Validation section below
+         back to plain "content-section" so the alt-bg stripe keeps alternating.
+            <section class="content-section alt-bg">
         <div class="container">
             <h2 class="section-title mb-xl">Developer Experience</h2>
             <div class="content-wrapper mw-container">
@@ -572,7 +650,7 @@
                     <div class="focus-card">
                         <h3>Easy to Adopt</h3>
                         <ul class="focus-list">
-                            <li>Deploys as a sidecar container alongside your existing Kubernetes workloads</li>
+                            <li>Deploys as a node-level agent alongside your existing Kubernetes workloads, with nothing injected into your pods</li>
                             <li>No modifications required to your application code; protection is transparent</li>
                             <li>Compatible with existing CI/CD pipelines, testing frameworks, and deployment processes</li>
                             <li>Fits into your current orchestration and security tooling workflows</li>
@@ -591,6 +669,7 @@
             </div>
         </div>
     </section>
+    -->
 
     <!-- Validation Results Section -->
     <section class="content-section alt-bg" id="validation">
@@ -618,7 +697,7 @@
                     </div>
                     <div>
                         <div class="stat-number">~5-6 MiB</div>
-                        <div class="detail-note">Memory Overhead</div>
+                        <div class="detail-note">Memory Overhead, Per Pod</div>
                     </div>
                     <div>
                         <div class="stat-number">10+</div>
@@ -626,7 +705,7 @@
                     </div>
                 </div>
 
-                <p class="section-note">Two false isolations and zero false terminations across more than 20,000 continuous pod-hours on GKE, against production-representative synthetic workloads rather than customer traffic, means PandoCore's automated responses can run without disrupting legitimate workloads. The sidecar profiles each workload automatically across web servers, databases, and JIT and interpreted runtimes, with no manual tuning required.</p>
+                <p class="section-note">Two false isolations and zero false terminations across more than 20,000 continuous pod-hours on GKE, against production-representative synthetic workloads rather than customer traffic, means PandoCore's automated responses can run without disrupting legitimate workloads. Those hours were measured on the per-pod collector. Profiling is automatic across web servers, databases, and JIT and interpreted runtimes, with no manual tuning required.</p>
             </div>
         </div>
     </section>
