@@ -71,7 +71,15 @@
         <section>
             <h2>Compliance roadmap</h2>
             <p>We will be straight about this: PandoCore does not hold SOC 2 or any third-party security attestation today. We are targeting a SOC 2 Type 1 report in Q4 2027, with a Type 2 to follow shortly after.</p>
-            <p>In the meantime, the practices above are how we operate: least-privilege, namespace-scoped Kubernetes permissions; a signed container supply chain with published SBOMs; a fail-open, monitor-by-default posture; and evidence egress you control. Our detection has been validated through extended, continuous soak testing across a range of real, production-representative workloads.</p>
+            <p>In the meantime, the practices above are how we operate: least-privilege Kubernetes permissions, namespace-scoped except for a small cluster-wide read on endpoints, namespaces and services; a signed container supply chain with published SBOMs; a fail-open, monitor-by-default posture; and evidence egress you control. Our detection has been validated through extended, continuous soak testing across a range of real, production-representative workloads.</p>
+        </section>
+
+        <section>
+            <h2>What is changing</h2>
+            <p>Everything above describes PandoCore as it ships today, and today the sidecar is the sensor. Two components are being added alongside it.</p>
+            <p><strong>A cluster controller.</strong> A StatefulSet that receives evidence from sidecars over mTLS and owns delivery to your SIEM, Slack and the portal. It runs unprivileged, holds no Kubernetes API permissions at all, and is installed separately. It is available now and documented in <a href="/docs/controller">the controller docs</a>.</p>
+            <p><strong>A node-level agent.</strong> An optional DaemonSet that reads the file-integrity and provenance signals a sidecar cannot reach across user boundaries. It runs <strong>privileged</strong>, with <code>hostPID</code> and several host path mounts. That is real additional surface on your nodes, and it is not compatible with GKE Autopilot. It is opt-in per workload and not part of a default install.</p>
+            <p>The sidecar is not going away, and it stays unprivileged. When the node agent ships, this page will cover it in the same detail as the rest.</p>
         </section>
 
         <p class="trust-footer">Questions? <a href="mailto:eliot@pandocore.io">eliot@pandocore.io</a> &middot; &copy; 2026 PandoCore Inc.</p>
