@@ -96,18 +96,14 @@ Then visit `http://localhost:8000` in your browser.
 
 ## Deployment
 
-### Recommended: Netlify
+The site is deployed to **Cloudflare Pages**.
 
-1. **Sign up** at [netlify.com](https://netlify.com)
-2. **Deploy**: Drag and drop the entire project folder or connect your git repository
+1. **Connect** the repository as a Cloudflare Pages project
+2. **Build settings**: none. This is a static site with no build step, so leave the build command empty and serve the repository root
 3. **Configure**: Set the `EMAILJS_PUBLIC_KEY`, `EMAILJS_SERVICE_ID`, and `EMAILJS_TEMPLATE_ID` environment variables so the contact form can send
-4. **Custom Domain**: Add your domain in Netlify settings
+4. **Custom Domain**: Add your domain in the Pages project settings
 
-### Alternative Options
-
-- **Vercel**: Deploy via [vercel.com](https://vercel.com)
-- **GitHub Pages**: Push to GitHub and enable in repository settings
-- **Traditional Hosting**: Upload files via FTP/SFTP
+Headers are served from `_headers` at the repository root.
 
 See `docs/DEPLOYMENT.md` for detailed deployment instructions.
 
