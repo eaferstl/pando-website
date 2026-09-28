@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Upgrade PandoCore sidecar and admission webhook versions via Helm with zero-downtime rollouts.">
+    <meta name="description" content="Upgrade the PandoCore sidecar, admission webhook and controller via Helm with zero-downtime rollouts.">
     <title>Upgrading | PandoCore Docs</title>
     <link rel="canonical" href="https://pandocore.io/docs/upgrading">
     <link rel="icon" type="image/png" href="../images/favicon.png">
@@ -86,7 +86,7 @@
 
             <h1>Upgrading</h1>
 
-            <p>PandoCore ships two things: the admission <strong>webhook</strong> (cluster-wide, installed once) and the <strong>sidecar</strong> image (injected into each protected pod). They version independently. This page covers how to upgrade both safely.</p>
+            <p>PandoCore ships three things: the admission <strong>webhook</strong> and the <strong>controller</strong> (each cluster-wide, installed once) and the <strong>sidecar</strong> image (injected into each protected pod). They version independently. This page covers how to upgrade each safely.</p>
 
             <div class="docs-callout info">
                 <div class="docs-callout-title">Check your current version first</div>
@@ -131,6 +131,51 @@ helm upgrade pando-webhook \
                 <div class="docs-callout-title">Webhook downtime window</div>
                 <p>The webhook's <code>failurePolicy</code> is <code>Ignore</code>, so if the webhook is briefly unreachable during the update, any pods that start will be admitted <em>without</em> sidecar injection. They won't be protected until their next restart. In practice the window is small: the chart runs two replicas with a PodDisruptionBudget and rolls them one at a time. Watch for <code>PandoUnprotectedPod</code> warning events and the <code>pando_webhook_unprotected_in_protected_ns_total</code> metric (port 9091) around upgrades to catch any pod that slipped through.</p>
             </div>
+
+            <h2>Upgrade the Controller</h2>
+
+            <p>The controller is a StatefulSet that keeps each replica's evidence spool on its own volume. Upgrade it with <code>helm upgrade</code>. The StatefulSet replaces one replica at a time, and each new pod tries to deliver what is on its spool before it accepts new evidence.</p>
+
+            <pre><code>helm upgrade pando-controller \
+  oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-controller \
+  --version &lt;version&gt; \
+  --namespace pando-system \
+  --reset-then-reuse-values</code></pre>
+
+            <p>Use <code>--reset-then-reuse-values</code> (Helm 3.14 or later) rather than <code>--reuse-values</code>. It keeps what you set, such as your license key, and takes the new chart's defaults for everything else. <code>--reuse-values</code> keeps the old chart's defaults as well, so a setting a newer chart introduced can render empty.</p>
+
+            <h3>One-time step for controllers installed before 2026-09-28</h3>
+
+            <p>Controller charts published before 2026-09-28 wrote the chart version into the StatefulSet's volume claim template, which Kubernetes never lets change. A controller installed from one of them cannot be upgraded in place. <code>helm upgrade</code> stops with a message that begins:</p>
+
+            <pre><code>The live StatefulSet pando-system/pando-controller-pando-controller has a spool
+volumeClaimTemplate this chart cannot upgrade in place.</code></pre>
+
+            <p>and ends with the command to run. Tools that render with <code>helm template</code>, such as Argo CD, show the API server's message instead, <code>spec: Forbidden: updates to statefulset spec for fields other than ...</code>, and the fix is the same. To check whether your install needs it:</p>
+
+            <pre><code>kubectl get statefulset pando-controller-pando-controller -n pando-system \
+  -o jsonpath='{.spec.volumeClaimTemplates[0].metadata.labels}'</code></pre>
+
+            <p>If the output includes <code>app.kubernetes.io/version</code>, delete the StatefulSet object once, keeping its pods and volumes, then run the upgrade:</p>
+
+            <pre><code>kubectl delete statefulset pando-controller-pando-controller -n pando-system --cascade=orphan
+
+helm upgrade pando-controller \
+  oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-controller \
+  --version &lt;version&gt; \
+  --namespace pando-system \
+  --reset-then-reuse-values</code></pre>
+
+            <div class="docs-callout warning">
+                <div class="docs-callout-title">Never delete the spool volumes</div>
+                <p><code>--cascade=orphan</code> removes only the StatefulSet object. The controller pods keep running and the <code>spool-*</code> PersistentVolumeClaims are untouched. Those volumes hold evidence the controller has acknowledged and not yet delivered. The new StatefulSet finds them by name (<code>spool-pando-controller-pando-controller-0</code> and <code>-1</code>), mounts the same volumes, and delivers what is on them. Run the upgrade straight after the delete: until it runs, a controller pod that is evicted or deleted is not recreated.</p>
+            </div>
+
+            <p>Afterwards, confirm the claims are the ones you had, bound to the same volumes:</p>
+
+            <pre><code>kubectl get pvc -n pando-system -l app.kubernetes.io/instance=pando-controller</code></pre>
+
+            <p>Existing claims keep their old <code>app.kubernetes.io/version</code> label, because a StatefulSet never relabels a claim it already created. A <code>helm rollback</code> to a release made before this change needs the same one-time step.</p>
 
             <h2>Upgrade Sidecars in Protected Pods</h2>
 
