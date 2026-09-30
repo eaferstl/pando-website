@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="We built PandoCore as a detector container in every pod. We are replacing it with one process per node. The threat model, the privilege count, the visibility, and the resource reservation all point the same way. The node sensor is still in development; here is the argument for it.">
+    <title>PandoCore | We're Dropping Sidecars In Favor Of A Node Sensor</title>
+    <link rel="canonical" href="https://pandocore.io/blog/node-sensor">
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="We're Dropping Sidecars In Favor Of A Node Sensor">
+    <meta property="og:description" content="We built PandoCore as a detector container in every pod. We are replacing it with one process per node. The threat model, the privilege count, the visibility, and the resource reservation all point the same way. The node sensor is still in development; here is the argument for it.">
+    <meta property="og:image" content="https://pandocore.io/images/blog/node-sensor-cover.svg">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <link rel="icon" type="image/png" href="/images/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css?v=2">
+</head>
+<body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a href="/" class="logo">
+                    <img src="/images/logoTransparency.png" alt="Pando Logo">
+                    <div class="logo-text-wrapper">
+                        <span class="logo-text">PandoCore</span>
+                    </div>
+                </a>
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <div class="nav-overlay"></div>
+                <ul class="nav-links">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/product">Product</a></li>
+                    <li><a href="/pricing">Pricing</a></li>
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/blog/" class="active">Blog</a></li>
+                    <li><a href="/docs/">Docs</a></li>
+                    <li><a href="/contact" class="nav-contact">Contact</a></li>
+                    <li><a href="https://portal.pandocore.io/signup" class="nav-signup">Sign Up</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Post header -->
+    <section id="main-content" tabindex="-1" class="page-hero">
+        <div class="wave-container">
+            <div class="wave wave-layer-1"></div>
+            <div class="wave wave-layer-2"></div>
+        </div>
+        <div class="container">
+            <h1>We're Dropping Sidecars In Favor Of A Node Sensor</h1>
+            <p class="page-subtitle">September 30, 2026 &middot; By Eliot Ferstl</p>
+        </div>
+    </section>
+
+    <!-- Post body -->
+    <section class="content-section">
+        <div class="container">
+            <img class="blog-cover" src="/images/blog/node-sensor-cover.svg" alt="Two nodes side by side: on the left every pod carries its own sidecar detector, on the right the pods carry none and a single node sensor spans the node">
+
+            <article class="blog-article">
+                <p>We built PandoCore as a sidecar: one detector container injected into every pod it protects. We are replacing it with a node sensor, one process per node. It is still in development, and the sidecar is what ships today. We made the case for sidecars in public last month, so here is the case against them.</p>
+
+                <p>Start with who can touch the detector. A sidecar lives inside the pod it watches. It shares that pod's lifecycle and network namespace, and if it wants to see processes, its PID namespace too. Anything with authority over the pod has authority over its monitor. A detector the workload can reach is a detector the workload's attacker can reach. A node sensor sits outside every workload pod: nothing in your pod can signal it, read its state, or restart it. The observer should not live inside the thing it observes.</p>
+
+                <p>Then count the grants. To see process-level signals from inside a pod, a sidecar needs privileges inside that pod: SYS_PTRACE, and either root or privilege escalation, in every pod spec. In our own soak, the only pods with full visibility were the ones where the app ran as the sidecar's own user ID or where that grant was made. Out of the box, most pods ran with those signals dark, and we published that. So the sidecar's advantage of needing no node privileges was mostly on paper. It needed pod privileges instead, once per pod, reviewed by nobody. A node sensor runs as a privileged DaemonSet with host PID access, the same kind of grant your CNI already holds on every node, plus cluster-wide read access to pods so it can attribute what it sees. You review it once, and it covers the node.</p>
+
+                <p>A sidecar also sees only what its pod's permissions let it see, which by default left process-level signals dark. A node sensor reads every pod's processes from the host, so full visibility stops depending on a grant in each pod spec.</p>
+
+                <p>Cost scales with the wrong thing. A sidecar is a full detector per pod. Ninety-four protected pods meant ninety-four collectors, each with its own loop and its own model. Every pod's resource request grows by the sidecar's, which shifts bin-packing and autoscaling for every workload, and the total scales with pod count. A node sensor makes one request per node. Bringing actual consumption down with it is the job of the collector rework that follows: the collector we have was built for one pod in view and is being reworked for a node with fifty. There will be no overhead numbers until they are measured on the node path. <a href="/blog/clean-run-soak-results.html">The sidecar figures we published</a> do not transfer.</p>
+
+                <p>Then there's the install. A sidecar needs a mutating admission webhook, a change to every pod spec, and a rollout of every workload to pick up injection or an upgrade. We wrote two posts about the sharp edges of that path. A node sensor is a DaemonSet: no admission webhook, no pod spec touched, upgrades that never restart a workload. When it ships, <a href="/blog/fail-open-webhook.html">our post on the webhook fail-open</a> will describe the previous install.</p>
+
+                <p>What does not change: the detector is the same code, baselines are still learned per pod, and the response ceiling is untouched. An anomaly can isolate a workload. Only cryptographic provenance can terminate one.</p>
+
+                <p>What it costs. Node-level privileges are a larger single grant than any one sidecar's, and we would rather you review one than fifty. Some environments block node-level software outright: EKS Fargate runs no DaemonSets, and GKE Autopilot rejects privileged host-PID pods unless allowlisted. The node sensor will not run there. Also, the soak numbers we published were measured on the sidecar. They describe the detector, not the node path, and they do not get reused until there is a clean run on the node sensor scored under the same rules.</p>
+
+                <p>It is in development. We will announce when it ships rather than guess at a date.</p>
+            </article>
+
+            <p class="blog-back">
+                <a href="/blog/" class="btn btn-secondary">&larr; Back to all posts</a>
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <p class="footer-links"><a href="https://trust.pandocore.io">Trust Center</a></p>
+                <p>&copy; 2026 PandoCore Inc. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/main.js?v=2"></script>
+</body>
+</html>
