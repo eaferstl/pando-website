@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="PandoCore - Runtime threat detection for Kubernetes, with the audit evidence to prove it. Maps to SOC 2 CC7.2, ISO 27001 A.8.16 and PCI DSS 5.3.2.">
+    <meta name="description" content="PandoCore - Runtime threat detection for Kubernetes, with the audit evidence to prove it. Maps to SOC 2, ISO 27001, PCI DSS, and HIPAA.">
     <title>PandoCore | Product</title>
     <link rel="canonical" href="https://pandocore.io/product">
     <link rel="icon" type="image/png" href="images/favicon.png">
@@ -52,7 +52,7 @@
         </div>
         <div class="container">
             <h1>Runtime threat detection for Kubernetes, with the audit evidence to prove it.</h1>
-            <p class="page-subtitle">Maps to SOC 2 CC7.2, ISO 27001 A.8.16, PCI DSS 5.3.2. Installed in 15 minutes, learning your workloads from the first sample. No security team required.</p>
+            <p class="page-subtitle">Maps to SOC 2, ISO 27001, PCI DSS, and HIPAA. Installed in 15 minutes, learning your workloads from the first sample. No security team required.</p>
         </div>
     </section>
 
@@ -90,7 +90,7 @@
                         <span class="check-mark">✓</span>
                         <div>
                             <span class="fw-600">Minimal Overhead</span>
-                            <p class="detail-note">~5-6 MiB memory footprint per pod, measured across 20,000+ continuous pod-hours on GKE. Per-node figure pending re-measurement.</p>
+                            <p class="detail-note">~5-6 MiB memory footprint per pod, measured across 20,000+ total pod-hours on GKE. Per-node figure pending re-measurement.</p>
                         </div>
                     </div>
                 </div>
@@ -560,11 +560,31 @@
                         <td role="cell" data-label="Asks for">12 months of audit log history, 3 months immediately available</td>
                         <td role="cell" data-label="PandoCore provides">Enterprise plans retain evidence for 12+ months, available in the portal. Growth retains 90 days.</td>
                     </tr>
+                    <tr role="row">
+                        <th scope="row" role="rowheader" data-label="Control">HIPAA §164.308(a)(1)(ii)(D)</th>
+                        <td role="cell" data-label="Asks for">Regularly reviewing records of information system activity</td>
+                        <td role="cell" data-label="PandoCore provides">Detection history and signed evidence records in the portal.</td>
+                    </tr>
+                    <tr role="row">
+                        <th scope="row" role="rowheader" data-label="Control">HIPAA §164.308(a)(5)(ii)(B)</th>
+                        <td role="cell" data-label="Asks for">Guarding against, detecting and reporting malicious software</td>
+                        <td role="cell" data-label="PandoCore provides">Detects unexpected process execution inside protected workloads, including cryptominers.</td>
+                    </tr>
+                    <tr role="row">
+                        <th scope="row" role="rowheader" data-label="Control">HIPAA §164.308(a)(6)(ii)</th>
+                        <td role="cell" data-label="Asks for">Identifying, responding to and documenting security incidents</td>
+                        <td role="cell" data-label="PandoCore provides">Optional response actions: isolate a workload by network policy, or terminate it. Every action leaves a signed record of what ran and why.</td>
+                    </tr>
+                    <tr role="row">
+                        <th scope="row" role="rowheader" data-label="Control">HIPAA §164.312(b)</th>
+                        <td role="cell" data-label="Asks for">Mechanisms that record and examine activity in systems containing ePHI</td>
+                        <td role="cell" data-label="PandoCore provides">Records and signs detection events for protected workloads.</td>
+                    </tr>
                 </tbody>
             </table>
 
             <div class="content-wrapper">
-                <p class="section-note">Availability as of September 15, 2026: the portal evidence retention behind PCI DSS 5.3.4 and 10.5.1 is in build, roughly 3 to 4 weeks out. Detection, signing and response are live today. PandoCore holds no third-party security attestation yet; the <a href="/trust">trust center</a> states where we stand and what we target.</p>
+                <p class="section-note">PandoCore holds no third-party security attestation yet; the <a href="/trust">trust center</a> states where we stand and what we target.</p>
             </div>
         </div>
     </section>
@@ -627,13 +647,13 @@
                         </div>
                         <div class="feature-content">
                             <h3>Validated Performance</h3>
-                            <p>Validated across more than 20,000 continuous pod-hours on GKE, running production-representative synthetic workloads, with 2 false isolations and zero false terminations. Every capability is backed by measured results from continuous soak testing against diverse production-representative applications.</p>
+                            <p>Validated across more than 20,000 total pod-hours on GKE, running production-representative synthetic workloads, with 2 false isolations and zero false terminations. Every capability is backed by measured results from soak testing against diverse production-representative applications.</p>
                         </div>
                     </div>
                 </div>
                 
                 <div class="cta-center">
-                    <a href="https://portal.pandocore.io/signup" class="btn btn-primary">Get Started</a>
+                    <a href="https://portal.pandocore.io/signup" class="btn btn-primary">Start free</a>
                 </div>
             </div>
         </div>
@@ -676,7 +696,7 @@
         <div class="container">
             <h2 class="section-title">Validated Against Real Workloads</h2>
             <div class="content-wrapper mw-container">
-                <p class="section-intro">PandoCore has been deployed alongside 10+ real-world workload types across extended continuous soak tests. No manual configuration or tuning was performed. All workloads ran with default settings.</p>
+                <p class="section-intro">PandoCore has been deployed alongside 10+ real-world workload types across extended soak tests. No manual configuration or tuning was performed. All workloads ran with default settings.</p>
 
                 <div class="validation-grid">
                     <div>
@@ -705,7 +725,7 @@
                     </div>
                 </div>
 
-                <p class="section-note">Two false isolations and zero false terminations across more than 20,000 continuous pod-hours on GKE, against production-representative synthetic workloads rather than customer traffic, means PandoCore's automated responses can run without disrupting legitimate workloads. Those hours were measured on the per-pod collector. Profiling is automatic across web servers, databases, and JIT and interpreted runtimes, with no manual tuning required.</p>
+                <p class="section-note">Two false isolations and zero false terminations across more than 20,000 total pod-hours on GKE, against production-representative synthetic workloads rather than customer traffic, means PandoCore's automated responses can run without disrupting legitimate workloads. Those hours were measured on the per-pod collector. Profiling is automatic across web servers, databases, and JIT and interpreted runtimes, with no manual tuning required.</p>
             </div>
         </div>
     </section>
@@ -721,7 +741,7 @@
                 <p>We're working with teams to bring behavioral runtime detection and response to production Kubernetes clusters. If you run sensitive workloads on Kubernetes, let's talk.</p>
 
                 <div class="cta-actions">
-                    <a href="https://portal.pandocore.io/signup" class="btn btn-primary">Get Started</a>
+                    <a href="https://portal.pandocore.io/signup" class="btn btn-primary">Start free</a>
                     <a href="https://calendar.proton.me/bookings#wchS9JFz7Sg34QFZ593-UxZnQx0lhS0q_JtB-zyAnTQ=" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Let's Talk</a>
                     
                     <!-- Social Media Links -->

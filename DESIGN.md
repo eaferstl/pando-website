@@ -1,6 +1,6 @@
 ---
 name: PandoCore
-description: Autonomous runtime defense for Kubernetes — the calm control room.
+description: Runtime threat detection for Kubernetes, for teams facing their first audit. The calm control room.
 colors:
   forest: "#001C06"
   honey: "#DF9F15"
@@ -89,6 +89,8 @@ PandoCore's interface is the composed room where nothing is on fire. Runtime sec
 Density is low and the register is refined. Surfaces are calm and mostly flat, type is a single disciplined family, and interaction is understated. Warmth is present — the cream and the amber are a deliberate, human counterpoint to cold security tooling — but it is held in check. This system leans slightly cooler than a purely warm palette would: the forest is deepened and cooled toward a near-black instrument backdrop, the azure counterweight carries the action, and amber is rationed. It never tips into cozy, earthy, or "coastal-warm" territory. Warmth is a seasoning, not the dish.
 
 The system explicitly rejects: fear-based security marketing (red alerts, threat imagery), dense enterprise SaaS (jargon walls, feature grids, logo soup), hype-y startup styling (gradient-drenched heroes, unverifiable claims), quantum/AI buzzword mysticism, and the over-warm forest aesthetic the name might invite.
+
+**Audience note (2026-10-05).** The site's primary reader changed from a platform owner adopting runtime security to an engineering leader closing their **first** compliance obligation (SOC 2, ISO 27001, PCI DSS, HIPAA) with no security team. See `PRODUCT.md` → Users. That changes copy, hierarchy and conversion paths; it does **not** change this visual system. The Calm Control Room still holds, and it matters more, not less: a reader under audit deadline is already anxious, and the palette's job is to lower the temperature rather than raise it. Specifically, the compliance framing must not pull the design toward checkbox/trust-badge visual language, framework logo rows, or the red-alert urgency the No-Alarm Red Rule already forbids.
 
 **Key Characteristics:**
 - Low-alarm: grounded near-black forest backdrop, no red-alert urgency, calm as the core feeling.
@@ -204,5 +206,6 @@ An abstract SVG constellation of workload nodes — each wrapped in its own azur
 - **Don't** build dense enterprise-SaaS surfaces: no jargon walls, endless feature grids, or logo soup.
 - **Don't** use hype-y startup styling: no gradient-drenched heroes, no unverifiable claims, no exclamation energy.
 - **Don't** lean on "quantum" or "AI-powered" buzzword/sci-fi mysticism to signal sophistication.
+- **Don't** build compliance-theater visuals: framework logo rows, badge/seal clusters, checkbox-grid "coverage" graphics, or progress meters implying an audit is being passed. The compliance-first audience makes this the nearest trap. Control mappings live in the `/product#compliance` table, as a table, and nowhere else.
 - **Don't** pair Inter with a second typeface or use gradient text (`background-clip: text`).
 - **Don't** rest surfaces on soft ambient shadows or add `scale()` hover pops — they read as consumer SaaS.

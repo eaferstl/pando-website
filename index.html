@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="PandoCore - Runtime threat detection for Kubernetes. Maps to SOC 2 CC7.2, ISO 27001 A.8.16 and PCI DSS 5.3.2, with a signed evidence record for every detection.">
+    <meta name="description" content="PandoCore - Runtime threat detection for Kubernetes. Maps to SOC 2, ISO 27001, PCI DSS and HIPAA, with a signed evidence record for every detection.">
     <title>PandoCore | Runtime Threat Detection for Kubernetes</title>
     <link rel="canonical" href="https://pandocore.io/">
     <link rel="icon" type="image/png" href="images/favicon.png">
@@ -54,11 +54,12 @@
             <div class="hero-split">
                 <div class="hero-content-left">
                     <h1>Runtime threat detection for Kubernetes</h1>
-                    <p class="hero-subtitle">PandoCore installs in 15 minutes, learns what normal looks like, and turns every detection into signed evidence built for SOC 2, ISO 27001 and PCI DSS audits. No security team required.</p>
+                    <p class="hero-subtitle">PandoCore installs in 15 minutes, learns what normal looks like, and turns every detection into signed evidence mapped to SOC 2, ISO 27001, PCI DSS and HIPAA controls. No security team required.</p>
                     <div class="hero-buttons">
-                        <a href="https://portal.pandocore.io/signup" class="btn btn-primary">Get Started</a>
-                        <a href="https://calendar.proton.me/bookings#wchS9JFz7Sg34QFZ593-UxZnQx0lhS0q_JtB-zyAnTQ=" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Let's Talk</a>
+                        <a href="https://portal.pandocore.io/signup" class="btn btn-primary">Start free</a>
+                        <a href="/product#compliance" class="btn btn-secondary">See the controls</a>
                     </div>
+                    <p class="detail-note mt-md"><a href="#pilot">Pilot program: 30% off, founder on call</a></p>
                 </div>
                 <div class="hero-visual">
                     <svg viewBox="5 4 311 193" class="grove-graphic" role="img" aria-label="Thirteen protected Kubernetes workloads across a cluster, each learning its own normal behavior.">
@@ -157,18 +158,19 @@
             <h2>The Problem</h2>
             <div class="problem-list">
                 <div class="problem-item">
-                    <h3>Rules can't cover everything.</h3>
-                    <p>Rule-based runtime tools require you to anticipate every attack. If you don't write the rule, you miss the threat.</p>
+                    <h3>Someone asked how you monitor production.</h3>
+                    <p>A customer's security questionnaire or your auditor wants to know what watches your Kubernetes workloads at runtime. "Nothing yet" isn't an answer.</p>
                 </div>
                 <div class="problem-item">
-                    <h3>Runtime threats evolve.</h3>
-                    <p>Attackers adapt faster than static policies. You need monitoring that adapts to your workload automatically.</p>
+                    <h3>There's no security team to answer it.</h3>
+                    <p>You're shipping product with a small team. Nobody owns runtime security. Hiring a security engineer runs $135K+ a year, and experienced cyber roles often take 3 to 6 months to fill.</p>
                 </div>
                 <div class="problem-item">
-                    <h3>Alert fatigue kills response.</h3>
-                    <p>Generic detection generates false positives. Real threats get buried. You need detection tuned to your specific workload behavior.</p>
+                    <h3>Rule-based tools need someone to run them.</h3>
+                    <p>They assume someone writes and tunes the rules. If nobody owns that, the box stays unchecked.</p>
                 </div>
             </div>
+            <p class="section-note">Sources: Jobicy and ZipRecruiter US security engineer salary data (2026); <a href="https://www.isaca.org/resources/reports/state-of-cybersecurity-2025">ISACA State of Cybersecurity 2025</a>.</p>
         </div>
     </section>
 
@@ -197,7 +199,7 @@
                     </div>
                     <div class="checkmark-span-row">
                         <span class="check-mark">✓</span>
-                        <span class="fw-600">Validated: 20,000+ continuous pod-hours on GKE, zero false terminations</span>
+                        <span class="fw-600">Validated: 20,000+ total pod-hours on GKE, zero false terminations</span>
                     </div>
                 </div>
             </div>
@@ -211,8 +213,8 @@
             <div class="timing-content">
                 <p>More of what runs in your cluster now arrives without a person reading it line by line. That includes AI-generated services, autonomous agents, and dependencies pulled in at build time. Rules written for last year's threats can't anticipate any of it, but a workload's own behavior still shows you the moment it changes.</p>
                 <div class="cta-actions">
-                    <a href="https://portal.pandocore.io/signup" class="btn btn-primary">Get Started</a>
-                    <a href="https://calendar.proton.me/bookings#wchS9JFz7Sg34QFZ593-UxZnQx0lhS0q_JtB-zyAnTQ=" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Let's Talk</a>
+                    <a href="https://portal.pandocore.io/signup" class="btn btn-primary">Start free</a>
+                    <a href="#pilot" class="btn btn-secondary">Apply for the pilot</a>
                 </div>
             </div>
         </div>
@@ -241,9 +243,9 @@
                         </div>
                     </div>
                     <div class="feature-content">
-                        <h3>Kill the alert fatigue</h3>
-                        <p class="feature-quote">"Signal, not noise."</p>
-                        <p>Rule-based tools fire on everything they can't rule out, and real threats get buried. PandoCore learns each workload's normal behavior, so alerts stay rare enough to trust: 1 false alert, 2 false isolation and 0 false terminations across more than 20,000 total pod-hours on GKE, running production-representative synthetic workloads, the kind of alerts your team won't learn to ignore.</p>
+                        <h3>An answer for the questionnaire</h3>
+                        <p class="feature-quote">"Yes, we monitor production at runtime."</p>
+                        <p>Install in about 15 minutes, with no rules to write and no security hire. PandoCore starts learning what normal looks like for each workload immediately and begins flagging changes after a 30-minute learning phase, with its baselines sharpening for about ten hours after that. Free on up to 5 nodes, then $15 per node per month.</p>
                     </div>
                 </div>
                 <div class="feature-row">
@@ -256,9 +258,10 @@
                         </div>
                     </div>
                     <div class="feature-content">
-                        <h3>Cut your MTTR</h3>
-                        <p class="feature-quote">"Know what changed, and when."</p>
-                        <p>Every detection ships with structured evidence and forensic context. Your on-call spends less time reconstructing what happened and more time resolving it.</p>
+                        <h3>Evidence your auditor can inspect</h3>
+                        <p class="feature-quote">"Here's the record."</p>
+                        <p>Every detection becomes an Ed25519-signed evidence record mapped to SOC 2, ISO 27001, PCI DSS and HIPAA controls, so tampering is detectable. Your auditor decides what it's worth. PandoCore gives them something real to look at.</p>
+                        <p class="fw-600 mt-md"><a href="/product#compliance">See the controls</a></p>
                     </div>
                 </div>
                 <div class="feature-row">
@@ -271,40 +274,38 @@
                         </div>
                     </div>
                     <div class="feature-content">
-                        <h3>Catch novel threats</h3>
-                        <p class="feature-quote">"See what no rule anticipated."</p>
-                        <p>Because it flags deviations from each workload's learned-normal behavior, PandoCore surfaces unexpected process and behavioral changes that rule-based tools can't see, complementing them with no custom rules to write.</p>
+                        <h3>Response that can't overreach</h3>
+                        <p class="feature-quote">"Safe to leave on."</p>
+                        <p>An unusual behavior can isolate a workload, never kill it. Only cryptographic proof can terminate one. You can set it more conservative, never less.</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- CTA Section -->
-    <section class="cta-section">
+    <!-- Pilot Section -->
+    <section class="cta-section" id="pilot">
         <div class="wave-container">
             <div class="wave wave-layer-1"></div>
         </div>
         <div class="container">
             <div class="cta-content">
-                <h2>See It In Action</h2>
-                <p>Whether you're securing critical workloads or exploring runtime monitoring for your Kubernetes clusters, we want to hear from you.</p>
-
-                <div class="cta-actions">
-                    <a href="https://portal.pandocore.io/signup" class="btn btn-primary">Get Started</a>
-                    <a href="https://calendar.proton.me/bookings#wchS9JFz7Sg34QFZ593-UxZnQx0lhS0q_JtB-zyAnTQ=" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Let's Talk</a>
-
-                    <!-- Social Media Links -->
-                    <div class="social-links">
-                        <div class="social-icons">
-                            <a href="https://www.linkedin.com/company/pando-core/" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="LinkedIn">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
-                                </svg>
-                            </a>
-                        </div>
-                    </div>
+                <h2>Join the pilot program</h2>
+                <p>We're taking a small number of pilot partners, and we build the path to your first audit with you.</p>
+                <div class="content-wrapper">
+                    <ul class="focus-list">
+                        <li>Alert-only for the first 30 days. Nothing acts on your workloads until you've watched it.</li>
+                        <li>Direct line to the founder</li>
+                        <li>A check-in every two weeks</li>
+                        <li>30% off Growth for your first year.</li>
+                    </ul>
                 </div>
+                <p>No one has taken PandoCore evidence through an audit yet. Pilot partners are the first.</p>
+                <div class="cta-actions mt-md">
+                    <a href="https://calendar.proton.me/bookings#t7PnTu8h9XjlEF-4k5YC13Liug1tcvhOBYDtz-ONZt0=" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Apply for the pilot</a>
+                    <a href="https://portal.pandocore.io/signup" class="btn btn-secondary">Start free</a>
+                </div>
+                <div class="detail-note mt-md">Free on up to 5 nodes, with no card and no call.</div>
             </div>
         </div>
     </section>

@@ -53,6 +53,7 @@
 html {
     font-size: var(--font-size-base);
     scroll-behavior: smooth;
+    scroll-padding-top: 100px;
 }
 
 body {
@@ -747,10 +748,10 @@ ul {
     margin: 0;
     font-size: 0.9rem;
     color: var(--charcoal);
-    opacity: 0.8;
 }
 
-/* margin-bottom overrides (must follow the section-* rules above) */
+/* margin overrides (must follow the section-* rules above) */
+.mt-md { margin-top: var(--spacing-md); }
 .mb-md { margin-bottom: var(--spacing-md); }
 .mb-xl { margin-bottom: var(--spacing-xl); }
 
@@ -2149,6 +2150,12 @@ ul {
     padding: 0;
     margin: var(--spacing-md) 0 0 0;
     text-align: left;
+}
+
+.cta-content .focus-list {
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .focus-list li {

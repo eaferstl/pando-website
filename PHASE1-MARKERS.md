@@ -3,7 +3,7 @@
 Claims published in the Phase 1 marketing release that are not yet fully supported,
 and decisions recorded so they are not silently re-opened.
 
-Last updated: 2026-09-15. Delete an entry when its item closes.
+Last updated: 2026-10-05. Delete an entry when its item closes.
 
 ## Unverified or pending
 
@@ -21,24 +21,24 @@ limit are chart defaults, not measurements, and must not be published as measure
 Both surfaces now state the per-pod unit explicitly and flag the per-node figure as pending.
 
 ### False-positive soak claim
-**Where:** `product.html` validation section note, and the same claim at `product.html:554`,
-`index.html:200`, `index.html:246`
+**Where:** `product.html:650` and `product.html:728`, and `index.html:202`
 **Status:** Kept by decision until new data exists. Measured on the sidecar collector.
 Retire at collector cutover. A new soak is required before any false-positive claim about
-the node agent. Note the four instances travel together; retiring one means retiring all four.
+the node agent. Note the instances travel together; retiring one means retiring all of them.
+**2026-10-05:** the word "continuous" was removed from the pod-hour *measurement* claims on
+the marketing pages `index.html` and `product.html` (the hours are cumulative, not one
+unbroken run); "continuously monitors" is retained as a product-*behavior* claim. **Two
+instances outside those pages were not scrubbed and still need it:** `docs/index.html:191`
+("20,000 continuous pod-hours") and `trust/index.html:74` ("extended, continuous soak
+testing"). `docs/` is change-gated per CLAUDE.md, so both need an explicit ask. The homepage's prose instance was dropped when "What It Solves" was
+rewritten, leaving the checkmark at `index.html:202`. Count is now three.
 
-### Evidence retention, PCI DSS 5.3.4 and 10.5.1
+### Evidence retention, PCI DSS 5.3.4 and 10.5.1 (RESOLVED 2026-10-05)
 **Where:** `product.html` compliance table, rows 9 and 11
-**Status:** Published ahead of the build by decision, with a dated availability note under
-the table on `product.html` stating the retention is in build and roughly 3 to 4 weeks out.
-That note is load-bearing: it is the only place on the site where these two rows are
-qualified. Do not remove it before the retention work lands.
-
-Roadmap decision 59 records that twelve-month retention already holds by absence of a delete
-path in the portal; what is missing is a query path, a deployment default, and a written
-policy an auditor can test. Estimated 13 to 20 working days. When that lands, update or drop
-the note and the date.
-**Also flagged there and outside this repo:** the portal dashboard's plan card advertises
+**Status:** Retention shipped. The dated availability note that qualified these two rows was
+removed from `product.html` on 2026-10-05; the rows now stand on shipped capability. The
+attestation sentence and its trust-center link remain under the table.
+**Still open and outside this repo:** the portal dashboard's plan card advertises
 "Long retention + compliance export" while no export endpoint exists.
 
 ### Compliance table framing sentence
