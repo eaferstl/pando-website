@@ -198,8 +198,6 @@ helm upgrade pando-webhook \
             <div class="docs-callout info">
                 <div class="docs-callout-title">What isolate does on a trip</div>
                 <p>PandoCore applies a NetworkPolicy that blocks pod egress (except DNS) and contains the attack without killing the pod. If drift subsides, the policy is removed automatically. This is the right durable mode for stateful workloads (databases, caches, queues) where pod restart is expensive.</p>
-                <pre><code>kubectl annotate deployment your-app pandocore.io/mode=isolate --overwrite
-kubectl rollout restart deployment/your-app</code></pre>
             </div>
 
             <h3>2. Wire Up Slack Alerts</h3>
