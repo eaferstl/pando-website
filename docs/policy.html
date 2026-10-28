@@ -107,7 +107,7 @@ metadata:
   name: default
   namespace: production
 spec:
-  mode: enforce
+  mode: isolate
   sensitivity: high</code></pre>
 
             <p>Apply it:</p>
@@ -119,11 +119,11 @@ spec:
             <pre><code>kubectl get pcp -n production
 
 NAME      MODE      SENSITIVITY   AGE
-default   enforce   high          5s</code></pre>
+default   isolate   high          5s</code></pre>
 
             <h2>Full Policy Reference</h2>
 
-            <p>Every field is optional. The sidecar falls back to environment variables (or built-in defaults) for any field not specified.</p>
+            <p>Every field is optional. Any field you leave out falls back to the environment, and then to the built-in defaults. On the node sensor that environment is the DaemonSet's own, which is node-wide rather than per-workload.</p>
 
             <pre><code>apiVersion: pandocore.io/v1alpha1
 kind: PandoCorePolicy
@@ -131,32 +131,35 @@ metadata:
   name: default            # must be "default", one policy per namespace
   namespace: production
 spec:
-  # Operating mode (modes layer additively, each does everything the prior mode does)
-  mode: enforce            # monitor | alert | isolate | enforce | debug
+  # Operating mode, a cumulative ladder: each tier adds to the one before it.
+  #   monitor : observe and log only
+  #   alert   : + notify (Slack / SIEM)
+  #   isolate : + quarantine via NetworkPolicy, auto-release on recovery.
+  #             Never deletes a pod. This is the node sensor's ceiling.
+  #   debug   : monitor plus verbose logging, no enforcement
+  mode: isolate            # monitor | alert | isolate | debug
 
-  # Sensitivity (higher = more permissive)
+  # Sensitivity preset. Maps to threshold multipliers: a higher preset is a
+  # tighter gate. Ignored if explicit thresholds are set below.
   sensitivity: medium      # low | medium | high
 
-  # Graduated response chain
-  response:
-    actions:
-      - alert
-      - isolate
-      - terminate
-    escalationDelaySec: 60
+  # Tighten the auto-learned drift gates. A lower number is a tighter gate.
+  # Both bounds are exclusive: greater than 0.0 and less than 1.0.
+  thresholds:
+    incremental: 0.15      # incremental (sample-to-sample) drift
+    cumulative: 0.45       # cumulative (baseline) drift
 
-  # Alert integrations
+  # Per-namespace evidence destinations. Credentials are Secret references,
+  # never literals: a Secret in this namespace, read by name and key.
   integrations:
-    slack: "https://hooks.slack.com/services/T.../B.../xxx"
-    pagerduty: "&lt;routing-key&gt;"
-
-  # Exclusions (applied at webhook level)
-  exclude:
-    namespaces:
-      - kube-system
-      - monitoring
-    labels:
-      pandocore.io/skip: "true"</code></pre>
+    slackWebhook:
+      urlSecretRef:
+        name: pando-slack
+        key: url
+    pagerdutyEvents:
+      routingKeySecretRef:
+        name: pando-pagerduty
+        key: routingKey</code></pre>
 
             <h2>Precedence</h2>
 
@@ -179,7 +182,7 @@ spec:
                     <tr>
                         <td>2</td>
                         <td>Environment Variables</td>
-                        <td>Fallback when no CRD field is set</td>
+                        <td>Fallback when no CRD field is set. On the node sensor this is the DaemonSet's own environment, which is node-wide rather than per-workload.</td>
                     </tr>
                     <tr>
                         <td>3 (lowest)</td>
@@ -189,7 +192,13 @@ spec:
                 </tbody>
             </table>
 
-            <p>If the CRD is deleted, the sidecar reverts to env-var-based configuration on the next poll cycle.</p>
+            <p>What a poll finds decides what happens next, and there are three answers rather than two:</p>
+
+            <ul>
+                <li>A policy exists: it is applied. A namespace with no policy of its own is left as it was, not reset.</li>
+                <li>No <code>PandoCorePolicy</code> exists anywhere on the cluster: every protected workload returns to its environment-variable configuration on that poll.</li>
+                <li>The read failed: whatever was already applied stays applied, so an API blip never disarms a node.</li>
+            </ul>
 
             <h2>Spec Fields</h2>
 
@@ -216,10 +225,6 @@ spec:
                         <td>Everything in <code>alert</code>, plus a NetworkPolicy that blocks pod egress (except DNS) on trip. No pod termination. Policy is removed automatically once drift subsides.</td>
                     </tr>
                     <tr>
-                        <td><code>enforce</code></td>
-                        <td>Full response chain: alert &rarr; NetworkPolicy &rarr; escalation timer &rarr; pod terminate if drift persists past the escalation window.</td>
-                    </tr>
-                    <tr>
                         <td><code>debug</code></td>
                         <td>Verbose logging for troubleshooting. No response actions.</td>
                     </tr>
@@ -238,7 +243,7 @@ spec:
                 <tbody>
                     <tr>
                         <td><code>low</code></td>
-                        <td>Strictest. Catches subtler deviations. Use after a workload has been running cleanly for weeks.</td>
+                        <td>Most permissive. Good starting point for chatty workloads (JVMs, databases, batch jobs).</td>
                     </tr>
                     <tr>
                         <td><code>medium</code></td>
@@ -246,14 +251,16 @@ spec:
                     </tr>
                     <tr>
                         <td><code>high</code></td>
-                        <td>Most permissive. Good starting point for chatty workloads (JVMs, databases, batch jobs).</td>
+                        <td>Strictest. Catches subtler deviations. Use after a workload has been running cleanly for weeks, or on security-critical services.</td>
                     </tr>
                 </tbody>
             </table>
 
-            <p>For finer numeric control on individual workloads, use the <code>PANDO_SENSITIVITY</code> environment variable (see <a href="/docs/configuration">Configuration</a>).</p>
+            <p>For finer numeric control, set <code>thresholds</code> below. The <code>PANDO_SENSITIVITY</code> environment variable is the other route (see <a href="/docs/configuration">Configuration</a>), but on the node sensor it belongs to the DaemonSet and so applies node-wide rather than to one workload.</p>
 
-            <h3>response</h3>
+            <h3>thresholds</h3>
+
+            <p>Tighten the auto-learned drift gates. A lower number is a tighter gate. Thresholds can only tighten what learning derived, never loosen it; use <code>sensitivity</code> to loosen. Setting either field overrides the sensitivity preset for that gate. Both bounds are exclusive, and the CRD rejects a value at or outside them at admission, so a bad number is an error on your <code>kubectl</code> command rather than a surprise at runtime.</p>
 
             <table>
                 <thead>
@@ -265,20 +272,24 @@ spec:
                 </thead>
                 <tbody>
                     <tr>
-                        <td><code>actions</code></td>
-                        <td>array of strings</td>
-                        <td>Ordered response chain: <code>alert</code>, <code>isolate</code>, <code>terminate</code></td>
+                        <td><code>incremental</code></td>
+                        <td>number, 0.0 &lt; n &lt; 1.0</td>
+                        <td>Incremental (sample-to-sample) drift threshold.</td>
                     </tr>
                     <tr>
-                        <td><code>escalationDelaySec</code></td>
-                        <td>integer (0&ndash;3600)</td>
-                        <td>Seconds after isolation before escalating to terminate</td>
+                        <td><code>cumulative</code></td>
+                        <td>number, 0.0 &lt; n &lt; 1.0</td>
+                        <td>Cumulative (baseline) drift threshold.</td>
                     </tr>
                 </tbody>
             </table>
 
             <h3>integrations</h3>
 
+            <p>Per-namespace evidence destinations. The admission webhook reads this block cluster-wide, resolves every Secret reference against a Secret in the policy's own namespace, and hands the resolved set to the controller, which delivers each namespace's evidence to that namespace's destinations.</p>
+
+            <p>Credentials are given by Secret reference, never as a literal. A <code>PandoCorePolicy</code> is a namespaced object, so a token written into one is readable by anyone who can read policies in that namespace. Non-credential settings (endpoint URL, index, site, facility, port, protocol) stay literal: they are configuration, not secrets.</p>
+
             <table>
                 <thead>
                     <tr>
@@ -289,17 +300,39 @@ spec:
                 </thead>
                 <tbody>
                     <tr>
-                        <td><code>slack</code></td>
-                        <td>string</td>
-                        <td>Slack incoming webhook URL</td>
+                        <td><code>slackWebhook</code></td>
+                        <td>object</td>
+                        <td>Slack incoming webhook. <code>urlSecretRef</code> (<code>name</code>, <code>key</code>) holds the webhook URL.</td>
                     </tr>
                     <tr>
-                        <td><code>pagerduty</code></td>
-                        <td>string</td>
-                        <td>PagerDuty routing key</td>
+                        <td><code>pagerdutyEvents</code></td>
+                        <td>object</td>
+                        <td>PagerDuty Events v2. <code>routingKeySecretRef</code> (<code>name</code>, <code>key</code>) holds the routing key.</td>
+                    </tr>
+                    <tr>
+                        <td><code>splunk</code></td>
+                        <td>object</td>
+                        <td>Splunk HTTP Event Collector. <code>url</code> is the HEC base URL, without <code>/services/collector/event</code>. <code>tokenSecretRef</code> holds the HEC token. Optional: <code>index</code>, <code>sourcetype</code>, <code>source</code>, <code>ackEnabled</code>.</td>
+                    </tr>
+                    <tr>
+                        <td><code>elastic</code></td>
+                        <td>object</td>
+                        <td>Elasticsearch <code>_bulk</code>. <code>url</code> is the cluster base URL, without <code>/_bulk</code>. <code>authType</code> is <code>api_key</code> or <code>basic</code>, with the matching <code>apiKeySecretRef</code> or <code>basicAuthSecretRef</code>. Optional: <code>index</code>, <code>refresh</code>, <code>stdoutEnabled</code>.</td>
+                    </tr>
+                    <tr>
+                        <td><code>datadog</code></td>
+                        <td>object</td>
+                        <td>Datadog Logs API. <code>site</code> takes a short name, a bare site domain, or a full URL for a proxy. <code>apiKeySecretRef</code> holds the API key. Optional: <code>service</code>, <code>source</code>, <code>clusterName</code>, <code>extraTags</code>.</td>
+                    </tr>
+                    <tr>
+                        <td><code>syslog</code></td>
+                        <td>object</td>
+                        <td>RFC-5424 syslog, the one destination with no credential. <code>host</code>, <code>port</code> and <code>protocol</code> (<code>udp</code>, <code>tcp</code> or <code>tls</code>). Optional: <code>appName</code>, <code>facility</code>, <code>severity</code>, <code>enterpriseId</code>.</td>
                     </tr>
                 </tbody>
             </table>
+
+            <p>Every destination also takes <code>enabled</code>, which defaults to true. Setting it to <code>false</code> pauses that destination, which is not the same as leaving the block out: a paused destination still overrides the controller's own baseline, while an absent one lets the baseline apply.</p>
 
             <h2>Examples</h2>
 
@@ -311,13 +344,16 @@ metadata:
   name: default
   namespace: production
 spec:
-  mode: enforce
+  mode: isolate
   sensitivity: medium
-  response:
-    actions: [alert, isolate, terminate]
-    escalationDelaySec: 60
+  thresholds:
+    incremental: 0.12
+    cumulative: 0.35
   integrations:
-    slack: "https://hooks.slack.com/services/T.../B.../xxx"</code></pre>
+    slackWebhook:
+      urlSecretRef:
+        name: pando-slack
+        key: url</code></pre>
 
             <h3>Staging Namespace (Monitor Only)</h3>
 
@@ -340,23 +376,29 @@ spec:
 
             <pre><code>kubectl get pcp --all-namespaces</code></pre>
 
-            <p>Check sidecar logs for policy pickup:</p>
+            <p>Check for policy pickup. On the node sensor, read the sensor on the node rather than a container in the pod:</p>
 
-            <pre><code>kubectl logs &lt;pod&gt; -c pando-sidecar | grep "PandoCorePolicy"</code></pre>
+            <pre><code>DS=$(kubectl -n pando-system get ds -l app.kubernetes.io/name=pando-node-sensor \
+  -o jsonpath='{.items[0].metadata.name}')
+kubectl -n pando-system logs "ds/$DS" | grep -i "PandoCorePolicy"</code></pre>
+
+            <p>In sidecar mode, read the injected container:</p>
+
+            <pre><code>kubectl logs &lt;pod&gt; -c pando-sidecar | grep -i "PandoCorePolicy"</code></pre>
 
             <p>Expected output:</p>
 
             <pre><code>PandoCorePolicy CRD found  namespace=production name=default
-Applied PandoCorePolicy  mode=enforce resource_version="12345"</code></pre>
+Applied PandoCorePolicy  mode=isolate resource_version="12345"</code></pre>
 
             <div class="docs-callout info">
-                <div class="docs-callout-title">Advanced fields</div>
-                <p>The CRD accepts additional fields for specialized deployments (fine-grained threshold overrides, feature toggles, workload-specific tuning). These are intentionally not documented here. The fields above cover every workload we've seen in production. If you need more, <a href="/contact">talk to support</a>.</p>
+                <div class="docs-callout-title">The spec is exactly these four fields</div>
+                <p><code>mode</code>, <code>sensitivity</code>, <code>thresholds</code> and <code>integrations</code> are the whole of it, and they are all that PandoCore reads from a policy. Anything else under <code>spec</code> is not part of the schema, so the API server drops it before the object is stored. If you need something the four do not cover, <a href="/contact">talk to support</a>.</p>
             </div>
 
             <h2>Polling Interval</h2>
 
-            <p>The sidecar polls for policy changes every 30 seconds by default. To customize, set <code>PANDO_POLICY_POLL_INTERVAL_SECS</code> on the sidecar container.</p>
+            <p>Both topologies poll for policy changes every 30 seconds by default, through <code>PANDO_POLICY_POLL_INTERVAL_SECS</code>. In sidecar mode, set it on the injected container. On the node sensor it belongs to the DaemonSet and is therefore node-wide, so there is one poll interval for every pod on a node rather than one per workload.</p>
 
             <h2>GitOps Integration</h2>
 
@@ -373,7 +415,7 @@ Applied PandoCorePolicy  mode=enforce resource_version="12345"</code></pre>
 
             <ul>
                 <li><a href="/docs/configuration">Configuration</a>:Full env var and Helm reference</li>
-                <li><a href="/docs/operating-modes">Operating Modes</a>:The monitor &rarr; alert &rarr; isolate &rarr; enforce ladder</li>
+                <li><a href="/docs/operating-modes">Operating Modes</a>:The monitor &rarr; alert &rarr; isolate ladder</li>
                 <li><a href="/docs/webhook">Admission Webhook</a>:Per-pod annotation overrides</li>
             </ul>
 

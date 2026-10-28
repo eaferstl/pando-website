@@ -181,30 +181,30 @@ kubectl exec &lt;pod-name&gt; -c pando-sidecar -- wget -qO- http://localhost:909
 
             <h3>1. Enable Enforcement</h3>
 
-            <p>Once you've watched a workload in monitor mode for a few days and are satisfied with the detections, flip it to <code>enforce</code> mode. The sidecar will now terminate pods on enforcement-level detections.</p>
+            <p>Once you've watched a workload in monitor mode for a few days and are satisfied with the detections, flip it to <code>isolate</code> mode. On a trip the sidecar now applies a NetworkPolicy that contains the pod, instead of only logging.</p>
 
             <pre><code># Per-deployment: annotation overrides cluster default
-kubectl annotate deployment your-app pandocore.io/mode=enforce --overwrite
+kubectl annotate deployment your-app pandocore.io/mode=isolate --overwrite
 kubectl rollout restart deployment/your-app
 
 # Or cluster-wide: change the default for newly-created pods
 helm upgrade pando-webhook \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-webhook \
   --reuse-values \
-  --set defaultMode=enforce</code></pre>
+  --set defaultMode=isolate</code></pre>
 
-            <p>Most teams run <strong>monitor → alert → isolate → enforce</strong> over the course of a few weeks per workload; each step adds one automated response action on top of the prior. See <a href="/docs/operating-modes">Operating Modes</a> for the full mode ladder.</p>
+            <p>Most teams run <strong>monitor → alert → isolate</strong> over the course of a few weeks per workload; each step adds one automated response action on top of the prior. See <a href="/docs/operating-modes">Operating Modes</a> for the full mode ladder.</p>
 
             <div class="docs-callout info">
-                <div class="docs-callout-title">Intermediate step: Isolate mode</div>
-                <p>Before flipping straight to <code>enforce</code>, consider <code>isolate</code>. On a trip, PandoCore applies a NetworkPolicy that blocks pod egress (except DNS) and contains the attack without killing the pod. If drift subsides, the policy is removed automatically. This is the right durable mode for stateful workloads (databases, caches, queues) where pod restart is expensive.</p>
+                <div class="docs-callout-title">What isolate does on a trip</div>
+                <p>PandoCore applies a NetworkPolicy that blocks pod egress (except DNS) and contains the attack without killing the pod. If drift subsides, the policy is removed automatically. This is the right durable mode for stateful workloads (databases, caches, queues) where pod restart is expensive.</p>
                 <pre><code>kubectl annotate deployment your-app pandocore.io/mode=isolate --overwrite
 kubectl rollout restart deployment/your-app</code></pre>
             </div>
 
             <h3>2. Wire Up Slack Alerts</h3>
 
-            <p>Real-time notifications on detection. Set <code>PANDO_MODE=alert</code> or <code>enforce</code> and provide a Slack incoming webhook URL:</p>
+            <p>Real-time notifications on detection. Set <code>PANDO_MODE=alert</code> or <code>isolate</code> and provide a Slack incoming webhook URL:</p>
 
             <pre><code>helm upgrade pando-webhook \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-webhook \
@@ -238,7 +238,7 @@ kubectl set env deployment/your-app -c pando-sidecar \
 
             <h3>5. GitOps via CRD Policy</h3>
 
-            <p>For anything beyond a handful of deployments, manage configuration declaratively with the <code>PandoCorePolicy</code> CRD. One YAML file in your GitOps repo controls mode, sensitivity, and response chains across multiple namespaces.</p>
+            <p>For anything beyond a handful of deployments, manage configuration declaratively with the <code>PandoCorePolicy</code> CRD. One YAML file in your GitOps repo controls mode, sensitivity, thresholds and alert destinations across multiple namespaces.</p>
 
             <pre><code>apiVersion: pandocore.io/v1alpha1
 kind: PandoCorePolicy
@@ -246,12 +246,13 @@ metadata:
   name: default
   namespace: production
 spec:
-  mode: enforce
+  mode: isolate
   sensitivity: medium
-  response:
-    actions: [alert, isolate, terminate]
   integrations:
-    slack: https://hooks.slack.com/services/...</code></pre>
+    slackWebhook:
+      urlSecretRef:
+        name: pando-slack
+        key: url</code></pre>
 
             <p>See <a href="/docs/policy">CRD Policy</a> for the full schema.</p>
 
@@ -302,8 +303,8 @@ PANDO_LICENSE_KEY="YOUR_LICENSE_KEY" \
                         <td><code>kubectl exec &lt;pod&gt; -c pando-sidecar -- wget -qO- http://localhost:9090/metrics</code></td>
                     </tr>
                     <tr>
-                        <td>Switch to enforce mode</td>
-                        <td><code>kubectl set env deployment/&lt;name&gt; -c pando-sidecar PANDO_MODE=enforce</code></td>
+                        <td>Switch to isolate mode</td>
+                        <td><code>kubectl set env deployment/&lt;name&gt; -c pando-sidecar PANDO_MODE=isolate</code></td>
                     </tr>
                     <tr>
                         <td>Trigger re-learning</td>
