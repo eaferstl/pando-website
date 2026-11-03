@@ -15,12 +15,92 @@
     --success-green: #388E3C;
     /* Legacy aliases still referenced in markup */
     --charcoal: #4A4640;
-    
+
+    /* Palette channels, so an alpha of a brand colour is never hand-written.
+       Use as rgb(var(--forest-rgb) / 0.15). */
+    --forest-rgb: 0 28 6;
+    --cream-rgb: 247 244 235;
+    --honey-rgb: 223 159 21;
+    --coffee-rgb: 31 17 2;
+    --azure-rgb: 225 240 244;
+    --white-rgb: 255 255 255;
+    --neutral-rgb: 0 0 0;
+    --error-rgb: 211 47 47;
+    --success-rgb: 56 142 60;
+
+    /* Alpha roles. Values pinned to what the sheet already used, so adopting
+       a token never moves a pixel. Collapsing the 13 forest alphas onto these
+       is a design decision, not a plumbing one. */
+    --hairline-faint: rgb(var(--forest-rgb) / 0.08);
+    --hairline: rgb(var(--forest-rgb) / 0.15);
+    --hairline-strong: rgb(var(--forest-rgb) / 0.25);
+    --hairline-inverse: rgb(var(--white-rgb) / 0.15);
+    --wash-faint: rgb(var(--forest-rgb) / 0.03);
+    --wash: rgb(var(--forest-rgb) / 0.06);
+    --wash-strong: rgb(var(--forest-rgb) / 0.12);
+    --wash-inverse: rgb(var(--white-rgb) / 0.1);
+    --scrim: rgb(var(--neutral-rgb) / 0.5);
+
+    /* An amber that is legal as body text, from the documented honey ramp.
+       Measured on the docs warning-callout background, rgb(252 245 232):
+         --amber-honey #DF9F15  2.13:1  fails
+         old hand-rolled #B8860B 3.00:1  fails (bold 16px is not WCAG "large")
+         --honey-ink   #8A620C  5.05:1  passes AA
+       Do not "simplify" this to --amber-honey; that regresses a real failure. */
+    --honey-ink: #8A620C;
+
+    /* Semantic roles. The brand tokens above name colours; these name jobs,
+       and a theme re-points these, never the brand tokens. Call sites migrate
+       opportunistically, inside sections being restyled anyway. */
+    --surface-page: var(--white);
+    --surface-raised: var(--floral-white);
+    --surface-inverse: var(--black-forest);
+    --text-primary: var(--coffee-bean);
+    --text-heading: var(--black-forest);
+    --text-muted: var(--charcoal);
+    --text-on-inverse: var(--floral-white);
+    --accent-action: var(--azure-mist);
+    --accent-status: var(--amber-honey);
+    --border-default: var(--hairline);
+
     /* Typography */
     --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    /* Code only, and the single documented exception to the One Family Rule:
+       a Helm command has to be read character by character, which is the one
+       job Inter cannot do. Never used for prose. */
+    --font-mono: 'Monaco', 'Menlo', 'Consolas', monospace;
     --font-size-base: 16px;
     --line-height-base: 1.6;
-    
+
+    /* Type scale, derived from the sizes the sheet already used. The clusters
+       it absorbs are listed so the next person can see what rounded where. */
+    --text-2xs: 0.75rem;   /* 0.6 0.65 0.68 0.7 0.75 0.78 */
+    --text-xs: 0.85rem;    /* 0.8 0.85 0.875 */
+    --text-sm: 0.95rem;    /* 0.9 0.92 0.95 */
+    --text-base: 1rem;
+    --text-md: 1.1rem;     /* 1.05 1.1 */
+    --text-lg: 1.25rem;    /* 1.15 1.25 1.35 */
+    --text-xl: 1.5rem;     /* 1.5 1.6 */
+    --text-2xl: 2rem;      /* 1.75 2 2.1 2.2 */
+    --text-3xl: 2.5rem;    /* 2.5 2.75 3 */
+    --text-display: 3.5rem;
+
+    /* The five DESIGN.md type roles. Author against these, not the steps. */
+    --font-display: var(--text-display);
+    --font-headline: var(--text-2xl);
+    --font-title: var(--text-lg);
+    --font-body: var(--text-base);
+    --font-label: var(--text-sm);
+
+    --leading-tight: 1.1;
+    --leading-snug: 1.3;
+    --leading-base: 1.6;
+    --leading-loose: 1.7;
+
+    --weight-regular: 400;
+    --weight-semibold: 600;
+    --weight-bold: 700;
+
     /* Spacing */
     --spacing-xs: 8px;
     --spacing-sm: 16px;
@@ -28,16 +108,47 @@
     --spacing-lg: 32px;
     --spacing-xl: 48px;
     --spacing-xxl: 64px;
-    
+
     /* Container */
     --container-max-width: 1200px;
     --content-max-width: 800px;
-    
-    /* Border Radius */
-    --border-radius: 6px;
-    
-    /* Transitions */
-    --transition-speed: 0.3s;
+
+    /* Measure. DESIGN.md's Earned-Line Rule, as a token instead of a literal. */
+    /* Calibrated against Inter, not nominal. `ch` is the advance of the digit
+       zero, which in Inter is much wider than the average lowercase character,
+       so a nominal 70ch renders about 93 real characters: the token promised
+       something it did not deliver, and every call site inherited the error.
+       These values are measured to land prose in the 65-75 character band. */
+    --measure: 56ch;
+    --measure-narrow: 52ch;
+
+    /* Border Radius. DESIGN.md says inputs 6px, buttons and cards 8px, pill.
+       --border-radius stays 6px so nothing moves; moving buttons to
+       --radius-md is a deliberate visual change, not a rename. */
+    --radius-xs: 2px;
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-pill: 999px;
+    --radius-circle: 50%;
+    --border-radius: var(--radius-sm);
+
+    /* Layering. Only six declarations in this sheet are genuine layers; the
+       many bare `z-index: 1` uses lift content over a ::before wash and are
+       deliberately left alone. --z-skip-link must stay above --z-nav or the
+       skip link paints behind the sticky navbar when focused. */
+    --z-base: 1;
+    --z-overlay: 900;
+    --z-nav: 1000;
+    --z-nav-toggle: 1001;
+    --z-skip-link: 1100;
+
+    /* Motion */
+    --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+    --dur-fast: 0.15s;
+    --dur-base: 0.3s;
+    --dur-slow: 0.4s;
+    --transition-speed: var(--dur-base);
 }
 
 /* ===================================
@@ -77,7 +188,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1 {
-    font-size: 2rem;
+    font-size: var(--text-2xl);
     font-weight: 700;
 }
 
@@ -87,13 +198,13 @@ h2 {
 }
 
 h3 {
-    font-size: 1.25rem;
+    font-size: var(--text-lg);
 }
 
 p {
     margin-bottom: var(--spacing-sm);
-    line-height: 1.7;
-    max-width: 70ch;
+    line-height: var(--leading-loose);
+    max-width: var(--measure);
 }
 
 a {
@@ -105,6 +216,37 @@ a {
 a:hover {
     color: var(--black-forest);
     opacity: 0.7;
+}
+
+/* Links inside running prose carry an underline, because `a { text-decoration:
+   none }` above leaves them distinguished by colour alone. Measured at 1.92:1
+   against the body text they sit in, which is under WCAG 1.4.1's 3:1 for a
+   non-text cue, so colour cannot be the only signal. Scoped to prose: nav
+   items, buttons and cards are identifiable by position and shape and are
+   excluded by the :not() list rather than by hoping no paragraph holds one.
+
+   There is deliberately no bare `li > a` branch. One was added here and had to
+   come out: nav items are `<li><a>`, so it underlined all eight nav links
+   including the azure Sign Up pill, on every page. Lists that do hold prose
+   links are named one at a time instead.
+
+   `.focus-list li > a` is one of them, added 2026-11-02. The pilot block's
+   "Growth" link sat at 1.03:1 against the surrounding coffee-bean body text
+   with no underline, so it was identifiable by nothing at all: WCAG 1.4.1 asks
+   for 3:1 when colour is the only cue, and there was not even colour. If you
+   add a link inside a list, add its list here; do not generalise to `li > a`. */
+p > a:not(.btn):not(.nav-contact):not(.nav-signup),
+.blog-addendum a,
+.focus-list li > a,
+.docs-content p > a,
+.docs-content li > a {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+p > a.btn,
+li > a.btn {
+    text-decoration: none;
 }
 
 ul {
@@ -129,10 +271,10 @@ ul {
 .navbar {
     background-color: var(--black-forest);
     padding: var(--spacing-xs) 0;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 8px rgb(var(--neutral-rgb) / 0.1);
     position: sticky;
     top: 0;
-    z-index: 1000;
+    z-index: var(--z-nav);
 }
 
 .nav-wrapper {
@@ -162,7 +304,7 @@ ul {
 
 .logo-text {
     color: var(--floral-white);
-    font-size: 2rem;
+    font-size: var(--text-2xl);
     font-weight: 700;
     letter-spacing: 0.5px;
     line-height: 1;
@@ -170,7 +312,7 @@ ul {
 
 .logo-tagline {
     color: var(--floral-white);
-    font-size: 1rem;
+    font-size: var(--text-base);
     font-weight: 500;
     letter-spacing: 0.5px;
     opacity: 0.85;
@@ -194,7 +336,18 @@ ul {
 
 .nav-links a:hover,
 .nav-links a.active {
-    background-color: rgba(255, 255, 255, 0.15);
+    background-color: rgb(var(--white-rgb) / 0.15);
+}
+
+/* Hover and current-page were the same fill, so "you are here" and "you are
+   hovering" were indistinguishable and hovering one item marked two. The
+   current page gets an amber status mark as well: 7.79:1 on the forest navbar,
+   and the one place on this site where DESIGN.md's status-light gesture is
+   literally a status light. Inset so it costs no layout. Excluded from the
+   signup pill, where amber would sit on azure at 1.97:1 and fail 1.4.11; that
+   link is never the current page anyway. */
+.nav-links a.active:not(.nav-signup) {
+    box-shadow: inset 0 -2px 0 var(--amber-honey);
 }
 
 /* Contact renders as a plain nav link; Sign Up is the single azure CTA pill */
@@ -219,13 +372,20 @@ ul {
     display: none;
     flex-direction: column;
     justify-content: space-between;
+    /* 28x20 of bars inside a 52x44 target. The bars are the content box and
+       the padding is the hit area, so content-box is required here against the
+       global border-box. The old 28x20 box failed WCAG 2.5.8's 24px minimum on
+       the short axis, and on a phone this is the only route to Pricing, Docs
+       and Contact. */
+    box-sizing: content-box;
     width: 28px;
     height: 20px;
     background: none;
     border: none;
     cursor: pointer;
-    padding: 0;
-    z-index: 1001;
+    padding: 12px;
+    margin-right: -12px;
+    z-index: var(--z-nav-toggle);
 }
 
 .mobile-menu-toggle span {
@@ -250,8 +410,17 @@ ul {
     transform: translateY(-8.5px) rotate(-45deg);
 }
 
-/* Mobile Navigation Styles */
-@media (max-width: 767px) {
+/* Mobile Navigation Styles.
+   Collapses at 1023px, not 767px. Eight nav items need about 710px and the
+   wrapper offers 735px at 1023px, so 1023 is where the margin runs out: at
+   900px the Sign Up pill wrapped to two lines and clipped, at 820px Contact
+   went with it, and at 768px Docs, Contact and Sign Up were all off-screen and
+   unreachable. That band is small laptops, split-screen windows and iPad
+   portrait, which is how an engineer reads a vendor page.
+   js/main.js's resize handler carries the same 1023 boundary. The two must
+   move together: if this query stops matching while the handler still closes
+   the drawer above 767, the drawer is stuck open on every page. */
+@media (max-width: 1023px) {
     .mobile-menu-toggle {
         display: flex;
     }
@@ -259,7 +428,14 @@ ul {
     .nav-links {
         position: fixed;
         top: 0;
-        right: -100%;
+        /* Parked with a transform, not `right: -100%`. Offsetting it by `right`
+           left the drawer sitting 106px beyond the document's right edge at
+           390px, which Chrome counts in scrollWidth: a horizontal scrollbar on
+           every page, caused by a menu nobody had opened. A transform also
+           animates on the compositor instead of forcing layout on each frame,
+           which is what the design guidance asks for. */
+        right: 0;
+        transform: translateX(100%);
         width: 280px;
         height: 100vh;
         background-color: var(--black-forest);
@@ -268,13 +444,24 @@ ul {
         align-items: stretch;
         padding: 80px var(--spacing-lg) var(--spacing-lg);
         gap: 0;
-        transition: right 0.3s ease;
-        box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
-        z-index: 1000;
+        /* `visibility` and not `right` alone. Off-screen at `right: -100%` the
+           drawer stayed focusable, so tabbing from the hamburger walked eight
+           nav stops with the focus ring painted outside the viewport: WCAG
+           2.4.3 and 2.4.7. `visibility: hidden` takes it out of the tab order
+           and the accessibility tree. Transitioned so the slide still animates:
+           hidden -> visible flips at the start of the transition and
+           visible -> hidden at the end, so neither direction is cut short.
+           Scoped inside this query; the base rule sets no visibility, so
+           desktop is untouched. */
+        visibility: hidden;
+        transition: transform 0.3s var(--ease-standard), visibility 0.3s ease;
+        box-shadow: -5px 0 15px rgb(var(--neutral-rgb) / 0.2);
+        z-index: var(--z-nav);
     }
     
     .nav-links.active {
-        right: 0;
+        transform: translateX(0);
+        visibility: visible;
     }
     
     .nav-links li {
@@ -285,14 +472,14 @@ ul {
         display: block;
         width: 100%;
         padding: var(--spacing-md) var(--spacing-sm);
-        font-size: 1.1rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        font-size: var(--text-md);
+        border-bottom: 1px solid rgb(var(--white-rgb) / 0.1);
         border-radius: 0;
     }
     
     .nav-links a:hover,
     .nav-links a.active {
-        background-color: rgba(255, 255, 255, 0.1);
+        background-color: rgb(var(--white-rgb) / 0.1);
     }
     
     .nav-links a.nav-contact {
@@ -317,8 +504,8 @@ ul {
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        z-index: 999;
+        background-color: rgb(var(--neutral-rgb) / 0.5);
+        z-index: var(--z-overlay);
     }
     
     .nav-overlay.active {
@@ -348,18 +535,6 @@ ul {
     }
     50% {
         transform: translateX(-15%) translateY(10px);
-    }
-    100% {
-        transform: translateX(0) translateY(0);
-    }
-}
-
-@keyframes wave-motion-3 {
-    0% {
-        transform: translateX(0) translateY(0);
-    }
-    50% {
-        transform: translateX(-30%) translateY(-5px);
     }
     100% {
         transform: translateX(0) translateY(0);
@@ -445,26 +620,59 @@ ul {
 }
 
 .hero-content-left {
-    flex: 0 0 50%;
+    /* 1 1, not 0 0: two 50% basis children plus the 48px gap made the flex line
+       100% + 48px at every width >= 768px, and `.hero { overflow: hidden }`
+       swallowed the symptom rather than the cause. Shrinkable children absorb
+       the gap. min-width: 0 so long words cannot push them back out.
+       58/38 rather than 50/50: at an even split the h1 had 521px of a 1440px
+       viewport and the grove sat in a 628px column with ~165px of empty band
+       above and below it. The type needs the width more than the graphic does. */
+    flex: 1 1 58%;
+    min-width: 0;
     text-align: left;
     padding-right: var(--spacing-lg);
 }
 
 .hero-content-left h1 {
-    font-size: 3.5rem;
+    /* Ceiling raised from 3.5rem: the old cap meant the page's largest
+       typographic asset rendered at 56px in a column it shared with nothing.
+       `balance` because without it the headline broke to four lines at 768
+       with the single word "threat" alone on line 2. */
+    font-size: clamp(2.25rem, 1rem + 4vw, 4.25rem);
     margin-bottom: var(--spacing-md);
     color: var(--coffee-bean);
     font-weight: 700;
     line-height: 1.1;
+    text-wrap: balance;
 }
 
 .hero-subtitle {
-    font-size: 1.5rem;
+    /* 500, not 600: against a 700 h1 this was a 2.3x size step with only one
+       weight step, so the lead read as a second headline and the sentence that
+       carries the product in ten seconds was not findable inside it. */
+    font-size: clamp(1.125rem, 1rem + 0.6vw, 1.5rem);
     color: var(--coffee-bean);
     opacity: 0.9;
-    margin-bottom: var(--spacing-xl);
+    margin-bottom: var(--spacing-md);
     line-height: 1.4;
-    font-weight: 600;
+    font-weight: 500;
+    text-wrap: pretty;
+}
+
+/* The second half of the hero lead, carrying the compliance mapping and the
+   price, so the first sentence can stand alone. No `opacity` here: dimming
+   text by compositing is what produced both of the contrast failures this
+   project has already had to fix. */
+.hero-support {
+    /* Ceiling is --text-md, not 1.125rem: at 18px this was a single node
+       sitting 2.3% away from the 17.6px step that 43 other nodes use, which is
+       below the perceptual threshold and reads as drift rather than a step. */
+    font-size: clamp(1rem, 0.95rem + 0.25vw, 1.1rem);
+    color: var(--coffee-bean);
+    margin-bottom: var(--spacing-xl);
+    line-height: 1.6;
+    max-width: var(--measure);
+    text-wrap: pretty;
 }
 
 .hero-buttons {
@@ -474,7 +682,8 @@ ul {
 }
 
 .hero-visual {
-    flex: 0 0 50%;
+    flex: 1 1 38%;
+    min-width: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -569,14 +778,14 @@ ul {
 
 .page-hero h1 {
     color: var(--coffee-bean);
-    font-size: 2.5rem;
+    font-size: var(--text-3xl);
     margin-bottom: var(--spacing-sm);
     position: relative;
     z-index: 1;
 }
 
 .page-subtitle {
-    font-size: 1.1rem;
+    font-size: var(--text-md);
     color: var(--coffee-bean);
     opacity: 0.85;
     position: relative;
@@ -587,6 +796,28 @@ ul {
     margin-right: auto;
 }
 
+/* The hero collapses to one column at 999px rather than 767. Between those
+   widths each child held a ~45% basis, which broke the headline to four lines
+   with an orphaned preposition and stacked the CTAs inside a half-width column.
+   Text stays left-aligned here; centring is still a 767-and-below decision. */
+@media (max-width: 999px) {
+    .hero-split {
+        flex-direction: column;
+        gap: var(--spacing-lg);
+        min-height: auto;
+    }
+
+    .hero-content-left,
+    .hero-visual {
+        flex: 1 1 auto;
+        width: 100%;
+    }
+
+    .hero-content-left {
+        padding-right: 0;
+    }
+}
+
 /* ===================================
    Buttons
    =================================== */
@@ -594,29 +825,42 @@ ul {
 .btn {
     display: inline-block;
     padding: 16px 36px;
-    font-size: 1.05rem;
+    font-size: var(--text-md);
     font-weight: 600;
     text-align: center;
     border-radius: 8px;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Named rather than `all`, because `all` animated `outline-color` too: the
+       keyboard focus ring faded in over 300ms instead of appearing, and read as
+       a blend of ring and ground for most of that. A focus indicator has to be
+       present the moment focus lands. */
+    transition: background-color var(--dur-base) var(--ease-standard),
+                border-color var(--dur-base) var(--ease-standard),
+                color var(--dur-base) var(--ease-standard),
+                transform var(--dur-base) var(--ease-standard),
+                box-shadow var(--dur-base) var(--ease-standard);
     border: 2px solid transparent;
     text-decoration: none;
 }
 
+/* Primary carries the highest-contrast fill available against its band: forest
+   on light grounds, azure on the one dark band (see `.timing-section`). It was
+   azure everywhere, which measured 1.02:1 against the hero cream and 1.17:1
+   against the CTA white, both under the 3:1 non-text floor, leaving the label
+   text as the only thing separating primary from secondary. */
 .btn-primary {
-    background-color: var(--azure-mist);
-    color: var(--coffee-bean);
+    background-color: var(--black-forest);
+    color: var(--azure-mist);
     border-color: var(--black-forest);
     opacity: 1;
 }
 
 .btn-primary:hover {
-    background-color: var(--azure-mist);
+    background-color: var(--black-forest);
     border-color: var(--black-forest);
-    color: var(--coffee-bean);
+    color: var(--azure-mist);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 28, 6, 0.15);
+    box-shadow: 0 6px 20px rgb(var(--forest-rgb) / 0.15);
     opacity: 1;
 }
 
@@ -624,14 +868,30 @@ ul {
     background-color: transparent;
     color: var(--black-forest);
     border-color: var(--black-forest);
-    box-shadow: 0 2px 4px rgba(0, 28, 6, 0.1);
 }
 
+/* A full forest fill here would render the hovered secondary as a resting
+   primary. A wash keeps the two ranks distinct in every state. */
 .btn-secondary:hover {
-    background-color: var(--black-forest);
-    color: var(--white);
+    background-color: rgb(var(--forest-rgb) / 0.08);
+    color: var(--black-forest);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 28, 6, 0.15);
+    box-shadow: 0 6px 20px rgb(var(--forest-rgb) / 0.15);
+}
+
+/* Primary on a dark ground: the fill and the text swap, because a forest fill
+   would vanish into the ground it is meant to stand out from. Every dark
+   surface that carries a primary belongs in this selector. Two do today: the
+   `.timing-section` band and the forest `.founder-single` card on /about, which
+   sits inside an otherwise white section and is easy to miss. Check a new one
+   with the measured ratio, not by eye. */
+.timing-section .btn-primary,
+.timing-section .btn-primary:hover,
+.founder-single .btn-primary,
+.founder-single .btn-primary:hover {
+    background-color: var(--azure-mist);
+    color: var(--black-forest);
+    border-color: var(--azure-mist);
 }
 
 .btn:active {
@@ -660,7 +920,7 @@ ul {
     text-align: center;
     color: var(--black-forest);
     margin-bottom: var(--spacing-md);
-    font-size: 1.1rem;
+    font-size: var(--text-md);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     opacity: 0.8;
@@ -695,10 +955,10 @@ ul {
 .section-note {
     text-align: center;
     margin-top: var(--spacing-lg);
-    max-width: 100%;
+    max-width: var(--measure);
     margin-left: auto;
     margin-right: auto;
-    font-size: 0.95rem;
+    font-size: var(--text-sm);
     color: var(--charcoal);
 }
 
@@ -727,9 +987,16 @@ ul {
     justify-content: center;
 }
 
+/* Forest, not --success-green. DESIGN.md reserves the success and error
+   colours "strictly for form validation and system state", and nine ticks
+   across two marketing sections had made the reserved colour the page's second
+   most repeated accent, which is how a status-light system stops meaning
+   anything. It also measured 3.37:1 on the cream ground, clearing the 3:1
+   large-text floor only because 24px is exactly 18pt. This also unifies the
+   two tick systems: .focus-list li::before was already forest. */
 .check-mark {
-    color: var(--success-green);
-    font-size: 1.5rem;
+    color: var(--black-forest);
+    font-size: var(--text-xl);
     flex-shrink: 0;
 }
 
@@ -742,11 +1009,20 @@ ul {
     font-size: 2.2rem;
     font-weight: 700;
     color: var(--black-forest);
+    /* These tiles hold measured values supplied at release time, so the longest
+       string they will ever carry is not known while authoring. A grid `1fr`
+       track is `minmax(auto, 1fr)` and cannot shrink below its content, so a
+       long value widens the track and overflows the container rather than
+       wrapping. The grid below is switched to `minmax(0, 1fr)`; this makes the
+       text itself the thing that gives way. A wrapped stat is untidy, an
+       overflowing one is broken. */
+    overflow-wrap: anywhere;
+    text-wrap: balance;
 }
 
 .detail-note {
     margin: 0;
-    font-size: 0.9rem;
+    font-size: var(--text-sm);
     color: var(--charcoal);
 }
 
@@ -768,7 +1044,7 @@ ul {
 
 .problem-section h2 {
     text-align: center;
-    font-size: 2rem;
+    font-size: var(--text-2xl);
     margin-bottom: var(--spacing-xl);
     color: var(--black-forest);
     position: relative;
@@ -816,15 +1092,15 @@ ul {
     background-color: var(--floral-white);
     padding: 36px;
     border-radius: 8px;
-    border: 1px solid rgba(0, 28, 6, 0.15);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgb(var(--forest-rgb) / 0.15);
+    transition: all var(--dur-base) var(--ease-standard);
     position: relative;
     z-index: 1;
 }
 
 .problem-card:hover {
-    box-shadow: 0 6px 20px rgba(0, 28, 6, 0.10);
-    border-color: rgba(0, 28, 6, 0.3);
+    box-shadow: 0 6px 20px rgb(var(--forest-rgb) / 0.10);
+    border-color: rgb(var(--forest-rgb) / 0.3);
 }
 
 .problem-card h3 {
@@ -847,7 +1123,7 @@ ul {
 
 .problem-item {
     padding: var(--spacing-lg) 0;
-    border-top: 1px solid rgba(0, 28, 6, 0.12);
+    border-top: 1px solid rgb(var(--forest-rgb) / 0.12);
 }
 
 .problem-item:first-child {
@@ -864,16 +1140,16 @@ ul {
 .problem-item p {
     color: var(--coffee-bean);
     margin-bottom: 0;
-    max-width: 65ch;
+    max-width: var(--measure-narrow);
 }
 
 /* ===================================
-   ALTERNATIVE LAYOUT 1: Side-by-Side Feature Rows
-   Modern, Apple-style alternating content
+   Feature Rows: alternating side-by-side content
+   LIVE: index.html, product.html, about.html. Not an unused alternative.
    =================================== */
 
 .feature-rows {
-    max-width: 1000px;
+    max-width: 780px;
     margin: 0 auto;
     position: relative;
     z-index: 1;
@@ -881,24 +1157,23 @@ ul {
 
 .feature-row {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--spacing-sm);
-    align-items: center;
-    margin-bottom: var(--spacing-xs);
+    /* `auto` sizes the icon column to the 80px glyph. It was `1fr`, which gave
+       each icon a 492px track and left about 412px of it empty, so three small
+       marks read as three large tiles adrift in the band. */
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--spacing-lg);
+    /* Top, not centre: centred, the mark floated level with the middle of the
+       body copy and left the heading with nothing beside it. */
+    align-items: start;
+    /* Separation between rows must exceed separation within one. This was 8px
+       between against a 16px gap inside, which grouped each icon with the row
+       below it rather than with its own text. */
+    margin-bottom: var(--spacing-xxl);
     padding: 0;
 }
 
 .feature-row:last-child {
     margin-bottom: 0;
-}
-
-/* Alternate the direction */
-.feature-row:nth-child(even) .feature-content {
-    order: 2;
-}
-
-.feature-row:nth-child(even) .feature-visual {
-    order: 1;
 }
 
 .feature-content h3 {
@@ -910,7 +1185,7 @@ ul {
 }
 
 .feature-content p {
-    font-size: 1.05rem;
+    font-size: var(--text-md);
     line-height: 1.7;
     color: var(--coffee-bean);
     margin-bottom: 0;
@@ -920,15 +1195,19 @@ ul {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: var(--spacing-lg);
+    padding: 0;
 }
 
-.feature-number {
-    font-size: 8rem;
-    font-weight: 800;
-    color: var(--azure-mist);
-    opacity: 0.6;
-    line-height: 1;
+/* `.feature-content p` (0,1,1) outranked the bare `.feature-quote` (0,1,0) and
+   zeroed its margin, welding each pull-quote to the paragraph beneath it. */
+.feature-content .feature-quote {
+    margin-bottom: var(--spacing-md);
+}
+
+/* The band is no longer two half-width columns, so the text track would run to
+   888px without a cap. */
+.feature-content p {
+    max-width: var(--measure);
 }
 
 /* Feature Icons - Pando Tree/Branch Theme */
@@ -937,7 +1216,7 @@ ul {
     height: 120px;
     color: var(--black-forest);
     opacity: 0.7;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all var(--dur-slow) var(--ease-standard);
 }
 
 .feature-row:hover .feature-icon {
@@ -946,8 +1225,8 @@ ul {
 }
 
 /* ===================================
-   ALTERNATIVE LAYOUT 2: Minimal Icon Cards
-   Clean, borderless approach with hover effects
+   Icon System: card, inline, tool and container icon sizing
+   LIVE sitewide. This is the site's entire icon system. Not an alternative.
    =================================== */
 
 .card-icon {
@@ -969,6 +1248,20 @@ ul {
 
 .icon-shape {
     fill: var(--floral-white);
+}
+
+/* The feature rows drop the filled tile and let the mark carry itself. Three
+   identical dark rounded squares in a column is the icon-tile trio brand.md
+   bans; the rest of the site's icon system is unchanged. The stroke is set
+   because the row-1 glyph hardcodes `stroke="white"` as a presentation
+   attribute, which is invisible once the tile behind it is gone. */
+.feature-row .icon-bg {
+    fill: none;
+}
+
+.feature-row .icon-shape {
+    fill: var(--black-forest);
+    stroke: var(--black-forest);
 }
 
 /* Inline Icons - Professional icon style for inline use */
@@ -1023,75 +1316,8 @@ ul {
 }
 
 /* ===================================
-   ALTERNATIVE LAYOUT 3: Full-Width Feature Blocks
-   Bold, immersive sections like Apple product pages
-   =================================== */
-
-.fullwidth-feature {
-    padding: var(--spacing-xxl) 0;
-    text-align: center;
-    position: relative;
-    z-index: 1;
-}
-
-.fullwidth-feature.dark {
-    background-color: var(--coffee-bean);
-    color: var(--white);
-}
-
-.fullwidth-feature h2 {
-    font-size: 3rem;
-    font-weight: 700;
-    margin-bottom: var(--spacing-lg);
-    letter-spacing: -0.5px;
-}
-
-.fullwidth-feature.dark h2 {
-    color: var(--white);
-}
-
-.fullwidth-feature p {
-    font-size: 1.25rem;
-    line-height: 1.6;
-    max-width: 700px;
-    margin: 0 auto var(--spacing-xl) auto;
-}
-
-.fullwidth-feature.dark p {
-    color: rgba(255, 255, 255, 0.85);
-}
-
-.feature-highlights {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: var(--spacing-lg);
-    max-width: 900px;
-    margin: 0 auto;
-}
-
-.highlight-item {
-    padding: var(--spacing-md);
-}
-
-.highlight-item h4 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: var(--spacing-sm);
-    color: var(--black-forest);
-}
-
-.fullwidth-feature.dark .highlight-item h4 {
-    color: var(--white);
-}
-
-.highlight-item p {
-    font-size: 0.95rem;
-    margin-bottom: 0;
-}
-
-/* ===================================
-   ALTERNATIVE LAYOUT 4: Timeline/Process Flow
-   Sequential presentation for methodologies
+   Timeline / Process Flow
+   LIVE: about.html. Not an unused alternative.
    =================================== */
 
 .timeline-container {
@@ -1131,14 +1357,14 @@ ul {
     justify-content: center;
     font-size: 1.5rem;
     font-weight: 700;
-    box-shadow: 0 4px 12px rgba(0, 28, 6, 0.2);
+    box-shadow: 0 4px 12px rgb(var(--forest-rgb) / 0.2);
     z-index: 2;
 }
 
 .timeline-line {
     width: 3px;
     flex: 1;
-    background: rgba(0, 28, 6, 0.15);
+    background: rgb(var(--forest-rgb) / 0.15);
     margin-top: var(--spacing-sm);
 }
 
@@ -1163,6 +1389,17 @@ ul {
     color: var(--coffee-bean);
     margin-bottom: 0;
 }
+
+/* ===================================
+   QUARANTINED, PENDING REWRITE: product.html diagram CSS
+   The three sections from here to the end of "Cluster-level K8s Visual"
+   style product.html's hand-authored diagrams. Those diagrams are being
+   rewritten for the node sensor: the pandocore.io/protect label inverted
+   from opt-in to opt-out, so the "unprotected pod, no label" case the
+   cluster diagram is built around no longer exists.
+   Do not tokenise, restyle or delete in here. New markup and new CSS land
+   together, or the work is done twice and conflicts.
+   =================================== */
 
 /* ===================================
    Security Stack Visual (Product Page Integration)
@@ -1918,7 +2155,7 @@ ul {
 }
 
 .ns-empty {
-    font-size: 0.75rem;
+    font-size: var(--text-2xs);
     color: var(--coffee-bean);
     opacity: 0.6;
     font-style: italic;
@@ -2036,7 +2273,7 @@ ul {
     display: flex;
     align-items: center;
     gap: var(--spacing-sm);
-    font-size: 0.85rem;
+    font-size: var(--text-xs);
     color: var(--coffee-bean);
     line-height: 1.4;
 }
@@ -2057,7 +2294,7 @@ ul {
 .zoom-heading {
     text-align: center;
     color: var(--black-forest);
-    font-size: 1rem;
+    font-size: var(--text-base);
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-bottom: var(--spacing-md);
@@ -2103,9 +2340,12 @@ ul {
     }
 }
 
+/* === END QUARANTINE: product.html diagram CSS === */
+
 /* ===================================
-   ALTERNATIVE LAYOUT 5: Split Focus Cards
-   Two-column emphasis for key differentiators
+   Split Focus Cards
+   LIVE: product.html (.split-focus/.focus-card), index.html (.focus-list).
+   Not an unused alternative.
    =================================== */
 
 .split-focus {
@@ -2120,26 +2360,26 @@ ul {
     padding: 36px;
     background: linear-gradient(135deg, var(--floral-white) 0%, var(--azure-mist) 100%);
     border-radius: 8px;
-    border: 1px solid rgba(0, 28, 6, 0.15);
+    border: 1px solid rgb(var(--forest-rgb) / 0.15);
     text-align: center;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all var(--dur-base) var(--ease-standard);
     position: relative;
     overflow: hidden;
 }
 
 .focus-card:hover {
-    box-shadow: 0 8px 24px rgba(0, 28, 6, 0.10);
+    box-shadow: 0 8px 24px rgb(var(--forest-rgb) / 0.10);
 }
 
 .focus-card h3 {
-    font-size: 2rem;
+    font-size: var(--text-2xl);
     font-weight: 700;
     color: var(--black-forest);
     margin-bottom: var(--spacing-lg);
 }
 
 .focus-card p {
-    font-size: 1.05rem;
+    font-size: var(--text-md);
     line-height: 1.7;
     color: var(--coffee-bean);
     margin-bottom: 0;
@@ -2162,7 +2402,7 @@ ul {
     padding: var(--spacing-sm) 0;
     padding-left: var(--spacing-lg);
     position: relative;
-    font-size: 1rem;
+    font-size: var(--text-base);
     line-height: 1.6;
 }
 
@@ -2187,7 +2427,7 @@ ul {
 
 .use-cases-section h2 {
     text-align: center;
-    font-size: 2rem;
+    font-size: var(--text-2xl);
     margin-bottom: var(--spacing-md);
     color: var(--black-forest);
     position: relative;
@@ -2196,7 +2436,7 @@ ul {
 
 .section-intro {
     text-align: center;
-    font-size: 1.1rem;
+    font-size: var(--text-md);
     color: var(--coffee-bean);
     max-width: var(--content-max-width);
     margin: 0 auto var(--spacing-xl) auto;
@@ -2217,15 +2457,15 @@ ul {
     background-color: var(--floral-white);
     padding: 36px;
     border-radius: 8px;
-    border: 1px solid rgba(0, 28, 6, 0.15);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgb(var(--forest-rgb) / 0.15);
+    transition: all var(--dur-base) var(--ease-standard);
     position: relative;
     z-index: 1;
 }
 
 .use-case-card:hover {
-    box-shadow: 0 6px 20px rgba(0, 28, 6, 0.10);
-    border-color: rgba(0, 28, 6, 0.3);
+    box-shadow: 0 6px 20px rgb(var(--forest-rgb) / 0.10);
+    border-color: rgb(var(--forest-rgb) / 0.3);
 }
 
 .use-case-card h3 {
@@ -2251,7 +2491,7 @@ ul {
 
 .vision-section h2 {
     text-align: center;
-    font-size: 2rem;
+    font-size: var(--text-2xl);
     margin-bottom: var(--spacing-lg);
     color: var(--black-forest);
     position: relative;
@@ -2266,7 +2506,7 @@ ul {
 }
 
 .vision-content p {
-    font-size: 1.1rem;
+    font-size: var(--text-md);
     line-height: 1.8;
     margin-bottom: var(--spacing-md);
 }
@@ -2274,8 +2514,8 @@ ul {
 .disclaimer {
     margin-top: var(--spacing-lg);
     padding: var(--spacing-md);
-    background-color: rgba(0, 28, 6, 0.1);
-    border: 1px solid rgba(0, 28, 6, 0.15);
+    background-color: rgb(var(--forest-rgb) / 0.1);
+    border: 1px solid rgb(var(--forest-rgb) / 0.15);
     border-radius: var(--border-radius);
 }
 
@@ -2292,7 +2532,7 @@ ul {
 }
 
 .timing-section h2 {
-    font-size: 2rem;
+    font-size: var(--text-2xl);
     margin-bottom: var(--spacing-md);
     color: var(--floral-white);
     position: relative;
@@ -2305,22 +2545,19 @@ ul {
 }
 
 .timing-content p {
-    font-size: 1.1rem;
+    font-size: var(--text-md);
     line-height: 1.8;
     color: var(--floral-white);
-    max-width: 70ch;
+    max-width: var(--measure);
     margin: 0 auto var(--spacing-lg) auto;
 }
 
-/* The default primary border is black forest, invisible on this band */
-.timing-section .btn-primary,
-.timing-section .btn-primary:hover {
-    border-color: var(--azure-mist);
-}
+/* Primary inverts on this band. The rule lives with the other button rules; see
+   "dark ground" in the Buttons section. */
 
 .timing-section .btn-secondary {
-    background-color: var(--floral-white);
-    color: var(--black-forest);
+    background-color: transparent;
+    color: var(--floral-white);
     border-color: var(--floral-white);
 }
 
@@ -2343,7 +2580,7 @@ ul {
 
 .team-section h2 {
     text-align: center;
-    font-size: 2rem;
+    font-size: var(--text-2xl);
     margin-bottom: var(--spacing-xl);
     color: var(--black-forest);
     position: relative;
@@ -2395,8 +2632,8 @@ ul {
     border-radius: 12px;
     border: none;
     box-shadow: 
-        0 8px 24px rgba(0, 28, 6, 0.25),
-        0 4px 8px rgba(0, 28, 6, 0.15);
+        0 8px 24px rgb(var(--forest-rgb) / 0.25),
+        0 4px 8px rgb(var(--forest-rgb) / 0.15);
     position: relative;
     z-index: 1;
 }
@@ -2406,7 +2643,7 @@ ul {
     height: 220px;
     object-fit: cover;
     border-radius: 12px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 6px 20px rgb(var(--neutral-rgb) / 0.3);
     border: 3px solid var(--azure-mist);
     grid-row: 1;
     grid-column: 1;
@@ -2428,15 +2665,15 @@ ul {
     flex-wrap: wrap;
 }
 
-.founder-header h3 {
-    font-size: 2rem;
+.founder-header h2 {
+    font-size: var(--text-2xl);
     color: var(--white);
     margin-bottom: 0;
     font-weight: 700;
 }
 
 .founder-role {
-    font-size: 1.1rem;
+    font-size: var(--text-md);
     color: var(--floral-white);
     font-weight: 600;
     opacity: 0.9;
@@ -2454,7 +2691,7 @@ ul {
 }
 
 .founder-bio {
-    font-size: 1.05rem;
+    font-size: var(--text-md);
     line-height: 1.7;
     color: var(--floral-white);
     margin-bottom: 0;
@@ -2462,10 +2699,10 @@ ul {
 }
 
 .founder-fun-fact {
-    font-size: 0.95rem;
+    font-size: var(--text-sm);
     color: var(--white);
     padding: var(--spacing-sm) var(--spacing-md);
-    background: rgba(223, 159, 21, 0.2);
+    background: rgb(var(--honey-rgb) / 0.2);
     border-radius: 8px;
     margin-bottom: 0;
 }
@@ -2478,13 +2715,13 @@ ul {
     align-items: center;
     gap: var(--spacing-lg);
     padding-top: var(--spacing-lg);
-    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    border-top: 1px solid rgb(var(--white-rgb) / 0.15);
     margin-top: calc(-1 * var(--spacing-md)); /* Pull up slightly */
 }
 
 .founder-footer .founder-fun-fact {
     flex: 1;
-    background: rgba(223, 159, 21, 0.15);
+    background: rgb(var(--honey-rgb) / 0.15);
     margin-left: 40px; /* Partially under the photo */
 }
 
@@ -2499,8 +2736,26 @@ ul {
    =================================== */
 
 .cta-section {
-    padding: var(--spacing-xxl) 0;
-    background-color: var(--azure-mist);
+    /* Asymmetric: the decorative wave's fill reaches about 119px up from the
+       section's bottom edge, so at a symmetric 64px the closing line rendered
+       half on sage and half on white with the tonal boundary running through
+       the type, at the last sentence before the click. */
+    padding: var(--spacing-xxl) 0 calc(var(--spacing-xxl) * 2);
+    /* Was --azure-mist, which is also .btn-primary's fill: DESIGN.md:173 says
+       the primary is "never placed on an azure-tending background", and on this
+       band the primary button was literally the same colour as the ground it
+       sat on, at the highest-stakes ask on the site. Floral white is the
+       system's designated section surface, so the button keeps its one
+       rendering and regains its contrast.
+
+       White rather than floral-white: #footprint above it is already cream, and
+       two cream bands in a row collapsed the alternation at the final ask.
+
+       The ratio note that used to live here is gone because its premise is:
+       .detail-note was moved above the button pair, so it no longer crosses the
+       wave at all. Measured gap to the wave container is 41px at 1440 and 105px
+       at 390, and the element sits on plain white at 9.37:1. */
+    background-color: var(--white);
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -2541,7 +2796,7 @@ ul {
 }
 
 .cta-content p {
-    font-size: 1.1rem;
+    font-size: var(--text-md);
     color: var(--coffee-bean);
     margin-bottom: var(--spacing-lg);
     max-width: 600px;
@@ -2578,7 +2833,7 @@ ul {
 .cta-section .social-link:hover {
     background-color: var(--coffee-bean);
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 28, 6, 0.25);
+    box-shadow: 0 6px 16px rgb(var(--forest-rgb) / 0.25);
     opacity: 1;
 }
 
@@ -2616,9 +2871,78 @@ ul {
 }
 
 .content-wrapper p {
-    font-size: 1.05rem;
+    font-size: var(--text-md);
     line-height: 1.8;
     margin-bottom: var(--spacing-md);
+    /* The wrapper is 800px, which at 1.05rem is about 95 characters a line.
+       --measure exists for exactly this and was already in use elsewhere. */
+    max-width: var(--measure);
+}
+
+/* Inline code in marketing prose. The homepage's engineer band names a label
+   and three RBAC verbs that a reader may need to copy exactly, and a label
+   whose value is compared byte-for-byte has to look like one. Matches the
+   trust page's treatment and uses the declared --font-mono, which is the one
+   scoped exception to the One Family Rule in DESIGN.md. */
+.content-wrapper code {
+    overflow-wrap: anywhere;
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    background-color: var(--azure-mist);
+    padding: 2px 6px;
+    border-radius: var(--radius-xs);
+}
+
+.content-wrapper h3 {
+    color: var(--black-forest);
+    font-size: var(--text-lg);
+    margin-top: var(--spacing-lg);
+    margin-bottom: var(--spacing-sm);
+}
+
+/* A copyable command block. `.content-wrapper code` carries
+   `overflow-wrap: anywhere`, which is right for an inline identifier and wrong
+   for a command: it would break a flag mid-token. Inside a pre the line is held
+   intact and the block scrolls instead. */
+.content-wrapper pre {
+    background-color: var(--surface-inverse);
+    color: var(--text-on-inverse);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    margin: 0 0 var(--spacing-lg);
+    overflow-x: auto;
+    font-size: var(--text-xs);
+    line-height: var(--leading-snug);
+}
+
+.content-wrapper pre code {
+    overflow-wrap: normal;
+    white-space: pre;
+    background-color: transparent;
+    color: inherit;
+    padding: 0;
+    border-radius: 0;
+    font-size: inherit;
+}
+
+/* Measured figures, as a definition list rather than a table: four rows of two
+   short values do not need column rules, and a dl keeps the pairing in the
+   accessibility tree. */
+.figure-list {
+    margin: 0 0 var(--spacing-lg);
+    max-width: var(--measure);
+}
+
+.figure-list dt {
+    font-weight: 600;
+    color: var(--black-forest);
+    margin-top: var(--spacing-md);
+}
+
+.figure-list dd {
+    margin: 0;
+    color: var(--coffee-bean);
+    line-height: 1.7;
 }
 
 .content-list {
@@ -2643,12 +2967,12 @@ ul {
     padding: 36px;
     background-color: var(--floral-white);
     border-radius: 8px;
-    border: 1px solid rgba(0, 28, 6, 0.15);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgb(var(--forest-rgb) / 0.15);
+    transition: all var(--dur-base) var(--ease-standard);
 }
 
 .milestone-title {
-    font-size: 1.1rem;
+    font-size: var(--text-md);
     color: var(--black-forest);
     margin-bottom: var(--spacing-sm);
     font-weight: 600;
@@ -2717,7 +3041,7 @@ ul {
 }
 
 .contact-subtitle {
-    font-size: 1.25rem;
+    font-size: var(--text-lg);
     font-weight: 600;
     color: var(--black-forest);
 }
@@ -2740,14 +3064,14 @@ ul {
     border-radius: var(--border-radius);
 }
 
-.privacy-note h3 {
-    font-size: 1.1rem;
+.privacy-note h2 {
+    font-size: var(--text-md);
     color: var(--black-forest);
     margin-bottom: var(--spacing-sm);
 }
 
 .privacy-note p {
-    font-size: 0.95rem;
+    font-size: var(--text-sm);
     margin-bottom: 0;
 }
 
@@ -2759,7 +3083,7 @@ ul {
     background-color: var(--floral-white);
     padding: var(--spacing-lg);
     border-radius: var(--border-radius);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 8px rgb(var(--neutral-rgb) / 0.08);
 }
 
 /* Social Media Links */
@@ -2779,7 +3103,7 @@ ul {
 }
 
 .page-hero .social-intro {
-    font-size: 1rem;
+    font-size: var(--text-base);
     color: var(--coffee-bean);
     margin-bottom: var(--spacing-md);
 }
@@ -2810,7 +3134,7 @@ ul {
 .page-hero .social-link:hover {
     background-color: var(--coffee-bean);
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 28, 6, 0.25);
+    box-shadow: 0 6px 16px rgb(var(--forest-rgb) / 0.25);
     opacity: 1;
 }
 
@@ -2833,7 +3157,7 @@ ul {
     border: 2px solid var(--black-forest);
     border-radius: 35px;
     font-weight: 600;
-    font-size: 1.05rem;
+    font-size: var(--text-md);
     text-decoration: none;
     transition: all var(--transition-speed);
 }
@@ -2843,7 +3167,7 @@ ul {
     background-color: var(--black-forest);
     color: var(--white);
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0, 28, 6, 0.25);
+    box-shadow: 0 6px 16px rgb(var(--forest-rgb) / 0.25);
     opacity: 1;
 }
 
@@ -2878,7 +3202,7 @@ ul {
     border: 2px solid var(--floral-white);
     border-radius: var(--border-radius);
     font-family: var(--font-family);
-    font-size: 1rem;
+    font-size: var(--text-base);
     background-color: var(--white);
     transition: border-color var(--transition-speed);
 }
@@ -2898,7 +3222,7 @@ ul {
 .error-message {
     display: block;
     color: var(--error-red);
-    font-size: 0.875rem;
+    font-size: var(--text-xs);
     margin-top: 4px;
     min-height: 0;
 }
@@ -2925,14 +3249,14 @@ ul {
 
 .form-status.success {
     display: block;
-    background-color: rgba(56, 142, 60, 0.1);
+    background-color: rgb(var(--success-rgb) / 0.1);
     color: var(--success-green);
     border: 1px solid var(--success-green);
 }
 
 .form-status.error {
     display: block;
-    background-color: rgba(211, 47, 47, 0.1);
+    background-color: rgb(var(--error-rgb) / 0.1);
     color: var(--error-red);
     border: 1px solid var(--error-red);
 }
@@ -2947,14 +3271,14 @@ ul {
 
 .footer {
     background-color: var(--coffee-bean);
-    color: rgba(255, 255, 255, 0.8);
+    color: rgb(var(--white-rgb) / 0.8);
     padding: var(--spacing-sm) 0;
     text-align: center;
 }
 
 .footer-content p {
     margin-bottom: var(--spacing-sm);
-    font-size: 0.95rem;
+    font-size: var(--text-sm);
     max-width: 100%;
     margin-left: auto;
     margin-right: auto;
@@ -2962,7 +3286,7 @@ ul {
 
 .footer-links {
     margin-bottom: var(--spacing-xs);
-    font-size: 0.9rem;
+    font-size: var(--text-sm);
 }
 
 .footer-links a {
@@ -2975,7 +3299,7 @@ ul {
 }
 
 .patent-notice {
-    font-size: 0.875rem;
+    font-size: var(--text-xs);
     opacity: 0.7;
 }
 
@@ -2986,15 +3310,11 @@ ul {
 /* Tablet (768px and up) */
 @media (min-width: 768px) {
     h1 {
-        font-size: 2.5rem;
+        font-size: var(--text-3xl);
     }
     
     h2 {
-        font-size: 2rem;
-    }
-    
-    .hero-content-left h1 {
-        font-size: 3.5rem;
+        font-size: var(--text-2xl);
     }
     
     .page-hero h1 {
@@ -3032,7 +3352,7 @@ ul {
     }
     
     .nav-links a {
-        font-size: 0.9rem;
+        font-size: var(--text-sm);
         padding: var(--spacing-xs);
     }
     
@@ -3040,24 +3360,16 @@ ul {
         height: 80px;
     }
     
-    .hero-split {
-        flex-direction: column;
-        gap: var(--spacing-lg);
-        min-height: auto;
-    }
-    
     .hero-content-left {
-        flex: 1;
         text-align: center;
-        padding-right: 0;
     }
     
     .hero-content-left h1 {
-        font-size: 2.5rem;
+        font-size: var(--text-3xl);
     }
     
     .hero-subtitle {
-        font-size: 1.25rem;
+        font-size: var(--text-lg);
     }
     
     .hero-buttons {
@@ -3093,34 +3405,18 @@ ul {
     /* Alternative layouts - Mobile responsive */
     .feature-row {
         grid-template-columns: 1fr;
-        gap: var(--spacing-lg);
-        margin-bottom: var(--spacing-lg);
+        gap: var(--spacing-md);
+        /* Keep separation between rows ahead of separation within one, as the
+           desktop rule does. Both were 32px here, which read as one long list. */
+        margin-bottom: var(--spacing-xxl);
     }
-    
-    .feature-row:nth-child(even) .feature-content,
-    .feature-row:nth-child(even) .feature-visual {
-        order: initial;
-    }
-    
-    .feature-number {
-        font-size: 5rem;
-    }
-    
-    .feature-icon {
+        .feature-icon {
         width: 80px;
         height: 80px;
     }
     
     .feature-content h3 {
-        font-size: 1.5rem;
-    }
-    
-    .fullwidth-feature h2 {
-        font-size: 2rem;
-    }
-    
-    .fullwidth-feature p {
-        font-size: 1.1rem;
+        font-size: var(--text-xl);
     }
     
     .timeline-item {
@@ -3132,11 +3428,11 @@ ul {
     .timeline-number {
         width: 50px;
         height: 50px;
-        font-size: 1.25rem;
+        font-size: var(--text-lg);
     }
     
     .timeline-content h3 {
-        font-size: 1.25rem;
+        font-size: var(--text-lg);
     }
     
     .split-focus {
@@ -3149,7 +3445,7 @@ ul {
     }
     
     .focus-card h3 {
-        font-size: 1.5rem;
+        font-size: var(--text-xl);
     }
     
     /* Single Founder - Mobile */
@@ -3179,7 +3475,7 @@ ul {
         gap: var(--spacing-sm);
     }
     
-    .founder-header h3 {
+    .founder-header h2 {
         font-size: 1.75rem;
     }
     
@@ -3236,10 +3532,12 @@ ul {
     }
     
     h2 {
-        font-size: 1.5rem;
+        font-size: var(--text-xl);
     }
     
-    .hero h1,
+    /* `.hero h1` deliberately absent: it carries a clamp whose floor is
+       2.25rem, and overriding it here produced a 28px headline against a
+       20px/600 subtitle. `.page-hero h1` has no clamp and still needs this. */
     .page-hero h1 {
         font-size: 1.75rem;
     }
@@ -3251,11 +3549,11 @@ ul {
 
 .validation-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--spacing-lg);
     margin-bottom: var(--spacing-xl);
     padding: var(--spacing-xl);
-    background: rgba(0, 28, 6, 0.05);
+    background: rgb(var(--forest-rgb) / 0.05);
     border-radius: 8px;
     text-align: center;
 }
@@ -3265,7 +3563,7 @@ ul {
     grid-template-columns: repeat(5, 1fr);
     gap: var(--spacing-md);
     padding: var(--spacing-lg);
-    background: rgba(0, 28, 6, 0.05);
+    background: rgb(var(--forest-rgb) / 0.05);
     border-radius: 8px;
     text-align: center;
 }
@@ -3276,7 +3574,7 @@ ul {
     gap: var(--spacing-lg) var(--spacing-xxl);
     margin-top: var(--spacing-xl);
     padding: var(--spacing-xl);
-    background: rgba(0, 28, 6, 0.05);
+    background: rgb(var(--forest-rgb) / 0.05);
     border-radius: 8px;
     justify-content: center;
     width: fit-content;
@@ -3290,14 +3588,14 @@ ul {
     gap: var(--spacing-md);
     margin-top: var(--spacing-lg);
     padding: var(--spacing-lg);
-    background: rgba(0, 28, 6, 0.05);
+    background: rgb(var(--forest-rgb) / 0.05);
     border-radius: 8px;
-    border: 1px solid rgba(0, 28, 6, 0.12);
+    border: 1px solid rgb(var(--forest-rgb) / 0.12);
 }
 
 @media (max-width: 767px) {
     .validation-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .workloads-grid {
@@ -3334,7 +3632,7 @@ ul {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: var(--spacing-lg);
-    font-size: 0.95rem;
+    font-size: var(--text-sm);
     line-height: 1.7;
 }
 
@@ -3343,7 +3641,7 @@ ul {
     padding: var(--spacing-sm) var(--spacing-md);
     text-align: left;
     vertical-align: top;
-    border-bottom: 1px solid rgba(0, 28, 6, 0.12);
+    border-bottom: 1px solid rgb(var(--forest-rgb) / 0.12);
 }
 
 .compliance-table thead th {
@@ -3372,7 +3670,7 @@ ul {
 
 @media (max-width: 1023px) {
     .compliance-table {
-        font-size: 0.9rem;
+        font-size: var(--text-sm);
     }
 
     .compliance-table th,
@@ -3398,7 +3696,7 @@ ul {
         margin-bottom: var(--spacing-md);
         padding: var(--spacing-sm) var(--spacing-md);
         background-color: var(--white);
-        border: 1px solid rgba(0, 28, 6, 0.12);
+        border: 1px solid rgb(var(--forest-rgb) / 0.12);
         border-radius: var(--border-radius);
     }
 
@@ -3413,10 +3711,10 @@ ul {
     }
 
     .compliance-table tbody th {
-        font-size: 1.05rem;
+        font-size: var(--text-md);
         padding-bottom: var(--spacing-xs);
         margin-bottom: var(--spacing-xs);
-        border-bottom: 1px solid rgba(0, 28, 6, 0.12);
+        border-bottom: 1px solid rgb(var(--forest-rgb) / 0.12);
     }
 
     .compliance-table tbody td {
@@ -3439,28 +3737,58 @@ ul {
    Accessibility
    =================================== */
 
-/* Focus states for keyboard navigation */
-a:focus,
-button:focus,
-input:focus,
-select:focus,
-textarea:focus {
+/* Focus states for keyboard navigation.
+   `:focus-visible`, not `:focus`: the latter painted a persistent ring for
+   mouse users on every link they clicked. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
     outline: 2px solid var(--black-forest);
     outline-offset: 2px;
 }
 
+/* Dark bands need a light ring. The global ring above is --black-forest, which
+   on a dark ground is 1.00:1 against the navbar and 1.03:1 against the
+   --coffee-bean footer: an invisible keyboard focus indicator (WCAG 2.4.7).
+   Floral-white measures 16.34:1 on forest.
+
+   Every dark container that holds a focusable element is listed here. A
+   pixel-diff sweep of the full tab order found exactly three stops still
+   invisible after the navbar was fixed: both buttons in .timing-section and
+   the footer's Trust Center link. The band was already known to be a problem
+   for borders (see the .timing-section .btn-primary border-color override) and
+   the same reasoning had never reached the focus ring.
+
+   If a new dark section gains a link, add it here. */
+.navbar a:focus-visible,
+.mobile-menu-toggle:focus-visible,
+.skip-to-main:focus-visible,
+.skip-to-main:focus,
+.timing-section a:focus-visible,
+.timing-section button:focus-visible,
+.founder-single a:focus-visible,
+.footer a:focus-visible {
+    outline: 2px solid var(--floral-white);
+    outline-offset: 2px;
+}
+
 /* Skip to main content link (for screen readers) */
+/* The skip link must outrank the sticky navbar. At the old z-index: 999 it
+   painted behind .navbar (--z-nav) when focused, at scroll 0, which is exactly
+   where a keyboard user starts: WCAG 2.4.7. */
 .skip-to-main {
     position: absolute;
     left: -9999px;
-    z-index: 999;
+    z-index: var(--z-skip-link);
 }
 
 .skip-to-main:focus {
     left: 0;
     top: 0;
-    background: var(--black-forest);
-    color: white;
+    background: var(--surface-inverse);
+    color: var(--text-on-inverse);
     padding: var(--spacing-sm);
 }
 
@@ -3491,7 +3819,7 @@ textarea:focus {
 .pricing-grid {
     display: grid;
     /* minmax(0, 1fr) lets the three columns shrink to fit instead of overflowing
-       on narrower desktop widths — keeps all tiers on a single row. */
+       on narrower desktop widths; keeps all tiers on a single row. */
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: var(--spacing-lg);
     max-width: var(--container-max-width);
@@ -3502,7 +3830,7 @@ textarea:focus {
 .pricing-card {
     position: relative;
     background: var(--white);
-    border: 2px solid rgba(0, 28, 6, 0.12);
+    border: 2px solid rgb(var(--forest-rgb) / 0.12);
     border-radius: 12px;
     padding: var(--spacing-lg);
     display: flex;
@@ -3511,8 +3839,8 @@ textarea:focus {
 }
 
 .pricing-card:hover {
-    box-shadow: 0 8px 24px rgba(0, 28, 6, 0.10);
-    border-color: rgba(0, 28, 6, 0.25);
+    box-shadow: 0 8px 24px rgb(var(--forest-rgb) / 0.10);
+    border-color: rgb(var(--forest-rgb) / 0.25);
 }
 
 .pricing-card-featured {
@@ -3520,7 +3848,7 @@ textarea:focus {
 }
 
 .pricing-card-featured:hover {
-    box-shadow: 0 8px 24px rgba(0, 28, 6, 0.10);
+    box-shadow: 0 8px 24px rgb(var(--forest-rgb) / 0.10);
     border-color: var(--black-forest);
 }
 
@@ -3531,13 +3859,13 @@ textarea:focus {
     transform: translateX(-50%);
     background: var(--black-forest);
     color: var(--floral-white);
-    font-size: 0.75rem;
+    font-size: var(--text-2xs);
     font-weight: 700;
     letter-spacing: 0.5px;
     text-transform: uppercase;
     padding: 6px 14px;
     border-radius: 999px;
-    box-shadow: 0 4px 12px rgba(0, 28, 6, 0.18);
+    box-shadow: 0 4px 12px rgb(var(--forest-rgb) / 0.18);
 }
 
 .pricing-card-header {
@@ -3547,7 +3875,7 @@ textarea:focus {
 
 .pricing-tier-name {
     color: var(--black-forest);
-    font-size: 1.5rem;
+    font-size: var(--text-xl);
     font-weight: 700;
     margin: 0 0 6px 0;
 }
@@ -3555,7 +3883,7 @@ textarea:focus {
 .pricing-tier-tagline {
     color: var(--charcoal);
     opacity: 0.75;
-    font-size: 0.9rem;
+    font-size: var(--text-sm);
     margin: 0;
 }
 
@@ -3563,7 +3891,7 @@ textarea:focus {
     text-align: center;
     margin-bottom: var(--spacing-md);
     padding-bottom: var(--spacing-md);
-    border-bottom: 1px solid rgba(0, 28, 6, 0.12);
+    border-bottom: 1px solid rgb(var(--forest-rgb) / 0.12);
 }
 
 .pricing-price-amount {
@@ -3576,7 +3904,7 @@ textarea:focus {
 .pricing-price-period {
     color: var(--charcoal);
     opacity: 0.7;
-    font-size: 1rem;
+    font-size: var(--text-base);
     margin-left: 4px;
 }
 
@@ -3588,7 +3916,7 @@ textarea:focus {
 
 .pricing-meta-row {
     color: var(--charcoal);
-    font-size: 0.95rem;
+    font-size: var(--text-sm);
     margin: 4px 0;
 }
 
@@ -3607,8 +3935,8 @@ textarea:focus {
     position: relative;
     padding: 8px 0 8px 26px;
     color: var(--charcoal);
-    font-size: 0.95rem;
-    border-bottom: 1px solid rgba(0, 28, 6, 0.06);
+    font-size: var(--text-sm);
+    border-bottom: 1px solid rgb(var(--forest-rgb) / 0.06);
 }
 
 .pricing-features li:last-child {
@@ -3636,7 +3964,7 @@ textarea:focus {
     text-align: center;
     color: var(--charcoal);
     opacity: 0.8;
-    font-size: 0.9rem;
+    font-size: var(--text-sm);
     line-height: 1.6;
 }
 
@@ -3678,15 +4006,15 @@ textarea:focus {
     flex-direction: column;
     background-color: var(--floral-white);
     border-radius: 8px;
-    border: 1px solid rgba(0, 28, 6, 0.15);
+    border: 1px solid rgb(var(--forest-rgb) / 0.15);
     overflow: hidden;
     text-decoration: none;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all var(--dur-base) var(--ease-standard);
 }
 
 .blog-card:hover {
-    box-shadow: 0 6px 20px rgba(0, 28, 6, 0.10);
-    border-color: rgba(0, 28, 6, 0.3);
+    box-shadow: 0 6px 20px rgb(var(--forest-rgb) / 0.10);
+    border-color: rgb(var(--forest-rgb) / 0.3);
 }
 
 .blog-card-image {
@@ -3705,7 +4033,7 @@ textarea:focus {
 }
 
 .blog-card-meta {
-    font-size: 0.8rem;
+    font-size: var(--text-xs);
     color: var(--coffee-bean);
     font-weight: 600;
     letter-spacing: 0.02em;
@@ -3714,14 +4042,14 @@ textarea:focus {
 
 .blog-card-title {
     color: var(--black-forest);
-    font-size: 1.15rem;
+    font-size: var(--text-lg);
     line-height: 1.3;
     margin-bottom: var(--spacing-xs);
 }
 
 .blog-card-excerpt {
     color: var(--coffee-bean);
-    font-size: 0.92rem;
+    font-size: var(--text-sm);
     margin-bottom: var(--spacing-sm);
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -3732,7 +4060,7 @@ textarea:focus {
 
 .blog-card-author {
     margin-top: auto;
-    font-size: 0.85rem;
+    font-size: var(--text-xs);
     font-weight: 700;
     color: var(--coffee-bean);
 }
@@ -3762,7 +4090,7 @@ textarea:focus {
     margin: 0 auto var(--spacing-lg);
 }
 
-/* Readable post body — styles content pasted into a post page */
+/* Readable post body: styles content pasted into a post page */
 .blog-article {
     max-width: var(--content-max-width);
     margin: 0 auto;
@@ -3777,13 +4105,13 @@ textarea:focus {
 
 .blog-article h2 {
     color: var(--black-forest);
-    font-size: 1.6rem;
+    font-size: var(--text-xl);
     margin-top: var(--spacing-xl);
 }
 
 .blog-article h3 {
     color: var(--black-forest);
-    font-size: 1.25rem;
+    font-size: var(--text-lg);
     margin-top: var(--spacing-lg);
 }
 
@@ -3824,13 +4152,34 @@ textarea:focus {
 .blog-article blockquote {
     margin-left: 0;
     padding: var(--spacing-sm) var(--spacing-md);
-    background: rgba(0, 28, 6, 0.04);
+    background: rgb(var(--forest-rgb) / 0.04);
     border-radius: var(--border-radius);
     font-style: italic;
     color: var(--coffee-bean);
 }
 
+/* Dated correction on a post kept as a record. The posts stay as written;
+   this says what has since changed so a reader does not take a retired
+   mechanism for current behaviour. */
+.blog-addendum {
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--azure-mist);
+    border-radius: var(--border-radius);
+    color: var(--coffee-bean);
+    font-size: var(--text-sm);
+}
+
+.blog-addendum p {
+    margin-bottom: var(--spacing-xs);
+    max-width: none;
+}
+
+.blog-addendum p:last-child {
+    margin-bottom: 0;
+}
+
 .blog-article code {
+    overflow-wrap: anywhere;
     background-color: var(--azure-mist);
     padding: 2px 6px;
     border-radius: 4px;
@@ -3889,7 +4238,7 @@ textarea:focus {
 .trust-meta {
     color: var(--coffee-bean);
     opacity: 0.7;
-    font-size: 0.9rem;
+    font-size: var(--text-sm);
     margin-bottom: var(--spacing-xl);
 }
 
@@ -3899,7 +4248,7 @@ textarea:focus {
 
 .trust-page h2 {
     color: var(--black-forest);
-    font-size: 1.35rem;
+    font-size: var(--text-lg);
     margin-bottom: var(--spacing-sm);
 }
 
@@ -3924,16 +4273,37 @@ textarea:focus {
 }
 
 .trust-page code {
+    overflow-wrap: anywhere;
     background-color: var(--azure-mist);
     padding: 2px 6px;
     border-radius: 4px;
     font-size: 0.9em;
 }
 
+.trust-page pre {
+    background-color: var(--surface-inverse);
+    color: var(--text-on-inverse);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-sm);
+    overflow-x: auto;
+    font-size: var(--text-xs);
+    line-height: var(--leading-snug);
+}
+
+/* A block command is not an inline identifier: drop the pill treatment. */
+.trust-page pre code {
+    background-color: transparent;
+    color: inherit;
+    padding: 0;
+    border-radius: 0;
+    font-size: inherit;
+}
+
 .trust-footer {
-    border-top: 1px solid rgba(31, 17, 2, 0.15);
+    border-top: 1px solid rgb(var(--coffee-rgb) / 0.15);
     padding-top: var(--spacing-md);
-    font-size: 0.9rem;
+    font-size: var(--text-sm);
     opacity: 0.75;
 }
 

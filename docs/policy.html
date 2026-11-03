@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="PandoCore CRD Policy - Manage sidecar configuration declaratively with Kubernetes custom resources.">
+    <meta name="description" content="PandoCore CRD Policy - manage mode, sensitivity, thresholds and integrations per namespace with Kubernetes custom resources.">
     <title>CRD Policy | PandoCore Docs</title>
     <link rel="canonical" href="https://pandocore.io/docs/policy">
-    <link rel="icon" type="image/png" href="../images/favicon.png">
+    <link rel="icon" type="image/png" href="/images/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/docs.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/docs.css">
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
@@ -20,7 +20,7 @@
         <div class="container">
             <div class="nav-wrapper">
                 <a href="/" class="logo">
-                    <img src="../images/logoTransparency.png" alt="Pando Logo">
+                    <img src="/images/logoTransparency.png" alt="PandoCore" width="184" height="240">
                     <div class="logo-text-wrapper">
                         <span class="logo-text">PandoCore</span>
                     </div>
@@ -93,7 +93,7 @@
                 <ol>
                     <li>Create a <code>pando-policy.yaml</code> file</li>
                     <li>Run <code>kubectl apply -f pando-policy.yaml</code></li>
-                    <li>Done. Sidecars pick up the policy within 30 seconds.</li>
+                    <li>Done. Sensors pick up the policy within 30 seconds.</li>
                 </ol>
             </div>
 
@@ -214,7 +214,7 @@ spec:
                 <tbody>
                     <tr>
                         <td><code>monitor</code></td>
-                        <td>Detect and log only. No alerts, no network action, no termination.</td>
+                        <td>Detect and record only. No alerts and no network action.</td>
                     </tr>
                     <tr>
                         <td><code>alert</code></td>
@@ -222,7 +222,7 @@ spec:
                     </tr>
                     <tr>
                         <td><code>isolate</code></td>
-                        <td>Everything in <code>alert</code>, plus a NetworkPolicy that blocks pod egress (except DNS) on trip. No pod termination. Policy is removed automatically once drift subsides.</td>
+                        <td>Everything in <code>alert</code>, plus a NetworkPolicy that blocks pod egress (except DNS) on trip. This is the ceiling of the supported install. Policy is removed automatically once drift subsides.</td>
                     </tr>
                     <tr>
                         <td><code>debug</code></td>
@@ -382,10 +382,6 @@ spec:
   -o jsonpath='{.items[0].metadata.name}')
 kubectl -n pando-system logs "ds/$DS" | grep -i "PandoCorePolicy"</code></pre>
 
-            <p>In sidecar mode, read the injected container:</p>
-
-            <pre><code>kubectl logs &lt;pod&gt; -c pando-sidecar | grep -i "PandoCorePolicy"</code></pre>
-
             <p>Expected output:</p>
 
             <pre><code>PandoCorePolicy CRD found  namespace=production name=default
@@ -398,7 +394,7 @@ Applied PandoCorePolicy  mode=isolate resource_version="12345"</code></pre>
 
             <h2>Polling Interval</h2>
 
-            <p>Both topologies poll for policy changes every 30 seconds by default, through <code>PANDO_POLICY_POLL_INTERVAL_SECS</code>. In sidecar mode, set it on the injected container. On the node sensor it belongs to the DaemonSet and is therefore node-wide, so there is one poll interval for every pod on a node rather than one per workload.</p>
+            <p>The sensor polls for policy changes every 30 seconds by default, through <code>PANDO_POLICY_POLL_INTERVAL_SECS</code>. It belongs to the DaemonSet and is therefore node-wide, so there is one poll interval covering the pods on a node rather than one per workload.</p>
 
             <h2>GitOps Integration</h2>
 
@@ -432,6 +428,6 @@ Applied PandoCorePolicy  mode=isolate resource_version="12345"</code></pre>
         </div>
     </footer>
 
-    <script src="../js/main.js"></script>
+    <script src="/js/main.js"></script>
 </body>
 </html>

@@ -17,7 +17,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/styles.css?v=2">
+    <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
@@ -26,7 +26,7 @@
         <div class="container">
             <div class="nav-wrapper">
                 <a href="/" class="logo">
-                    <img src="/images/logoTransparency.png" alt="Pando Logo">
+                    <img src="/images/logoTransparency.png" alt="PandoCore" width="184" height="240">
                     <div class="logo-text-wrapper">
                         <span class="logo-text">PandoCore</span>
                     </div>
@@ -69,6 +69,11 @@
             <img class="blog-cover" src="/images/blog/node-sensor-cover.svg" alt="Two nodes side by side: on the left every pod carries its own sidecar detector, on the right the pods carry none and a single node sensor spans the node">
 
             <article class="blog-article">
+                <aside class="blog-addendum">
+                    <p><strong>Update, November 1, 2026.</strong> The node sensor shipped. It is now the one supported install, alongside the cluster controller, and the injected sidecar and its admission webhook are deprecated with no further release.</p>
+                    <p>Two things below have changed since. The response ceiling now ends at isolation: the sensor's Kubernetes permissions withhold pod deletion outright, so nothing can terminate a workload, cryptographic provenance included. And workload selection became opt-out, so pods on a node are watched by default rather than labelled in. The current behaviour is documented in the <a href="/trust">trust center</a> and the <a href="/docs/">docs</a>. The argument below is kept as the record of why we made the change.</p>
+                </aside>
+
                 <p>We built PandoCore as a sidecar: one detector container injected into every pod it protects. We are replacing it with a node sensor, one process per node. It is still in development, and the sidecar is what ships today. We made the case for sidecars in public last month, so here is the case against them.</p>
 
                 <p>Start with who can touch the detector. A sidecar lives inside the pod it watches. It shares that pod's lifecycle and network namespace, and if it wants to see processes, its PID namespace too. Anything with authority over the pod has authority over its monitor. A detector the workload can reach is a detector the workload's attacker can reach. A node sensor sits outside every workload pod: nothing in your pod can signal it, read its state, or restart it. The observer should not live inside the thing it observes.</p>
@@ -104,6 +109,6 @@
         </div>
     </footer>
 
-    <script src="/js/main.js?v=2"></script>
+    <script src="/js/main.js"></script>
 </body>
 </html>

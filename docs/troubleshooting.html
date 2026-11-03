@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Troubleshoot PandoCore: sidecar not injecting, license errors, false positives, and common operational issues.">
+    <meta name="description" content="Troubleshoot PandoCore: workloads not being watched, sensor refusals, false positives, and unexpected containment.">
     <title>Troubleshooting | PandoCore Docs</title>
     <link rel="canonical" href="https://pandocore.io/docs/troubleshooting">
-    <link rel="icon" type="image/png" href="../images/favicon.png">
+    <link rel="icon" type="image/png" href="/images/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/docs.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/docs.css">
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
@@ -20,7 +20,7 @@
         <div class="container">
             <div class="nav-wrapper">
                 <a href="/" class="logo">
-                    <img src="../images/logoTransparency.png" alt="Pando Logo">
+                    <img src="/images/logoTransparency.png" alt="PandoCore" width="184" height="240">
                     <div class="logo-text-wrapper">
                         <span class="logo-text">PandoCore</span>
                     </div>
@@ -86,141 +86,162 @@
 
             <h1>Troubleshooting</h1>
 
-            <p>Most issues fall into three buckets: the sidecar never injected, the sidecar injected but crash-looped, or the sidecar is running but producing more alerts than you expect. Each section below starts with how to diagnose, then lists the usual causes.</p>
+            <p>Most issues fall into four buckets: a workload is not being watched, a sensor is refusing to start, a sensor is running but producing more alerts than you expect, or a pod was contained and you need to know why. Each section starts with how to diagnose, then lists the usual causes.</p>
 
-            <h2>Sidecar Not Injecting</h2>
+            <div class="docs-callout info">
+                <div class="docs-callout-title">Start here</div>
+                <pre><code># One sensor per node, all Ready?
+kubectl get pods -n pando-system -l app.kubernetes.io/name=pando-node-sensor -o wide
 
-            <p>Symptom: you labeled a deployment and restarted it, but <code>kubectl get pods</code> still shows <code>1/1</code> instead of <code>2/2</code>.</p>
+# What does the sensor on this node think it is doing?
+kubectl exec -n pando-system &lt;sensor-pod&gt; -- wget -qO- http://localhost:9090/status</code></pre>
+                <p><code>/status</code> reports the engine count, the license ceiling and any node clamp. It answers most of the questions below in one call.</p>
+            </div>
 
-            <pre><code># Check that the webhook is registered and healthy
-kubectl get mutatingwebhookconfiguration pando-webhook
-kubectl get pods -n pando-system -l app=pando-webhook
+            <h2>A Workload Is Not Being Watched</h2>
 
-# Look at webhook logs for the rejected/ignored admission request
-kubectl logs -n pando-system -l app=pando-webhook --tail=100
+            <p>Symptom: a pod is running, but it never appears in detections and no engine was started for it.</p>
 
-# Confirm the label is actually on the pod template, not just the deployment
-kubectl get deployment your-app -o jsonpath='{.spec.template.metadata.labels}'</code></pre>
+            <pre><code># Is there a sensor on that pod's node at all?
+kubectl get pods -n pando-system -o wide \
+  -l app.kubernetes.io/name=pando-node-sensor | grep &lt;node&gt;
+
+# How many engines is that node's sensor running, and is it shedding?
+kubectl exec -n pando-system &lt;sensor-pod&gt; -- wget -qO- http://localhost:9090/status
+
+# Is the pod opted out?
+kubectl get pod &lt;pod&gt; -o jsonpath='{.metadata.labels}'</code></pre>
 
             <h3>Common causes</h3>
 
             <ul>
-                <li><strong>Label on deployment only, not pod template.</strong> <code>kubectl label deployment</code> adds the label to the deployment object. The webhook matches on pod labels. Use <code>kubectl patch</code> or edit the deployment directly if <code>kubectl rollout restart</code> didn't propagate. The label must be on <code>spec.template.metadata.labels</code>.</li>
-                <li><strong>Namespace excluded by webhook.</strong> The webhook skips <code>kube-system</code>, <code>pando-system</code>, and any namespace in <code>excludedNamespaces</code>. Check the <code>MutatingWebhookConfiguration</code>'s <code>namespaceSelector</code>.</li>
-                <li><strong>Missing ServiceAccount or license Secret in target namespace.</strong> If you're protecting workloads outside <code>pando-system</code>, each target namespace needs its own <code>pando-sidecar</code> ServiceAccount and a copy of the license Secret. Without these, the webhook logs an injection error and admits the pod unmodified. See <a href="/docs/getting-started">Getting Started</a> for the copy commands.</li>
-                <li><strong>Webhook cert expired.</strong> The webhook uses a self-signed cert that rotates via cert-manager or the install hook. If the webhook pod logs show TLS errors, reinstall or run <code>helm upgrade</code>.</li>
-                <li><strong>failurePolicy=Ignore swallowed the error.</strong> Production installs ship with <code>failurePolicy: Ignore</code> so a broken webhook doesn't brick your cluster. That also means injection failures are silent. Always check webhook logs when something didn't inject.</li>
+                <li><strong>The node is over the engine cap.</strong> Each sensor runs at most <code>maxEngines</code> monitored pods (70 by default). Pods beyond it get no engine, and they are shed in a stable order, so the same pods stay unwatched across restarts rather than rotating. Check <code>pando_node_sensor_pods_unmonitored{reason="cap"}</code>. This is the most likely cause on a dense node, and it is a coverage gap rather than a capacity hint.</li>
+                <li><strong>The pod opted out.</strong> <code>pandocore.io/protect: "false"</code> excludes a pod, and nothing an operator sets overrides it. Note the comparison is byte-for-byte: <code>"False"</code> or <code>"0"</code> do not opt out, so an intended opt-out may also be silently inactive.</li>
+                <li><strong>The namespace is excluded.</strong> Eleven are by default, covering <code>kube-system</code> and the GKE managed namespaces. Add the namespace to <code>includedNamespaces</code> to protect it anyway; emptying <code>excludedNamespaces</code> does not work, because an empty list is read as unconfigured and falls back to the built-in eleven.</li>
+                <li><strong>The pod uses <code>hostPID</code> or <code>hostNetwork</code>.</strong> Both are excluded and neither is overridable. A pod whose process view or socket table is the node's cannot have a pod-scoped baseline, so watching it on request would answer the question wrongly rather than narrowly.</li>
+                <li><strong>No sensor is scheduled on that node.</strong> The DaemonSet tolerates everything by default, so this usually means a <code>nodeSelector</code> was set, or the node cannot allocate the sensor's CPU request. The install preflight refuses the latter case at install time; if it was bypassed with <code>preflight.nodeCapacity=false</code>, the sensor pod will sit <code>Pending</code> instead.</li>
             </ul>
 
-            <h2>Sidecar Crash-Looping</h2>
+            <h2>A Sensor Is Refusing Or Crash-Looping</h2>
 
-            <p>Symptom: the pod shows <code>2/2</code> briefly then drops to <code>1/2</code>, or the pando-sidecar container reports <code>CrashLoopBackOff</code>.</p>
+            <p>Symptom: the sensor pod is running but <code>/readyz</code> returns 503 indefinitely, or the pod is in <code>CrashLoopBackOff</code>.</p>
 
-            <pre><code># Logs from the previous crashed instance
-kubectl logs &lt;pod&gt; -c pando-sidecar --previous
+            <pre><code># Current and previous logs
+kubectl logs -n pando-system &lt;sensor-pod&gt;
+kubectl logs -n pando-system &lt;sensor-pod&gt; --previous
 
-# Current logs
-kubectl logs &lt;pod&gt; -c pando-sidecar
+# Events and exit codes
+kubectl describe pod -n pando-system &lt;sensor-pod&gt;</code></pre>
 
-# Describe pod for events and exit codes
-kubectl describe pod &lt;pod&gt;</code></pre>
+            <div class="docs-callout warning">
+                <div class="docs-callout-title">A refusal is not a crash, and <code>/healthz</code> will still say 200</div>
+                <p>When the sensor refuses to monitor it parks rather than exiting, and <code>/healthz</code> deliberately keeps returning 200 so the kubelet does not crash-loop the refusal logs away before you can read them. <code>/readyz</code> is the endpoint that reports it. A pod that looks healthy in <code>kubectl get pods</code> can be refusing, so check readiness rather than phase.</p>
+            </div>
 
-            <h3>License errors</h3>
-
-            <p>The sidecar validates the license on startup. If validation fails, it exits immediately with a log line starting with <code>license:</code>.</p>
+            <p>A refusal names one of eight reasons, which is also the label on the refusal metric: <code>config</code>, <code>licence</code>, <code>siem</code>, <code>node_name</code>, <code>state_dir</code>, <code>cluster_limit</code>, <code>revoked</code> or <code>channel</code>. A refusal is a configuration error and will not clear on its own.</p>
 
             <ul>
-                <li><strong><code>license: signature invalid</code></strong>: the license was signed with a key that doesn't match the sidecar's embedded public key. Usually means you're running a sidecar image from a different environment (staging sidecar with prod license, or vice versa). Reinstall with the matching chart.</li>
-                <li><strong><code>license: expired</code></strong>: the <code>expiry</code> field is in the past. Log in to the portal and request a renewal.</li>
-                <li><strong><code>license: max_nodes exceeded</code></strong>: you're running more protected nodes than your license allows. Either upgrade your plan in the portal or unlabel some deployments.</li>
-                <li><strong><code>license: secret not found</code></strong>: the <code>pando-license</code> Secret is missing from the target namespace. See the per-namespace setup in <a href="/docs/getting-started">Getting Started</a>.</li>
+                <li><strong><code>licence</code></strong>: the license failed validation. A signature mismatch usually means the image and the license are from different environments. An expired license needs renewal from the portal. Note the key is not trimmed, so a Secret created from a file with a trailing newline fails validation; create it with <code>--from-literal</code>.</li>
+                <li><strong><code>config</code></strong>: a value was rejected at startup rather than silently clamped. The most common is <code>sampleIntervalMs</code> below its 250 ms floor, which is refused by name. There is no 100 ms option.</li>
+                <li><strong><code>channel</code></strong>: the sensor could not establish its evidence channel to the controller. Check the controller is installed and running, and that its Service publishes the evidence port the sensor expects. The sensor composes that URL from the controller's parts rather than taking a hand-written one, so a mismatch is usually a namespace or service-name override.</li>
+                <li><strong><code>state_dir</code></strong>: <code>/var/lib/pando</code> could not be created or written on the node.</li>
+                <li><strong><code>node_name</code></strong>: the sensor could not determine which node it is on, so it cannot attribute evidence or be metered correctly.</li>
+                <li><strong><code>cluster_limit</code></strong> or <strong><code>revoked</code></strong>: a portal-side verdict about this cluster or license. Check the portal.</li>
             </ul>
 
-            <h3>Process namespace errors</h3>
+            <div class="docs-callout warning">
+                <div class="docs-callout-title">The controller client certificate is mandatory</div>
+                <p>The sensor mounts the controller's client certificate Secret with <code>optional: false</code>, so a missing Secret fails the pod rather than starting a sensor whose evidence has nowhere to go. If the pod will not start at all and the events mention a missing Secret, that is this.</p>
+            </div>
 
-            <p>The sidecar attaches to the shared process namespace of its pod. If the pod doesn't have <code>shareProcessNamespace: true</code> set (the webhook adds this automatically), the sidecar can't see the target process and exits with <code>process namespace not shared</code>. This only happens if a PodSecurityPolicy or admission controller stripped the field after the webhook set it. Check your cluster's admission chain.</p>
+            <h3>Memory or CPU pressure</h3>
 
-            <h3>Memory pressure</h3>
+            <p>The sensor requests 250m CPU and 256Mi per node, and is limited to 2 cores and 1Gi. If you have shortened the sampling cadence, raise the request to match: at the 250 ms floor the same build costs roughly four times as much CPU as at the 1000 ms default, and CPU is shared by request under contention.</p>
 
-            <p>The sidecar defaults to a 50Mi memory limit, sized for a typical web app. Heavy runtimes or high-throughput services can push it over. Raise the limit via Helm:</p>
+            <pre><code>helm upgrade pando-node-sensor ... \
+  --set resources.requests.cpu=500m \
+  --set resources.limits.memory=1Gi</code></pre>
 
-            <pre><code>helm upgrade pando-webhook \
-  oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-webhook \
-  --reuse-values \
-  --set sidecar.resources.limits.memory=128Mi</code></pre>
+            <h2 id="too-many-alerts">Too Many Alerts</h2>
 
-            <h2>Too Many Alerts (False Positives)</h2>
+            <p>Symptom: detections firing on normal workload behaviour during batch jobs, traffic bursts or other legitimate variance.</p>
 
-            <p>Symptom: the sidecar is tripping on normal workload behavior during batch jobs, traffic bursts, or other legitimate variance.</p>
+            <p>First, confirm the workload finished learning. A profile takes 30 minutes and at least 900 samples, whichever is later, and detections before that are not meaningful. Behavioural checks that rest on longer baselines keep warming for hours beyond it, so a workload that has been watched for forty minutes is not yet fully calibrated.</p>
 
-            <p>Before tuning, confirm the workload has completed its learning window. The first 30 minutes after pod start are the learning phase (tunable via <code>PANDO_LEARNING_DURATION_SECONDS</code>) and any detections during that window are meaningless. Check readiness:</p>
-
-            <pre><code>kubectl exec &lt;pod&gt; -c pando-sidecar -- wget -qO- http://localhost:9090/readyz</code></pre>
-
-            <p>If that returns 200, learning is complete. If 503, wait it out.</p>
+            <pre><code>kubectl exec -n pando-system &lt;sensor-pod&gt; -- wget -qO- http://localhost:9090/readyz</code></pre>
 
             <h3>Tuning options, in order of preference</h3>
 
             <ol>
-                <li><strong>Raise <code>PANDO_SENSITIVITY</code>.</strong> The single knob for most workloads. Default is 2.0 (3.0 for JIT and database runtimes); try bumping by 0.5&ndash;1.0 for noisy services. Higher values make the sidecar more permissive without disabling detection entirely.
-                    <pre><code>kubectl set env deployment/your-app -c pando-sidecar PANDO_SENSITIVITY=3.0</code></pre>
+                <li><strong>Loosen <code>sensitivity</code> in a PandoCorePolicy</strong> for that namespace. <code>low</code>, <code>medium</code> or <code>high</code>, where a higher preset is a tighter gate. This is the right lever because it is per-namespace and version-controlled. See <a href="/docs/policy">CRD Policy</a>.
+                    <pre><code>kubectl patch pandocorepolicy default -n production \
+  --type merge -p '{"spec":{"sensitivity":"low"}}'</code></pre>
                 </li>
-                <li><strong>Trigger a re-learn.</strong> If the workload's traffic pattern changed (deploy, config rollout, customer onboarding), the old baseline no longer reflects normal. Re-learn rebuilds it from the current state:
-                    <pre><code>kubectl exec &lt;pod&gt; -c pando-sidecar -- wget -qO- --post-data='' http://localhost:9090/relearn</code></pre>
+                <li><strong>Put the workload in <code>monitor</code>.</strong> It keeps being watched and keeps producing evidence, and stops alerting, which is the right move while you calibrate rather than switching anything off.
+                    <pre><code>kubectl annotate deployment your-app pandocore.io/mode=monitor --overwrite
+kubectl rollout restart deployment/your-app</code></pre>
                 </li>
-                <li><strong>Drop back to monitor mode.</strong> If you're still calibrating, there's no shame in running in <code>monitor</code> for another week. Evidence still flows to the portal; no pods get killed.</li>
-                <li><strong>Contact support.</strong> If sensitivity and re-learning don't settle the workload, reach out. We'd rather debug it with you than let you chase it alone.</li>
+                <li><strong>Restart the workload to re-profile it.</strong> If its traffic pattern genuinely changed, the old profile no longer describes normal. There is no re-learn endpoint on the sensor; a workload re-profiles when its pods restart.</li>
+                <li><strong>Contact support.</strong> If the preset and a re-profile do not settle it, reach out. We would rather debug it with you.</li>
             </ol>
 
             <div class="docs-callout info">
-                <div class="docs-callout-title">Noisy runtimes</div>
-                <p>The webhook auto-applies a higher sensitivity default for a handful of well-known runtime families whose legitimate behavior is inherently variable. If your workload runs a custom base image the detection didn't match, explicitly set <code>PANDO_SENSITIVITY=3.0</code>.</p>
+                <div class="docs-callout-title">Sensitivity is not a per-workload environment variable any more</div>
+                <p><code>PANDO_SENSITIVITY</code> still exists, but on the node sensor it belongs to the DaemonSet, so it applies node-wide rather than to one workload. Use a PandoCorePolicy for per-namespace tuning, and <code>thresholds</code> within it for finer numeric control. Thresholds can only tighten what learning derived, never loosen it; use <code>sensitivity</code> to loosen.</p>
             </div>
 
-            <h2>Sidecar Running but No Metrics</h2>
+            <h2>Sensor Running But No Data</h2>
 
-            <p>Symptom: the sidecar pod is ready, but <code>/metrics</code> returns nothing or the portal dashboard shows no activity.</p>
+            <p>Symptom: the sensor is ready, but <code>/metrics</code> looks empty or the portal dashboard shows no activity.</p>
 
-            <pre><code># Hit the metrics endpoint directly
-kubectl exec &lt;pod&gt; -c pando-sidecar -- wget -qO- http://localhost:9090/metrics
+            <pre><code># Metrics directly off the sensor
+kubectl exec -n pando-system &lt;sensor-pod&gt; -- wget -qO- http://localhost:9090/metrics
 
-# Confirm the portal URL the sidecar is talking to
-kubectl exec &lt;pod&gt; -c pando-sidecar -- env | grep PANDO_PORTAL_URL</code></pre>
+# Is the controller receiving anything?
+kubectl logs -n pando-system -l app.kubernetes.io/name=pando-controller --tail=100</code></pre>
 
             <ul>
-                <li><strong>Metrics endpoint empty</strong>: the sidecar hasn't completed learning yet, or the target process hasn't been sampled. Wait for <code>/readyz</code> to return 200.</li>
-                <li><strong>Portal dashboard empty</strong>: the sidecar posts evidence + heartbeats to <code>PANDO_PORTAL_URL</code>. If this is unset or pointing at the wrong environment, the portal won't receive anything. Re-run the Helm install with the correct portal URL.</li>
-                <li><strong>Egress blocked</strong>: your cluster's NetworkPolicy or firewall may be blocking outbound calls to the portal. Check sidecar logs for HTTP errors.</li>
+                <li><strong>Your Prometheus job matches nothing.</strong> This is the most common cause and the most misleading, because it reports a clean scrape of nothing, which looks identical to healthy. The sensor's own pod carries <code>pandocore.io/protect: "false"</code>, so a job selecting on <code>protect=true</code> finds no targets. Select on <code>app.kubernetes.io/name=pando-node-sensor</code>.</li>
+                <li><strong>Learning has not finished.</strong> Wait for <code>/readyz</code> to return 200.</li>
+                <li><strong>Evidence is reaching the controller but not leaving it.</strong> The controller owns every outbound destination, so an empty SIEM or Slack channel with healthy sensors is a controller configuration question rather than a sensor one. See <a href="/docs/controller">Controller</a>.</li>
+                <li><strong>Egress is blocked.</strong> Your cluster's NetworkPolicy or firewall may be blocking the controller's outbound calls. Check the controller's logs for HTTP errors.</li>
+                <li><strong>Per-namespace integrations are inert.</strong> Integrations declared in a PandoCorePolicy reach the controller through the destinations mirror. If <code>mirror.enabled=false</code>, nothing writes the destinations Secret and those integrations do nothing. The controller's own destinations are unaffected.</li>
             </ul>
 
-            <h2>Pod Terminated Unexpectedly</h2>
+            <h2>A Pod Was Contained Unexpectedly</h2>
 
-            <p>Symptom: a protected pod was killed and you need to understand why.</p>
+            <p>Symptom: a workload lost network egress and you need to understand why.</p>
 
-            <p>Every termination ships with a structured evidence envelope to the portal. Start there:</p>
+            <p>Containment is a Kubernetes NetworkPolicy, so it is visible and reversible with ordinary tooling:</p>
+
+            <pre><code># The policy PandoCore wrote
+kubectl get networkpolicy -n &lt;namespace&gt;
+
+# The detection that caused it
+kubectl get events -n &lt;namespace&gt; --field-selector involvedObject.name=&lt;pod&gt;</code></pre>
 
             <ol>
-                <li>Open the portal dashboard, find the pod in the Events tab, and read the detection reason and severity.</li>
-                <li>If you don't have portal access at the moment, the sidecar's own logs include the full decision path. The logs are still available on the node's container runtime for a short window after termination.</li>
-                <li>Check whether the pod was in <code>enforce</code> mode. If you expected it to only alert, confirm your mode setting with <code>kubectl get deployment your-app -o jsonpath='{.spec.template.metadata.annotations}'</code>. Deployment annotations override the cluster default.</li>
+                <li>Read the evidence record in the portal's Events tab for the detection reason and severity.</li>
+                <li>Check the workload's mode. If you expected it only to alert, confirm with <code>kubectl get deployment your-app -o jsonpath='{.spec.template.metadata.annotations}'</code>. Remember the annotation is read when the sensor starts watching a pod, so a recent change may not have applied to pods already running.</li>
+                <li>If the behaviour subsides, the policy is removed automatically. You do not need to delete it by hand, and deleting it does not resolve the underlying detection.</li>
             </ol>
 
-            <p>If the termination was clearly a false positive, see the <a href="#too-many-alerts-false-positives">false positives</a> section above. If you need to pause enforcement immediately while you investigate, see <a href="/docs/emergency">Emergency Procedures</a>.</p>
+            <p>If it was clearly a false positive, see <a href="#too-many-alerts">Too Many Alerts</a> above. To stop PandoCore responding immediately while you investigate, see <a href="/docs/emergency">Emergency Procedures</a>.</p>
 
             <h2>Getting Help</h2>
 
-            <p>If none of the above fixes your issue, collect the following before reaching out:</p>
+            <p>Collect the following before reaching out:</p>
 
             <ul>
-                <li><code>kubectl version</code> and the sidecar image tag</li>
-                <li><code>kubectl logs &lt;pod&gt; -c pando-sidecar</code> (last 200 lines)</li>
-                <li><code>kubectl describe pod &lt;pod&gt;</code></li>
-                <li><code>kubectl get mutatingwebhookconfiguration pando-webhook -o yaml</code></li>
-                <li>Relevant portal evidence envelope if there was a termination</li>
+                <li><code>kubectl version</code>, and the chart versions from <code>helm list -n pando-system</code></li>
+                <li><code>kubectl logs -n pando-system &lt;sensor-pod&gt;</code> (last 200 lines)</li>
+                <li><code>kubectl exec -n pando-system &lt;sensor-pod&gt; -- wget -qO- http://localhost:9090/status</code></li>
+                <li><code>kubectl describe pod -n pando-system &lt;sensor-pod&gt;</code></li>
+                <li>The value of <code>pando_node_sensor_pods_unmonitored</code> if coverage is the question</li>
+                <li>The relevant portal evidence record if a pod was contained</li>
             </ul>
 
             <p>Send to <a href="/contact">support</a> or reply to your onboarding email thread.</p>
-
         </main>
     </div>
 
@@ -234,6 +255,6 @@ kubectl exec &lt;pod&gt; -c pando-sidecar -- env | grep PANDO_PORTAL_URL</code><
         </div>
     </footer>
 
-    <script src="../js/main.js"></script>
+    <script src="/js/main.js"></script>
 </body>
 </html>

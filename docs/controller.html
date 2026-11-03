@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="PandoCore controller - An in-cluster StatefulSet that receives sidecar evidence over mTLS, spools it durably, and delivers it to your SIEM, Slack and the portal.">
+    <meta name="description" content="PandoCore controller - the in-cluster StatefulSet that receives sensor evidence over mTLS, spools it durably, and delivers it to your SIEM, Slack and the portal.">
     <title>Controller | PandoCore Docs</title>
     <link rel="canonical" href="https://pandocore.io/docs/controller">
-    <link rel="icon" type="image/png" href="../images/favicon.png">
+    <link rel="icon" type="image/png" href="/images/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/docs.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/docs.css">
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
@@ -20,7 +20,7 @@
         <div class="container">
             <div class="nav-wrapper">
                 <a href="/" class="logo">
-                    <img src="../images/logoTransparency.png" alt="Pando Logo">
+                    <img src="/images/logoTransparency.png" alt="PandoCore" width="184" height="240">
                     <div class="logo-text-wrapper">
                         <span class="logo-text">PandoCore</span>
                     </div>
@@ -49,7 +49,7 @@
     <section class="docs-hero">
         <div class="container">
             <h2>Controller</h2>
-            <p>An optional in-cluster component that takes evidence delivery off the sidecar.</p>
+            <p>The in-cluster component that receives evidence and owns every outbound destination.</p>
         </div>
     </section>
 
@@ -86,30 +86,32 @@
 
             <h1>Controller</h1>
 
-            <p>The controller is a StatefulSet that receives evidence from sidecars over mTLS, writes it to a durable spool, and owns delivery to your SIEM, Slack and the portal. Without it, each sidecar handles its own delivery from an <code>emptyDir</code> that dies with the pod.</p>
+            <p>The controller is a StatefulSet that receives evidence from the node sensors over mTLS, writes it to a durable spool, and owns delivery to your SIEM, Slack and the portal. Centralising delivery is what keeps third-party credentials out of every node: the sensor holds none of them.</p>
 
-            <div class="docs-callout info">
-                <div class="docs-callout-title">Optional, and separately installed</div>
-                <p>The controller is its own Helm chart, currently <code>0.1.0</code>. The <code>pando-webhook</code> chart does not install it, and sidecars run and detect without it.</p>
+            <div class="docs-callout warning">
+                <div class="docs-callout-title">Install it first, and install it</div>
+                <p>The controller is its own Helm chart and the node sensor chart does not install it. Install the controller first: the sensor mounts its client certificate Secret with <code>optional: false</code>, so a sensor installed without a controller fails to start rather than running with nowhere to send evidence. See <a href="/docs/getting-started">Getting Started</a> for the order.</p>
             </div>
 
             <h2>Install</h2>
 
             <pre><code>helm install pando-controller \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-controller \
+  --version &lt;VERSION&gt; \
   --namespace pando-system --create-namespace \
   --set license.key="YOUR_LICENSE_KEY"</code></pre>
 
+            <p><code>--version</code> is not optional: installing an OCI chart without it fails outright rather than resolving to the newest release.</p>
+
             <p><code>license.key</code> is required unless you set <code>license.existingSecret.name</code> instead. <code>portalURL</code> is also required, and already carries the right default.</p>
 
-            <h2>Pointing Sidecars at It</h2>
+            <h2>How Sensors Find It</h2>
 
-            <p>Installing the chart does not route anything to it. Two steps connect the two halves:</p>
+            <p>Nothing to wire by hand. The sensor composes the controller's evidence URL from the <code>controller.*</code> values in its own chart, which default to the service name, namespace and port this chart publishes, so the two agree out of the box.</p>
 
-            <ol>
-                <li>Set <code>PANDO_CONTROLLER_URL</code> in the <code>pando-webhook</code> chart to the controller's evidence URL, which is <code>https://&lt;release&gt;-pando-controller.pando-system.svc:9443</code> with the defaults above</li>
-                <li>Mirror the <code>pando-controller-client-tls</code> Secret into every protected workload's namespace, so sidecars hold a client certificate</li>
-            </ol>
+            <p>That composition is deliberate rather than a convenience. An early live run dialled a hand-written <code>:8443</code> while the controller's Service has only ever published its evidence listener on <code>:9443</code>: the sensor reported a healthy channel, started its engines, and would have failed at the first detection, with hundreds of chart assertions green over it. If you override the controller's service name, namespace or port, override the matching <code>controller.*</code> value on the sensor rather than writing a URL.</p>
+
+            <p>The client certificate Secret, <code>pando-controller-client-tls</code>, is mounted by the sensor chart in <code>pando-system</code>. There is nothing to mirror into your workload namespaces, because nothing of PandoCore's runs there.</p>
 
             <h2>Ports</h2>
 
@@ -149,7 +151,7 @@
 
             <p>Each replica gets a PersistentVolumeClaim, <code>2Gi</code> by default. The default is 2 replicas, so that is two cluster-level volumes, not one per protected pod. It does not grow with the fleet.</p>
 
-            <p>The controller answers <code>202</code> only after an <code>fsync</code>, and replays whatever is on disk at startup. That is what makes it safe for the sidecar to drop a record once it has been accepted.</p>
+            <p>The controller answers <code>202</code> only after an <code>fsync</code>, and replays whatever is on disk at startup. That is what makes it safe for a sensor to drop a record once it has been accepted.</p>
 
             <div class="docs-callout warning">
                 <div class="docs-callout-title">The spool is a delivery hop, not a history</div>
@@ -158,7 +160,9 @@
 
             <h2>Per-Namespace Destinations</h2>
 
-            <p>When <code>destinations.enabled</code> is set, the controller mounts a Secret written by the admission webhook and re-reads it every 30 seconds. If the <code>pando-webhook</code> chart is not installed the mount is empty, the controller logs that once, and each namespace falls back to the portal and the environment baseline. The mount is optional by design, so the controller still starts.</p>
+            <p>When <code>destinations.enabled</code> is set, the controller mounts a Secret written by the destinations mirror and re-reads it every 30 seconds. The mirror is an unprivileged Deployment installed by the sensor chart, and it exists for a privilege reason: resolving a policy's <code>secretRef</code> needs cluster-wide <code>secrets get</code>, and that grant must not sit on a <code>hostPID</code> pod running as uid 0 on every node. One replica holds it instead.</p>
+
+            <p>If <code>mirror.enabled=false</code> on the sensor chart, nothing writes that Secret: the mount is empty, the controller logs it once, and each namespace falls back to the portal and the environment baseline. The mount is optional by design so the controller still starts, which means per-namespace integrations declared in a policy fail quietly rather than loudly. Check the controller's log line if a policy's destination seems to do nothing.</p>
 
             <h2>Next Steps</h2>
 
@@ -181,6 +185,6 @@
         </div>
     </footer>
 
-    <script src="../js/main.js"></script>
+    <script src="/js/main.js"></script>
 </body>
 </html>

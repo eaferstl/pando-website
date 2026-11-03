@@ -17,7 +17,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/styles.css?v=2">
+    <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
@@ -26,7 +26,7 @@
         <div class="container">
             <div class="nav-wrapper">
                 <a href="/" class="logo">
-                    <img src="/images/logoTransparency.png" alt="Pando Logo">
+                    <img src="/images/logoTransparency.png" alt="PandoCore" width="184" height="240">
                     <div class="logo-text-wrapper">
                         <span class="logo-text">PandoCore</span>
                     </div>
@@ -69,6 +69,11 @@
             <img class="blog-cover" src="/images/blog/sidecar-injection-silent-failures-cover.svg" alt="A Deployment box carrying a label, with the path down to three running pods broken by an X">
 
             <article class="blog-article">
+                <aside class="blog-addendum">
+                    <p><strong>Update, November 1, 2026.</strong> This post is about the injected sidecar and its mutating admission webhook, which are deprecated and receive no further release. PandoCore now ships as a node sensor: one DaemonSet pod per node, nothing injected into your pods, and no label needed to select a workload. The failure described here cannot happen on the current install, because there is no injection to miss.</p>
+                    <p>It is kept as a record of how the previous install behaved. For current behaviour, see the <a href="/docs/getting-started">install guide</a>.</p>
+                </aside>
+
                 <p>Running <code>kubectl label deployment my-app pandocore.io/inject=enabled</code> modifies the Deployment's top-level <code>metadata.labels</code>, not <code>spec.template.metadata.labels</code>. Those are two different things, and the difference is the bug.</p>
 
                 <p>Sidecar injection works through a mutating admission webhook that fires when a pod is created. The webhook matches on the pod's labels. Pods inherit their labels from exactly one place: the Deployment's pod template. Labels on the Deployment object itself never propagate down to pods. They exist so you can select the Deployment with things like <code>kubectl get deploy -l team=payments</code>.</p>
@@ -103,6 +108,6 @@
         </div>
     </footer>
 
-    <script src="/js/main.js?v=2"></script>
+    <script src="/js/main.js"></script>
 </body>
 </html>

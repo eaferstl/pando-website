@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="PandoCore Operating Modes - Understand monitor, alert, isolate, enforce, and debug modes for runtime protection.">
+    <meta name="description" content="PandoCore operating modes: monitor, alert and isolate, plus debug. What each one does, and what sets the ceiling a workload can reach.">
     <title>Operating Modes | PandoCore Docs</title>
     <link rel="canonical" href="https://pandocore.io/docs/operating-modes">
-    <link rel="icon" type="image/png" href="../images/favicon.png">
+    <link rel="icon" type="image/png" href="/images/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/docs.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/docs.css">
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
@@ -20,7 +20,7 @@
         <div class="container">
             <div class="nav-wrapper">
                 <a href="/" class="logo">
-                    <img src="../images/logoTransparency.png" alt="Pando Logo">
+                    <img src="/images/logoTransparency.png" alt="PandoCore" width="184" height="240">
                     <div class="logo-text-wrapper">
                         <span class="logo-text">PandoCore</span>
                     </div>
@@ -35,9 +35,9 @@
                     <li><a href="/">Home</a></li>
                     <li><a href="/product">Product</a></li>
                     <li><a href="/pricing">Pricing</a></li>
-                    <li><a href="/docs/" class="active">Docs</a></li>
                     <li><a href="/about">About</a></li>
                     <li><a href="/blog/">Blog</a></li>
+                    <li><a href="/docs/" class="active">Docs</a></li>
                     <li><a href="/contact" class="nav-contact">Contact</a></li>
                     <li><a href="https://portal.pandocore.io/signup" class="nav-signup">Sign Up</a></li>
                 </ul>
@@ -49,7 +49,7 @@
     <section class="docs-hero">
         <div class="container">
             <h2>Operating Modes</h2>
-            <p>A four-step ladder (monitor, alert, isolate, enforce) plus a debug mode. Each step adds one response action to the one below it.</p>
+            <p>A three-step ladder (monitor, alert, isolate) plus a debug mode. Each step adds one response action to the one below it.</p>
         </div>
     </section>
 
@@ -86,12 +86,41 @@
 
             <h1>Operating Modes</h1>
 
-            <p>PandoCore uses a four-step ladder, <strong>Monitor → Alert → Isolate → Enforce</strong>, controlling how it responds when anomalous behavior is detected. Modes layer additively: each step does everything the step below it does, plus one additional action. Pick the step that matches your deployment stage and risk tolerance. A separate <strong>Debug</strong> mode exists for troubleshooting.</p>
+            <p>PandoCore responds on a ladder: <strong>Monitor, Alert, Isolate</strong>. The rungs are additive, so each one does everything the rung below it does plus one more action, and intensity is monotonic. A separate <strong>Debug</strong> mode sits outside the ladder for troubleshooting.</p>
+
+            <p>Two things decide where a given workload sits: the ceiling your license permits, and the mode you set beneath it. A mode can only narrow what the license allows, never widen it.</p>
+
+            <h2>What Sets The Ceiling</h2>
+
+            <p>The response ceiling is a license property rather than a chart value, which is why raising it changes nothing in your cluster.</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>License</th>
+                        <th>Ceiling</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Free</td>
+                        <td>Alert. Detects and alerts on as many nodes as you install on, and never contains</td>
+                    </tr>
+                    <tr>
+                        <td>Growth, Enterprise</td>
+                        <td>Isolate</td>
+                    </tr>
+                </tbody>
+            </table>
 
             <div class="docs-callout info">
-                <div class="docs-callout-title">ℹ️ Layered ladder</div>
-                <p>Everything Alert does, Isolate also does. Everything Isolate does, Enforce also does. One knob (<code>PANDO_MODE</code>), four values, monotonic intensity.</p>
+                <div class="docs-callout-title">Isolate is the ceiling of the supported install</div>
+                <p>The node sensor's ClusterRole withholds <code>pods: delete</code> by name, and the sensor caps its own ceiling at Isolate in code rather than relying on that grant being absent. So the hardest automatic action available is a NetworkPolicy that contains the pod. A mode or license naming something harder resolves down to Isolate rather than failing, which is deliberate: the alternative is a sensor that attempts a forbidden call on every response and learns about it as a 403 each time.</p>
             </div>
+
+            <p>There is a second, separate limit. The portal can clamp an individual node, holding it to Monitor regardless of license or annotation. That is a commercial verdict about the node rather than anything to do with your license, and the consequence is worth being precise about: a clamped node does not alert either, where a free node does. The two limits are reported separately on purpose, so an operator reading a clamped node is not sent to upgrade a license that was never the constraint.</p>
+
+            <p>A free license never clamps, because there is no node cap for a clamp to be a function of. What Free does not get is containment, and that comes from the license ceiling applying equally on every node rather than from protection being withdrawn from some of them.</p>
 
             <h2>Mode Comparison</h2>
 
@@ -101,92 +130,60 @@
                         <th>Mode</th>
                         <th>Detection</th>
                         <th>Evidence</th>
-                        <th>Alerts (Slack + portal)</th>
+                        <th>Alerts</th>
                         <th>NetworkPolicy isolation</th>
-                        <th>Pod Termination</th>
                         <th>Use Case</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td><strong>Monitor</strong></td>
-                        <td>✓</td>
-                        <td>✓</td>
-                        <td>✗</td>
-                        <td>✗</td>
-                        <td>✗</td>
-                        <td>Initial deployment, tuning, evaluation</td>
+                        <td>&#10003;</td>
+                        <td>&#10003;</td>
+                        <td>&#10007;</td>
+                        <td>&#10007;</td>
+                        <td>Tuning a noisy workload, or a workload you want watched silently</td>
                     </tr>
                     <tr>
                         <td><strong>Alert</strong></td>
-                        <td>✓</td>
-                        <td>✓</td>
-                        <td>✓</td>
-                        <td>✗</td>
-                        <td>✗</td>
-                        <td>Production visibility with human-in-the-loop triage</td>
+                        <td>&#10003;</td>
+                        <td>&#10003;</td>
+                        <td>&#10003;</td>
+                        <td>&#10007;</td>
+                        <td>Production visibility with a human deciding what to do</td>
                     </tr>
                     <tr>
                         <td><strong>Isolate</strong></td>
-                        <td>✓</td>
-                        <td>✓</td>
-                        <td>✓</td>
-                        <td>✓</td>
-                        <td>✗</td>
-                        <td>Contain suspicious pods without pod termination risk</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Enforce</strong></td>
-                        <td>✓</td>
-                        <td>✓</td>
-                        <td>✓</td>
-                        <td>✓</td>
-                        <td>✓</td>
-                        <td>Full production protection</td>
+                        <td>&#10003;</td>
+                        <td>&#10003;</td>
+                        <td>&#10003;</td>
+                        <td>&#10003;</td>
+                        <td>Containment without restarting the workload</td>
                     </tr>
                     <tr>
                         <td><strong>Debug</strong></td>
-                        <td>✓</td>
-                        <td>✓</td>
-                        <td>✗</td>
-                        <td>✗</td>
-                        <td>✗</td>
-                        <td>Troubleshooting, development (verbose logs)</td>
+                        <td>&#10003;</td>
+                        <td>&#10003;</td>
+                        <td>&#10007;</td>
+                        <td>&#10007;</td>
+                        <td>Troubleshooting, with verbose logs</td>
                     </tr>
                 </tbody>
             </table>
 
             <h2>Monitor Mode</h2>
-            
-            <p><strong>Set via:</strong> <code>PANDO_MODE=monitor</code></p>
-            
-            <p>Monitor mode is the recommended starting point for all deployments. PandoCore detects anomalies and generates evidence but does <strong>not</strong> terminate pods.</p>
 
-            <div class="docs-callout info">
-                <div class="docs-callout-title">ℹ️ Default Mode</div>
-                <p>Monitor mode is the default. You don't need to set any configuration to use it.</p>
-            </div>
+            <p>Monitor detects and records, and does nothing outward. It is the node-wide default for a pod carrying no mode annotation.</p>
 
-            <h3>Behavior</h3>
-            
             <ul>
-                <li>Continuously monitors workload behavior</li>
-                <li>Logs detection events to stdout (JSON format)</li>
+                <li>Watches workload behaviour and builds a profile per workload</li>
+                <li>Logs detections as JSON to stdout</li>
                 <li>Emits Kubernetes events for detections</li>
-                <li>Updates Prometheus metrics for detection activity</li>
-                <li><strong>Does not terminate pods</strong></li>
+                <li>Updates Prometheus metrics</li>
+                <li>Sends no alerts and applies no NetworkPolicy</li>
             </ul>
 
-            <h3>When to Use</h3>
-            
-            <ul>
-                <li><strong>Initial deployment:</strong> Understand your workload's normal behavior patterns</li>
-                <li><strong>Tuning:</strong> Observe detection events and adjust sensitivity</li>
-                <li><strong>Evaluation:</strong> Test PandoCore before enabling enforcement</li>
-                <li><strong>Compliance requirements:</strong> When you need detection without automated response</li>
-            </ul>
-
-            <h3>Example Output</h3>
+            <p>Reach for it when a specific workload is noisy and you want it watched while you tune, rather than as a fleet-wide starting posture: on a free license the fleet-wide posture is already Alert, and alerts you can read are the point of running it.</p>
 
             <pre><code>{
   "level": "warn",
@@ -199,226 +196,101 @@
 
             <h2>Alert Mode</h2>
 
-            <p><strong>Set via:</strong> <code>PANDO_MODE=alert</code></p>
+            <p>Alert adds notification. On a detection, the controller delivers to whichever destinations you have configured, and the workload is left alone.</p>
 
-            <p>Alert mode adds real-time notifications to monitoring. When anomalous behavior is detected, PandoCore sends alerts to Slack (and other configured destinations) so your team is notified immediately, but pods are <strong>not</strong> terminated.</p>
+            <ul>
+                <li>Everything Monitor does, plus:</li>
+                <li>Delivers each detection to the destinations configured on the controller</li>
+                <li>Alerts carry pod name, namespace, severity and timestamp</li>
+                <li>Applies no NetworkPolicy</li>
+            </ul>
 
             <div class="docs-callout info">
-                <div class="docs-callout-title">Requires Configuration</div>
-                <p>Alert mode requires a Slack incoming webhook URL. Set <code>PANDO_SLACK_WEBHOOK_URL</code> or configure <code>slackWebhookURL</code> in Helm values.</p>
+                <div class="docs-callout-title">Destinations live on the controller</div>
+                <p>Alert does not need a webhook URL per workload. The controller owns every outbound destination, so SIEM, Slack and webhook delivery are configured once, and no workload pod holds a third-party credential. See <a href="/docs/controller">Controller</a>.</p>
             </div>
-
-            <h3>Behavior</h3>
-
-            <ul>
-                <li>Everything in Monitor mode, plus:</li>
-                <li>Sends color-coded Slack alerts on each detection event</li>
-                <li>Alerts include pod name, namespace, severity, and timestamp</li>
-                <li><strong>Does not terminate pods</strong></li>
-            </ul>
-
-            <h3>When to Use</h3>
-
-            <ul>
-                <li><strong>Production rollout:</strong> Get notified before enabling enforcement</li>
-                <li><strong>Compliance:</strong> When you need alerting without automated response</li>
-                <li><strong>Team visibility:</strong> Keep security and ops teams in the loop</li>
-            </ul>
-
-            <h3>Example Alert</h3>
-
-            <p>Slack alerts are color-coded by severity:</p>
-            <ul>
-                <li><strong>Critical</strong> (red): enforcement triggered</li>
-                <li><strong>High</strong> (orange): significant anomaly detected</li>
-                <li><strong>Warning</strong> (yellow): detection below enforcement threshold</li>
-                <li><strong>Info</strong> (green): low-severity detection</li>
-            </ul>
 
             <h2>Isolate Mode</h2>
 
-            <p><strong>Set via:</strong> <code>PANDO_MODE=isolate</code></p>
+            <p>Isolate is the top of the ladder on the supported install. On a trip, PandoCore writes a Kubernetes NetworkPolicy that denies the pod's egress except DNS, and removes it again if the behaviour subsides.</p>
 
-            <p>Isolate mode adds automated network containment on top of Alert mode. When anomalous behavior is detected, PandoCore generates evidence, sends alerts, and applies a <strong>NetworkPolicy</strong> to the compromised pod that blocks all egress traffic except DNS. Pods are <strong>not terminated</strong>.</p>
+            <ul>
+                <li>Everything Alert does, plus:</li>
+                <li>Applies a NetworkPolicy to the tripped pod</li>
+                <li>Releases automatically on recovery</li>
+            </ul>
 
             <div class="docs-callout info">
-                <div class="docs-callout-title">Why isolate instead of terminate?</div>
-                <p>Isolation contains the blast radius of an in-progress attack (preventing lateral movement, data exfiltration, C2 callbacks) while preserving the running pod for forensic inspection. If the drift signal subsides within the recovery window, the NetworkPolicy is removed automatically and the pod is released. This is the right mode for stateful workloads where pod restart is expensive.</p>
-            </div>
-
-            <h3>Behavior</h3>
-
-            <ul>
-                <li>Everything in Alert mode, plus:</li>
-                <li>Creates a <code>pando-isolate-{pod-name}</code> NetworkPolicy that denies egress except DNS (UDP 53)</li>
-                <li>Starts a recovery timer; after <code>recoveryTimeoutSecs</code> (default 60s) of clean samples, the NetworkPolicy is removed and the pod is released</li>
-                <li>Does NOT terminate the pod; the escalation-to-terminate path is only active in Enforce mode</li>
-            </ul>
-
-            <h3>When to Use</h3>
-
-            <ul>
-                <li><strong>Stateful workloads:</strong> Databases, caches, message queues where pod restart causes downtime or data loss</li>
-                <li><strong>Forensic-first security posture:</strong> Contain first, preserve the pod for inspection, then decide</li>
-                <li><strong>Graduated rollout:</strong> A middle step between Alert (notify only) and Enforce (terminate). Confirm alerts are accurate, then confirm the NetworkPolicy doesn't disrupt legitimate traffic, then enable termination.</li>
-            </ul>
-
-            <h3>Example Output</h3>
-
-            <pre><code>{
-  "level": "info",
-  "timestamp": "2026-04-22T19:13:21Z",
-  "message": "Pod isolated via NetworkPolicy: egress denied except DNS",
-  "action": "isolated_pending_escalation",
-  "policy": "pando-isolate-nginx-b8f89948c-l8spl",
-  "recovery_timeout_secs": 60
-}</code></pre>
-
-            <h2>Enforce Mode</h2>
-
-            <p><strong>Set via:</strong> <code>PANDO_MODE=enforce</code></p>
-
-            <p>Enforce mode provides active protection. When anomalous behavior is detected, PandoCore runs the full graduated-response chain: alert → network isolation → escalation timer → pod termination.</p>
-
-            <div class="docs-callout warning">
-                <div class="docs-callout-title">⚠️ Production Use</div>
-                <p>Before enabling enforce mode, run in monitor mode for at least one week in staging to validate detection behavior for your workload. Consider stepping through Alert and Isolate first; the mode ladder is designed to let you promote gradually.</p>
+                <div class="docs-callout-title">Why containment rather than a restart</div>
+                <p>A restart destroys the thing you want to look at and costs you the workload. Containment holds the pod still, keeps it available for inspection, and is survivable for stateful workloads where a restart is expensive: databases, caches, queues. If the behaviour was transient, the policy comes off and nothing was lost.</p>
             </div>
 
             <div class="docs-callout info">
-                <div class="docs-callout-title">What can and can't terminate a pod</div>
-                <p>Termination is reserved for high-confidence signals. Behavioral drift and ML anomaly detections can alert and isolate, but on their own they never terminate a pod, even in enforce mode. Pod termination is limited to three things: a high-confidence execution-integrity violation (code executing that diverges from the workload's attested image), an operator or operational action (a manual request or a safety timeout), or a customer-authored rule that explicitly opts into deletion. This ceiling is enforced inside the sidecar, so an operator can dial a response down but never above the ceiling for a given signal class.</p>
+                <div class="docs-callout-title">The policy is tighter than the sidecar's was</div>
+                <p>The sensor applies and removes the policy from outside the pod, so the policy needs no API-server exception: the deprecated sidecar ran inside the pod it was containing and had to be able to call the API to release itself, which meant granting an isolated workload reach it did not otherwise need. Dropping that also takes <code>endpoints: get</code> out of the sensor's grant entirely.</p>
+                <p>For the same reason ingress can be denied as well, so containment can be in both directions rather than egress-only. That half depends on your CNI permitting host-to-pod traffic regardless of policy, which Cilium and therefore GKE Dataplane V2 guarantee. On other CNIs, treat containment as egress-only.</p>
             </div>
-
-            <h3>Behavior</h3>
-
-            <ul>
-                <li>Continuously monitors workload behavior</li>
-                <li>Generates and externalizes evidence on detection</li>
-                <li>Emits Kubernetes events before pod termination</li>
-                <li><strong>Terminates the pod</strong> via Kubernetes API</li>
-                <li>Kubernetes automatically restarts the pod (assuming RestartPolicy allows)</li>
-            </ul>
-
-            <h3>Response Sequence</h3>
-
-            <ol>
-                <li><strong>Detection:</strong> Anomalous behavior identified</li>
-                <li><strong>Evidence generation:</strong> Structured evidence record created</li>
-                <li><strong>Evidence externalization:</strong> Written to logs, K8s events, and webhooks <em>before</em> pod deletion, so it survives</li>
-                <li><strong>Alert dispatch:</strong> Slack + portal notifications sent</li>
-                <li><strong>Network isolation:</strong> NetworkPolicy applied (egress denied except DNS)</li>
-                <li><strong>Escalation timer:</strong> Runs for <code>escalationTimeoutSecs</code> (default 120s). If drift subsides and <code>recoveryTimeoutSecs</code> clean samples (default 60s) accumulate first, the NetworkPolicy is removed and the pod is released.</li>
-                <li><strong>Pod termination:</strong> If drift persists past the escalation window, Kubernetes API DELETE call fires; a second <code>PandoCollapse</code> K8s event records the escalation</li>
-                <li><strong>Pod restart:</strong> Kubernetes scheduler creates new pod</li>
-                <li><strong>Fresh baseline:</strong> New sidecar establishes clean baseline</li>
-            </ol>
-
-            <div class="docs-callout info">
-                <div class="docs-callout-title">Graduated response favors recovery for brief attacks</div>
-                <p>With default timers (<code>escalationTimeoutSecs=120</code>, <code>recoveryTimeoutSecs=60</code>), short attacks are contained via NetworkPolicy and then released when drift subsides; the pod is not killed. To demonstrate termination quickly in a lab, lower <code>escalationTimeoutSecs</code> or use a sustained attack longer than the escalation window.</p>
-            </div>
-
-            <h3>When to Use</h3>
-            
-            <ul>
-                <li><strong>Production workloads:</strong> After validation in monitor mode</li>
-                <li><strong>High-security environments:</strong> Where automated response is required</li>
-                <li><strong>Workloads with rapid recovery:</strong> Stateless services that restart cleanly</li>
-            </ul>
-
-            <h3>Example Output</h3>
-            
-            <pre><code>{
-  "level": "error",
-  "timestamp": "2026-03-16T14:30:00Z",
-  "message": "enforcement_triggered",
-  "mode": "enforce",
-  "severity": "high",
-  "action": "pod_terminated",
-  "evidence_id": "abc123-def456"
-}</code></pre>
 
             <h2>Debug Mode</h2>
-            
-            <p><strong>Set via:</strong> <code>PANDO_MODE=debug</code></p>
-            
-            <p>Debug mode provides verbose logging for troubleshooting and development. It outputs detailed information about every sample collected and all internal decisions.</p>
+
+            <p>Debug is verbose logging with no response, and sits outside the ladder at the same intensity as Monitor. Use it to understand why something did or did not fire, then set it back.</p>
 
             <div class="docs-callout warning">
-                <div class="docs-callout-title">⚠️ Log Volume</div>
-                <p>Debug mode generates significantly more log output. Use only for troubleshooting, not in production.</p>
+                <div class="docs-callout-title">Log volume</div>
+                <p>Debug is substantially more verbose than Monitor. Leave it on a single workload while you investigate rather than node-wide, and do not leave it on.</p>
             </div>
 
-            <h3>Behavior</h3>
+            <h2>Setting A Workload's Mode</h2>
 
-            <ul>
-                <li>Same as monitor mode (no pod termination)</li>
-                <li>Logs detailed information about detection activity and learning-window progress</li>
-            </ul>
+            <p>Mode is a per-pod annotation. The node-wide setting is the fallback an unannotated pod gets.</p>
 
-            <h3>When to Use</h3>
+            <pre><code>kubectl annotate deployment your-app pandocore.io/mode=isolate --overwrite
+kubectl rollout restart deployment/your-app</code></pre>
 
-            <ul>
-                <li><strong>Troubleshooting:</strong> Understanding why detections are or aren't occurring</li>
-                <li><strong>Sensitivity tuning:</strong> Seeing detection activity in context</li>
-                <li><strong>Development:</strong> Testing PandoCore integration</li>
-                <li><strong>Support requests:</strong> Gathering detailed logs for analysis</li>
-            </ul>
+            <p>Accepted values are <code>monitor</code>, <code>alert</code>, <code>isolate</code> and <code>debug</code>.</p>
 
-            <h2>Switching Modes</h2>
-            
-            <p>You can change the operating mode at runtime without redeploying:</p>
+            <div class="docs-callout warning">
+                <div class="docs-callout-title">Three things worth knowing about this annotation</div>
+                <p><strong>It is read when the sensor starts watching a pod</strong>, so a change applies to pods created after it. The <code>rollout restart</code> above is what applies it to pods already running.</p>
+                <p><strong>The value is matched exactly</strong>, with no trimming and no case folding. <code>Isolate</code> and <code>isolate </code> are not the same string as <code>isolate</code>.</p>
+                <p><strong>A value that does not match falls back</strong> to the node-wide default rather than leaving the pod unwatched, and the sensor warns naming the pod. Refusing to watch a workload over a typo would be the worse failure, but check for that warning after a change.</p>
+            </div>
 
-            <h3>Switch to Monitor Mode</h3>
+            <h2>Reading The Current State</h2>
 
-            <pre><code>kubectl set env deployment/your-app -c pando-sidecar PANDO_MODE=monitor</code></pre>
+            <p>Ask a sensor what it is actually doing. <code>/status</code> reports the license ceiling and any node clamp as separate lines.</p>
 
-            <h3>Switch to Alert Mode</h3>
-
-            <pre><code>kubectl set env deployment/your-app -c pando-sidecar PANDO_MODE=alert</code></pre>
-
-            <h3>Switch to Isolate Mode</h3>
-
-            <pre><code>kubectl set env deployment/your-app -c pando-sidecar PANDO_MODE=isolate</code></pre>
-
-            <h3>Switch to Enforce Mode</h3>
-
-            <pre><code>kubectl set env deployment/your-app -c pando-sidecar PANDO_MODE=enforce</code></pre>
-
-            <h3>Switch to Debug Mode</h3>
-
-            <pre><code>kubectl set env deployment/your-app -c pando-sidecar PANDO_MODE=debug</code></pre>
+            <pre><code>kubectl exec -n pando-system &lt;sensor-pod&gt; -- wget -qO- http://localhost:9090/status</code></pre>
 
             <div class="docs-callout info">
-                <div class="docs-callout-title">ℹ️ Rolling Update</div>
-                <p>Changing the mode triggers a rolling restart of the deployment. The new pods will start with the updated mode and establish fresh baselines.</p>
+                <div class="docs-callout-title"><code>node_clamp: none</code> is a reading, not a gap</div>
+                <p>A clamp applies only on a signed verdict from the portal. A portal outage, an unresolved node identity, a cluster with no fresh presence map and an expired verdict all report <code>none</code>, and all of them mean this node is fully protected. An absent clamp is never a silent restriction.</p>
             </div>
 
-            <h2>Recommended Deployment Path</h2>
+            <h2>Recommended Path</h2>
 
             <ol>
-                <li><strong>Week 1-2: Monitor mode.</strong> Deploy to staging with <code>PANDO_MODE=monitor</code>. Observe detections, adjust sensitivity if needed.</li>
-                <li><strong>Week 3-4: Alert mode.</strong> Switch to <code>PANDO_MODE=alert</code> in production. Your team gets notified on detections without any automated response.</li>
-                <li><strong>Week 5-6: Isolate mode.</strong> Switch to <code>PANDO_MODE=isolate</code>. Tripped pods get a NetworkPolicy that blocks egress (except DNS); the policy is removed automatically once drift subsides. This is the right durable mode for stateful workloads.</li>
-                <li><strong>Week 7+: Enforce mode.</strong> Enable <code>PANDO_MODE=enforce</code> for full active protection with alerts, network isolation, and pod termination for drift that persists past the escalation window.</li>
+                <li><strong>Install on a free license, fleet-wide.</strong> The ceiling is Alert, so it detects and tells you, and contains nothing. There is no trial to remember to leave and no mode to set.</li>
+                <li><strong>Read what it reports.</strong> Decide from your own evidence whether these are detections you would have wanted acted on. Put a noisy workload in <code>monitor</code> while you tune it rather than turning anything off.</li>
+                <li><strong>Raise the ceiling when you are ready for it to act.</strong> That is a license change, so the install does not change. Workloads then reach Isolate as their annotations permit.</li>
             </ol>
 
-            <h2>Mode-Specific Metrics</h2>
-            
-            <p>PandoCore exposes the current mode via Prometheus metrics:</p>
+            <p>There is no fixed number of weeks here. The old advice to spend a week in each rung existed because the evaluation period was a mode you had to remember to leave; it is now simply the free tier, and you leave it when the evidence says so.</p>
 
-            <pre><code># Current operating mode (single gauge)
-# 0 = monitor, 1 = alert, 2 = isolate, 3 = enforce, 4 = debug
-pando_operating_mode{pod="your-pod"} 3
+            <h2>Metrics</h2>
 
-# Response activity (counters, present once an action has fired)
-pando_isolations_total{pod="your-pod"} 2
-pando_terminations_total{pod="your-pod"} 1</code></pre>
+            <pre><code># Current operating mode (0=monitor, 1=alert, 2=isolate, 4=debug)
+pando_operating_mode{pod="your-pod"} 2
+
+# The ceiling this license permits, same encoding
+pando_mode_ceiling 2
+
+# Isolation policies successfully applied
+pando_isolations_total{pod="your-pod"} 2</code></pre>
 
             <h2>HTTP Endpoints</h2>
-            
-            <p>PandoCore exposes several HTTP endpoints on port 9090 for health checks, monitoring, and operational control:</p>
+
+            <p>The sensor serves four endpoints on port 9090.</p>
 
             <table>
                 <thead>
@@ -432,57 +304,37 @@ pando_terminations_total{pod="your-pod"} 1</code></pre>
                     <tr>
                         <td><code>/healthz</code></td>
                         <td>GET</td>
-                        <td>Health check: returns 200 if healthy, 503 if unhealthy</td>
+                        <td>Liveness. Returns 200 even while the sensor is refusing to monitor, deliberately, so the kubelet does not crash-loop the refusal logs away</td>
                     </tr>
                     <tr>
                         <td><code>/readyz</code></td>
                         <td>GET</td>
-                        <td>Readiness check: 503 while the learning window is in progress, 200 once the sidecar is actively detecting. Wire this into load balancer readiness gates to hold traffic until learning completes.</td>
+                        <td>Readiness. 503 during learning and while refusing, 200 once armed. This is the one that gates</td>
                     </tr>
                     <tr>
                         <td><code>/metrics</code></td>
                         <td>GET</td>
-                        <td>Prometheus metrics endpoint</td>
-                    </tr>
-                    <tr>
-                        <td><code>/relearn</code></td>
-                        <td>POST</td>
-                        <td>Trigger re-learning phase to rebuild the baseline</td>
+                        <td>Prometheus metrics</td>
                     </tr>
                     <tr>
                         <td><code>/status</code></td>
                         <td>GET</td>
-                        <td>JSON summary of sidecar state: version, mode, uptime, detection counts</td>
+                        <td>Plain-text summary: engine count, license ceiling, node clamp</td>
                     </tr>
                 </tbody>
             </table>
 
-            <h3>Re-Learning Triggers</h3>
-            
-            <p>You can trigger re-learning in two ways:</p>
-
-            <pre><code># HTTP endpoint (within pod network)
-kubectl exec -it POD_NAME -c pando-sidecar -- \
-  curl -X POST http://localhost:9090/relearn
-
-# SIGUSR1 signal (Linux only)
-kubectl exec -it POD_NAME -c pando-sidecar -- \
-  kill -USR1 1</code></pre>
-
-            <p>Re-learning is useful when:</p>
-            <ul>
-                <li>Application behavior has legitimately changed (new release)</li>
-                <li>Baseline was established during unusual conditions</li>
-            </ul>
+            <p>There is no re-learning endpoint on the sensor. One sensor holds an engine per watched pod on its node, so a single node-wide rebuild is not a meaningful operation; a workload re-profiles when its pods restart.</p>
 
             <h2>Next Steps</h2>
 
             <ul>
-                <li><a href="/docs/configuration">Configuration</a>: Settings reference</li>
-                <li><a href="/docs/emergency">Emergency Procedures</a>: How to disable quickly</li>
-                <li><a href="/docs/evidence-format">Evidence Format</a>: Understand detection output</li>
+                <li><a href="/docs/configuration">Configuration Reference</a>: every chart value with defaults and ranges</li>
+                <li><a href="/docs/policy">CRD Policy</a>: setting mode per namespace declaratively</li>
+                <li><a href="/docs/controller">Controller</a>: where alerts and evidence go</li>
+                <li><a href="/docs/production-hardening">Production Hardening</a>: what to settle before raising the ceiling</li>
+                <li><a href="/docs/emergency">Emergency Procedures</a>: stopping it quickly</li>
             </ul>
-
         </main>
     </div>
 
@@ -496,6 +348,6 @@ kubectl exec -it POD_NAME -c pando-sidecar -- \
         </div>
     </footer>
 
-    <script src="../js/main.js"></script>
+    <script src="/js/main.js"></script>
 </body>
 </html>

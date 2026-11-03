@@ -25,7 +25,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Smooth scroll for anchor links
-    initializeSmoothScroll();
     
     // Initialize mobile menu
     initializeMobileMenu();
@@ -202,7 +201,9 @@ function initializeMobileMenu() {
     
     // Close menu on window resize to desktop
     window.addEventListener('resize', debounce(function() {
-        if (window.innerWidth > 767 && navLinks.classList.contains('active')) {
+        // 1023, matching the nav drawer's media query in styles.css. If these
+        // two ever disagree the drawer is stuck open or cannot be closed.
+        if (window.innerWidth > 1023 && navLinks.classList.contains('active')) {
             closeMobileMenu();
         }
     }, 100));
@@ -437,29 +438,13 @@ function showFormStatus(type, message) {
     }
 }
 
-/**
- * Initialize smooth scrolling for anchor links
- */
-function initializeSmoothScroll() {
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-            const href = this.getAttribute('href');
-            
-            // Only handle internal anchors, not empty ones
-            if (href && href !== '#') {
-                e.preventDefault();
-                const target = document.querySelector(href);
-                
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            }
-        });
-    });
-}
+// Anchor scrolling is deliberately left to the browser. `html { scroll-behavior:
+// smooth; scroll-padding-top }` in styles.css does the scroll, and the
+// prefers-reduced-motion block there turns it off. A click handler that called
+// preventDefault() here set no hash (so Back left the site), never moved focus to
+// the target despite its tabindex="-1" (WCAG 2.4.1), passed behavior: 'smooth'
+// explicitly (overriding reduced motion in Chrome) and ignored scroll-padding-top
+// (landing targets under the sticky nav). Do not reintroduce it.
 
 /**
  * Handle Netlify form success (redirect after submission)

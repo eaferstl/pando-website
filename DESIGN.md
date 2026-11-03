@@ -37,6 +37,11 @@ typography:
     fontSize: "1rem"
     fontWeight: 600
     lineHeight: 1.3
+  mono:
+    fontFamily: "Monaco, Menlo, Consolas, monospace"
+    fontSize: "0.95rem"
+    fontWeight: 400
+    lineHeight: 1.6
 rounded:
   sm: "6px"
   md: "8px"
@@ -121,6 +126,22 @@ A grounded forest-and-cream base, warmed by a single amber accent and cooled by 
 ### Named Rules
 **The Cool Counterweight Rule.** Azure mist is the palette's balancing note and belongs on the primary action. It is never swapped for a warm fill "to match the brand" — its coolness is what keeps PandoCore from tipping into the over-warm aesthetic.
 
+**The Measure Rule.** `--measure` and `--measure-narrow` are **calibrated, not nominal.**
+`ch` is the advance of the digit zero, which in Inter is much wider than the average
+lowercase character, so a nominal `70ch` renders about 93 real characters. The tokens are
+`56ch` and `52ch`, measured to land prose in the 65-75 character band; every prose block on
+the site medians 61-74 at desktop. Do not "restore" them to round numbers, and if the type
+family ever changes, re-measure rather than re-deriving them from the nominal figure.
+
+**The Primary Fill Rule, amended 2026-11-02.** Primary was azure-mist fill with a forest
+edge, on the stated grounds that it "always reads as the highest-contrast control". Measured,
+it did not: the azure fill sat at 1.02:1 against the hero cream and 1.17:1 against the CTA
+white, both beneath the 3:1 non-text floor, and because primary and secondary already shared
+an identical 2px forest border the only thing separating the two ranks was the label text.
+The fill and the text swapped rather than the azure being darkened, which keeps azure as the
+brand's accent and puts the contrast in the fill where the rule always intended it. The band
+polarity rule above replaces "one rendering everywhere", which could not survive a dark band.
+
 **The One Warm Accent Rule.** Honey amber is used on ≤10% of any screen, as accent only. Its rarity is what makes it read as a status light rather than decoration.
 
 **The No-Alarm Red Rule.** Red (#D32F2F) is confined to form errors. It is forbidden as a threat/alert motif anywhere in marketing surfaces — this brand sells calm, not fear.
@@ -137,9 +158,12 @@ A grounded forest-and-cream base, warmed by a single amber accent and cooled by 
 - **Title** (600, 1.25rem, line-height 1.3): `h3` — card and subsection headings.
 - **Body** (400, 1rem, line-height 1.7): Paragraph text, capped at ~70ch for readability.
 - **Label** (600, 1rem, line-height 1.3): Navigation links, button text, form labels — the UI-text weight.
+- **Mono** (400, 0.95rem, line-height 1.6): Code only. `--font-mono`, a Monaco/Menlo/Consolas stack. Never prose.
 
 ### Named Rules
-**The One Family Rule.** Inter is the only typeface. Never pair it with a second sans or a display serif; if a heading needs more presence, add weight or size, not a new font.
+**The One Family Rule.** Inter is the only typeface for prose and UI. Never pair it with a second sans or a display serif; if a heading needs more presence, add weight or size, not a new font.
+
+**The one exception, scoped deliberately.** Code gets a monospace stack, because a Helm command, a label selector and an image digest have to be read character by character, and that is the one job a proportional face cannot do. It lives in `--font-mono` and appears only inside `code` and `pre`. This is an exception for legibility, not a licence to introduce a second voice: a monospace face used for headings, labels or body copy is the "mono as shorthand for technical" costume the system rejects elsewhere.
 
 **The Earned-Line Rule.** Body copy stays at or below ~70ch. Long claims get broken into short, scannable lines rather than dense paragraphs — the reader is a busy platform lead skimming for proof.
 
@@ -162,8 +186,8 @@ Components are refined and restrained: quiet surfaces, hairline structure, under
 
 ### Buttons
 - **Shape:** Softly rounded (8px radius), 2px border, `16px 36px` padding, `cubic-bezier(0.4,0,0.2,1)` transition.
-- **Primary:** Azure mist fill (#E1F0F4) with coffee-bean text and a **forest (#001C06) edge** so it always reads as the highest-contrast control — the calm, cool primary action ("Get Started" / sign up). One rendering everywhere; never placed on an azure-tending background.
-- **Secondary:** Transparent with a forest (#001C06) outline and forest text; on hover it fills forest with white text.
+- **Primary:** **Forest (#001C06) fill with azure-mist (#E1F0F4) text** and a forest edge, so it carries the highest-contrast fill available against its band (16.3:1 on cream, 15.4:1 for the label). On a dark band the pair inverts, azure-mist fill with forest text, for the same reason; `.timing-section` is currently the only such band on the site.
+- **Secondary:** Transparent with a forest (#001C06) outline and forest text; on hover it takes an 8% forest wash rather than a fill, so a hovered secondary never renders as a resting primary.
 - **Hover / Focus:** A subtle lift and shadow. Migrate away from `scale(1.02)` toward a pure translate. Keyboard focus shows a 2px forest outline with 2px offset.
 
 ### Cards / Containers

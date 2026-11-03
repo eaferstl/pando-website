@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="PandoCore Detection Events Dashboard - View protection status, detection events, and what-would-have-happened analysis.">
+    <meta name="description" content="Where to see what PandoCore is doing: the portal for detections, Prometheus for coverage and health, kubectl for current state.">
     <title>Dashboard | PandoCore Docs</title>
     <link rel="canonical" href="https://pandocore.io/docs/dashboard">
-    <link rel="icon" type="image/png" href="../images/favicon.png">
+    <link rel="icon" type="image/png" href="/images/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/docs.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/docs.css">
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
@@ -20,7 +20,7 @@
         <div class="container">
             <div class="nav-wrapper">
                 <a href="/" class="logo">
-                    <img src="../images/logoTransparency.png" alt="Pando Logo">
+                    <img src="/images/logoTransparency.png" alt="PandoCore" width="184" height="240">
                     <div class="logo-text-wrapper">
                         <span class="logo-text">PandoCore</span>
                     </div>
@@ -84,223 +84,173 @@
                 Dashboard
             </div>
 
-            <h1>Detection Events Dashboard</h1>
+            <h1>Dashboard</h1>
 
-            <p>PandoCore provides two ways to view detection events:</p>
-
-            <ol>
-                <li><strong>Portal Dashboard</strong> (recommended): Detection events are streamed from sidecars to your PandoCore Portal at <code>portal.pandocore.io</code>, stored in Firestore, and displayed in your authenticated customer dashboard. This is the primary way to view events and requires no additional setup beyond the Helm install.</li>
-                <li><strong>In-cluster Dashboard</strong> (optional): A lightweight dashboard that runs entirely within your cluster for real-time debugging. No data leaves your environment.</li>
-            </ol>
-
-            <div class="docs-callout info">
-                <div class="docs-callout-title">Portal Integration</div>
-                <p>When installed via Helm, the sidecar's <code>PANDO_EVIDENCE_WEBHOOK_URL</code> is automatically configured to send detection events to the PandoCore Portal. Events appear in your customer dashboard at <a href="https://portal.pandocore.io/dashboard">portal.pandocore.io/dashboard</a>.</p>
-            </div>
+            <p>There are three places to see what PandoCore is doing, and which one you want depends on the question. The portal is for detections and entitlements, Prometheus is for coverage and health, and <code>kubectl</code> is for what is true in the cluster right now.</p>
 
             <h2>Portal Dashboard</h2>
 
-            <p>The portal dashboard is available at <a href="https://portal.pandocore.io/dashboard">portal.pandocore.io/dashboard</a> after signing in. It shows:</p>
+            <p>Evidence is delivered by the controller to <a href="https://portal.pandocore.io">portal.pandocore.io</a>, which is where detections, their reasons and their outcomes are read. No extra configuration is needed: the portal is a destination the controller carries by default.</p>
 
-            <ul>
-                <li><strong>Event Stats</strong>:events in last 24h and 7 days, enforcements, and "would have killed" counts</li>
-                <li><strong>Recent Events</strong>:chronological list of detection events with severity and actions taken</li>
-                <li><strong>Namespace Breakdown</strong>:which namespaces are generating events</li>
-            </ul>
+            <h3>Event data flow</h3>
 
-            <p>Events are automatically streamed from sidecars to the portal when <code>portalWebhook.enabled=true</code> (the default). No additional configuration is needed.</p>
-
-            <h3>Event Data Flow</h3>
             <ol>
-                <li>Sidecar detects anomalous behavior</li>
-                <li>Evidence is POSTed to <code>portal.pandocore.io/api/events/ingest</code> (authenticated via license key)</li>
-                <li>Portal stores the event in Firestore under your customer account</li>
-                <li>Dashboard displays events with severity classification and action details</li>
+                <li>A sensor detects behaviour diverging from a workload's profile</li>
+                <li>It seals and signs an evidence record, and delivers it to the controller over mTLS</li>
+                <li>The controller writes it to a durable spool and only then acknowledges it</li>
+                <li>The controller delivers it onward to the portal, and to any SIEM, Slack or webhook destinations you have configured</li>
+                <li>If a response ran, a second <code>pando.response</code> record follows carrying what it actually did</li>
             </ol>
 
-            <h2>In-Cluster Dashboard (Optional)</h2>
-
-            <p>For real-time debugging or air-gapped environments, PandoCore also offers an optional in-cluster dashboard.</p>
-
-            <h2>What the In-Cluster Dashboard Shows</h2>
-
-            <h3>Overview</h3>
-            <ul>
-                <li><strong>Protected Deployments</strong>:count of deployments with the PandoCore sidecar</li>
-                <li><strong>Protected Pods</strong>:total running pods under protection</li>
-                <li><strong>Events (24h / 7d)</strong>:detection events in the last day and week</li>
-                <li><strong>Trips (24h)</strong>:enforcement-level detections</li>
-                <li><strong>Pod Status</strong>:how many pods are in learning, monitoring, or enforcing phase</li>
-            </ul>
-
-            <h3>Event Timeline</h3>
-            <p>A chronological list of detection events, filterable by:</p>
-            <ul>
-                <li><strong>Type</strong>:anomaly detected, trip executed</li>
-                <li><strong>Severity</strong>:info, warning, critical</li>
-                <li><strong>Namespace</strong>:filter to a specific namespace</li>
-            </ul>
-
-            <h3>"What Would Have Happened"</h3>
-            <p>In <strong>monitor mode</strong>, PandoCore detects but does not terminate pods. The dashboard shows which pods <em>would have been killed</em> if enforcement were enabled, along with the severity and reason. This lets you validate PandoCore's behavior before switching to enforce mode.</p>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Mode</th>
-                        <th>Action Column Shows</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Monitor</td>
-                        <td><strong>WOULD HAVE KILLED</strong>:enforcement-level detection, but no action taken</td>
-                    </tr>
-                    <tr>
-                        <td>Enforce</td>
-                        <td><strong>POD TERMINATED</strong>:pod was killed and evidence emitted</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h2>Enabling the Dashboard</h2>
-
-            <p>The dashboard is an optional component of the <code>pando-webhook</code> Helm chart:</p>
-
-            <pre><code>helm install pando-webhook oci://&lt;registry&gt;/charts/pando-webhook \
-  --namespace pando-system --create-namespace \
-  --set licenseKey="&lt;your-key&gt;" \
-  --set dashboard.enabled=true</code></pre>
-
-            <p>Or enable it on an existing installation:</p>
-
-            <pre><code>helm upgrade pando-webhook oci://&lt;registry&gt;/charts/pando-webhook \
-  --reuse-values \
-  --set dashboard.enabled=true</code></pre>
-
-            <h2>Accessing the Dashboard</h2>
-
-            <p>The dashboard runs as a ClusterIP Service. Access it via port-forward:</p>
-
-            <pre><code>kubectl port-forward svc/pando-dashboard -n pando-system 8080:80</code></pre>
-
-            <p>Then open <code>http://localhost:8080</code> in your browser.</p>
-
-            <div class="docs-callout success">
-                <div class="docs-callout-title">No Ingress Required</div>
-                <p>The dashboard is designed for <code>kubectl port-forward</code> access. You can optionally expose it via an Ingress or LoadBalancer Service if your security policy allows it.</p>
+            <div class="docs-callout info">
+                <div class="docs-callout-title">Two records per response, and why</div>
+                <p>The trip record is sealed and shipped before the response chain resolves, because there is no action without a durable record first. So the first record carries the <em>intended</em> response and the receipt carries the outcome. They are correlated by <code>trip_evidence_id</code>, not by sharing an id. See <a href="/docs/evidence-format">Evidence Format</a>.</p>
             </div>
 
-            <h2>Configuration</h2>
+            <h3>What the portal shows</h3>
+
+            <ul>
+                <li><strong>Detections</strong>, with the reason, severity, pod, namespace and the response taken</li>
+                <li><strong>Your license</strong>, including the response ceiling it permits and its retention window</li>
+                <li><strong>Your plan</strong>, as a separate card derived independently of the license, so the two can be cross-checked rather than agreeing by construction</li>
+                <li><strong>Node protection</strong>, including any node held to monitor by a clamp</li>
+                <li><strong>The install commands</strong> for your cluster, pre-filled with your license key and the current chart version</li>
+            </ul>
+
+            <div class="docs-callout warning">
+                <div class="docs-callout-title">Retention is a floor, not a query window</div>
+                <p>Your plan's retention figure is the period the portal undertakes to keep evidence for. Nothing deletes an event at the end of it, so it is not a promise that older evidence is gone, and it is not an availability claim about querying it. If you need evidence for a defined period under your own control, deliver it to your SIEM and apply your retention policy there.</p>
+            </div>
+
+            <h2>Coverage And Health, In Prometheus</h2>
+
+            <p>The portal shows what was detected. It does not tell you whether a node stopped being watched, and that is the question worth alerting on.</p>
 
             <table>
                 <thead>
                     <tr>
-                        <th>Helm Value</th>
-                        <th>Default</th>
-                        <th>Description</th>
+                        <th>Metric</th>
+                        <th>What it answers</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td><code>dashboard.enabled</code></td>
-                        <td><code>false</code></td>
-                        <td>Enable the dashboard deployment</td>
+                        <td><code>pando_node_sensor_pods_unmonitored</code></td>
+                        <td>Pods getting no engine. With <code>reason="cap"</code>, pods you wanted watched that the node had no room for</td>
                     </tr>
                     <tr>
-                        <td><code>dashboard.pollInterval</code></td>
-                        <td><code>"30s"</code></td>
-                        <td>How often to poll sidecar <code>/status</code> endpoints</td>
+                        <td><code>pando_operating_mode</code></td>
+                        <td>The mode in force (0 monitor, 1 alert, 2 isolate, 4 debug)</td>
                     </tr>
                     <tr>
-                        <td><code>dashboard.maxEvents</code></td>
-                        <td><code>10000</code></td>
-                        <td>Maximum events stored in memory</td>
+                        <td><code>pando_mode_ceiling</code></td>
+                        <td>The ceiling the license permits, same encoding</td>
                     </tr>
                     <tr>
-                        <td><code>dashboard.resources</code></td>
-                        <td>50m CPU / 64Mi mem</td>
-                        <td>Resource limits for the dashboard pod</td>
+                        <td><code>pando_isolations_total</code></td>
+                        <td>Isolation policies successfully applied</td>
                     </tr>
                 </tbody>
             </table>
 
-            <h2>REST API</h2>
+            <p>The sensor chart ships PrometheusRules covering coverage at the cap, the series going absent, a refusal at startup, and a cadence stretched past its configured interval. Absence matters most: it is the one condition no self-report can distinguish from healthy.</p>
 
-            <p>The dashboard exposes a REST API that the UI consumes. You can also use it directly:</p>
+            <div class="docs-callout danger">
+                <div class="docs-callout-title">Two ways this dashboard lies by omission</div>
+                <p><strong>A job selecting on the protect label matches nothing.</strong> The sensor's own pod carries <code>pandocore.io/protect: "false"</code>, so a Prometheus job written against <code>protect=true</code> finds no targets and reports a clean scrape of nothing, which renders identically to healthy. Select on <code>app.kubernetes.io/name=pando-node-sensor</code>.</p>
+                <p><strong>On GKE managed Prometheus the shipped rules are inert.</strong> It honours neither the chart's scrape annotations nor a <code>PrometheusRule</code>, so set <code>metrics.podMonitoring.enabled=true</code> to get scraping at all, and port the coverage and absence rules across by hand. See <a href="/docs/configuration">Configuration</a>.</p>
+            </div>
+
+            <h2>Right Now, With kubectl</h2>
+
+            <pre><code># One sensor per node, all Ready
+kubectl get pods -n pando-system -l app.kubernetes.io/name=pando-node-sensor -o wide
+
+# Engine count, license ceiling, node clamp, for one node
+kubectl exec -n pando-system &lt;sensor-pod&gt; -- wget -qO- http://localhost:9090/status
+
+# What is contained at this moment
+kubectl get networkpolicy --all-namespaces \
+  -l app.kubernetes.io/managed-by=pandocore
+
+# Detections as Kubernetes events
+kubectl get events -n &lt;namespace&gt; --field-selector reason=PandoCollapse
+
+# Collapse-grade conditions where nothing acted
+kubectl get events -n &lt;namespace&gt; --field-selector reason=PandoRefrained</code></pre>
+
+            <h3>What a detection looks like as an event</h3>
 
             <table>
                 <thead>
                     <tr>
-                        <th>Endpoint</th>
-                        <th>Description</th>
+                        <th>Reason</th>
+                        <th>Type</th>
+                        <th>Meaning</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td><code>GET /api/summary</code></td>
-                        <td>Cluster-wide stats: protected pods, events, trips</td>
+                        <td><code>PandoAlert</code></td>
+                        <td>Normal</td>
+                        <td>A detection that called for no response chain</td>
                     </tr>
                     <tr>
-                        <td><code>GET /api/deployments</code></td>
-                        <td>List of protected deployments with status</td>
+                        <td><code>PandoRefrained</code></td>
+                        <td>Warning</td>
+                        <td>A collapse-grade condition was detected and nothing acted, because of the mode, the license ceiling or the learning window</td>
                     </tr>
                     <tr>
-                        <td><code>GET /api/events?page=1&amp;limit=50</code></td>
-                        <td>Paginated event timeline with optional filters (<code>type</code>, <code>severity</code>, <code>namespace</code>)</td>
+                        <td><code>PandoCollapse</code></td>
+                        <td>Warning</td>
+                        <td>A containment action was attempted</td>
                     </tr>
                 </tbody>
             </table>
 
-            <h2>Architecture</h2>
+            <div class="docs-callout success">
+                <div class="docs-callout-title"><code>PandoRefrained</code> is how you evaluate before you let it act</div>
+                <p>On a free license nothing is ever contained, so every collapse-grade finding arrives as <code>PandoRefrained</code>: this was serious enough to act on, and nothing did. That is the list to read before deciding whether to raise the ceiling, and it is evidence from your own cluster rather than a projection.</p>
+                <p>It pairs with <code>pando_collapses_total{outcome="refrained"}</code>, which is deliberately the same word so the event and the metric are recognisably the same fact. The event's machine-readable <code>event_type_label</code> remains <code>would-collapse</code>, unchanged on purpose: it is a selector, and changing one quietly is worse than a stale word inside it.</p>
+            </div>
 
-            <p>The dashboard is a single Go binary running as a Deployment in <code>pando-system</code>. It collects data from two sources:</p>
+            <p><code>/status</code> reports the license ceiling and any node clamp as separate lines, deliberately: a clamped node is held to monitor by a portal-side verdict rather than by your license, so an operator reading one must not be sent to upgrade a license that was never the constraint. <code>node_clamp: none</code> means no clamp applies and the node is fully protected.</p>
 
-            <ol>
-                <li><strong>Kubernetes Events</strong>:watches for events with label <code>pando.io/event-type=collapse</code> (created by sidecars on trip/detection)</li>
-                <li><strong>Sidecar <code>/status</code> endpoints</strong>:polls each protected pod's sidecar on port 9090 at the configured interval</li>
-            </ol>
+            <h2>In-Cluster Dashboard</h2>
 
-            <p>Events are stored in an in-memory ring buffer (configurable size, default 10,000 events). The dashboard has <strong>read-only</strong> RBAC permissions: it can list/watch events and list pods, but cannot modify any resources.</p>
-
-            <h2>Resource Footprint</h2>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Resource</th>
-                        <th>Limit</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>CPU</td>
-                        <td>50m</td>
-                    </tr>
-                    <tr>
-                        <td>Memory</td>
-                        <td>64Mi</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="docs-callout warning">
+                <div class="docs-callout-title">Deprecated with the admission webhook</div>
+                <p>The in-cluster dashboard shipped as an optional component of the <code>pando-webhook</code> chart, off by default, and it worked by polling each protected pod's sidecar on port 9090. Neither that chart nor those per-pod endpoints is part of the supported install: a node sensor serves one <code>/status</code> per node, not one per pod. It receives no further release.</p>
+                <p>Use the portal for detections, Prometheus for coverage and health, and <code>kubectl</code> for current state. Between them they cover everything it showed, and the Prometheus route covers the coverage question it never answered.</p>
+            </div>
 
             <h2>Troubleshooting</h2>
 
-            <h3>Dashboard shows 0 protected pods</h3>
+            <h3>The portal shows no activity</h3>
             <ol>
-                <li>Verify pods have the label: <code>kubectl get pods -l pandocore.io/protect=true --all-namespaces</code></li>
-                <li>Verify the sidecar container is running (2/2 Ready)</li>
-                <li>Check the dashboard logs: <code>kubectl logs -n pando-system -l app.kubernetes.io/name=pando-dashboard</code></li>
+                <li>Confirm the sensors are ready: <code>/readyz</code> returns 503 during learning and while refusing</li>
+                <li>Confirm the controller is running and receiving. It is what delivers to the portal, so healthy sensors with an empty portal is a controller question</li>
+                <li>Check the controller's logs for delivery errors, and your egress rules for blocked outbound calls</li>
             </ol>
 
-            <h3>Events not appearing</h3>
-            <p>Events are populated from two sources. If the event timeline is empty:</p>
-            <ul>
-                <li>Check that sidecars have RBAC to create events (<code>events/create</code> permission)</li>
-                <li>Wait for the poll interval (default 30s) for status-based events to appear</li>
-                <li>Verify the dashboard's ClusterRole has <code>events</code> watch permission</li>
-            </ul>
+            <h3>Prometheus shows no PandoCore data</h3>
+            <ol>
+                <li>Check your job selects <code>app.kubernetes.io/name=pando-node-sensor</code> rather than the protect label</li>
+                <li>Confirm the metrics port is 9090</li>
+                <li>On GKE managed Prometheus, confirm <code>metrics.podMonitoring.enabled=true</code></li>
+            </ol>
 
+            <h3>Some pods never appear</h3>
+            <p>Check <code>pando_node_sensor_pods_unmonitored{reason="cap"}</code> first. Then check whether the pod is opted out, in an excluded namespace, or using <code>hostPID</code> or <code>hostNetwork</code>. See <a href="/docs/troubleshooting">Troubleshooting</a>.</p>
+
+            <h2>Next Steps</h2>
+
+            <ul>
+                <li><a href="/docs/evidence-format">Evidence Format</a>: the record schema and its wire fields</li>
+                <li><a href="/docs/controller">Controller</a>: configuring destinations</li>
+                <li><a href="/docs/configuration">Configuration</a>: metrics and alerting values</li>
+                <li><a href="/docs/production-hardening">Production Hardening</a>: what to alert on before production</li>
+            </ul>
         </main>
     </div>
 
@@ -314,6 +264,6 @@
         </div>
     </footer>
 
-    <script src="../js/main.js"></script>
+    <script src="/js/main.js"></script>
 </body>
 </html>

@@ -6,12 +6,12 @@
     <meta name="description" content="PandoCore Evidence Format - JSON schema for SIEM integration.">
     <title>Evidence Format | PandoCore Docs</title>
     <link rel="canonical" href="https://pandocore.io/docs/evidence-format">
-    <link rel="icon" type="image/png" href="../images/favicon.png">
+    <link rel="icon" type="image/png" href="/images/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/docs.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/docs.css">
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
@@ -20,7 +20,7 @@
         <div class="container">
             <div class="nav-wrapper">
                 <a href="/" class="logo">
-                    <img src="../images/logoTransparency.png" alt="Pando Logo">
+                    <img src="/images/logoTransparency.png" alt="PandoCore" width="184" height="240">
                     <div class="logo-text-wrapper">
                         <span class="logo-text">PandoCore</span>
                     </div>
@@ -104,8 +104,12 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td><strong>Evidence Webhook</strong></td>
-                        <td>HTTP POST of Evidence JSON to <code>PANDO_EVIDENCE_WEBHOOK_URL</code></td>
+                        <td><strong>The controller</strong></td>
+                        <td>Records are delivered to it over mTLS and written to a durable spool before it acknowledges them. It owns every outbound destination from there</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Your webhook</strong></td>
+                        <td>HTTP POST of Evidence JSON, configured on the controller</td>
                     </tr>
                     <tr>
                         <td><strong>stdout</strong></td>
@@ -116,8 +120,12 @@
                         <td>K8s Event object, survives pod deletion</td>
                     </tr>
                     <tr>
+                        <td><strong>SIEM</strong></td>
+                        <td>Splunk, Elastic, Datadog or syslog, configured on the controller</td>
+                    </tr>
+                    <tr>
                         <td><strong>Slack</strong></td>
-                        <td>Formatted message to <code>PANDO_SLACK_WEBHOOK_URL</code></td>
+                        <td>Formatted message, configured on the controller</td>
                     </tr>
                 </tbody>
             </table>
@@ -151,12 +159,48 @@
                 </tbody>
             </table>
 
-            <p>Delivery is retried with exponential backoff (tunable via <code>PANDO_EVIDENCE_WEBHOOK_MAX_RETRIES</code> and <code>PANDO_EVIDENCE_WEBHOOK_TIMEOUT_SECONDS</code>). Evidence is always delivered <strong>before</strong> pod termination so downstream systems see the record even if the pod is killed.</p>
+            <p>Delivery is retried with exponential backoff, configured on the controller. No workload pod holds a destination credential: the sensor delivers to the controller and the controller delivers onward, which is why these are controller settings rather than per-workload ones. See <a href="/docs/controller">Controller</a>.</p>
+
+            <div class="docs-callout info">
+                <div class="docs-callout-title">A record is externalized before any action is taken</div>
+                <p>Evidence is sealed, signed and shipped before the response chain is even resolved, and a failed externalization aborts the response. That ordering is deliberate: there is no action without a durable record first. The consequence for a consumer is that a trip record carries <strong>intent</strong> rather than outcome, which is why there is a second record type for what actually happened.</p>
+            </div>
+
+            <h3>Three event types</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th><code>event_type</code></th>
+                        <th>Meaning</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>pando.evidence</code></td>
+                        <td>A detection. Carries the intended response</td>
+                    </tr>
+                    <tr>
+                        <td><code>pando.response</code></td>
+                        <td>What the response chain actually did. Correlated to the trip by <code>trip_evidence_id</code>, not by sharing its <code>id</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>pando.heartbeat</code></td>
+                        <td>Periodic liveness, so a consumer can tell silence from health</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="docs-callout warning">
+                <div class="docs-callout-title">Two wire names still say "sidecar"</div>
+                <p><code>metadata.sidecar_version</code> and the <code>action_taken</code> value <code>sidecar_absent</code> keep their names although the component is now the node sensor. They are a wire contract: renaming them would break every parser, dashboard and SIEM rule written against them, so they are deliberately unchanged. Read both as referring to whatever is reporting, which on the supported install is the sensor.</p>
+            </div>
 
             <h2>JSON Example</h2>
 
             <pre><code>{
-  "version": "2.0",
+  "version": "3.3",
+  "event_type": "pando.evidence",
   "id": "550e8400-e29b-41d4-a716-446655440000",
   "timestamp": "2026-03-16T14:30:00.123Z",
   "pod": {
@@ -166,18 +210,13 @@
     "node": "gke-cluster-pool-1-abc123"
   },
   "trip_reason": "drift_threshold_exceeded",
-  "action_taken": "pod_terminated",
-  "response_chain": [
-    { "action": "alert",     "success": true, "timestamp": "2026-03-16T14:30:00.150Z" },
-    { "action": "isolate",   "success": true, "timestamp": "2026-03-16T14:30:00.320Z" },
-    { "action": "terminate", "success": true, "timestamp": "2026-03-16T14:32:00.400Z" }
-  ],
+  "action_taken": "collapse",
   "hash": "a1b2c3d4e5f6...",
   "previous_hash": "9f8e7d6c5b4a...",
   "sequence": 42,
   "metadata": {
-    "sidecar_version": "<version>",
-    "mode": "enforce",
+    "sidecar_version": "0.1.0",
+    "mode": "isolate",
     "customer_id": "cust_abc123"
   }
 }</code></pre>
@@ -218,7 +257,7 @@
                     <tr>
                         <td><code>action_taken</code></td>
                         <td>string</td>
-                        <td>The final action: <code>logged_only</code>, <code>alert_sent</code>, <code>pod_isolated</code>, or <code>pod_terminated</code>.</td>
+                        <td>The intended response at the moment the record was sealed, which is before any action runs. One of <code>alert_only</code> (benign, no response chain), <code>monitor_collapse</code> (collapse-grade, but the mode or the learning window meant nothing acted), <code>collapse</code> (a containment action was attempted), <code>sidecar_absent</code> (the controller noticed a sensor that should be reporting has stopped) or <code>absence_detection_degraded</code> (absence detection itself could not run). The last two are stamped by the controller rather than by a sensor.</td>
                     </tr>
                     <tr>
                         <td><code>hash</code></td>
@@ -269,7 +308,7 @@
 
             <h3>response_chain</h3>
 
-            <p>Array of response actions attempted, in order. Each entry records whether the action succeeded and when it ran. In graduated response, earlier actions (e.g. <code>alert</code>, <code>isolate</code>) may succeed before a later action (<code>terminate</code>) is escalated.</p>
+            <p>Array of response actions attempted, in order, with whether each succeeded and when it ran. This appears on the <code>pando.response</code> receipt rather than on the trip record, because the trip record is sealed before the chain resolves. Correlate the two by <code>trip_evidence_id</code>.</p>
 
             <table>
                 <thead>
@@ -281,7 +320,7 @@
                 <tbody>
                     <tr>
                         <td><code>action</code></td>
-                        <td><code>alert</code>, <code>isolate</code>, or <code>terminate</code></td>
+                        <td><code>alert</code> or <code>isolate</code>. Isolate is the ceiling of the supported install</td>
                     </tr>
                     <tr>
                         <td><code>success</code></td>
@@ -306,11 +345,11 @@
                 <tbody>
                     <tr>
                         <td><code>metadata.sidecar_version</code></td>
-                        <td>Version string of the sidecar that emitted the record.</td>
+                        <td>Version of the component that emitted the record, which on the supported install is the node sensor. The field name is retained for wire compatibility, so a parser written against it keeps working.</td>
                     </tr>
                     <tr>
                         <td><code>metadata.mode</code></td>
-                        <td>Operating mode at the time: <code>monitor</code>, <code>alert</code>, <code>isolate</code>, <code>enforce</code>, or <code>debug</code>.</td>
+                        <td>Operating mode at the time: <code>monitor</code>, <code>alert</code>, <code>isolate</code> or <code>debug</code>.</td>
                     </tr>
                     <tr>
                         <td><code>metadata.customer_id</code></td>
@@ -325,7 +364,7 @@
 
             <h2>Slack Alerts</h2>
 
-            <p>When <code>PANDO_SLACK_WEBHOOK_URL</code> is set and the mode is <code>alert</code> or <code>enforce</code>, PandoCore sends formatted messages color-coded by severity.</p>
+            <p>When a Slack destination is configured on the controller and the workload's mode is <code>alert</code> or <code>isolate</code>, PandoCore sends formatted messages colour-coded by severity.</p>
 
             <table>
                 <thead>
@@ -337,7 +376,7 @@
                 <tbody>
                     <tr>
                         <td><strong>Critical</strong></td>
-                        <td>Pod was terminated (enforce mode)</td>
+                        <td>A containment action was attempted</td>
                     </tr>
                     <tr>
                         <td><strong>High</strong></td>
@@ -345,7 +384,7 @@
                     </tr>
                     <tr>
                         <td><strong>Warning</strong></td>
-                        <td>Detection below enforcement threshold</td>
+                        <td>Detection below the response threshold</td>
                     </tr>
                     <tr>
                         <td><strong>Info</strong></td>
@@ -380,6 +419,6 @@ kubectl get events -n YOUR_NAMESPACE --field-selector reason=PandoCollapse</code
         </div>
     </footer>
 
-    <script src="../js/main.js"></script>
+    <script src="/js/main.js"></script>
 </body>
 </html>

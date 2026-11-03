@@ -17,7 +17,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/styles.css?v=2">
+    <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
@@ -26,7 +26,7 @@
         <div class="container">
             <div class="nav-wrapper">
                 <a href="/" class="logo">
-                    <img src="/images/logoTransparency.png" alt="Pando Logo">
+                    <img src="/images/logoTransparency.png" alt="PandoCore" width="184" height="240">
                     <div class="logo-text-wrapper">
                         <span class="logo-text">PandoCore</span>
                     </div>
@@ -69,6 +69,11 @@
             <img class="blog-cover" src="/images/blog/fail-open-webhook-cover.svg" alt="Two admission gates side by side: a closed one labeled Fail with no pods behind it, and an open one labeled Ignore with pods admitted, one flagged">
 
             <article class="blog-article">
+                <aside class="blog-addendum">
+                    <p><strong>Update, November 1, 2026.</strong> This post defends a design decision in the mutating admission webhook, which is deprecated and receives no further release. PandoCore now ships as a node sensor: a DaemonSet with no admission webhook anywhere in the path of pod creation, so the tradeoff argued here no longer applies to the product.</p>
+                    <p>The reasoning still holds for anything that does install a webhook, which is why the post stays up. For current behaviour, see the <a href="/trust">trust center</a>.</p>
+                </aside>
+
                 <p>Anything that installs an admission webhook into your cluster puts itself in the critical path of pod creation: service meshes, secret injectors, policy engines, security agents. One field in that config, <code>failurePolicy</code>, decides what happens when the vendor's code goes down. Most install guides don't mention it.</p>
 
                 <p>The textbook answer is fail-closed: <code>failurePolicy: Fail</code>, opt-in namespaces, an objectSelector so only labeled pods ever touch the webhook. PandoCore ships the opposite: <code>Ignore</code>, watching every namespace you haven't excluded. On purpose.</p>
@@ -98,6 +103,6 @@
         </div>
     </footer>
 
-    <script src="/js/main.js?v=2"></script>
+    <script src="/js/main.js"></script>
 </body>
 </html>

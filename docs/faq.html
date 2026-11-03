@@ -6,12 +6,12 @@
     <meta name="description" content="PandoCore FAQ - Frequently asked questions about runtime protection, deployment, and operations.">
     <title>FAQ | PandoCore Docs</title>
     <link rel="canonical" href="https://pandocore.io/docs/faq">
-    <link rel="icon" type="image/png" href="../images/favicon.png">
+    <link rel="icon" type="image/png" href="/images/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/docs.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/docs.css">
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
@@ -20,7 +20,7 @@
         <div class="container">
             <div class="nav-wrapper">
                 <a href="/" class="logo">
-                    <img src="../images/logoTransparency.png" alt="Pando Logo">
+                    <img src="/images/logoTransparency.png" alt="PandoCore" width="184" height="240">
                     <div class="logo-text-wrapper">
                         <span class="logo-text">PandoCore</span>
                     </div>
@@ -78,18 +78,12 @@
 
         <!-- Main Content -->
         <main class="docs-content" id="main-content" tabindex="-1">
-            <div class="docs-breadcrumb">
-                <a href="/docs/">Docs</a>
-                <span>/</span>
-                FAQ
-            </div>
-
             <h1>Frequently Asked Questions</h1>
 
             <h2>General</h2>
 
             <h3>What is PandoCore?</h3>
-            <p>PandoCore is a runtime execution-integrity security system for Kubernetes. It monitors containerized workloads for signs of anomalous behavior and responds instantly when detected, providing runtime protection that complements your existing security stack.</p>
+            <p>PandoCore is a runtime execution-integrity security system for Kubernetes. It watches containerized workloads as they run, detects behaviour that diverges from what each workload established as normal, and can respond, complementing your existing security stack rather than replacing it.</p>
 
             <h3>How does PandoCore differ from other security tools?</h3>
             <table>
@@ -104,28 +98,28 @@
                     <tr>
                         <td><strong>Focus</strong></td>
                         <td>Prevention, detection, alerting</td>
-                        <td>Real-time detection + automated response</td>
+                        <td>Runtime detection with automated response</td>
                     </tr>
                     <tr>
-                        <td><strong>Response Time</strong></td>
-                        <td>Minutes to hours (human-dependent)</td>
-                        <td>Seconds (automated)</td>
+                        <td><strong>Baseline</strong></td>
+                        <td>Signatures and rules you maintain</td>
+                        <td>A profile learned per workload</td>
                     </tr>
                     <tr>
                         <td><strong>Integration</strong></td>
-                        <td>Often requires code changes or agents</td>
-                        <td>Zero application changes (sidecar)</td>
+                        <td>Often requires code changes or agents in the pod</td>
+                        <td>No application changes, and nothing added to your pods</td>
                     </tr>
                     <tr>
-                        <td><strong>Language Support</strong></td>
+                        <td><strong>Language support</strong></td>
                         <td>Often language-specific</td>
-                        <td>Language-agnostic (any container)</td>
+                        <td>Language-agnostic</td>
                     </tr>
                 </tbody>
             </table>
 
-            <h3>Does PandoCore replace my firewall/WAF/scanner?</h3>
-            <p>No. PandoCore complements your existing security infrastructure. It focuses specifically on runtime execution integrity, detecting issues that occur while code runs. Use PandoCore alongside your existing preventive security measures (firewalls, WAFs, vulnerability scanners, etc.).</p>
+            <h3>Does PandoCore replace my firewall, WAF or scanner?</h3>
+            <p>No. PandoCore focuses specifically on runtime execution integrity, which means issues that appear while code is running. Use it alongside your existing preventive measures.</p>
 
             <h2>Deployment</h2>
 
@@ -138,168 +132,180 @@
             </ul>
             <p>EKS and AKS support is expected but not yet validated.</p>
 
+            <h3>Will it run on GKE Autopilot or EKS Fargate?</h3>
+            <p>No. The sensor runs as a <code>hostPID</code> DaemonSet with a host path mount, and neither is permitted on those platforms, so there is no install path on either. This is a change from the deprecated sidecar, which ran unprivileged. See <a href="/docs/production-hardening">Production Hardening</a> for what the sensor runs as.</p>
+
             <h3>What are the resource requirements?</h3>
+            <p>Per node, not per workload. One sensor pod runs on each node whatever that node is running, so the figure does not grow with your deployment count.</p>
             <table>
                 <thead>
                     <tr>
                         <th>Resource</th>
-                        <th>Minimum</th>
-                        <th>Recommended</th>
+                        <th>Request</th>
+                        <th>Limit</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td>CPU per sidecar</td>
-                        <td>50m</td>
-                        <td>100m</td>
+                        <td>CPU per node</td>
+                        <td>250m</td>
+                        <td>2 cores</td>
                     </tr>
                     <tr>
-                        <td>Memory per sidecar</td>
-                        <td>25Mi</td>
-                        <td>50Mi</td>
+                        <td>Memory per node</td>
+                        <td>256Mi</td>
+                        <td>1Gi</td>
                     </tr>
                 </tbody>
             </table>
+            <p>Measured on an <code>e2-standard-4</code> at 40 monitored pods per node, warm and enforcing for eleven hours at the default cadence: 113.6 mCPU at the p95 over five minutes, and a 85.4 MiB working set. The request is sized for the 70-pod cap rather than for 40. The controller is separate and smaller.</p>
 
             <h3>Does PandoCore require code changes?</h3>
-            <p>No. PandoCore deploys as a sidecar container alongside your existing application. You add the sidecar to your deployment manifest. No changes to your application code are required.</p>
+            <p>No, and it requires no changes to your pod specifications either. The sensor runs beside your workloads rather than inside them, so there is nothing to add to a deployment manifest and nothing to label.</p>
 
             <h3>How long does deployment take?</h3>
-            <p>Installing takes about 15 minutes: the Helm install, then labelling your first deployment. Detection does not begin at install time. See the learning phase question below for the warm-up, and our <a href="/docs/getting-started">Getting Started guide</a> for the steps.</p>
+            <p>Two Helm installs, controller first. Detection does not begin at install time: see the learning phase question below for the warm-up, and the <a href="/docs/getting-started">Getting Started guide</a> for the steps.</p>
 
             <h2>Operations</h2>
 
             <h3>What is the "learning phase"?</h3>
-            <p>When a pod starts with PandoCore, the sidecar spends a short window building a per-workload operational profile before it begins detection. During this phase:</p>
+            <p>When the sensor starts watching a workload, it spends a short window building an operational profile for it before detection begins. During that window:</p>
             <ul>
-                <li>The <code>/readyz</code> endpoint returns 503</li>
-                <li>No enforcement occurs, even in enforce mode</li>
-                <li>Duration is configurable via <code>PANDO_LEARNING_DURATION_SECONDS</code> (default: 30 minutes)</li>
+                <li><code>/readyz</code> returns 503</li>
+                <li>Nothing can fire, whatever the mode</li>
+                <li>The window is 30 minutes and at least 900 samples, whichever is later</li>
             </ul>
-            <p>After learning completes, <code>/readyz</code> returns 200 and detection begins. Two behavioral scales keep warming past that point, and neither is controlled by <code>PANDO_LEARNING_DURATION_SECONDS</code>:</p>
+            <p>After it completes, <code>/readyz</code> returns 200 and the deterministic checks are armed. Two behavioural scales keep warming past that point:</p>
             <ul>
                 <li>The short scale needs roughly 100 minutes from a cold start</li>
                 <li>The long scale needs roughly 10 hours</li>
             </ul>
-            <p>A scale that is not yet warm does not contribute, so the full detection envelope is in place around 10 hours after a pod first starts, not at install time.</p>
+            <p>A scale that is not yet warm does not contribute, so the fuller detection envelope is in place around 10 hours after a workload is first watched, not at install time. Longer-period scales keep warming for days beyond that.</p>
 
             <h3>How do I know if PandoCore is working?</h3>
-            <p>Check these indicators:</p>
-            <pre><code># Sidecar is running
-kubectl get pods -l app=your-app -o wide
+            <pre><code># One sensor per node, all Ready
+kubectl get pods -n pando-system -l app.kubernetes.io/name=pando-node-sensor -o wide
 
-# Sidecar is healthy
-kubectl exec &lt;pod&gt; -c pando-sidecar -- wget -qO- http://localhost:9090/healthz
+# Armed and watching (200 once learning completes)
+kubectl exec -n pando-system &lt;sensor-pod&gt; -- wget -qO- http://localhost:9090/readyz
 
-# Learning complete (returns 200)
-kubectl exec &lt;pod&gt; -c pando-sidecar -- wget -qO- http://localhost:9090/readyz
+# Engine count, license ceiling, node clamp
+kubectl exec -n pando-system &lt;sensor-pod&gt; -- wget -qO- http://localhost:9090/status
 
-# View detection metrics
-kubectl exec &lt;pod&gt; -c pando-sidecar -- wget -qO- http://localhost:9090/metrics | grep pando_</code></pre>
+# Detection metrics
+kubectl exec -n pando-system &lt;sensor-pod&gt; -- wget -qO- http://localhost:9090/metrics | grep pando_</code></pre>
+            <p>Select on <code>app.kubernetes.io/name=pando-node-sensor</code> rather than on the protect label: the sensor's own pod carries <code>pandocore.io/protect: "false"</code>, so a selector written against <code>protect=true</code> matches nothing and reports a clean scrape of nothing.</p>
 
-            <h3>What happens if the sidecar crashes?</h3>
-            <p>If the PandoCore sidecar crashes, your application container continues running unprotected. Kubernetes will automatically restart the sidecar container based on its restartPolicy. The new sidecar instance will re-establish a baseline through the learning phase.</p>
-            <p>Configure liveness probes to ensure Kubernetes restarts unhealthy sidecars promptly:</p>
-            <pre><code>livenessProbe:
-  httpGet:
-    path: /healthz
-    port: 9090
-  initialDelaySeconds: 5
-  periodSeconds: 10</code></pre>
+            <h3>Is every pod on a node watched?</h3>
+            <p>Not necessarily, and the exceptions are worth knowing. Each sensor runs at most 70 monitored pods per node by default. Pods beyond that cap get no engine and are shed in a stable order, so the same pods stay unwatched across restarts rather than rotating. The gauge <code>pando_node_sensor_pods_unmonitored{reason="cap"}</code> reports them and the chart ships an alerting rule for it.</p>
+            <p>Four classes are also excluded whatever the configuration says: the sensor's own pod, <code>hostPID</code> pods, <code>hostNetwork</code> pods, and any pod labelled <code>pandocore.io/protect: "false"</code>. Eleven namespaces are excluded by default.</p>
 
-            <h3>What if PandoCore keeps terminating my pods?</h3>
-            <p>If you're experiencing unexpected pod terminations:</p>
+            <h3>What happens if a sensor crashes?</h3>
+            <p>The workloads on that node keep running, unwatched, and Kubernetes restarts the sensor pod. The new sensor re-profiles the workloads on its node. Your application containers are unaffected either way, because nothing of PandoCore's runs inside them.</p>
+            <p>Note that a sensor refusing to monitor is not the same as crashing: it parks instead of exiting, and <code>/healthz</code> deliberately keeps returning 200 so the kubelet does not crash-loop the refusal logs away. <code>/readyz</code> is what reports it, so alert on readiness rather than on pod phase.</p>
+
+            <h3>What if PandoCore keeps isolating my pods?</h3>
             <ol>
-                <li><strong>Switch to monitor mode immediately:</strong>
-                    <pre><code>kubectl set env deployment/NAME -c pando-sidecar PANDO_MODE=monitor</code></pre>
+                <li><strong>Release the pod now</strong> by deleting the NetworkPolicy, which is an ordinary Kubernetes object:
+                    <pre><code>kubectl delete networkpolicy -n &lt;ns&gt; -l pandocore.io/isolation=&lt;pod&gt;</code></pre>
                 </li>
-                <li><strong>Review the evidence:</strong> Check logs to understand what triggered the detection</li>
-                <li><strong>Adjust sensitivity:</strong> Your workload may have legitimate behavioral variance that requires a more permissive setting</li>
-                <li><strong>Trigger re-learning:</strong> If your application behavior has legitimately changed</li>
+                <li><strong>Stop it acting</strong> on that workload while keeping it watched:
+                    <pre><code>kubectl annotate deployment &lt;name&gt; pandocore.io/mode=monitor --overwrite
+kubectl rollout restart deployment/&lt;name&gt;</code></pre>
+                </li>
+                <li><strong>Review the evidence</strong> in the portal to understand what triggered it</li>
+                <li><strong>Loosen sensitivity</strong> for that namespace in a PandoCorePolicy if it recurs</li>
             </ol>
-            <p>See <a href="/docs/emergency">Emergency Procedures</a> for detailed steps.</p>
+            <p>See <a href="/docs/emergency">Emergency Procedures</a> for the full set of levers.</p>
 
             <h3>How do I tune the detection sensitivity?</h3>
-            <p>Use <code>PANDO_SENSITIVITY</code> (default <code>2.0</code>, or <code>3.0</code> for JIT and database runtimes the webhook auto-detects). Raise it for noisy workloads, lower it to catch subtler anomalies. Start in monitor mode before enabling enforcement.</p>
+            <p>Per namespace, in a <code>PandoCorePolicy</code>: <code>sensitivity: low | medium | high</code>, where a higher preset is a tighter gate, plus <code>thresholds</code> for finer numeric control. Thresholds can only tighten what learning derived, never loosen it; use <code>sensitivity</code> to loosen. <code>PANDO_SENSITIVITY</code> still exists but belongs to the DaemonSet on the node sensor, so it applies node-wide rather than to one workload. See <a href="/docs/policy">CRD Policy</a>.</p>
 
             <h2>Detection</h2>
 
             <h3>What does PandoCore detect?</h3>
-            <p>PandoCore detects runtime behavioral anomalies indicative of compromise: deviations from a workload's learned operational profile that signature-based tools typically miss. It complements, rather than replaces, your existing prevention stack.</p>
+            <p>Runtime behavioural divergence from a workload's learned operational profile, which is the class of problem signature-based tools tend to miss. It complements your prevention stack rather than replacing it.</p>
 
             <h3>What doesn't PandoCore detect?</h3>
             <p>PandoCore focuses on runtime execution integrity. It does <strong>not</strong> detect:</p>
             <ul>
-                <li><strong>Pre-execution issues:</strong> Supply chain compromises, malicious images, vulnerabilities in dependencies (use image scanning)</li>
-                <li><strong>Application logic bugs:</strong> SQL injection, authentication bypass, business logic flaws (use application security testing)</li>
-                <li><strong>Network attacks:</strong> Man-in-the-middle, DDoS, DNS spoofing (use network security tools)</li>
+                <li><strong>Pre-execution issues:</strong> supply chain compromise, malicious images, dependency vulnerabilities (use image scanning)</li>
+                <li><strong>Application logic flaws:</strong> SQL injection, authentication bypass, business logic bugs (use application security testing)</li>
+                <li><strong>Network attacks:</strong> man-in-the-middle, denial of service, DNS spoofing (use network security tools)</li>
             </ul>
 
             <h3>Can PandoCore cause false positives?</h3>
-            <p>PandoCore is designed to minimize false positives by profiling each workload individually. Legitimate behavioral changes (new deployments, load spikes, batch jobs) may still trigger detections.</p>
-            <p>Best practices to avoid false positives:</p>
+            <p>Yes, and profiling each workload individually is how it keeps them low rather than how it eliminates them. Legitimate behavioural change, such as a new release, a load spike or a batch job, can trigger a detection.</p>
+            <p>What helps:</p>
             <ul>
-                <li>Run in monitor mode for at least one week before enabling enforcement</li>
-                <li>Trigger re-learning after deployments that significantly change behavior</li>
-                <li>Adjust sensitivity based on your workload's characteristics</li>
+                <li>Spend time on a free license first, where the ceiling is alert and nothing is contained, and read what it reports before raising it</li>
+                <li>Expect a workload to re-profile after a deployment that genuinely changes its behaviour</li>
+                <li>Set sensitivity per namespace to match the workload</li>
             </ul>
 
             <h2>Security</h2>
 
-            <h3>What permissions does the sidecar need?</h3>
-            <p>Most of it is namespace-scoped. A <code>ClusterRole</code> named <code>pando-sidecar</code> is bound with a <code>RoleBinding</code> in each protected namespace, so those grants apply only inside that namespace:</p>
+            <h3>What permissions does the sensor need?</h3>
+            <p>The sensor holds one <code>ClusterRole</code>. It contains exactly:</p>
             <ul>
-                <li><code>get</code>, <code>delete</code> on pods (read pod info; terminate a compromised pod in enforce mode)</li>
-                <li><code>create</code>, <code>delete</code>, <code>get</code> on networkpolicies (isolate a pod, then release it)</li>
-                <li><code>get</code>, <code>list</code> on services</li>
+                <li><code>get</code>, <code>list</code>, <code>watch</code> on pods</li>
                 <li><code>create</code> on events</li>
-                <li><code>get</code>, <code>list</code>, <code>watch</code> on pandocorepolicies</li>
+                <li><code>create</code>, <code>delete</code>, <code>get</code> on networkpolicies</li>
+                <li><code>get</code> on replicasets, statefulsets and daemonsets</li>
+                <li><code>list</code> on pandocorepolicies</li>
+                <li><code>list</code> on services</li>
+                <li><code>get</code> on namespaces, restricted to <code>kube-system</code></li>
             </ul>
-            <p>A smaller set is genuinely cluster-wide, granted by one <code>ClusterRoleBinding</code> named <code>pando-sidecar-cluster</code>: <code>get</code> on endpoints and namespaces, and <code>list</code> on services. The isolation NetworkPolicy needs the <code>kubernetes</code> Endpoints object, otherwise an isolated pod cannot reach the API server to release itself.</p>
+            <p>Three grants are withheld by name, each with its reason recorded in the chart: <code>pods: patch</code>, <code>pods: delete</code> and <code>endpoints: get</code>. The sensor cannot delete a pod, and that is a property of the grant and of the code, not a configuration choice.</p>
+            <p>The cluster-wide <code>secrets get</code> that per-namespace policy integrations need does not sit on the sensor at all. The destinations mirror is a separate unprivileged Deployment so that grant is not held by a <code>hostPID</code> pod running as uid 0 on every node.</p>
+
+            <h3>Does the sensor run privileged?</h3>
+            <p>It runs as a <code>hostPID</code> DaemonSet, as uid 0, with <code>CAP_SYS_PTRACE</code>, mounting the node's <code>/proc</code> read-only and a host path for its own state. That is a real increase in node surface compared with the deprecated sidecar, which ran unprivileged, and it is stated plainly rather than buried: see the <a href="https://trust.pandocore.io">trust center</a>.</p>
+            <p>On uid 0 specifically, it is load-bearing rather than inherited. <code>CAP_SYS_PTRACE</code> becomes effective through the uid-0 path, and the alternative is a file capability raised in-process with privilege escalation enabled, which is more escalation surface than root with escalation switched off. Of the two postures that work, this is the narrower one.</p>
 
             <h3>Can an attacker disable PandoCore?</h3>
-            <p>The sidecar runs in a separate container within the same pod. An attacker would need container escape capabilities to reach the sidecar. If they can escape the application container, PandoCore may detect the anomalous behavior (process/memory changes) before the attacker can disable protection.</p>
-            <p>If an attacker has root access on the node, they could potentially kill the sidecar process. This is a limitation of software-based monitoring.</p>
+            <p>The sensor runs outside the pods it watches, on the node, so an attacker who compromises an application container is not in the same container, the same pod, or the same process namespace as the thing watching them. Escaping the container does not by itself reach the sensor, and the behaviour involved in trying is the kind of divergence the sensor exists to notice.</p>
+            <p>An attacker with root on the node can stop the sensor process. That is a genuine limit of software monitoring on a compromised host, and it is why the chart ships an absence alerting rule: a sensor that has gone quiet is the one condition no self-report can distinguish from healthy, so it is alerted on from outside.</p>
 
             <h3>Where is evidence stored?</h3>
-            <p>Evidence is emitted to multiple channels:</p>
             <ul>
-                <li><strong>stdout:</strong> Captured by your log aggregator (Fluentd, Filebeat, etc.)</li>
-                <li><strong>Kubernetes Events:</strong> Stored in the Kubernetes API (survives pod deletion)</li>
-                <li><strong>Prometheus metrics:</strong> Time-series data in your metrics stack</li>
+                <li><strong>The controller:</strong> records are delivered to it over mTLS and written to a durable spool before it acknowledges them, so evidence does not die with the pod that produced it</li>
+                <li><strong>Your destinations:</strong> the controller owns delivery onward to SIEM, Slack, syslog or your own webhook</li>
+                <li><strong>Kubernetes events:</strong> stored in the API and surviving pod deletion</li>
+                <li><strong>stdout:</strong> picked up by your log aggregator</li>
+                <li><strong>Prometheus:</strong> metrics in your own metrics stack</li>
             </ul>
-            <p>Evidence is externalized <strong>before</strong> pod termination to ensure it's preserved.</p>
+            <p>Each record is signed with Ed25519 over a digest of its canonical form, and records are linked by <code>previous_hash</code> into a chain, which makes later tampering detectable rather than preventing it. See <a href="/docs/evidence-format">Evidence Format</a>.</p>
 
             <h2>Troubleshooting</h2>
 
-            <h3>Sidecar logs show "learning" for a long time</h3>
-            <p>The default learning phase is 30 minutes. During this time, the sidecar is in monitor-only mode. For slow-warmup workloads you can extend the window with <code>PANDO_LEARNING_DURATION_SECONDS</code> and <code>PANDO_LEARNING_MIN_SAMPLES</code>.</p>
+            <h3>A workload has shown "learning" for a long time</h3>
+            <p>The window is 30 minutes and at least 900 samples, whichever is later, so a workload that is sampled slowly takes longer than 30 minutes. For slow-warmup workloads the window can be extended with <code>PANDO_LEARNING_DURATION_SECONDS</code> and <code>PANDO_LEARNING_MIN_SAMPLES</code> on the DaemonSet, which applies node-wide.</p>
 
-            <h3>Detections happening but pods not terminating</h3>
-            <p>Check the operating mode:</p>
-            <pre><code>kubectl get pod &lt;pod&gt; -o jsonpath='{.spec.containers[?(@.name=="pando-sidecar")].env}' | jq .</code></pre>
-            <p>If <code>PANDO_MODE=monitor</code> or <code>alert</code>, PandoCore detects but does not enforce. Change to <code>enforce</code> for active protection.</p>
+            <h3>Detections are happening but nothing is being contained</h3>
+            <p>Check the ceiling before the mode, because the ceiling is the more common answer:</p>
+            <pre><code>kubectl exec -n pando-system &lt;sensor-pod&gt; -- wget -qO- http://localhost:9090/status</code></pre>
+            <p>A free license is held to alert and contains nothing, which is the tier working as intended rather than a misconfiguration. If the ceiling permits isolation, check the workload's mode annotation, and remember it is read when the sensor starts watching a pod, so a recent change may not have reached pods already running. A clamped node is held to monitor by a portal-side verdict and does not alert either.</p>
 
             <h3>Grafana shows no PandoCore data</h3>
             <ol>
-                <li>Verify Prometheus is scraping the sidecar: Check Prometheus targets UI</li>
-                <li>Verify the sidecar metrics port is exposed: Should be port 9090</li>
-                <li>Check that Grafana's data source is correctly configured</li>
+                <li>Check your Prometheus job selects <code>app.kubernetes.io/name=pando-node-sensor</code>. A job written against the protect label matches nothing and looks healthy</li>
+                <li>Confirm the metrics port is 9090</li>
+                <li>Confirm Grafana's data source</li>
             </ol>
 
             <h3>How do I get support?</h3>
-            <p>For pilot customers, contact PandoCore support directly with:</p>
+            <p>Contact <a href="/contact">support</a> with:</p>
             <ol>
-                <li>Evidence JSON from the detection event</li>
-                <li>What your workload was doing at the time</li>
-                <li>Your current sensitivity setting</li>
-                <li>Sidecar logs from around the time of the issue</li>
+                <li>The evidence record from the detection</li>
+                <li>What the workload was doing at the time</li>
+                <li>Your sensitivity setting, and the policy it came from</li>
+                <li>Sensor logs and <code>/status</code> output from around the time</li>
             </ol>
 
             <h2>Still Have Questions?</h2>
-            
-            <p>If your question isn't answered here, <a href="/contact">contact us</a> and we'll be happy to help.</p>
 
+            <p>If your question is not answered here, <a href="/contact">contact us</a> and we will be happy to help.</p>
         </main>
     </div>
 
@@ -313,6 +319,6 @@ kubectl exec &lt;pod&gt; -c pando-sidecar -- wget -qO- http://localhost:9090/met
         </div>
     </footer>
 
-    <script src="../js/main.js"></script>
+    <script src="/js/main.js"></script>
 </body>
 </html>
