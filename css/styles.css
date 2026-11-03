@@ -1115,7 +1115,12 @@ ul {
 
 /* Typographic list variant (no cards) */
 .problem-list {
-    max-width: 820px;
+    /* --content-max-width, not 820px: this, .vision-content (800) and
+       .feature-rows (780) were three spellings of one intent, and because each
+       centres inside the same container they produced left edges at 310, 320
+       and 330. Three edges 10px apart do not read as three decisions, they read
+       as none. */
+    max-width: var(--content-max-width);
     margin: var(--spacing-lg) auto 0;
     position: relative;
     z-index: 1;
@@ -1149,7 +1154,7 @@ ul {
    =================================== */
 
 .feature-rows {
-    max-width: 780px;
+    max-width: var(--content-max-width);
     margin: 0 auto;
     position: relative;
     z-index: 1;
