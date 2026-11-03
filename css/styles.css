@@ -2925,6 +2925,55 @@ ul {
     font-size: inherit;
 }
 
+/* Copy control. The visual contract already existed in docs.css and had no
+   markup or script driving it; this is the same treatment on the marketing
+   side so one button looks the same wherever a command appears. */
+.code-block-wrapper {
+    position: relative;
+}
+
+.copy-button {
+    position: absolute;
+    top: var(--spacing-xs);
+    right: var(--spacing-xs);
+    padding: 6px 12px;
+    background: rgb(var(--white-rgb) / 0.1);
+    border: 1px solid rgb(var(--white-rgb) / 0.25);
+    border-radius: var(--radius-xs);
+    color: var(--floral-white);
+    font-size: var(--text-2xs);
+    font-weight: 600;
+    cursor: pointer;
+    /* Named, not `all`: `all` animates outline-color, so the focus ring fades
+       in over the transition rather than appearing when focus lands. */
+    transition: background-color var(--dur-base) var(--ease-standard),
+                border-color var(--dur-base) var(--ease-standard);
+}
+
+.copy-button:hover {
+    background: rgb(var(--white-rgb) / 0.2);
+}
+
+/* A copy confirmation is system state, which is what DESIGN.md reserves the
+   success colour for. */
+.copy-button.copied {
+    background: var(--success-green);
+    border-color: var(--success-green);
+    color: var(--white);
+}
+
+/* The button is absolutely positioned over the block, so the first line of the
+   command needs room to clear it at every width. */
+.code-block-wrapper pre {
+    padding-top: calc(var(--spacing-md) + var(--spacing-lg));
+}
+
+/* The ring is light because the block is forest. */
+.copy-button:focus-visible {
+    outline: 2px solid var(--floral-white);
+    outline-offset: 2px;
+}
+
 /* Measured figures, as a definition list rather than a table: four rows of two
    short values do not need column rules, and a dl keeps the pairing in the
    accessibility tree. */
@@ -3402,6 +3451,18 @@ ul {
         grid-template-columns: 1fr;
     }
     
+    /* At 390 the command is 620px inside a 358px block. `overflow-x: auto`
+       protects the page but offers no visible scrollbar on touch, so the chart
+       coordinates, the part a reader is actually here for, are unreachable.
+       Wrapping is legible where a silent horizontal scroll is not; the `\`
+       line endings and the existing two-space indents still carry the
+       structure. */
+    .content-wrapper pre code,
+    .docs-content pre code {
+        white-space: pre-wrap;
+        overflow-wrap: break-word;
+    }
+
     /* Alternative layouts - Mobile responsive */
     .feature-row {
         grid-template-columns: 1fr;

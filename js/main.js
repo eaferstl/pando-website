@@ -31,6 +31,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Render blog cards (only runs on the blog index page)
     initializeBlogIndex();
+
+    // Add copy controls to command blocks
+    initializeCopyButtons();
 });
 
 /**
@@ -479,4 +482,69 @@ function debounce(func, wait) {
         clearTimeout(timeout);
         timeout = setTimeout(later, wait);
     };
+}
+
+/**
+ * Adds a copy control to every command block.
+ *
+ * The block it exists for is the two-chart install on the homepage: a reader
+ * who was forwarded the link is there to run those commands, and on a phone the
+ * `<pre>` scrolls horizontally, so the chart coordinates are the part they
+ * cannot reach. Selecting wrapped text by hand on a touch screen is the worst
+ * case this fixes.
+ *
+ * Nothing is injected when the Clipboard API is unavailable: a visible button
+ * that silently fails is worse than no button. `writeText` needs a secure
+ * context, so this is a no-op over plain http other than localhost.
+ */
+function initializeCopyButtons() {
+    if (!navigator.clipboard || typeof navigator.clipboard.writeText !== 'function') {
+        return;
+    }
+
+    const blocks = document.querySelectorAll('.content-wrapper pre, .docs-content pre');
+
+    blocks.forEach(function(pre) {
+        const code = pre.querySelector('code');
+        if (!code || pre.parentElement.classList.contains('code-block-wrapper')) {
+            return;
+        }
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'code-block-wrapper';
+        pre.parentNode.insertBefore(wrapper, pre);
+        wrapper.appendChild(pre);
+
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'copy-button';
+        button.textContent = 'Copy';
+        // The block has no accessible name of its own, so say what is copied.
+        button.setAttribute('aria-label', 'Copy command to clipboard');
+        wrapper.appendChild(button);
+
+        let revert = null;
+
+        button.addEventListener('click', function() {
+            navigator.clipboard.writeText(code.textContent).then(function() {
+                setState('Copied', 'Command copied to clipboard', true);
+            }).catch(function() {
+                // Permission denied or a non-secure context that slipped past
+                // the guard above. Say so rather than showing a false success.
+                setState('Press Ctrl+C', 'Copying failed, select the text and copy manually', false);
+            });
+        });
+
+        function setState(label, description, copied) {
+            button.textContent = label;
+            button.setAttribute('aria-label', description);
+            button.classList.toggle('copied', copied);
+            window.clearTimeout(revert);
+            revert = window.setTimeout(function() {
+                button.textContent = 'Copy';
+                button.setAttribute('aria-label', 'Copy command to clipboard');
+                button.classList.remove('copied');
+            }, 2000);
+        }
+    });
 }
