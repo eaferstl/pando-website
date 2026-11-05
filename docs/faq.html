@@ -158,7 +158,7 @@
                     </tr>
                 </tbody>
             </table>
-            <p>Measured on an <code>e2-standard-4</code> at 40 monitored pods per node, warm and enforcing for eleven hours at the default cadence: 113.6 mCPU at the p95 over five minutes, and a 85.4 MiB working set. The request is sized for the 70-pod cap rather than for 40. The controller is separate and smaller.</p>
+            <p>Measured warm and enforcing on the shipping build, across two runs: a 130.4 mCPU p95 with a 106.9 MiB working set over a 24-hour warm window, and 127.3 mCPU with 110.6 MiB over a 34-hour run. The working-set slope was flat in both, at -0.015 and +0.008 MiB per hour, so there is no leak to grow into the limit. There was no CFS throttling, no OOMKill, and no sensor restart in 77 hours. The request is sized for the 70-pod cap rather than for the engine counts these runs carried. The controller is separate and smaller.</p>
 
             <h3>Does PandoCore require code changes?</h3>
             <p>No, and it requires no changes to your pod specifications either. The sensor runs beside your workloads rather than inside them, so there is nothing to add to a deployment manifest and nothing to label.</p>

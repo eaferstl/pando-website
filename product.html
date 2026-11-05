@@ -63,7 +63,7 @@
             <h2 class="section-title">What PandoCore Does</h2>
             <div class="content-wrapper mw-container">
                 <p class="section-intro mb-md">Traditional runtime security tools require you to write detection rules for every threat you want to catch. If you don't write the rule, you miss the attack.</p>
-                <p class="section-intro"><strong>PandoCore takes a different approach.</strong> It automatically learns what normal looks like for each workload, then continuously monitors for deviations. When anomalous behavior is detected, it responds with a graduated action chain: alert, then isolate.</p>
+                <p class="section-intro"><strong>PandoCore takes a different approach.</strong> It automatically learns what normal looks like for each workload, then continuously monitors for deviations. When anomalous behavior is detected, it responds with a graduated action chain: alert, then isolate. On a first encounter that reached isolation, detection to containment took about 60 seconds without a human in the loop, measured twice on live infrastructure.</p>
                 
                 <div class="checkmarks-grid">
                     <div class="check-row">
@@ -648,7 +648,7 @@
                         </div>
                         <div class="feature-content">
                             <h3>Validated Performance</h3>
-                            <p>Validated across {{SOAK4_ENGINE_HOURS}} engine-hours on GKE, cumulative rather than one unbroken run, against production-representative synthetic workloads, with {{SOAK4_FALSE_ISOLATIONS_PHRASE}}. Every capability is backed by measured results from soak testing against diverse production-representative applications.</p>
+                            <p>Validated across 3,966 engine-hours on GKE, cumulative rather than one unbroken run, against production-representative synthetic workloads, with zero false isolations from sensors that were permitted to isolate, 1,231 engine-hours of them on the exact build we ship. Every capability is backed by measured results from soak testing against diverse production-representative applications.</p>
                         </div>
                     </div>
                 </div>
@@ -697,36 +697,22 @@
         <div class="container">
             <h2 class="section-title">Validated Against Real Workloads</h2>
             <div class="content-wrapper mw-container">
-                <p class="section-intro">The node sensor has been run against production-representative workloads in an extended soak on GKE. No manual configuration or tuning was performed, and every workload ran with default settings.</p>
+                <p class="section-intro">The node sensor has been run against production-representative workloads in extended soak runs on GKE. No manual configuration or tuning was performed, and every workload ran with default settings.</p>
+
+                <p class="validation-claim">Zero false isolations across 3,966 engine-hours of sensors that were permitted to isolate, 1,231 of them on the exact build we ship.</p>
 
                 <div class="validation-grid">
                     <div>
-                        <div class="stat-number">{{SOAK4_ENGINE_HOURS}}</div>
-                        <div class="detail-note">Engine-Hours</div>
-                    </div>
-                    <div>
-                        <div class="stat-number">{{SOAK4_FALSE_ISOLATIONS}}</div>
-                        <div class="detail-note">False Isolations</div>
-                    </div>
-                    <div>
-                        <div class="stat-number">{{SOAK4_SAMPLES}}</div>
-                        <div class="detail-note">Samples Collected</div>
-                    </div>
-                    <div>
-                        <div class="stat-number">{{SOAK4_ATTESTATION_CHECKS}}</div>
-                        <div class="detail-note">Attestation Checks Passed</div>
-                    </div>
-                    <div>
-                        <div class="stat-number">{{SOAK4_NODE_MEMORY}}</div>
+                        <div class="stat-number">110.6 MiB</div>
                         <div class="detail-note">Working Set, Per Node</div>
                     </div>
                     <div>
-                        <div class="stat-number">{{SOAK4_WORKLOAD_TYPES}}</div>
+                        <div class="stat-number">24</div>
                         <div class="detail-note">Workload Types</div>
                     </div>
                 </div>
 
-                <p class="section-note">{{SOAK4_FALSE_ISOLATIONS_PHRASE}} across {{SOAK4_ENGINE_HOURS}} engine-hours on GKE, measured on {{SOAK4_NODES}}, against production-representative synthetic workloads rather than customer traffic. Profiling is automatic across web servers, databases, and JIT and interpreted runtimes, with no manual tuning required. These figures are from the node sensor; the earlier per-pod collector's numbers are not carried forward.</p>
+                <p class="section-note">Cumulative across two runs rather than one unbroken window, measured on one node per run, against production-representative synthetic workloads rather than customer traffic. A zero bounds the rate rather than being one: at most one false isolation in 1,324 engine-hours, at 95 percent confidence. Profiling is automatic across web servers, databases, and JIT and interpreted runtimes, with no manual tuning required. These figures are from the node sensor; the earlier per-pod collector's numbers are not carried forward.</p>
             </div>
         </div>
     </section>

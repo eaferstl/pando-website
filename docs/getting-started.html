@@ -110,14 +110,14 @@
             <pre><code># 1. The controller: receives evidence and owns every outbound destination
 helm install pando-controller \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-controller \
-  --version &lt;VERSION&gt; \
+  --version 2.0.0 \
   --namespace pando-system --create-namespace \
   --set license.key="YOUR_LICENSE_KEY"
 
 # 2. The node sensor: one pod per node
 helm install pando-node-sensor \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-node-sensor \
-  --version &lt;VERSION&gt; \
+  --version 2.0.0 \
   --namespace pando-system \
   --set license.key="YOUR_LICENSE_KEY"</code></pre>
 
@@ -252,7 +252,7 @@ kubectl rollout restart deployment/your-app</code></pre>
 
             <p>The sensor requests <strong>250m CPU and 256Mi</strong> per node and is limited to <strong>2 cores and 1Gi</strong>. One pod per node, whatever that node is running.</p>
 
-            <p>Measured on an <code>e2-standard-4</code> at 40 monitored pods per node, warm and enforcing for eleven hours, at the default cadence: <strong>113.6 mCPU</strong> at the p95 over five minutes, and a <strong>85.4 MiB</strong> working set. The request is sized for the 70-pod cap rather than for 40, which carries to roughly 199 mCPU; that is a carry from the measurement, not itself a measurement, since the bench held the engine count at forty throughout.</p>
+            <p>Measured warm and enforcing on the shipping build, across two runs: <strong>130.4 mCPU</strong> at the p95 with a <strong>106.9 MiB</strong> working set over a 24-hour warm window, and <strong>127.3 mCPU</strong> with <strong>110.6 MiB</strong> over a 34-hour run. The working set stayed flat in both, so there is no leak to grow into the limit, and there was no CFS throttling, no OOMKill and no sensor restart. The request is sized for the 70-pod cap rather than for the engine counts these runs carried.</p>
 
             <div class="docs-callout info">
                 <div class="docs-callout-title">The install refuses nodes that cannot fit the sensor</div>

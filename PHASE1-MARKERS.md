@@ -3,29 +3,50 @@
 Claims published on the marketing and docs surfaces that are not yet fully supported,
 and decisions recorded so they are not silently re-opened.
 
-Last updated: 2026-11-02. Delete an entry when its item closes.
+Last updated: 2026-11-05. Delete an entry when its item closes.
 
 ## Blocked on a release
 
-### The seven soak placeholders
-**Where:** `index.html`, `product.html` (the six validation tiles and the section note),
-`docs/index.html`
-**Status:** The sidecar-era soak figures were retired at collector cutover, so the pages
-carry placeholders rather than numbers. Fill all seven together; they travel as a set.
+### The eight soak placeholders: CLOSED 2026-11-05
+Six filled, two withdrawn. No `{{SOAK4_*}}` token remains anywhere in the tree.
 
-| Placeholder | Tile / use |
+| Placeholder | Resolution |
 |---|---|
-| `{{SOAK4_ENGINE_HOURS}}` | Engine-Hours, plus the prose instances |
-| `{{SOAK4_FALSE_ISOLATIONS}}` | False Isolations tile, and `index.html`. A bare number |
-| `{{SOAK4_FALSE_ISOLATIONS_PHRASE}}` | The prose instances. A full phrase, e.g. "Two false isolations" |
-| `{{SOAK4_SAMPLES}}` | Samples Collected |
-| `{{SOAK4_ATTESTATION_CHECKS}}` | Attestation Checks Passed |
-| `{{SOAK4_NODE_MEMORY}}` | Working Set, Per Node |
-| `{{SOAK4_WORKLOAD_TYPES}}` | Workload Types |
-| `{{SOAK4_NODES}}` | Node count, in the section note only |
+| `{{SOAK4_ENGINE_HOURS}}` | `3,966` |
+| `{{SOAK4_FALSE_ISOLATIONS}}` | `zero`, folded into the headline statement |
+| `{{SOAK4_FALSE_ISOLATIONS_PHRASE}}` | folded into the headline statement |
+| `{{SOAK4_NODE_MEMORY}}` | `110.6 MiB` |
+| `{{SOAK4_WORKLOAD_TYPES}}` | `24` |
+| `{{SOAK4_NODES}}` | one node per run |
+| `{{SOAK4_SAMPLES}}` | **not recorded. Tile removed, not filled.** |
+| `{{SOAK4_ATTESTATION_CHECKS}}` | **not recorded. Tile removed, not filled.** |
 
-GKE only. **Two tokens, not one, for false isolations**: the tile needs a bare number and
-the three prose instances need a phrase, and one token cannot serve both grammars.
+GKE only. The validation grid is two tiles now, not six.
+
+**The 663,841,097 trap.** soak4 arm B's teardown entry in `HARDENING_UPDATES.md` records
+"663,841,097 samples". That is a count of Prometheus datapoints across 15 TSDB blocks, not
+behavioural samples collected by the sensor, and it is roughly 2,700 times the per-engine
+figures. It reads exactly like a Samples Collected tile and it is not one. That tile was
+removed rather than filled. **Do not restore it from that number.**
+
+**Any future figure must come from soak4 arm B plus soak5**, the two runs behind the
+published 3,966 engine-hours. **Never from soak3.** Soak3 is much the larger sample at
+22,266.54 engine-hours, but it ran in Monitor mode, so its figures cannot sit in a band whose
+headline is an isolation claim: the denominators differ by a factor of six. A soak3 figure
+needs its own sentence and its own denominator.
+
+**The headline is one statement and must stay one:** "Zero false isolations across 3,966
+engine-hours of sensors that were permitted to isolate, 1,231 of them on the exact build we
+ship." Every clause is load-bearing. The zero is only true of sensors that were permitted to
+isolate, and only 1,231 of those hours ran on the shipping build. The grid used to carry the
+engine-hours and the zero as two separate tiles, which published the figure apart from the
+qualifier that makes it true; that is what `.validation-claim` exists for, and why those two
+tiles were merged into it. Do not re-cut them into the grid.
+
+**Three grammars, not two.** A bare number; a mid-sentence phrase after "with"; and a
+sentence-initial phrase followed by "across N engine-hours", which would have duplicated the
+clause. The third could not be served by a token at all and is hand-written in
+`product.html`'s section note.
 
 **Overflow is handled, 2026-11-02.** `.validation-grid` now uses `minmax(0, 1fr)` tracks
 and `.stat-number` carries `overflow-wrap: anywhere`, so a long value wraps instead of
@@ -40,34 +61,55 @@ Note the distinction PRODUCT.md draws: "continuously monitors" stays as a produc
 claim, and the surviving instances on `product.html` are that, not measurements. Do not
 publish a false-termination count; the sensor cannot terminate.
 
-### The published install command names a release that does not exist
-**Where:** `docs/getting-started.html`, `docs/upgrading.html`, `docs/configuration.html`,
-`docs/controller.html`, `docs/emergency.html`, `docs/production-hardening.html`
-**Status:** The pages publish the prod OCI coordinates with `--version <VERSION>`. The
-coordinates are correct and deterministic (`cloudbuild-prod.yaml` substitutions), but **no
-prod release containing the node sensor has ever been cut**: the last tag is `v1.4.2`
-(2026-08-19) and the node-sensor chart first appeared 2026-10-09. Two owner steps gate it,
-and both are outside this repo:
+### `<VERSION>`: FILLED 2026-11-05 as `2.0.0`, but the chart is not published yet
+**Where:** `index.html` and 6 docs pages, 11 sites, now reading `--version 2.0.0`.
+**Status:** The version is certain by construction rather than a guess: the prod build writes
+every chart's `version` and `appVersion` from the `_TAG_NAME` substitution with the leading
+`v` stripped, and the owner passed `_TAG_NAME=v2.0.0`. All five charts get it, node sensor
+included. **`Chart.yaml` reads `0.1.0` in git; ignore it, the build overwrites both keys.**
 
-1. `scripts/setup-gcp-repos.sh prod` to create the `node-sensor` Artifact Registry
-   repository. It was still absent on 2026-10-29; Artifact Registry does not create a
-   repository on push, and `cloudbuild-prod.yaml` refuses to publish the chart without it.
-2. A tagged prod build.
+It is one value for both charts, not two. `--version` is mandatory and must stay in every
+published command: an OCI chart installed without it fails outright rather than resolving to
+the newest release.
 
-Until then `<VERSION>` is honest but the command resolves to nothing. `--version` is
-mandatory and must stay in every published command: installing an OCI chart without it
-fails outright rather than resolving to the newest release.
+**SHIP GATE, still open.** The chart is not published. `charts/` in prod currently holds only
+`pando-sidecar`, newest `1.4.2`; `pando-node-sensor` has never been carried by prod at all.
+Until the build lands, every published install command 404s. **Confirm the chart is
+resolvable before the site goes live**, because this is the first command a KubeCon visitor
+runs:
 
-### `cosign verify` has never been run against a prod artifact
+    helm show chart oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-node-sensor \
+      --version 2.0.0
+
+### `cosign verify`: only the digest is still missing
 **Where:** `trust/index.html`, the supply-chain section
-**Status:** The published command's flag shape is verified against
-`cloudbuild-prod.yaml:1877-1905`, including `--insecure-ignore-tlog=true`, which is required
-because signing passes `--tlog-upload=false`. The public key exists and is git-tracked at
-`deploy/keys/cosign-public-prod.pem` (committed 2026-10-30, distinct from staging's). But no
-prod image has ever been signed with it, because no prod release has run. The owner is
-supplying an image reference and digest so the command can be run end to end. Do not claim a
-transparency-log entry, Rekor, or publicly auditable signing: signing is by key with the log
-deliberately disabled.
+**Status:** Narrowed 2026-11-05. The durable half is published and verified:
+
+- The **public key is published inline on the page**, byte-identical to
+  `deploy/keys/cosign-public-prod.pem`, hashing to
+  `sha256:dc0145d97692207e64d9e79f94d46c823d48364922f88d0db3b9e3899dfd14d8`. All three were
+  checked against each other on 2026-11-05, and the key parses as a valid P-256 public key.
+  The owner separately confirmed it pairs with the prod KMS key by DER SHA-256 comparison.
+- The **image path** is real: `us-central1-docker.pkg.dev/pandocore-prod/node-sensor/pando-node-sensor`.
+- The **flag shape** is verified against `cloudbuild-prod.yaml:1877-1905`, including
+  `--insecure-ignore-tlog=true`, required because signing passes `--tlog-upload=false`.
+
+Outstanding: the `<digest>` itself, produced at `sensor-docker-push` and signed at
+`image-signing` in the prod build. There will be five digests, one per image; the node
+sensor's is the one this page wants. Run the command end to end before calling it done.
+
+**Do not fill the digest by listing the repository.** The prod node-sensor repo already holds
+an untagged orphan predating this pipeline, with no signature artifacts and
+`slsa_build_level: unknown`, and it is exactly what a repo listing returns. It is not a
+release artifact and will not verify. The page now tells readers the same thing.
+
+Do not claim a transparency-log entry, Rekor, or publicly auditable signing: signing is by
+key with the log deliberately disabled.
+
+**Scanning is not uniform, corrected 2026-11-05.** Signing and both SBOM attestations cover
+all five images. Trivy gates the node sensor only, on CRITICAL and HIGH with fixed-available
+only; the sidecar is scanned but not gated; the controller, webhook and enforcer are not
+scanned at all. "All images scanned" would be false.
 
 ## Unverified or pending
 
@@ -115,16 +157,26 @@ Removed from `index.html`, `product.html` and `docs/faq.html`, and a "under 5 mi
 in `docs/getting-started.html`'s meta description went with it. State the shape of the
 install, not a duration. Do not reintroduce a figure without a measurement.
 
-### Per-node resource footprint: RESOLVED 2026-11-01
-The pending per-node figure now exists and is measured, so the old `~5-6 MiB` per-pod figure
-is retired along with the rest of the sidecar numbers. Publishable: 250m CPU and 256Mi
-requested per node, limited to 2 cores and 1Gi
-(`pando-node-sensor/values.yaml:407-413`); and measured on an `e2-standard-4` at 40
-monitored pods per node, warm and enforcing for eleven hours at the default 1000 ms cadence,
-113.6 mCPU at the p95 over five minutes and an 85.4 MiB working set (`values.yaml:325-327`).
-The ~199 mCPU figure at the 70-pod cap is a **carry** from that reading, not a measurement,
-and must be labelled as such. The per-engine cost model is struck in the source and must not
-be published or used to size a node.
+### Per-node resource footprint: RESOLVED 2026-11-01, re-measured 2026-11-05
+The old `~5-6 MiB` per-pod figure is retired along with the rest of the sidecar numbers.
+Publishable: 250m CPU and 256Mi requested per node, limited to 2 cores and 1Gi
+(`pando-node-sensor/values.yaml:407-413`); and, from the soak runs on the shipping shape, a
+130.4 mCPU p95 with a 106.9 MiB working set over soak4 arm B's 24-hour warm cost sub-window,
+and 127.3 mCPU with 110.6 MiB over soak5's 34-hour run. Working-set slope flat in both at
+-0.015 and +0.008 MiB/h, CFS throttling 0.000 percent, 0 OOMKills, and 0 sensor restarts in
+77 hours.
+
+The earlier `113.6 mCPU` / `85.4 MiB` pair from `values.yaml:325-327` is an eleven-hour bench
+at 40 monitored pods and came **off every surface on 2026-11-05**: it understated the
+shipping build's p95 by about 15 percent, which an operator would notice on install. The
+~199 mCPU carry at the 70-pod cap went with it, because no 70-engine figure is settled and
+deriving one is forbidden. The per-engine cost model is struck in the source and must not be
+published or used to size a node.
+
+**Do not round the two runs together.** "About 130 mCPU and 110 MiB, measured warm over 72
+hours" attaches soak5's working set to arm B's window. The pairs are (130.4, 106.9) and
+(127.3, 110.6), each with its own window. The numbers brief itself blends them; it is wrong
+to.
 
 ### Sidecar-era soak claims: RETIRED 2026-11-01
 "20,000+ total pod-hours", "2 false isolations" and "zero false terminations" are off every

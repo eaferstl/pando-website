@@ -187,7 +187,7 @@ kubectl rollout restart deployment/&lt;name&gt;</code></pre>
 
             <pre><code>helm upgrade pando-node-sensor \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-node-sensor \
-  --version &lt;VERSION&gt; \
+  --version 2.0.0 \
   --namespace pando-system \
   --reset-then-reuse-values \
   --set 'excludedNamespaces={kube-system,kube-public,kube-node-lease,&lt;your-namespace&gt;}'</code></pre>

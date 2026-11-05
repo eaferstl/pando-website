@@ -98,7 +98,7 @@
 
             <p>The sensor requests <strong>250m CPU and 256Mi</strong> per node and is limited to <strong>2 cores and 1Gi</strong>. That is one pod per node rather than one per workload, so the figure to plan against is per node and does not grow with your deployment count.</p>
 
-            <p>Measured on an <code>e2-standard-4</code> at 40 monitored pods per node, warm and enforcing for eleven hours at the default cadence: 113.6 mCPU at the p95 over five minutes, and a 85.4 MiB working set. The request is sized for the 70-pod cap rather than for 40.</p>
+            <p>Measured warm and enforcing on the shipping build, across two runs: a 130.4 mCPU p95 with a 106.9 MiB working set over a 24-hour warm window, and 127.3 mCPU with 110.6 MiB over a 34-hour run. Both held a flat working-set slope, with no CFS throttling and no OOMKills. The request is sized for the 70-pod cap rather than for the engine counts these runs carried.</p>
 
             <pre><code>helm upgrade pando-node-sensor ... \
   --set resources.requests.cpu=250m \
@@ -127,7 +127,7 @@
 
             <pre><code>helm upgrade pando-node-sensor \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-node-sensor \
-  --version &lt;VERSION&gt; \
+  --version 2.0.0 \
   --reuse-values</code></pre>
 
             <h2>5. Run The Controller With Two Replicas</h2>

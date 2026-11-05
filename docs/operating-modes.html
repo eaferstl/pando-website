@@ -220,6 +220,12 @@
                 <li>Releases automatically on recovery</li>
             </ul>
 
+            <div class="docs-callout warning">
+                <div class="docs-callout-title">A repeated attack on the same pod can resolve to an alert</div>
+                <p>The first excursion's own samples are folded into the baseline that judges the next one, so a second identical attack against the same pod is scored against a baseline that has partly learned it. It can therefore stay under the gate and resolve to an alert rather than an isolation. The second attack is not quieter and not less novel: in the measured case its peak was within a few percent of the first and its peak drift score was marginally higher, and what changed was that the score stayed under the gate for the whole excursion rather than crossing it.</p>
+                <p>Detection and evidence are unaffected. In the soak runs, each attack was detected and produced a signed evidence record, and Alert is the floor the ladder never drops below. A fix for the absorption is in test and is not in this release.</p>
+            </div>
+
             <div class="docs-callout info">
                 <div class="docs-callout-title">Why containment rather than a restart</div>
                 <p>A restart destroys the thing you want to look at and costs you the workload. Containment holds the pod still, keeps it available for inspection, and is survivable for stateful workloads where a restart is expensive: databases, caches, queues. If the behaviour was transient, the policy comes off and nothing was lost.</p>

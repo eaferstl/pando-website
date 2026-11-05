@@ -182,7 +182,7 @@
         <div class="container">
             <h2>A Different Approach</h2>
             <div class="vision-content">
-                <p>Rule-based runtime security asks you to anticipate the attack and then maintain the rule. PandoCore learns what normal looks like for each of your workloads instead, flags when behavior deviates, and responds within <a href="/docs/operating-modes">a ceiling you set</a>. Install the two charts and the workloads already running on each node start learning, with nothing to label.</p>
+                <p>Rule-based runtime security asks you to anticipate the attack and then maintain the rule. PandoCore learns what normal looks like for each of your workloads instead, flags when behavior deviates, and responds within <a href="/docs/operating-modes">a ceiling you set</a>. On a first encounter that reached isolation, detection to containment took about 60 seconds without a human in the loop. Install the two charts and the workloads already running on each node start learning, with nothing to label.</p>
                 <div class="checkmarks-grid-simple">
                     <div class="check-row-center">
                         <span class="check-mark">✓</span>
@@ -202,7 +202,7 @@
                     </div>
                     <div class="checkmark-span-row">
                         <span class="check-mark">✓</span>
-                        <span class="fw-600">Measured: {{SOAK4_FALSE_ISOLATIONS}} false isolations across {{SOAK4_ENGINE_HOURS}} engine-hours on GKE</span>
+                        <span class="fw-600">Measured on GKE: zero false isolations across 3,966 engine-hours of sensors permitted to isolate, 1,231 of them on the build we ship</span>
                     </div>
                 </div>
             </div>
@@ -301,14 +301,14 @@
                 <pre><code># 1. The controller: receives evidence and owns every outbound destination
 helm install pando-controller \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-controller \
-  --version &lt;VERSION&gt; \
+  --version 2.0.0 \
   --namespace pando-system --create-namespace \
   --set license.key="YOUR_LICENSE_KEY"
 
 # 2. The node sensor: one pod per node
 helm install pando-node-sensor \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-node-sensor \
-  --version &lt;VERSION&gt; \
+  --version 2.0.0 \
   --namespace pando-system \
   --set license.key="YOUR_LICENSE_KEY"</code></pre>
 
@@ -321,8 +321,8 @@ helm install pando-node-sensor \
                     <dd>250m CPU and 256Mi of memory.</dd>
                     <dt>Limited to, per node</dt>
                     <dd>2 cores and 1Gi.</dd>
-                    <dt>Measured, at 40 watched pods</dt>
-                    <dd>113.6 mCPU at the p95 over five minutes and an 85.4 MiB working set, on an <code>e2-standard-4</code> warm and enforcing for eleven hours at the default 1000 ms cadence.</dd>
+                    <dt>Measured, warm and enforcing</dt>
+                    <dd>A 130.4 mCPU p95 with a 106.9 MiB working set over a 24-hour warm window, and 127.3 mCPU with 110.6 MiB on a second 34-hour run. The working set stayed flat in both, with no CFS throttling and no OOMKills.</dd>
                     <dt>The controller, once per cluster</dt>
                     <dd>100m CPU and 128Mi requested, limited to 500m and 512Mi.</dd>
                 </dl>

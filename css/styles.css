@@ -2884,6 +2884,25 @@ ul {
     max-width: var(--measure);
 }
 
+/* The validation band's headline claim. It is one statement and not a pair of
+   tiles on purpose: the qualifier ("permitted to isolate", and how much of the
+   total ran on the shipping build) is what makes the zero true, so splitting
+   the figure from the qualifier would publish a claim the measurement does not
+   support. Do not re-cut this into the grid below it.
+
+   Scoped to .content-wrapper and placed after the rule above deliberately:
+   `.content-wrapper p` is (0,2,0) and would otherwise win on font-size,
+   max-width and margin-bottom, which is what happened on the first attempt. */
+.content-wrapper .validation-claim {
+    font-size: clamp(var(--text-lg), 1rem + 1vw, var(--text-xl));
+    font-weight: 600;
+    color: var(--black-forest);
+    text-align: center;
+    text-wrap: balance;
+    max-width: var(--measure-narrow);
+    margin: var(--spacing-lg) auto var(--spacing-xl);
+}
+
 /* Inline code in marketing prose. The homepage's engineer band names a label
    and three RBAC verbs that a reader may need to copy exactly, and a label
    whose value is compared byte-for-byte has to look like one. Matches the
@@ -3615,7 +3634,7 @@ ul {
 
 .validation-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--spacing-lg);
     margin-bottom: var(--spacing-xl);
     padding: var(--spacing-xl);
@@ -3660,10 +3679,6 @@ ul {
 }
 
 @media (max-width: 767px) {
-    .validation-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
     .workloads-grid {
         grid-template-columns: repeat(2, 1fr);
     }

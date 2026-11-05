@@ -134,7 +134,7 @@ curl -s https://portal.pandocore.io/api/version</code></pre>
 
             <pre><code>helm upgrade pando-node-sensor \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-node-sensor \
-  --version &lt;VERSION&gt; \
+  --version 2.0.0 \
   --namespace pando-system \
   --reset-then-reuse-values</code></pre>
 
@@ -153,7 +153,7 @@ curl -s https://portal.pandocore.io/api/version</code></pre>
 
             <pre><code>helm upgrade pando-controller \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-controller \
-  --version &lt;VERSION&gt; \
+  --version 2.0.0 \
   --namespace pando-system \
   --reset-then-reuse-values</code></pre>
 
@@ -175,7 +175,7 @@ volumeClaimTemplate this chart cannot upgrade in place.</code></pre>
 
 helm upgrade pando-controller \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-controller \
-  --version &lt;VERSION&gt; \
+  --version 2.0.0 \
   --namespace pando-system \
   --reset-then-reuse-values</code></pre>
 

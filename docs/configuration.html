@@ -324,7 +324,7 @@
 
             <pre><code>helm install pando-node-sensor \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-node-sensor \
-  --version &lt;VERSION&gt; \
+  --version 2.0.0 \
   --namespace pando-system --create-namespace \
   --set license.existingSecret.name=pando-license \
   --set 'excludedNamespaces={kube-system,kube-public,kube-node-lease,cert-manager,istio-system}' \
