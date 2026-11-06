@@ -4,9 +4,19 @@
  */
 
 // EmailJS Configuration
-// These values are replaced during build by environment variables
+//
+// These literals ship exactly as written. There is no build step and nothing
+// substitutes them, whatever an older comment here used to claim; that comment
+// was wrong and it is the reason a rotated key could sit unfixed.
+//
+// The public key is not a secret. EmailJS sends it as `user_id` and it is meant
+// to ship in client-side JS, so editing it here is the fix, not a workaround.
+//
+// A wrong key fails silently: the form reports no error and the message is
+// never delivered. After rotating, submit the form once on the deployed site
+// and confirm the mail arrives. Nothing on the page will tell you otherwise.
 const EMAILJS_CONFIG = {
-    publicKey: 'QOE9Vl1cBq8l2TlPN',
+    publicKey: 'VdBU9EQjbYtG0R6UG',
     serviceId: 'service_1q1byab',
     templateId: 'template_1zf3ykh'
 };
