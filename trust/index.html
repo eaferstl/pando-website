@@ -72,7 +72,7 @@
 
         <section>
             <h2>Supply chain</h2>
-            <p><strong>Signing is built and committed. The first signed production release has not shipped yet.</strong> We would rather say so than let what follows read as something you can check today. The release pipeline signs all five images it publishes with cosign, <strong>by digest rather than by tag</strong>, so a signature always covers the exact image you run and cannot be moved onto a different one by retagging. Signing uses a Cloud KMS asymmetric key, protection level HSM, algorithm EC_SIGN_P256_SHA256. That pipeline landed on 2026-10-29 and the first production release to use it, v2.0.0, has not completed, so no production image carries a signature as things stand.</p>
+            <p><strong>Every production image is signed, and you can check it yourself.</strong> The release pipeline signs all five images it publishes with cosign, <strong>by digest rather than by tag</strong>, so a signature always covers the exact image you run and cannot be moved onto a different one by retagging. Signing uses a Cloud KMS asymmetric key, protection level HSM, algorithm EC_SIGN_P256_SHA256. The first signed production release is v2.0.0, published on 2026-11-06. Each signature names the release it came from, so a verified image ties back to a tagged build rather than to our word for it.</p>
             <p>Each published image carries two software bill of materials attestations, one SPDX and one CycloneDX, generated with syft. All five images are signed and attested.</p>
             <p><strong>The verification key is published here rather than handed to you out of band.</strong> The public half of the signing key is committed at <code>deploy/keys/cosign-public-prod.pem</code>, and it is reproduced below so you can diff the two against each other. The file's own digest is <code>sha256:dc0145d97692207e64d9e79f94d46c823d48364922f88d0db3b9e3899dfd14d8</code>.</p>
             <pre><code>-----BEGIN PUBLIC KEY-----
@@ -83,7 +83,7 @@ mVSyehm4Nav5NyCk7ScI6cM3u5UXjps/hr+DPnLiAp5BABg5zeBYJDfjUg==
             <pre><code>cosign verify \
   --key cosign-public-prod.pem \
   --insecure-ignore-tlog=true \
-  us-central1-docker.pkg.dev/pandocore-prod/node-sensor/pando-node-sensor@&lt;digest&gt;</code></pre>
+  us-central1-docker.pkg.dev/pandocore-prod/node-sensor/pando-node-sensor@sha256:a06b5bec9a6214fc1460fc195dec11f7c751dd5dc83872bb72fdfcd0c7de8a40</code></pre>
             <p>Verify the digest we publish, rather than whatever a repository listing hands back: untagged images that predate this pipeline can sit in the same repository, and they carry no signature to check. The same flag applies to <code>cosign verify-attestation</code>, which also needs <code>--type spdxjson</code> or <code>--type cyclonedx</code> to choose which bill of materials to read. We are not claiming publicly auditable signing, because we do not do it: you are verifying against the key above, not against a third-party log.</p>
             <p><strong>Signing and SBOMs cover all five images. Vulnerability scanning does not.</strong> Trivy gates the node sensor image on critical and high-severity findings that have a fix available, and blocks the build on them. The sidecar image is scanned but not gated. The controller, the admission webhook and the enforcer are not scanned at all. Extending that is outstanding work, and until it lands it would be wrong to let "we scan our images" stand without the qualifier.</p>
         </section>

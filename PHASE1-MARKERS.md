@@ -3,9 +3,14 @@
 Claims published on the marketing and docs surfaces that are not yet fully supported,
 and decisions recorded so they are not silently re-opened.
 
-Last updated: 2026-11-05. Delete an entry when its item closes.
+Last updated: 2026-11-06. Delete an entry when its item closes.
 
-## Blocked on a release
+## The v2.0.0 release: all three items closed 2026-11-06
+
+Nothing in this section is outstanding. It is kept rather than deleted because each entry
+records how a figure or a command was verified, and the next person to touch those surfaces
+needs the reasoning more than the status.
+
 
 ### The eight soak placeholders: CLOSED 2026-11-05
 Six filled, two withdrawn. No `{{SOAK4_*}}` token remains anywhere in the tree.
@@ -61,55 +66,59 @@ Note the distinction PRODUCT.md draws: "continuously monitors" stays as a produc
 claim, and the surviving instances on `product.html` are that, not measurements. Do not
 publish a false-termination count; the sensor cannot terminate.
 
-### `<VERSION>`: FILLED 2026-11-05 as `2.0.0`, but the chart is not published yet
-**Where:** `index.html` and 6 docs pages, 11 sites, now reading `--version 2.0.0`.
-**Status:** The version is certain by construction rather than a guess: the prod build writes
-every chart's `version` and `appVersion` from the `_TAG_NAME` substitution with the leading
-`v` stripped, and the owner passed `_TAG_NAME=v2.0.0`. All five charts get it, node sensor
-included. **`Chart.yaml` reads `0.1.0` in git; ignore it, the build overwrites both keys.**
-
-It is one value for both charts, not two. `--version` is mandatory and must stay in every
-published command: an OCI chart installed without it fails outright rather than resolving to
-the newest release.
-
-**SHIP GATE, still open.** The chart is not published. `charts/` in prod currently holds only
-`pando-sidecar`, newest `1.4.2`; `pando-node-sensor` has never been carried by prod at all.
-Until the build lands, every published install command 404s. **Confirm the chart is
-resolvable before the site goes live**, because this is the first command a KubeCon visitor
-runs:
+### `<VERSION>` and the published charts: RESOLVED 2026-11-06
+**Where:** `index.html` and 6 docs pages, 11 sites, reading `--version 2.0.0`.
+**Status:** Closed. The charts are published and the coordinates on the site resolve. Verified
+by running the published command's own reference:
 
     helm show chart oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-node-sensor \
       --version 2.0.0
+    -> Pulled, appVersion 2.0.0, chart digest sha256:63b2c63ea30746802593cd11e4c9a08ceb...
 
-### `cosign verify`: only the digest is still missing
+`pando-controller` resolves at 2.0.0 too. The version was predicted by construction and the
+prediction held: the build writes every chart's `version` and `appVersion` from `_TAG_NAME`
+with the leading `v` stripped. **`Chart.yaml` still reads `0.1.0` in git; ignore it, the build
+overwrites both keys.** One value covers both charts, and `--version` must stay in every
+published command: an OCI chart installed without it fails outright rather than resolving to
+the newest release.
+
+### `cosign verify`: RESOLVED 2026-11-06, run end to end
 **Where:** `trust/index.html`, the supply-chain section
-**Status:** Narrowed 2026-11-05. The durable half is published and verified:
+**Status:** Closed. The page publishes a command that was actually executed, not assembled:
 
-- The **public key is published inline on the page**, byte-identical to
-  `deploy/keys/cosign-public-prod.pem`, hashing to
-  `sha256:dc0145d97692207e64d9e79f94d46c823d48364922f88d0db3b9e3899dfd14d8`. All three were
-  checked against each other on 2026-11-05, and the key parses as a valid P-256 public key.
-  The owner separately confirmed it pairs with the prod KMS key by DER SHA-256 comparison.
-- The **image path** is real: `us-central1-docker.pkg.dev/pandocore-prod/node-sensor/pando-node-sensor`.
-- The **flag shape** is verified against `cloudbuild-prod.yaml:1877-1905`, including
-  `--insecure-ignore-tlog=true`, required because signing passes `--tlog-upload=false`.
+    cosign verify --key deploy/keys/cosign-public-prod.pem --insecure-ignore-tlog=true \
+      us-central1-docker.pkg.dev/pandocore-prod/node-sensor/pando-node-sensor@sha256:a06b5be...
+    -> exit 0; signature verified against the public key
 
-Outstanding: the `<digest>` itself, produced at `sensor-docker-push` and signed at
-`image-signing` in the prod build. There will be five digests, one per image; the node
-sensor's is the one this page wants. Run the command end to end before calling it done.
+The signature payload carries `git.tag: v2.0.0` and `git.sha: f7956d6786dc...`, which matches
+the image's own `2.0.0-f7956d6` tag. Both SBOM attestations verify as well, `--type spdxjson`
+(260,193 bytes) and `--type cyclonedx` (131,161 bytes), so the page's "two attestations per
+image" claim is measured rather than asserted.
 
-**Do not fill the digest by listing the repository.** The prod node-sensor repo already holds
-an untagged orphan predating this pipeline, with no signature artifacts and
-`slsa_build_level: unknown`, and it is exactly what a repo listing returns. It is not a
-release artifact and will not verify. The page now tells readers the same thing.
+The **public key published inline on the page** is byte-identical to
+`deploy/keys/cosign-public-prod.pem` and hashes to
+`sha256:dc0145d97692207e64d9e79f94d46c823d48364922f88d0db3b9e3899dfd14d8`. Re-checked
+2026-11-06 after the file's mtime changed: content unchanged, digest still correct.
+
+The other four prod digests, recorded so nobody has to list a repository to find them:
+controller `sha256:2d9560b819ffdb3c...`, webhook `sha256:a4baf9d28e44adb9...`,
+enforcer `sha256:d7966968aa994392...`, sidecar `sha256:c8ca3f601f4fa86e...`.
+
+**Still do not fill a digest by listing the repository.** The prod node-sensor repo holds an
+untagged orphan predating this pipeline, with no signature artifacts and
+`slsa_build_level: unknown`, and it is what a listing returns. It is not a release artifact
+and will not verify. The page tells readers the same thing.
 
 Do not claim a transparency-log entry, Rekor, or publicly auditable signing: signing is by
-key with the log deliberately disabled.
+key with the log deliberately disabled, which is why `--insecure-ignore-tlog=true` is
+required and why the page explains the flag rather than hiding it. cosign prints its own
+warning about skipping the log; a reader will see it, and the page's explanation is what
+keeps that from reading as a broken signature.
 
-**Scanning is not uniform, corrected 2026-11-05.** Signing and both SBOM attestations cover
-all five images. Trivy gates the node sensor only, on CRITICAL and HIGH with fixed-available
-only; the sidecar is scanned but not gated; the controller, webhook and enforcer are not
-scanned at all. "All images scanned" would be false.
+**Scanning is not uniform.** Signing and both SBOM attestations cover all five images. Trivy
+gates the node sensor only, on CRITICAL and HIGH with fixed-available only; the sidecar is
+scanned but not gated; the controller, webhook and enforcer are not scanned at all. "All
+images scanned" would be false.
 
 ## Unverified or pending
 
