@@ -34,6 +34,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Add copy controls to command blocks
     initializeCopyButtons();
+
+    // Reveal the mobile conversion bar once the hero scrolls away
+    initializeMobileCtaBar();
 });
 
 /**
@@ -546,5 +549,51 @@ function initializeCopyButtons() {
                 button.classList.remove('copied');
             }, 2000);
         }
+    });
+}
+
+
+/**
+ * Reveal the fixed mobile "Start free" bar once the hero buttons scroll out of
+ * view, and hide it again when they return.
+ *
+ * Only index.html carries the bar, so this is a no-op everywhere else. The bar
+ * is hidden above 1024px by CSS alone; the observer still runs there, which is
+ * harmless, because toggling a class on an element with `display: none` paints
+ * nothing. Bailing out without IntersectionObserver leaves the bar in its
+ * CSS resting state, translated off-screen, rather than stuck open.
+ */
+function initializeMobileCtaBar() {
+    const bar = document.getElementById('mobile-cta-bar');
+
+    if (!bar || typeof IntersectionObserver !== 'function') {
+        return;
+    }
+
+    // Every in-page call to action. While any one of them is on screen the bar
+    // is a duplicate of a button the reader can already press, which is most
+    // visible at the very bottom where the pilot CTA and the bar would show
+    // two identical "Start free" buttons at once.
+    const inPageCtas = document.querySelectorAll('.hero-buttons, .cta-actions');
+
+    if (!inPageCtas.length) {
+        return;
+    }
+
+    const onScreen = new Set();
+
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+                onScreen.add(entry.target);
+            } else {
+                onScreen.delete(entry.target);
+            }
+        });
+        bar.classList.toggle('is-visible', onScreen.size === 0);
+    });
+
+    inPageCtas.forEach(function(el) {
+        observer.observe(el);
     });
 }

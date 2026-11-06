@@ -138,6 +138,9 @@
        deliberately left alone. --z-skip-link must stay above --z-nav or the
        skip link paints behind the sticky navbar when focused. */
     --z-base: 1;
+    /* Below --z-overlay on purpose: when the nav drawer is open its scrim must
+       cover the mobile CTA bar rather than leave a button floating over it. */
+    --z-sticky: 800;
     --z-overlay: 900;
     --z-nav: 1000;
     --z-nav-toggle: 1001;
@@ -718,6 +721,26 @@ ul {
     fill: var(--black-forest);
 }
 
+/* The Core node. DESIGN.md's signature spec calls for one connected organism
+   "whose roots converge on a single Core node", and the constellation already
+   had its convergence point: (241,108) carries five links, more than any other
+   node, yet it shipped with the smallest halo of the thirteen, so the busiest
+   junction read as the least important thing in the picture.
+
+   This marks that node rather than redrawing anything. No plotted coordinate
+   moves, which matters because the sixteen Bezier paths are hand-placed with no
+   generating script. The halo goes to 20 (the band the other hubs already use,
+   and clear of all five neighbours), the core dot to 8, and a single inner ring
+   reads as the root the others converge on. Its breathing phase is `gp1`, the
+   one phase none of its five neighbours uses, so the hub does not pulse in
+   lockstep with anything it is joined to. */
+.grove-root-ring {
+    fill: none;
+    stroke: var(--black-forest);
+    stroke-opacity: 0.35;
+    stroke-width: 1;
+}
+
 
 .grove-node {
     transform-box: fill-box;
@@ -979,14 +1002,6 @@ ul {
     gap: var(--spacing-sm);
 }
 
-.checkmark-span-row {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    grid-column: span 2;
-    justify-content: center;
-}
-
 /* Forest, not --success-green. DESIGN.md reserves the success and error
    colours "strictly for form validation and system state", and nine ticks
    across two marketing sections had made the reserved colour the page's second
@@ -1158,6 +1173,17 @@ ul {
     margin: 0 auto;
     position: relative;
     z-index: 1;
+}
+
+/* A narrative row with no mark runs the full measure. index.html's three marks
+   were removed on 2026-11-06: the first rendered as a bold X directly beside the
+   words "An answer for the questionnaire", and its siblings were a classical
+   bank and a padlock, which is the exact security-vendor vocabulary DESIGN.md
+   rejects. DESIGN.md already prescribes typographic rows for narrative sections.
+   product.html and about.html keep their own marks, so the default below stays
+   two-column rather than being changed out from under them. */
+.feature-row:not(:has(.feature-visual)) {
+    grid-template-columns: minmax(0, 1fr);
 }
 
 .feature-row {
@@ -2403,6 +2429,74 @@ ul {
     margin-right: auto;
 }
 
+/* The closing candid line. It shares the list's 600px block and left edge:
+   centred directly beneath a left-aligned list at list-gap spacing, it read as
+   a bullet that had lost its tick. Weight rather than size, because it is the
+   most candid sentence in the band and was also its quietest. */
+.cta-content .cta-statement {
+    max-width: 600px;
+    margin: var(--spacing-lg) auto 0;
+    text-align: left;
+    font-weight: 600;
+}
+
+/* Mobile conversion bar, index.html only.
+
+   Below 1024 the page runs about twelve screens and the only persistent
+   "Start free" is two taps behind the hamburger, which is exactly the forwarded
+   link case the product brief is built around: the engineer reads the install
+   band near the bottom, decides yes, and has nowhere to act. The bar appears
+   once the hero buttons leave the viewport, so it never competes with them.
+
+   Transition needs no reduced-motion guard: the global rule near the end of
+   this sheet already clamps every transition-duration with !important. */
+.mobile-cta-bar {
+    display: none;
+}
+
+@media (max-width: 1023px) {
+    .mobile-cta-bar {
+        display: block;
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: var(--z-sticky);
+        padding: var(--spacing-xs) var(--spacing-md);
+        padding-bottom: calc(var(--spacing-xs) + env(safe-area-inset-bottom, 0px));
+        background-color: var(--floral-white);
+        border-top: 1px solid var(--hairline);
+        transform: translateY(110%);
+        transition: transform var(--dur-base) var(--ease-standard);
+    }
+
+    .mobile-cta-bar.is-visible {
+        transform: translateY(0);
+    }
+
+    /* Padding reset rather than inherited: the base `.btn` padding renders a
+       64px block here, which with the bar's own padding came to 97px, about an
+       eighth of a phone viewport for one button. */
+    .mobile-cta-bar .btn {
+        display: block;
+        width: 100%;
+        padding: var(--spacing-xs) var(--spacing-md);
+        min-height: 44px;
+        text-align: center;
+    }
+
+    /* Touch comfort rather than a conformance fix: both of these already pass
+       WCAG 2.5.8 (24x24, AA). 44px is the platform guideline for a thumb. */
+    .nav-links a {
+        min-height: 44px;
+    }
+
+    .copy-button {
+        min-height: 44px;
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+}
+
 .focus-list li {
     padding: var(--spacing-sm) 0;
     padding-left: var(--spacing-lg);
@@ -2514,6 +2608,33 @@ ul {
     font-size: var(--text-md);
     line-height: 1.8;
     margin-bottom: var(--spacing-md);
+}
+
+/* The page's one measured claim, and the unit it is denominated in.
+
+   This used to be the fifth tick inside `.checkmarks-grid-simple`, set in the
+   same 16px/600 as "Works on existing infrastructure". A measured figure in the
+   same type as a generic claim reads as the same kind of statement, so the
+   measurement was being dragged down to the level of the claims around it.
+
+   Both selectors are scoped to `.vision-content` and sit after the rule above
+   on purpose: `.vision-content p` is (0,2,0) and beats a bare class on
+   font-size and margin. The qualifier stays attached to the figure; it is what
+   makes the zero true, so never split them. */
+.vision-content .proof-claim {
+    font-size: var(--text-lg);
+    font-weight: 700;
+    color: var(--black-forest);
+    text-wrap: balance;
+    margin-top: var(--spacing-lg);
+    margin-bottom: var(--spacing-sm);
+}
+
+.vision-content .proof-note {
+    font-size: var(--text-sm);
+    line-height: 1.7;
+    color: var(--charcoal);
+    margin-bottom: 0;
 }
 
 .disclaimer {
@@ -3349,6 +3470,17 @@ ul {
     text-align: center;
 }
 
+/* Clears the fixed mobile CTA bar so it never covers the last footer line.
+
+   This must sit after the rule above, not with the bar's own rules higher up
+   in the sheet: both selectors are (0,1,0), so the later one wins regardless of
+   the media query, and placing it earlier silently did nothing. */
+@media (max-width: 1023px) {
+    .footer {
+        padding-bottom: calc(var(--spacing-sm) + 80px);
+    }
+}
+
 .footer-content p {
     margin-bottom: var(--spacing-sm);
     font-size: var(--text-sm);
@@ -3687,11 +3819,6 @@ ul {
     .checkmarks-grid-simple {
         grid-template-columns: 1fr;
         width: auto;
-    }
-
-    .checkmark-span-row {
-        grid-column: span 1 !important;
-        justify-content: flex-start !important;
     }
 }
 

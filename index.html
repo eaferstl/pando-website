@@ -65,7 +65,7 @@
                     <p class="detail-note"><a href="#pilot">Pilot program: 30% off, founder on call</a></p>
                 </div>
                 <div class="hero-visual">
-                    <svg viewBox="5 4 311 193" class="grove-graphic" role="img" aria-label="Thirteen watched Kubernetes workloads across a cluster, each learning its own normal behavior.">
+                    <svg viewBox="5 4 311 193" class="grove-graphic" role="img" aria-label="Thirteen watched Kubernetes workloads across a cluster, each learning its own normal behavior, connected through a single shared core.">
                         <g class="grove-link">
                             <path d="M121,49 Q87,36 50,41" />
                             <path d="M121,49 Q119,79 134,105" />
@@ -144,10 +144,11 @@
                             <circle cx="171" cy="29" r="17" class="grove-halo-ring" />
                             <circle cx="171" cy="29" r="5" class="grove-core" />
                         </g>
-                        <g class="grove-node gp0">
-                            <circle cx="241" cy="108" r="13" class="grove-halo" />
-                            <circle cx="241" cy="108" r="13" class="grove-halo-ring" />
-                            <circle cx="241" cy="108" r="5" class="grove-core" />
+                        <g class="grove-node grove-node-root gp1">
+                            <circle cx="241" cy="108" r="20" class="grove-halo" />
+                            <circle cx="241" cy="108" r="20" class="grove-halo-ring" />
+                            <circle cx="241" cy="108" r="12" class="grove-root-ring" />
+                            <circle cx="241" cy="108" r="8" class="grove-core" />
                         </g>
                     </svg>
                 </div>
@@ -183,6 +184,9 @@
             <h2>A Different Approach</h2>
             <div class="vision-content">
                 <p>Rule-based runtime security asks you to anticipate the attack and then maintain the rule. PandoCore learns what normal looks like for each of your workloads instead, flags when behavior deviates, and responds within <a href="/docs/operating-modes">a ceiling you set</a>. On a first encounter that reached isolation, detection to containment took about 60 seconds without a human in the loop. Install the two charts and the workloads already running on each node start learning, with nothing to label.</p>
+                <p class="proof-claim">Measured on GKE: zero false isolations across 3,966 engine-hours of sensors permitted to isolate, 1,231 of them on the build we ship.</p>
+                <p class="proof-note">An engine is the per-pod detection instance, one pod to one engine. An engine-hour is one hour in which an engine was fully warmed and permitted to isolate; hours spent learning a workload's baseline are excluded, because an engine that is still learning cannot isolate anything.</p>
+
                 <div class="checkmarks-grid-simple">
                     <div class="check-row-center">
                         <span class="check-mark">✓</span>
@@ -199,10 +203,6 @@
                     <div class="check-row-center">
                         <span class="check-mark">✓</span>
                         <span class="fw-600">Works on existing infrastructure</span>
-                    </div>
-                    <div class="checkmark-span-row">
-                        <span class="check-mark">✓</span>
-                        <span class="fw-600">Measured on GKE: zero false isolations across 3,966 engine-hours of sensors permitted to isolate, 1,231 of them on the build we ship</span>
                     </div>
                 </div>
             </div>
@@ -229,22 +229,6 @@
             <h2>What It Solves</h2>
             <div class="feature-rows">
                 <div class="feature-row">
-                    <div class="feature-visual">
-                        <div class="card-icon">
-                            <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                                <rect width="64" height="64" rx="16" class="icon-bg"/>
-                                <circle cx="32" cy="32" r="4" class="icon-shape"/>
-                                <circle cx="20" cy="20" r="3" class="icon-shape"/>
-                                <circle cx="44" cy="20" r="3" class="icon-shape"/>
-                                <circle cx="20" cy="44" r="3" class="icon-shape"/>
-                                <circle cx="44" cy="44" r="3" class="icon-shape"/>
-                                <line x1="32" y1="28" x2="22" y2="22" stroke="white" stroke-width="2" class="icon-shape"/>
-                                <line x1="32" y1="28" x2="42" y2="22" stroke="white" stroke-width="2" class="icon-shape"/>
-                                <line x1="32" y1="36" x2="22" y2="42" stroke="white" stroke-width="2" class="icon-shape"/>
-                                <line x1="32" y1="36" x2="42" y2="42" stroke="white" stroke-width="2" class="icon-shape"/>
-                            </svg>
-                        </div>
-                    </div>
                     <div class="feature-content">
                         <h3>An answer for the questionnaire</h3>
                         <p class="feature-quote">"Yes, we monitor production at runtime."</p>
@@ -253,14 +237,6 @@
                     </div>
                 </div>
                 <div class="feature-row">
-                    <div class="feature-visual">
-                        <div class="card-icon">
-                            <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                                <rect width="64" height="64" rx="16" class="icon-bg"/>
-                                <path d="M32 16l-16 12v2h32v-2l-16-12zm-14 16v14h4v-14h-4zm6 0v14h4v-14h-4zm6 0v14h4v-14h-4zm6 0v14h4v-14h-4zm6 0v14h4v-14h-4zm-26 16v2h32v-2h-32z" class="icon-shape"/>
-                            </svg>
-                        </div>
-                    </div>
                     <div class="feature-content">
                         <h3>Evidence your auditor can inspect</h3>
                         <p class="feature-quote">"Here's the record."</p>
@@ -269,14 +245,6 @@
                     </div>
                 </div>
                 <div class="feature-row">
-                    <div class="feature-visual">
-                        <div class="card-icon">
-                            <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                                <rect width="64" height="64" rx="16" class="icon-bg"/>
-                                <path d="M32 18c-4.4 0-8 3.6-8 8v4h-2c-1.1 0-2 0.9-2 2v12c0 1.1 0.9 2 2 2h20c1.1 0 2-0.9 2-2V32c0-1.1-0.9-2-2-2h-2v-4c0-4.4-3.6-8-8-8zm0 3c2.8 0 5 2.2 5 5v4h-10v-4c0-2.8 2.2-5 5-5zm0 15c-1.7 0-3 1.3-3 3s1.3 3 3 3 3-1.3 3-3-1.3-3-3-3z" class="icon-shape"/>
-                            </svg>
-                        </div>
-                    </div>
                     <div class="feature-content">
                         <h3>Response that can't overreach</h3>
                         <p class="feature-quote">"Safe to leave on."</p>
@@ -294,7 +262,7 @@
     <section class="content-section alt-bg" id="footprint">
         <div class="container">
             <div class="content-wrapper">
-                <h2>What you are actually installing</h2>
+                <h2>What You Are Actually Installing</h2>
 
                 <p>Two Helm charts, controller first. The controller receives evidence and owns delivery; the sensor is a DaemonSet that puts one pod on each node. A sensor installed without a controller will not start, which is deliberate: it would otherwise run with nowhere to send what it found. Nothing is added to your workloads, so there is nothing to label and no pod to restart.</p>
 
@@ -347,7 +315,7 @@ helm install pando-node-sensor \
         </div>
         <div class="container">
             <div class="cta-content">
-                <h2>Join the pilot program</h2>
+                <h2>Join the Pilot Program</h2>
                 <p>We're taking a small number of pilot partners, and we build the path to your first audit with you.</p>
                 <div class="content-wrapper">
                     <ul class="focus-list" role="list">
@@ -357,7 +325,7 @@ helm install pando-node-sensor \
                         <li>30% off <a href="/pricing">Growth</a> for your first year, which is $10.50 per node per month.</li>
                     </ul>
                 </div>
-                <p>No one has taken PandoCore evidence through an audit yet. Pilot partners are the first.</p>
+                <p class="cta-statement">No one has taken PandoCore evidence through an audit yet. Pilot partners are the first.</p>
                 <div class="detail-note mt-md">Free on unlimited nodes, with no card and no call.</div>
                 <div class="cta-actions mt-md">
                     <a href="https://portal.pandocore.io/signup" class="btn btn-primary">Start free</a>
@@ -380,5 +348,9 @@ helm install pando-node-sensor \
     </footer>
 
     <script src="/js/main.js"></script>
+<div class="mobile-cta-bar" id="mobile-cta-bar">
+        <a href="https://portal.pandocore.io/signup" class="btn btn-primary">Start free</a>
+    </div>
+
 </body>
 </html>
