@@ -1,0 +1,55 @@
+/* =====================================================
+   NO-SCRIPT FALLBACK
+   =====================================================
+   Loaded only from inside <noscript>, so it reaches readers whose JavaScript
+   is disabled or blocked and nothing else. Keep it to overrides; anything that
+   belongs to every reader belongs in styles.css.
+
+   At <=1023px the nav list is a fixed drawer, parked with a transform and
+   visibility: hidden, which js/main.js opens by adding .active. Without
+   JavaScript the hamburger still rendered but could not act, so 0 of 8 nav
+   links were reachable on 28 of 29 pages and there was no fallback of any
+   kind. Here the list simply stays in flow as a stacked menu inside the
+   navbar, and the toggle is removed because nothing can respond to it.
+
+   The links need no colour override: the navbar is already forest and the base
+   .nav-links a rule is --white, so the stacked list keeps the same contrast it
+   has on desktop.
+   ===================================================== */
+
+@media (max-width: 1023px) {
+    .mobile-menu-toggle {
+        display: none;
+    }
+
+    /* The wrapper is a space-between row of logo and toggle. With the list in
+       flow it has to wrap to a second line instead of competing for width. */
+    .nav-wrapper {
+        flex-wrap: wrap;
+    }
+
+    .nav-links {
+        position: static;
+        transform: none;
+        visibility: visible;
+        width: 100%;
+        height: auto;
+        max-height: none;
+        padding: var(--spacing-xs) 0 var(--spacing-sm);
+        background-color: transparent;
+        box-shadow: none;
+        transition: none;
+        z-index: auto;
+    }
+
+    /* Only ever shown alongside the open drawer, which no longer exists here. */
+    .nav-overlay {
+        display: none;
+    }
+}
+
+/* Revealed by an IntersectionObserver in js/main.js, so without JavaScript it
+   can never appear. Taken out of flow so it also costs no space. */
+.mobile-cta-bar {
+    display: none;
+}

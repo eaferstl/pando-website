@@ -31,7 +31,11 @@
     border: 1px solid rgb(var(--forest-rgb) / 0.15);
 }
 
-.docs-sidebar h3 {
+/* A <summary>, so the 14-link list can collapse on a phone. On desktop the
+   disclosure stays open and this just reads as the label it always was. */
+.docs-sidebar-title {
+    list-style: none;
+    cursor: pointer;
     font-size: 0.85rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -58,7 +62,11 @@
     color: var(--coffee-bean);
     font-size: 0.95rem;
     border-radius: 6px;
-    transition: all var(--transition-speed);
+    /* Named properties, not `all`: `all` animated outline-color and
+       outline-offset too, so the focus ring faded in over 300ms rather than
+       appearing when focus arrived. Mid-transition it measures as little as
+       1.02:1, which is also how it gets misread as an invisible ring. */
+    transition: background-color var(--transition-speed), color var(--transition-speed);
 }
 
 .docs-nav a:hover {
@@ -71,6 +79,76 @@
     background-color: var(--black-forest);
     color: var(--white);
     font-weight: 600;
+}
+
+.docs-sidebar-title::-webkit-details-marker {
+    display: none;
+}
+
+/* summary is focusable but matches none of the element selectors in the global
+   focus block, so the docs disclosure wore Chrome's 1px blue default. */
+.docs-sidebar-title:focus-visible,
+.docs-content summary:focus-visible {
+    outline: 2px solid var(--black-forest);
+    outline-offset: 2px;
+}
+
+/* The 14-page docs tree carried no route to signup at all. Outside the
+   disclosure, so it stays visible when the link list is collapsed. */
+.docs-sidebar-cta {
+    display: block;
+    margin-top: var(--spacing-md);
+    text-align: center;
+}
+
+/* Sequential navigation.
+   The 14-page tree had no route from one page to the next: every move went
+   back through the sidebar, which is a collapsed disclosure below 1023. The
+   deprecated webhook page is deliberately not in the chain. */
+.docs-pager {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-xl);
+    padding-top: var(--spacing-lg);
+    border-top: 1px solid var(--hairline);
+}
+
+.docs-pager a {
+    flex: 1 1 220px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: var(--spacing-sm);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-md);
+    color: var(--black-forest);
+    text-decoration: none;
+}
+
+.docs-pager a:hover {
+    background-color: var(--wash);
+}
+
+/* A lone Next belongs on the right, where a Next always is. */
+.docs-pager-next:only-child {
+    margin-left: auto;
+}
+
+.docs-pager-next {
+    align-items: flex-end;
+    text-align: right;
+}
+
+/* Sentence case and no tracking: this is a direction label, not a section
+   eyebrow, and the eyebrow treatment is a design-system ban. */
+.docs-pager-dir {
+    font-size: var(--text-2xs);
+    color: var(--muted-ink);
+}
+
+.docs-pager-title {
+    font-weight: var(--weight-semibold);
 }
 
 /* Documentation Content */
@@ -113,11 +191,16 @@
     margin-bottom: var(--spacing-sm);
 }
 
+/* The 900px cap on .docs-content governs code blocks and tables, which need
+   the room. Prose does not: `max-width: none` here put the docs tree at 87-115
+   characters per line against 53-67 on every marketing page, on the 14 pages a
+   technical reader spends longest with. --measure is the site's own calibration
+   and it was simply being opted out of. */
 .docs-content p {
     font-size: 1.05rem;
     line-height: 1.8;
     margin-bottom: var(--spacing-md);
-    max-width: none;
+    max-width: var(--measure);
 }
 
 .docs-content ul,
@@ -130,6 +213,9 @@
     margin-bottom: var(--spacing-sm);
     line-height: 1.7;
     list-style: disc;
+    /* styles.css caps `p` at --measure but has no `li` counterpart, so every
+       list on the site ran unbounded - up to 111 characters per line. */
+    max-width: var(--measure);
 }
 
 .docs-content ol li {
@@ -147,6 +233,13 @@
     font-family: var(--font-mono);
     font-size: 0.9rem;
     line-height: 1.6;
+    /* A classic scrollbar rather than the platform overlay one. These blocks
+       hold registry URLs that can exceed the content column, and macOS hides
+       an overlay scrollbar until you scroll, so a Helm command truncated
+       mid-path looked complete. This shows a track exactly when there is
+       something to scroll and nothing when there is not. */
+    scrollbar-width: thin;
+    scrollbar-color: rgb(var(--white-rgb) / 0.35) rgb(var(--white-rgb) / 0.08);
 }
 
 .docs-content code {
@@ -164,12 +257,6 @@
     color: var(--black-forest);
 }
 
-.docs-content pre code {
-    background: none;
-    padding: 0;
-    color: inherit;
-}
-
 /* Inline code in text */
 .docs-content p code,
 .docs-content li code {
@@ -177,9 +264,35 @@
     color: var(--black-forest);
 }
 
+/* This and the inline rule above are both (0,1,2), so whichever is declared
+   last wins. While the inline rule was second, a `<pre>` nested inside an
+   `<ol><li>` painted forest on the coffee-bean block at 1.03:1 and hid the four
+   kubectl commands that release an isolated pod. Order is load-bearing here,
+   and the colour is stated rather than inherited so it cannot be re-lost. */
+.docs-content pre code {
+    background: none;
+    padding: 0;
+    color: var(--floral-white);
+}
+
+/* `th` sets a forest ground and white text, but `.docs-content code` sets its
+   own colour, so a `code` child never inherits that white: 1.00:1. */
+.docs-content th code {
+    background: rgb(var(--white-rgb) / 0.12);
+    color: var(--floral-white);
+}
+
 /* Copy button for code blocks */
 .code-block-wrapper {
     position: relative;
+}
+
+/* The button is absolutely positioned over the block, so the first line needs
+   room to clear it. Without this the Helm command's first line rendered under
+   the button between 901 and 1023px, where the content column is narrowest.
+   styles.css carries the same rule for the marketing side; this sheet lacked it. */
+.code-block-wrapper pre {
+    padding-top: calc(var(--spacing-md) + var(--spacing-lg));
 }
 
 .copy-button {
@@ -188,7 +301,11 @@
     right: 8px;
     padding: 6px 12px;
     background: rgb(var(--white-rgb) / 0.1);
-    border: 1px solid rgb(var(--white-rgb) / 0.2);
+    /* 0.35, not 0.2. The fill is only 1.3:1 against the code block behind it,
+       so the border is the button's sole boundary and has to carry WCAG
+       1.4.11's 3:1 on its own. At 0.2 it rendered rgb(94 84 73) on the block's
+       rgb(31 17 2): 2.48:1. At 0.35 it is 4.00:1. */
+    border: 1px solid rgb(var(--white-rgb) / 0.35);
     border-radius: 4px;
     color: var(--floral-white);
     font-size: 0.75rem;
@@ -237,7 +354,12 @@
 /* Info/Warning/Tip Boxes */
 /* A full hairline, not a thick left stripe. The side-stripe accent is a
    design-system ban, and the background tint already carries the severity. */
+/* Capped at the measure plus its own padding. The box ran the full 900px
+   .docs-content cap while holding about 560px of text, so roughly 340px of
+   every callout was empty border. Prose inside is capped anyway; this draws
+   the container to it. */
 .docs-callout {
+    max-width: calc(var(--measure) + (2 * var(--spacing-md)));
     padding: var(--spacing-md);
     border-radius: var(--radius-md);
     margin: var(--spacing-md) 0;
@@ -281,11 +403,11 @@
 }
 
 .docs-callout.danger .docs-callout-title {
-    color: var(--error-red);
+    color: var(--error-ink);
 }
 
 .docs-callout.success .docs-callout-title {
-    color: var(--success-green);
+    color: var(--success-ink);
 }
 
 .docs-callout p:last-child {
@@ -305,7 +427,8 @@
     background: var(--floral-white);
     border-radius: 8px;
     border: 1px solid rgb(var(--forest-rgb) / 0.15);
-    transition: all var(--transition-speed);
+    /* Named, not `all`, for the same reason as .docs-nav a. */
+    transition: transform var(--transition-speed), box-shadow var(--transition-speed), border-color var(--transition-speed);
     text-decoration: none;
 }
 
@@ -316,10 +439,13 @@
     opacity: 1;
 }
 
-.docs-quick-link h4 {
+/* The same size as .docs-content h3. At 1.1rem against the content h3's
+   1.25rem, /docs/ rendered h3 at two sizes on one page, so the rank did not
+   mean one thing. */
+.docs-quick-link h3 {
     color: var(--black-forest);
     margin-bottom: var(--spacing-xs);
-    font-size: 1.1rem;
+    font-size: var(--text-lg);
 }
 
 .docs-quick-link p {
@@ -330,26 +456,17 @@
 }
 
 /* Docs Hero */
-.docs-hero {
-    background: var(--floral-white);
-    padding: var(--spacing-xl) 0;
-    text-align: center;
-    border-bottom: 1px solid rgb(var(--forest-rgb) / 0.1);
-}
-
-.docs-hero h1,
-.docs-hero h2 {
-    margin-bottom: var(--spacing-sm);
-    border-bottom: none;
-    padding-bottom: 0;
-}
-
-.docs-hero p {
+/* The hero band this replaces restated the h1 verbatim on 12 of 14 pages, and
+   the breadcrumb said it a third time, so the top fold went on saying the page's
+   own name. Because that band preceded the sidebar in the DOM, the heading
+   outline also ran h2 -> h3 -> h1 and a screen reader's heading list opened on
+   something that was not the page title. The subtitle now sits under the h1. */
+.docs-subtitle {
     font-size: 1.15rem;
     color: var(--coffee-bean);
     opacity: 0.9;
-    max-width: 600px;
-    margin: 0 auto;
+    margin-bottom: var(--spacing-lg);
+    max-width: var(--measure);
 }
 
 /* Breadcrumb */
@@ -359,75 +476,38 @@
     margin-bottom: var(--spacing-lg);
 }
 
+/* 35x17 as drawn, which fails WCAG 2.5.8's 24x24 at every width, and below
+   1024 this is the only up-navigation once the sidebar collapses. The padding
+   grows the hit area to 43x47 and the negative margin absorbs it again, so
+   nothing on the page moves. Same pattern as .footer-links a. */
 .docs-breadcrumb a {
     color: var(--black-forest);
+    display: inline-block;
+    padding: 13px 6px;
+    margin: -13px -6px;
 }
 
 .docs-breadcrumb a:hover {
     text-decoration: underline;
 }
 
+/* A colour, not an opacity: at 0.5 the separator measured 3.50:1 on every
+   docs page that has a breadcrumb. See --muted-ink in styles.css. */
 .docs-breadcrumb span {
     margin: 0 var(--spacing-xs);
-    opacity: 0.5;
-}
-
-/* Step-by-Step Instructions */
-.docs-steps {
-    counter-reset: step-counter;
-    list-style: none;
-    padding: 0;
-    margin: var(--spacing-lg) 0;
-}
-
-.docs-step {
-    position: relative;
-    padding-left: 60px;
-    margin-bottom: var(--spacing-lg);
-    min-height: 50px;
-}
-
-.docs-step::before {
-    counter-increment: step-counter;
-    content: counter(step-counter);
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 40px;
-    height: 40px;
-    background: var(--black-forest);
-    color: var(--white);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 1.1rem;
-}
-
-.docs-step h4 {
-    margin-bottom: var(--spacing-xs);
-    color: var(--black-forest);
-}
-
-.docs-step p {
-    margin-bottom: var(--spacing-sm);
+    color: var(--muted-ink);
 }
 
 /* Mobile Responsive */
-/* Wide tables scroll in their own box from 1023px down, not 900px down.
-   The docs layout keeps a 260px sidebar plus a narrow content column between
-   901 and 1023px, which left the six-column mode-comparison table wider than
-   its container and pushed the page by 99px. The table rule used to start at
-   900px, where the sidebar collapses, so that band was uncovered. */
+/* 1023 and not 900, and it is coupled to js/main.js's initializeDocsSidebar.
+   The top nav already collapses to a drawer at 1023 because eight items need
+   more room than the wrapper offers. While the sidebar held its 260px column
+   down to 901, the band 901-1023 ran both paradigms at once: a hamburger for
+   the site and a fixed sidebar for the docs. The content column was 852px at
+   900 and 545px at 901 - narrower at a wider viewport - and in that column the
+   Helm commands truncated mid-registry-path. Collapsing the sidebar on the same
+   width the nav uses removes the cliff and the clipping together. */
 @media (max-width: 1023px) {
-    .docs-content table {
-        display: block;
-        overflow-x: auto;
-    }
-}
-
-@media (max-width: 900px) {
     .docs-layout {
         grid-template-columns: minmax(0, 1fr);
     }
@@ -452,7 +532,37 @@
         margin-bottom: 0;
     }
     
+    /* Collapsed by default here (js/main.js closes it at this width). Open, the
+       14 links wrapped into a ~500px chip cloud that pushed the h1 off the
+       first two screens; the chips were also ~30px against a 44px target. */
+    .docs-sidebar-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--spacing-xs);
+        min-height: 44px;
+        margin-bottom: 0;
+    }
+
+    .docs-nav-disclosure[open] .docs-sidebar-title {
+        margin-bottom: var(--spacing-md);
+    }
+
+    .docs-sidebar-title::after {
+        content: "\25BE";
+        font-size: 0.9rem;
+        line-height: 1;
+        transition: transform var(--transition-speed);
+    }
+
+    .docs-nav-disclosure[open] .docs-sidebar-title::after {
+        transform: rotate(180deg);
+    }
+
     .docs-nav a {
+        display: flex;
+        align-items: center;
+        min-height: 44px;
         padding: 8px 12px;
         font-size: 0.85rem;
         white-space: nowrap;
@@ -473,15 +583,6 @@
 }
 
 @media (max-width: 600px) {
-    .docs-hero {
-        padding: var(--spacing-lg) var(--spacing-sm);
-    }
-    
-    .docs-hero h1,
-    .docs-hero h2 {
-        font-size: 1.75rem;
-    }
-    
     .docs-quick-links {
         grid-template-columns: 1fr;
     }
@@ -489,5 +590,4 @@
     .docs-content pre {
         padding: var(--spacing-sm);
         font-size: 0.8rem;
-    }
-}
+    }}
