@@ -6,74 +6,82 @@
     <meta name="description" content="PandoCore operating modes: monitor, alert and isolate, plus debug. What each one does, and what sets the ceiling a workload can reach.">
     <title>Operating Modes | PandoCore Docs</title>
     <link rel="canonical" href="https://pandocore.io/docs/operating-modes">
+
+    <!-- Social share preview: this page gets forwarded. -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Operating Modes | PandoCore Docs">
+    <meta property="og:description" content="PandoCore operating modes: monitor, alert and isolate, plus debug. What each one does, and what sets the ceiling a workload can reach.">
+    <meta property="og:url" content="https://pandocore.io/docs/operating-modes">
+    <meta property="og:image" content="https://pandocore.io/images/og-default.png">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" type="image/png" href="/images/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="/css/docs.css">
+    <noscript><link rel="stylesheet" href="/css/noscript.css"></noscript>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
-    <!-- Navigation -->
+    <!-- Navigation. Wrapped in a banner landmark: the site nav was a bare
+         nav element, so no page exposed a banner to assistive tech. -->
+    <header>
     <nav class="navbar">
         <div class="container">
             <div class="nav-wrapper">
                 <a href="/" class="logo">
-                    <img src="/images/logoTransparency.png" alt="PandoCore" width="184" height="240">
+                    <img src="/images/logo-nav.png" alt="PandoCore" width="92" height="120">
                     <div class="logo-text-wrapper">
                         <span class="logo-text">PandoCore</span>
                     </div>
                 </a>
-                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="primary-nav">
                     <span></span>
                     <span></span>
                     <span></span>
                 </button>
                 <div class="nav-overlay"></div>
-                <ul class="nav-links">
+                <ul class="nav-links" role="list" id="primary-nav">
                     <li><a href="/">Home</a></li>
                     <li><a href="/product">Product</a></li>
                     <li><a href="/pricing">Pricing</a></li>
                     <li><a href="/about">About</a></li>
                     <li><a href="/blog/">Blog</a></li>
-                    <li><a href="/docs/" class="active">Docs</a></li>
+                    <li><a href="/docs/" class="active" aria-current="page">Docs</a></li>
                     <li><a href="/contact" class="nav-contact">Contact</a></li>
                     <li><a href="https://portal.pandocore.io/signup" class="nav-signup">Sign Up</a></li>
                 </ul>
             </div>
         </div>
     </nav>
-
-    <!-- Docs Hero -->
-    <section class="docs-hero">
-        <div class="container">
-            <h2>Operating Modes</h2>
-            <p>A three-step ladder (monitor, alert, isolate) plus a debug mode. Each step adds one response action to the one below it.</p>
-        </div>
-    </section>
+    </header>
 
     <!-- Documentation Layout -->
     <div class="docs-layout">
         <!-- Sidebar Navigation -->
-        <aside class="docs-sidebar">
-            <h3>Documentation</h3>
-            <ul class="docs-nav">
-                <li><a href="/docs/">Overview</a></li>
-                <li><a href="/docs/getting-started">Getting Started</a></li>
-                <li><a href="/docs/webhook">Admission Webhook</a></li>
-                <li><a href="/docs/controller">Controller</a></li>
-                <li><a href="/docs/dashboard">Dashboard</a></li>
-                <li><a href="/docs/configuration">Configuration</a></li>
-                <li><a href="/docs/policy">CRD Policy</a></li>
-                <li><a href="/docs/operating-modes" class="active">Operating Modes</a></li>
-                <li><a href="/docs/production-hardening">Production Hardening</a></li>
-                <li><a href="/docs/upgrading">Upgrading</a></li>
-                <li><a href="/docs/troubleshooting">Troubleshooting</a></li>
-                <li><a href="/docs/emergency">Emergency Procedures</a></li>
-                <li><a href="/docs/evidence-format">Evidence Format</a></li>
-                <li><a href="/docs/faq">FAQ</a></li>
-            </ul>
+        <aside class="docs-sidebar" aria-label="Documentation">
+            <details class="docs-nav-disclosure" open>
+                <summary class="docs-sidebar-title">Documentation</summary>
+                <ul class="docs-nav" role="list">
+                    <li><a href="/docs/">Overview</a></li>
+                    <li><a href="/docs/getting-started">Getting Started</a></li>
+                    <li><a href="/docs/controller">Controller</a></li>
+                    <li><a href="/docs/dashboard">Dashboard</a></li>
+                    <li><a href="/docs/configuration">Configuration</a></li>
+                    <li><a href="/docs/policy">CRD Policy</a></li>
+                    <li><a href="/docs/operating-modes" class="active" aria-current="page">Operating Modes</a></li>
+                    <li><a href="/docs/production-hardening">Production Hardening</a></li>
+                    <li><a href="/docs/upgrading">Upgrading</a></li>
+                    <li><a href="/docs/troubleshooting">Troubleshooting</a></li>
+                    <li><a href="/docs/emergency">Emergency Procedures</a></li>
+                    <li><a href="/docs/evidence-format">Evidence Format</a></li>
+                    <li><a href="/docs/faq">FAQ</a></li>
+                    <li><a href="/docs/webhook">Admission Webhook (deprecated)</a></li>
+                </ul>
+
+                <a href="https://portal.pandocore.io/signup" class="btn btn-primary docs-sidebar-cta">Start free</a>
+            </details>
         </aside>
 
         <!-- Main Content -->
@@ -85,6 +93,9 @@
             </div>
 
             <h1>Operating Modes</h1>
+
+
+            <p class="docs-subtitle">A three-step ladder (monitor, alert, isolate) plus a debug mode. Each step adds one response action to the one below it.</p>
 
             <p>PandoCore responds on a ladder: <strong>Monitor, Alert, Isolate</strong>. The rungs are additive, so each one does everything the rung below it does plus one more action, and intensity is monotonic. A separate <strong>Debug</strong> mode sits outside the ladder for troubleshooting.</p>
 
@@ -175,7 +186,7 @@
 
             <p>Monitor detects and records, and does nothing outward. It is the node-wide default for a pod carrying no mode annotation.</p>
 
-            <ul>
+            <ul role="list">
                 <li>Watches workload behaviour and builds a profile per workload</li>
                 <li>Logs detections as JSON to stdout</li>
                 <li>Emits Kubernetes events for detections</li>
@@ -198,7 +209,7 @@
 
             <p>Alert adds notification. On a detection, the controller delivers to whichever destinations you have configured, and the workload is left alone.</p>
 
-            <ul>
+            <ul role="list">
                 <li>Everything Monitor does, plus:</li>
                 <li>Delivers each detection to the destinations configured on the controller</li>
                 <li>Alerts carry pod name, namespace, severity and timestamp</li>
@@ -214,7 +225,7 @@
 
             <p>Isolate is the top of the ladder on the supported install. On a trip, PandoCore writes a Kubernetes NetworkPolicy that denies the pod's egress except DNS, and removes it again if the behaviour subsides.</p>
 
-            <ul>
+            <ul role="list">
                 <li>Everything Alert does, plus:</li>
                 <li>Applies a NetworkPolicy to the tripped pod</li>
                 <li>Releases automatically on recovery</li>
@@ -275,7 +286,7 @@ kubectl rollout restart deployment/your-app</code></pre>
 
             <h2>Recommended Path</h2>
 
-            <ol>
+            <ol role="list">
                 <li><strong>Install on a free license, fleet-wide.</strong> The ceiling is Alert, so it detects and tells you, and contains nothing. There is no trial to remember to leave and no mode to set.</li>
                 <li><strong>Read what it reports.</strong> Decide from your own evidence whether these are detections you would have wanted acted on. Put a noisy workload in <code>monitor</code> while you tune it rather than turning anything off.</li>
                 <li><strong>Raise the ceiling when you are ready for it to act.</strong> That is a license change, so the install does not change. Workloads then reach Isolate as their annotations permit.</li>
@@ -334,13 +345,24 @@ pando_isolations_total{pod="your-pod"} 2</code></pre>
 
             <h2>Next Steps</h2>
 
-            <ul>
+            <ul role="list">
                 <li><a href="/docs/configuration">Configuration Reference</a>: every chart value with defaults and ranges</li>
                 <li><a href="/docs/policy">CRD Policy</a>: setting mode per namespace declaratively</li>
                 <li><a href="/docs/controller">Controller</a>: where alerts and evidence go</li>
                 <li><a href="/docs/production-hardening">Production Hardening</a>: what to settle before raising the ceiling</li>
                 <li><a href="/docs/emergency">Emergency Procedures</a>: stopping it quickly</li>
             </ul>
+            <nav class="docs-pager" aria-label="Documentation pages">
+                <a class="docs-pager-prev" href="/docs/policy" rel="prev">
+                    <span class="docs-pager-dir">Previous</span>
+                    <span class="docs-pager-title">CRD Policy</span>
+                </a>
+                <a class="docs-pager-next" href="/docs/production-hardening" rel="next">
+                    <span class="docs-pager-dir">Next</span>
+                    <span class="docs-pager-title">Production Hardening</span>
+                </a>
+            </nav>
+
         </main>
     </div>
 
@@ -348,7 +370,13 @@ pando_isolations_total{pod="your-pod"} 2</code></pre>
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <p class="footer-links"><a href="https://trust.pandocore.io">Trust Center</a></p>
+                <p class="footer-links">
+                    <a href="/docs/">Docs</a>
+                    <a href="/pricing">Pricing</a>
+                    <a href="/blog/">Blog</a>
+                    <a href="/contact">Contact</a>
+                    <a href="https://trust.pandocore.io">Trust Center</a>
+                </p>
                 <p>&copy; 2026 PandoCore Inc. All rights reserved.</p>
             </div>
         </div>

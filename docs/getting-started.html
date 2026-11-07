@@ -6,74 +6,82 @@
     <meta name="description" content="Install PandoCore on a Kubernetes cluster: two Helm charts, one sensor pod per node, nothing injected into your workloads and nothing to label.">
     <title>Getting Started | PandoCore Docs</title>
     <link rel="canonical" href="https://pandocore.io/docs/getting-started">
+
+    <!-- Social share preview: this page gets forwarded. -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Getting Started | PandoCore Docs">
+    <meta property="og:description" content="Install PandoCore on a Kubernetes cluster: two Helm charts, one sensor pod per node, nothing injected into your workloads and nothing to label.">
+    <meta property="og:url" content="https://pandocore.io/docs/getting-started">
+    <meta property="og:image" content="https://pandocore.io/images/og-default.png">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" type="image/png" href="/images/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="/css/docs.css">
+    <noscript><link rel="stylesheet" href="/css/noscript.css"></noscript>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
-    <!-- Navigation -->
+    <!-- Navigation. Wrapped in a banner landmark: the site nav was a bare
+         nav element, so no page exposed a banner to assistive tech. -->
+    <header>
     <nav class="navbar">
         <div class="container">
             <div class="nav-wrapper">
                 <a href="/" class="logo">
-                    <img src="/images/logoTransparency.png" alt="PandoCore" width="184" height="240">
+                    <img src="/images/logo-nav.png" alt="PandoCore" width="92" height="120">
                     <div class="logo-text-wrapper">
                         <span class="logo-text">PandoCore</span>
                     </div>
                 </a>
-                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="primary-nav">
                     <span></span>
                     <span></span>
                     <span></span>
                 </button>
                 <div class="nav-overlay"></div>
-                <ul class="nav-links">
+                <ul class="nav-links" role="list" id="primary-nav">
                     <li><a href="/">Home</a></li>
                     <li><a href="/product">Product</a></li>
                     <li><a href="/pricing">Pricing</a></li>
                     <li><a href="/about">About</a></li>
                     <li><a href="/blog/">Blog</a></li>
-                    <li><a href="/docs/" class="active">Docs</a></li>
+                    <li><a href="/docs/" class="active" aria-current="page">Docs</a></li>
                     <li><a href="/contact" class="nav-contact">Contact</a></li>
                     <li><a href="https://portal.pandocore.io/signup" class="nav-signup">Sign Up</a></li>
                 </ul>
             </div>
         </div>
     </nav>
-
-    <!-- Docs Hero -->
-    <section class="docs-hero">
-        <div class="container">
-            <h2>Getting Started</h2>
-            <p>Two commands to install, and nothing to label or restart.</p>
-        </div>
-    </section>
+    </header>
 
     <!-- Documentation Layout -->
     <div class="docs-layout">
         <!-- Sidebar Navigation -->
-        <aside class="docs-sidebar">
-            <h3>Documentation</h3>
-            <ul class="docs-nav">
-                <li><a href="/docs/">Overview</a></li>
-                <li><a href="/docs/getting-started" class="active">Getting Started</a></li>
-                <li><a href="/docs/webhook">Admission Webhook</a></li>
-                <li><a href="/docs/controller">Controller</a></li>
-                <li><a href="/docs/dashboard">Dashboard</a></li>
-                <li><a href="/docs/configuration">Configuration</a></li>
-                <li><a href="/docs/policy">CRD Policy</a></li>
-                <li><a href="/docs/operating-modes">Operating Modes</a></li>
-                <li><a href="/docs/production-hardening">Production Hardening</a></li>
-                <li><a href="/docs/upgrading">Upgrading</a></li>
-                <li><a href="/docs/troubleshooting">Troubleshooting</a></li>
-                <li><a href="/docs/emergency">Emergency Procedures</a></li>
-                <li><a href="/docs/evidence-format">Evidence Format</a></li>
-                <li><a href="/docs/faq">FAQ</a></li>
-            </ul>
+        <aside class="docs-sidebar" aria-label="Documentation">
+            <details class="docs-nav-disclosure" open>
+                <summary class="docs-sidebar-title">Documentation</summary>
+                <ul class="docs-nav" role="list">
+                    <li><a href="/docs/">Overview</a></li>
+                    <li><a href="/docs/getting-started" class="active" aria-current="page">Getting Started</a></li>
+                    <li><a href="/docs/controller">Controller</a></li>
+                    <li><a href="/docs/dashboard">Dashboard</a></li>
+                    <li><a href="/docs/configuration">Configuration</a></li>
+                    <li><a href="/docs/policy">CRD Policy</a></li>
+                    <li><a href="/docs/operating-modes">Operating Modes</a></li>
+                    <li><a href="/docs/production-hardening">Production Hardening</a></li>
+                    <li><a href="/docs/upgrading">Upgrading</a></li>
+                    <li><a href="/docs/troubleshooting">Troubleshooting</a></li>
+                    <li><a href="/docs/emergency">Emergency Procedures</a></li>
+                    <li><a href="/docs/evidence-format">Evidence Format</a></li>
+                    <li><a href="/docs/faq">FAQ</a></li>
+                    <li><a href="/docs/webhook">Admission Webhook (deprecated)</a></li>
+                </ul>
+
+                <a href="https://portal.pandocore.io/signup" class="btn btn-primary docs-sidebar-cta">Start free</a>
+            </details>
         </aside>
 
         <!-- Main Content -->
@@ -86,11 +94,14 @@
 
             <h1>Getting Started</h1>
 
+
+            <p class="docs-subtitle">Two commands to install, and nothing to label or restart.</p>
+
             <p>PandoCore ships as a node sensor: one DaemonSet pod per node that watches the workloads already running there, plus a cluster controller that owns delivery of evidence. No application code changes, no SDK, no rules to write, and nothing injected into your pods.</p>
 
             <div class="docs-callout info">
                 <div class="docs-callout-title">Prerequisites</div>
-                <ul>
+                <ul role="list">
                     <li>Kubernetes 1.25+ with <code>kubectl</code> configured</li>
                     <li>Helm 3.0+</li>
                     <li>Nodes you control. The sensor needs <code>hostPID</code> and a host path, so managed node-less runtimes have no install path: see the note below</li>
@@ -145,7 +156,7 @@ helm install pando-node-sensor ... \
 
             <p>Because the model is opt-out, the question is no longer which pods are watched but which are not. Four classes are excluded whatever the configuration says:</p>
 
-            <ul>
+            <ul role="list">
                 <li>The sensor's own pod</li>
                 <li>Pods using <code>hostPID</code></li>
                 <li>Pods using <code>hostNetwork</code></li>
@@ -302,7 +313,7 @@ kubectl rollout restart deployment/your-app</code></pre>
 
             <h2>Next Steps</h2>
 
-            <ul>
+            <ul role="list">
                 <li><a href="/docs/operating-modes">Operating Modes</a>: the response ladder and what sets the ceiling</li>
                 <li><a href="/docs/configuration">Configuration Reference</a>: every chart value with defaults and ranges</li>
                 <li><a href="/docs/controller">Controller</a>: evidence delivery and outbound destinations</li>
@@ -313,6 +324,17 @@ kubectl rollout restart deployment/your-app</code></pre>
                 <li><a href="/docs/emergency">Emergency Procedures</a>: how to stop it quickly</li>
             </ul>
 
+            <nav class="docs-pager" aria-label="Documentation pages">
+                <a class="docs-pager-prev" href="/docs/" rel="prev">
+                    <span class="docs-pager-dir">Previous</span>
+                    <span class="docs-pager-title">Overview</span>
+                </a>
+                <a class="docs-pager-next" href="/docs/controller" rel="next">
+                    <span class="docs-pager-dir">Next</span>
+                    <span class="docs-pager-title">Controller</span>
+                </a>
+            </nav>
+
         </main>
     </div>
 
@@ -320,7 +342,13 @@ kubectl rollout restart deployment/your-app</code></pre>
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <p class="footer-links"><a href="https://trust.pandocore.io">Trust Center</a></p>
+                <p class="footer-links">
+                    <a href="/docs/">Docs</a>
+                    <a href="/pricing">Pricing</a>
+                    <a href="/blog/">Blog</a>
+                    <a href="/contact">Contact</a>
+                    <a href="https://trust.pandocore.io">Trust Center</a>
+                </p>
                 <p>&copy; 2026 PandoCore Inc. All rights reserved.</p>
             </div>
         </div>

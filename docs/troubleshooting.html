@@ -6,74 +6,82 @@
     <meta name="description" content="Troubleshoot PandoCore: workloads not being watched, sensor refusals, false positives, and unexpected containment.">
     <title>Troubleshooting | PandoCore Docs</title>
     <link rel="canonical" href="https://pandocore.io/docs/troubleshooting">
+
+    <!-- Social share preview: this page gets forwarded. -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Troubleshooting | PandoCore Docs">
+    <meta property="og:description" content="Troubleshoot PandoCore: workloads not being watched, sensor refusals, false positives, and unexpected containment.">
+    <meta property="og:url" content="https://pandocore.io/docs/troubleshooting">
+    <meta property="og:image" content="https://pandocore.io/images/og-default.png">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" type="image/png" href="/images/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="/css/docs.css">
+    <noscript><link rel="stylesheet" href="/css/noscript.css"></noscript>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
-    <!-- Navigation -->
+    <!-- Navigation. Wrapped in a banner landmark: the site nav was a bare
+         nav element, so no page exposed a banner to assistive tech. -->
+    <header>
     <nav class="navbar">
         <div class="container">
             <div class="nav-wrapper">
                 <a href="/" class="logo">
-                    <img src="/images/logoTransparency.png" alt="PandoCore" width="184" height="240">
+                    <img src="/images/logo-nav.png" alt="PandoCore" width="92" height="120">
                     <div class="logo-text-wrapper">
                         <span class="logo-text">PandoCore</span>
                     </div>
                 </a>
-                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="primary-nav">
                     <span></span>
                     <span></span>
                     <span></span>
                 </button>
                 <div class="nav-overlay"></div>
-                <ul class="nav-links">
+                <ul class="nav-links" role="list" id="primary-nav">
                     <li><a href="/">Home</a></li>
                     <li><a href="/product">Product</a></li>
                     <li><a href="/pricing">Pricing</a></li>
                     <li><a href="/about">About</a></li>
                     <li><a href="/blog/">Blog</a></li>
-                    <li><a href="/docs/" class="active">Docs</a></li>
+                    <li><a href="/docs/" class="active" aria-current="page">Docs</a></li>
                     <li><a href="/contact" class="nav-contact">Contact</a></li>
                     <li><a href="https://portal.pandocore.io/signup" class="nav-signup">Sign Up</a></li>
                 </ul>
             </div>
         </div>
     </nav>
-
-    <!-- Docs Hero -->
-    <section class="docs-hero">
-        <div class="container">
-            <h2>Troubleshooting</h2>
-            <p>Common issues and how to diagnose them.</p>
-        </div>
-    </section>
+    </header>
 
     <!-- Documentation Layout -->
     <div class="docs-layout">
         <!-- Sidebar Navigation -->
-        <aside class="docs-sidebar">
-            <h3>Documentation</h3>
-            <ul class="docs-nav">
-                <li><a href="/docs/">Overview</a></li>
-                <li><a href="/docs/getting-started">Getting Started</a></li>
-                <li><a href="/docs/webhook">Admission Webhook</a></li>
-                <li><a href="/docs/controller">Controller</a></li>
-                <li><a href="/docs/dashboard">Dashboard</a></li>
-                <li><a href="/docs/configuration">Configuration</a></li>
-                <li><a href="/docs/policy">CRD Policy</a></li>
-                <li><a href="/docs/operating-modes">Operating Modes</a></li>
-                <li><a href="/docs/production-hardening">Production Hardening</a></li>
-                <li><a href="/docs/upgrading">Upgrading</a></li>
-                <li><a href="/docs/troubleshooting" class="active">Troubleshooting</a></li>
-                <li><a href="/docs/emergency">Emergency Procedures</a></li>
-                <li><a href="/docs/evidence-format">Evidence Format</a></li>
-                <li><a href="/docs/faq">FAQ</a></li>
-            </ul>
+        <aside class="docs-sidebar" aria-label="Documentation">
+            <details class="docs-nav-disclosure" open>
+                <summary class="docs-sidebar-title">Documentation</summary>
+                <ul class="docs-nav" role="list">
+                    <li><a href="/docs/">Overview</a></li>
+                    <li><a href="/docs/getting-started">Getting Started</a></li>
+                    <li><a href="/docs/controller">Controller</a></li>
+                    <li><a href="/docs/dashboard">Dashboard</a></li>
+                    <li><a href="/docs/configuration">Configuration</a></li>
+                    <li><a href="/docs/policy">CRD Policy</a></li>
+                    <li><a href="/docs/operating-modes">Operating Modes</a></li>
+                    <li><a href="/docs/production-hardening">Production Hardening</a></li>
+                    <li><a href="/docs/upgrading">Upgrading</a></li>
+                    <li><a href="/docs/troubleshooting" class="active" aria-current="page">Troubleshooting</a></li>
+                    <li><a href="/docs/emergency">Emergency Procedures</a></li>
+                    <li><a href="/docs/evidence-format">Evidence Format</a></li>
+                    <li><a href="/docs/faq">FAQ</a></li>
+                    <li><a href="/docs/webhook">Admission Webhook (deprecated)</a></li>
+                </ul>
+
+                <a href="https://portal.pandocore.io/signup" class="btn btn-primary docs-sidebar-cta">Start free</a>
+            </details>
         </aside>
 
         <!-- Main Content -->
@@ -85,6 +93,9 @@
             </div>
 
             <h1>Troubleshooting</h1>
+
+
+            <p class="docs-subtitle">Common issues and how to diagnose them.</p>
 
             <p>Most issues fall into four buckets: a workload is not being watched, a sensor is refusing to start, a sensor is running but producing more alerts than you expect, or a pod was contained and you need to know why. Each section starts with how to diagnose, then lists the usual causes.</p>
 
@@ -114,7 +125,7 @@ kubectl get pod &lt;pod&gt; -o jsonpath='{.metadata.labels}'</code></pre>
 
             <h3>Common causes</h3>
 
-            <ul>
+            <ul role="list">
                 <li><strong>The node is over the engine cap.</strong> Each sensor runs at most <code>maxEngines</code> monitored pods (70 by default). Pods beyond it get no engine, and they are shed in a stable order, so the same pods stay unwatched across restarts rather than rotating. Check <code>pando_node_sensor_pods_unmonitored{reason="cap"}</code>. This is the most likely cause on a dense node, and it is a coverage gap rather than a capacity hint.</li>
                 <li><strong>The pod opted out.</strong> <code>pandocore.io/protect: "false"</code> excludes a pod, and nothing an operator sets overrides it. Note the comparison is byte-for-byte: <code>"False"</code> or <code>"0"</code> do not opt out, so an intended opt-out may also be silently inactive.</li>
                 <li><strong>The namespace is excluded.</strong> Eleven are by default, covering <code>kube-system</code> and the GKE managed namespaces. Add the namespace to <code>includedNamespaces</code> to protect it anyway; emptying <code>excludedNamespaces</code> does not work, because an empty list is read as unconfigured and falls back to the built-in eleven.</li>
@@ -140,7 +151,7 @@ kubectl describe pod -n pando-system &lt;sensor-pod&gt;</code></pre>
 
             <p>A refusal names one of eight reasons, which is also the label on the refusal metric: <code>config</code>, <code>licence</code>, <code>siem</code>, <code>node_name</code>, <code>state_dir</code>, <code>cluster_limit</code>, <code>revoked</code> or <code>channel</code>. A refusal is a configuration error and will not clear on its own.</p>
 
-            <ul>
+            <ul role="list">
                 <li><strong><code>licence</code></strong>: the license failed validation. A signature mismatch usually means the image and the license are from different environments. An expired license needs renewal from the portal. Note the key is not trimmed, so a Secret created from a file with a trailing newline fails validation; create it with <code>--from-literal</code>.</li>
                 <li><strong><code>config</code></strong>: a value was rejected at startup rather than silently clamped. The most common is <code>sampleIntervalMs</code> below its 250 ms floor, which is refused by name. There is no 100 ms option.</li>
                 <li><strong><code>channel</code></strong>: the sensor could not establish its evidence channel to the controller. Check the controller is installed and running, and that its Service publishes the evidence port the sensor expects. The sensor composes that URL from the controller's parts rather than taking a hand-written one, so a mismatch is usually a namespace or service-name override.</li>
@@ -172,7 +183,7 @@ kubectl describe pod -n pando-system &lt;sensor-pod&gt;</code></pre>
 
             <h3>Tuning options, in order of preference</h3>
 
-            <ol>
+            <ol role="list">
                 <li><strong>Loosen <code>sensitivity</code> in a PandoCorePolicy</strong> for that namespace. <code>low</code>, <code>medium</code> or <code>high</code>, where a higher preset is a tighter gate. This is the right lever because it is per-namespace and version-controlled. See <a href="/docs/policy">CRD Policy</a>.
                     <pre><code>kubectl patch pandocorepolicy default -n production \
   --type merge -p '{"spec":{"sensitivity":"low"}}'</code></pre>
@@ -200,7 +211,7 @@ kubectl exec -n pando-system &lt;sensor-pod&gt; -- wget -qO- http://localhost:90
 # Is the controller receiving anything?
 kubectl logs -n pando-system -l app.kubernetes.io/name=pando-controller --tail=100</code></pre>
 
-            <ul>
+            <ul role="list">
                 <li><strong>Your Prometheus job matches nothing.</strong> This is the most common cause and the most misleading, because it reports a clean scrape of nothing, which looks identical to healthy. The sensor's own pod carries <code>pandocore.io/protect: "false"</code>, so a job selecting on <code>protect=true</code> finds no targets. Select on <code>app.kubernetes.io/name=pando-node-sensor</code>.</li>
                 <li><strong>Learning has not finished.</strong> Wait for <code>/readyz</code> to return 200.</li>
                 <li><strong>Evidence is reaching the controller but not leaving it.</strong> The controller owns every outbound destination, so an empty SIEM or Slack channel with healthy sensors is a controller configuration question rather than a sensor one. See <a href="/docs/controller">Controller</a>.</li>
@@ -220,7 +231,7 @@ kubectl get networkpolicy -n &lt;namespace&gt;
 # The detection that caused it
 kubectl get events -n &lt;namespace&gt; --field-selector involvedObject.name=&lt;pod&gt;</code></pre>
 
-            <ol>
+            <ol role="list">
                 <li>Read the evidence record in the portal's Events tab for the detection reason and severity.</li>
                 <li>Check the workload's mode. If you expected it only to alert, confirm with <code>kubectl get deployment your-app -o jsonpath='{.spec.template.metadata.annotations}'</code>. Remember the annotation is read when the sensor starts watching a pod, so a recent change may not have applied to pods already running.</li>
                 <li>If the behaviour subsides, the policy is removed automatically. You do not need to delete it by hand, and deleting it does not resolve the underlying detection.</li>
@@ -232,7 +243,7 @@ kubectl get events -n &lt;namespace&gt; --field-selector involvedObject.name=&lt
 
             <p>Collect the following before reaching out:</p>
 
-            <ul>
+            <ul role="list">
                 <li><code>kubectl version</code>, and the chart versions from <code>helm list -n pando-system</code></li>
                 <li><code>kubectl logs -n pando-system &lt;sensor-pod&gt;</code> (last 200 lines)</li>
                 <li><code>kubectl exec -n pando-system &lt;sensor-pod&gt; -- wget -qO- http://localhost:9090/status</code></li>
@@ -242,6 +253,17 @@ kubectl get events -n &lt;namespace&gt; --field-selector involvedObject.name=&lt
             </ul>
 
             <p>Send to <a href="/contact">support</a> or reply to your onboarding email thread.</p>
+            <nav class="docs-pager" aria-label="Documentation pages">
+                <a class="docs-pager-prev" href="/docs/upgrading" rel="prev">
+                    <span class="docs-pager-dir">Previous</span>
+                    <span class="docs-pager-title">Upgrading</span>
+                </a>
+                <a class="docs-pager-next" href="/docs/emergency" rel="next">
+                    <span class="docs-pager-dir">Next</span>
+                    <span class="docs-pager-title">Emergency Procedures</span>
+                </a>
+            </nav>
+
         </main>
     </div>
 
@@ -249,7 +271,13 @@ kubectl get events -n &lt;namespace&gt; --field-selector involvedObject.name=&lt
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <p class="footer-links"><a href="https://trust.pandocore.io">Trust Center</a></p>
+                <p class="footer-links">
+                    <a href="/docs/">Docs</a>
+                    <a href="/pricing">Pricing</a>
+                    <a href="/blog/">Blog</a>
+                    <a href="/contact">Contact</a>
+                    <a href="https://trust.pandocore.io">Trust Center</a>
+                </p>
                 <p>&copy; 2026 PandoCore Inc. All rights reserved.</p>
             </div>
         </div>

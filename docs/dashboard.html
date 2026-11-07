@@ -6,74 +6,82 @@
     <meta name="description" content="Where to see what PandoCore is doing: the portal for detections, Prometheus for coverage and health, kubectl for current state.">
     <title>Dashboard | PandoCore Docs</title>
     <link rel="canonical" href="https://pandocore.io/docs/dashboard">
+
+    <!-- Social share preview: this page gets forwarded. -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Dashboard | PandoCore Docs">
+    <meta property="og:description" content="Where to see what PandoCore is doing: the portal for detections, Prometheus for coverage and health, kubectl for current state.">
+    <meta property="og:url" content="https://pandocore.io/docs/dashboard">
+    <meta property="og:image" content="https://pandocore.io/images/og-default.png">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" type="image/png" href="/images/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="/css/docs.css">
+    <noscript><link rel="stylesheet" href="/css/noscript.css"></noscript>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
-    <!-- Navigation -->
+    <!-- Navigation. Wrapped in a banner landmark: the site nav was a bare
+         nav element, so no page exposed a banner to assistive tech. -->
+    <header>
     <nav class="navbar">
         <div class="container">
             <div class="nav-wrapper">
                 <a href="/" class="logo">
-                    <img src="/images/logoTransparency.png" alt="PandoCore" width="184" height="240">
+                    <img src="/images/logo-nav.png" alt="PandoCore" width="92" height="120">
                     <div class="logo-text-wrapper">
                         <span class="logo-text">PandoCore</span>
                     </div>
                 </a>
-                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="primary-nav">
                     <span></span>
                     <span></span>
                     <span></span>
                 </button>
                 <div class="nav-overlay"></div>
-                <ul class="nav-links">
+                <ul class="nav-links" role="list" id="primary-nav">
                     <li><a href="/">Home</a></li>
                     <li><a href="/product">Product</a></li>
                     <li><a href="/pricing">Pricing</a></li>
                     <li><a href="/about">About</a></li>
                     <li><a href="/blog/">Blog</a></li>
-                    <li><a href="/docs/" class="active">Docs</a></li>
+                    <li><a href="/docs/" class="active" aria-current="page">Docs</a></li>
                     <li><a href="/contact" class="nav-contact">Contact</a></li>
                     <li><a href="https://portal.pandocore.io/signup" class="nav-signup">Sign Up</a></li>
                 </ul>
             </div>
         </div>
     </nav>
-
-    <!-- Docs Hero -->
-    <section class="docs-hero">
-        <div class="container">
-            <h2>Detection Events Dashboard</h2>
-            <p>In-cluster visibility into what PandoCore is detecting and protecting.</p>
-        </div>
-    </section>
+    </header>
 
     <!-- Documentation Layout -->
     <div class="docs-layout">
         <!-- Sidebar Navigation -->
-        <aside class="docs-sidebar">
-            <h3>Documentation</h3>
-            <ul class="docs-nav">
-                <li><a href="/docs/">Overview</a></li>
-                <li><a href="/docs/getting-started">Getting Started</a></li>
-                <li><a href="/docs/webhook">Admission Webhook</a></li>
-                <li><a href="/docs/controller">Controller</a></li>
-                <li><a href="/docs/dashboard" class="active">Dashboard</a></li>
-                <li><a href="/docs/configuration">Configuration</a></li>
-                <li><a href="/docs/policy">CRD Policy</a></li>
-                <li><a href="/docs/operating-modes">Operating Modes</a></li>
-                <li><a href="/docs/production-hardening">Production Hardening</a></li>
-                <li><a href="/docs/upgrading">Upgrading</a></li>
-                <li><a href="/docs/troubleshooting">Troubleshooting</a></li>
-                <li><a href="/docs/emergency">Emergency Procedures</a></li>
-                <li><a href="/docs/evidence-format">Evidence Format</a></li>
-                <li><a href="/docs/faq">FAQ</a></li>
-            </ul>
+        <aside class="docs-sidebar" aria-label="Documentation">
+            <details class="docs-nav-disclosure" open>
+                <summary class="docs-sidebar-title">Documentation</summary>
+                <ul class="docs-nav" role="list">
+                    <li><a href="/docs/">Overview</a></li>
+                    <li><a href="/docs/getting-started">Getting Started</a></li>
+                    <li><a href="/docs/controller">Controller</a></li>
+                    <li><a href="/docs/dashboard" class="active" aria-current="page">Dashboard</a></li>
+                    <li><a href="/docs/configuration">Configuration</a></li>
+                    <li><a href="/docs/policy">CRD Policy</a></li>
+                    <li><a href="/docs/operating-modes">Operating Modes</a></li>
+                    <li><a href="/docs/production-hardening">Production Hardening</a></li>
+                    <li><a href="/docs/upgrading">Upgrading</a></li>
+                    <li><a href="/docs/troubleshooting">Troubleshooting</a></li>
+                    <li><a href="/docs/emergency">Emergency Procedures</a></li>
+                    <li><a href="/docs/evidence-format">Evidence Format</a></li>
+                    <li><a href="/docs/faq">FAQ</a></li>
+                    <li><a href="/docs/webhook">Admission Webhook (deprecated)</a></li>
+                </ul>
+
+                <a href="https://portal.pandocore.io/signup" class="btn btn-primary docs-sidebar-cta">Start free</a>
+            </details>
         </aside>
 
         <!-- Main Content -->
@@ -84,7 +92,10 @@
                 Dashboard
             </div>
 
-            <h1>Dashboard</h1>
+            <h1>Detection Events Dashboard</h1>
+
+
+            <p class="docs-subtitle">In-cluster visibility into what PandoCore is detecting and protecting.</p>
 
             <p>There are three places to see what PandoCore is doing, and which one you want depends on the question. The portal is for detections and entitlements, Prometheus is for coverage and health, and <code>kubectl</code> is for what is true in the cluster right now.</p>
 
@@ -94,7 +105,7 @@
 
             <h3>Event data flow</h3>
 
-            <ol>
+            <ol role="list">
                 <li>A sensor detects behaviour diverging from a workload's profile</li>
                 <li>It seals and signs an evidence record, and delivers it to the controller over mTLS</li>
                 <li>The controller writes it to a durable spool and only then acknowledges it</li>
@@ -109,7 +120,7 @@
 
             <h3>What the portal shows</h3>
 
-            <ul>
+            <ul role="list">
                 <li><strong>Detections</strong>, with the reason, severity, pod, namespace and the response taken</li>
                 <li><strong>Your license</strong>, including the response ceiling it permits and its retention window</li>
                 <li><strong>Your plan</strong>, as a separate card derived independently of the license, so the two can be cross-checked rather than agreeing by construction</li>
@@ -227,14 +238,14 @@ kubectl get events -n &lt;namespace&gt; --field-selector reason=PandoRefrained</
             <h2>Troubleshooting</h2>
 
             <h3>The portal shows no activity</h3>
-            <ol>
+            <ol role="list">
                 <li>Confirm the sensors are ready: <code>/readyz</code> returns 503 during learning and while refusing</li>
                 <li>Confirm the controller is running and receiving. It is what delivers to the portal, so healthy sensors with an empty portal is a controller question</li>
                 <li>Check the controller's logs for delivery errors, and your egress rules for blocked outbound calls</li>
             </ol>
 
             <h3>Prometheus shows no PandoCore data</h3>
-            <ol>
+            <ol role="list">
                 <li>Check your job selects <code>app.kubernetes.io/name=pando-node-sensor</code> rather than the protect label</li>
                 <li>Confirm the metrics port is 9090</li>
                 <li>On GKE managed Prometheus, confirm <code>metrics.podMonitoring.enabled=true</code></li>
@@ -245,12 +256,23 @@ kubectl get events -n &lt;namespace&gt; --field-selector reason=PandoRefrained</
 
             <h2>Next Steps</h2>
 
-            <ul>
+            <ul role="list">
                 <li><a href="/docs/evidence-format">Evidence Format</a>: the record schema and its wire fields</li>
                 <li><a href="/docs/controller">Controller</a>: configuring destinations</li>
                 <li><a href="/docs/configuration">Configuration</a>: metrics and alerting values</li>
                 <li><a href="/docs/production-hardening">Production Hardening</a>: what to alert on before production</li>
             </ul>
+            <nav class="docs-pager" aria-label="Documentation pages">
+                <a class="docs-pager-prev" href="/docs/controller" rel="prev">
+                    <span class="docs-pager-dir">Previous</span>
+                    <span class="docs-pager-title">Controller</span>
+                </a>
+                <a class="docs-pager-next" href="/docs/configuration" rel="next">
+                    <span class="docs-pager-dir">Next</span>
+                    <span class="docs-pager-title">Configuration</span>
+                </a>
+            </nav>
+
         </main>
     </div>
 
@@ -258,7 +280,13 @@ kubectl get events -n &lt;namespace&gt; --field-selector reason=PandoRefrained</
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <p class="footer-links"><a href="https://trust.pandocore.io">Trust Center</a></p>
+                <p class="footer-links">
+                    <a href="/docs/">Docs</a>
+                    <a href="/pricing">Pricing</a>
+                    <a href="/blog/">Blog</a>
+                    <a href="/contact">Contact</a>
+                    <a href="https://trust.pandocore.io">Trust Center</a>
+                </p>
                 <p>&copy; 2026 PandoCore Inc. All rights reserved.</p>
             </div>
         </div>

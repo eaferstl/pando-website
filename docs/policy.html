@@ -6,74 +6,82 @@
     <meta name="description" content="PandoCore CRD Policy - manage mode, sensitivity, thresholds and integrations per namespace with Kubernetes custom resources.">
     <title>CRD Policy | PandoCore Docs</title>
     <link rel="canonical" href="https://pandocore.io/docs/policy">
+
+    <!-- Social share preview: this page gets forwarded. -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="CRD Policy | PandoCore Docs">
+    <meta property="og:description" content="PandoCore CRD Policy - manage mode, sensitivity, thresholds and integrations per namespace with Kubernetes custom resources.">
+    <meta property="og:url" content="https://pandocore.io/docs/policy">
+    <meta property="og:image" content="https://pandocore.io/images/og-default.png">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" type="image/png" href="/images/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="/css/docs.css">
+    <noscript><link rel="stylesheet" href="/css/noscript.css"></noscript>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
-    <!-- Navigation -->
+    <!-- Navigation. Wrapped in a banner landmark: the site nav was a bare
+         nav element, so no page exposed a banner to assistive tech. -->
+    <header>
     <nav class="navbar">
         <div class="container">
             <div class="nav-wrapper">
                 <a href="/" class="logo">
-                    <img src="/images/logoTransparency.png" alt="PandoCore" width="184" height="240">
+                    <img src="/images/logo-nav.png" alt="PandoCore" width="92" height="120">
                     <div class="logo-text-wrapper">
                         <span class="logo-text">PandoCore</span>
                     </div>
                 </a>
-                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="primary-nav">
                     <span></span>
                     <span></span>
                     <span></span>
                 </button>
                 <div class="nav-overlay"></div>
-                <ul class="nav-links">
+                <ul class="nav-links" role="list" id="primary-nav">
                     <li><a href="/">Home</a></li>
                     <li><a href="/product">Product</a></li>
                     <li><a href="/pricing">Pricing</a></li>
                     <li><a href="/about">About</a></li>
                     <li><a href="/blog/">Blog</a></li>
-                    <li><a href="/docs/" class="active">Docs</a></li>
+                    <li><a href="/docs/" class="active" aria-current="page">Docs</a></li>
                     <li><a href="/contact" class="nav-contact">Contact</a></li>
                     <li><a href="https://portal.pandocore.io/signup" class="nav-signup">Sign Up</a></li>
                 </ul>
             </div>
         </div>
     </nav>
-
-    <!-- Docs Hero -->
-    <section class="docs-hero">
-        <div class="container">
-            <h2>CRD-Based Policy</h2>
-            <p>Manage PandoCore configuration declaratively with Kubernetes custom resources.</p>
-        </div>
-    </section>
+    </header>
 
     <!-- Documentation Layout -->
     <div class="docs-layout">
         <!-- Sidebar Navigation -->
-        <aside class="docs-sidebar">
-            <h3>Documentation</h3>
-            <ul class="docs-nav">
-                <li><a href="/docs/">Overview</a></li>
-                <li><a href="/docs/getting-started">Getting Started</a></li>
-                <li><a href="/docs/webhook">Admission Webhook</a></li>
-                <li><a href="/docs/controller">Controller</a></li>
-                <li><a href="/docs/dashboard">Dashboard</a></li>
-                <li><a href="/docs/configuration">Configuration</a></li>
-                <li><a href="/docs/policy" class="active">CRD Policy</a></li>
-                <li><a href="/docs/operating-modes">Operating Modes</a></li>
-                <li><a href="/docs/production-hardening">Production Hardening</a></li>
-                <li><a href="/docs/upgrading">Upgrading</a></li>
-                <li><a href="/docs/troubleshooting">Troubleshooting</a></li>
-                <li><a href="/docs/emergency">Emergency Procedures</a></li>
-                <li><a href="/docs/evidence-format">Evidence Format</a></li>
-                <li><a href="/docs/faq">FAQ</a></li>
-            </ul>
+        <aside class="docs-sidebar" aria-label="Documentation">
+            <details class="docs-nav-disclosure" open>
+                <summary class="docs-sidebar-title">Documentation</summary>
+                <ul class="docs-nav" role="list">
+                    <li><a href="/docs/">Overview</a></li>
+                    <li><a href="/docs/getting-started">Getting Started</a></li>
+                    <li><a href="/docs/controller">Controller</a></li>
+                    <li><a href="/docs/dashboard">Dashboard</a></li>
+                    <li><a href="/docs/configuration">Configuration</a></li>
+                    <li><a href="/docs/policy" class="active" aria-current="page">CRD Policy</a></li>
+                    <li><a href="/docs/operating-modes">Operating Modes</a></li>
+                    <li><a href="/docs/production-hardening">Production Hardening</a></li>
+                    <li><a href="/docs/upgrading">Upgrading</a></li>
+                    <li><a href="/docs/troubleshooting">Troubleshooting</a></li>
+                    <li><a href="/docs/emergency">Emergency Procedures</a></li>
+                    <li><a href="/docs/evidence-format">Evidence Format</a></li>
+                    <li><a href="/docs/faq">FAQ</a></li>
+                    <li><a href="/docs/webhook">Admission Webhook (deprecated)</a></li>
+                </ul>
+
+                <a href="https://portal.pandocore.io/signup" class="btn btn-primary docs-sidebar-cta">Start free</a>
+            </details>
         </aside>
 
         <!-- Main Content -->
@@ -86,11 +94,14 @@
 
             <h1>CRD-Based Policy</h1>
 
+
+            <p class="docs-subtitle">Manage PandoCore configuration declaratively with Kubernetes custom resources.</p>
+
             <p>Instead of scattering environment variables across deployments, define a single <code>PandoCorePolicy</code> custom resource per namespace and apply it with <code>kubectl</code>. Policy values override environment variables automatically.</p>
 
             <div class="docs-callout info">
                 <div class="docs-callout-title">Three-Step Setup</div>
-                <ol>
+                <ol role="list">
                     <li>Create a <code>pando-policy.yaml</code> file</li>
                     <li>Run <code>kubectl apply -f pando-policy.yaml</code></li>
                     <li>Done. Sensors pick up the policy within 30 seconds.</li>
@@ -194,7 +205,7 @@ spec:
 
             <p>What a poll finds decides what happens next, and there are three answers rather than two:</p>
 
-            <ul>
+            <ul role="list">
                 <li>A policy exists: it is applied. A namespace with no policy of its own is left as it was, not reset.</li>
                 <li>No <code>PandoCorePolicy</code> exists anywhere on the cluster: every protected workload returns to its environment-variable configuration on that poll.</li>
                 <li>The read failed: whatever was already applied stays applied, so an API blip never disarms a node.</li>
@@ -400,7 +411,7 @@ Applied PandoCorePolicy  mode=isolate resource_version="12345"</code></pre>
 
             <p>Because <code>PandoCorePolicy</code> is a standard Kubernetes resource, it integrates naturally with GitOps workflows:</p>
 
-            <ul>
+            <ul role="list">
                 <li>Store policy YAML in your Git repository alongside application manifests</li>
                 <li>Review policy changes in pull requests</li>
                 <li>Apply via ArgoCD, Flux, or any <code>kubectl apply</code> pipeline</li>
@@ -409,11 +420,22 @@ Applied PandoCorePolicy  mode=isolate resource_version="12345"</code></pre>
 
             <h2>Next Steps</h2>
 
-            <ul>
-                <li><a href="/docs/configuration">Configuration</a>:Full env var and Helm reference</li>
-                <li><a href="/docs/operating-modes">Operating Modes</a>:The monitor &rarr; alert &rarr; isolate ladder</li>
-                <li><a href="/docs/webhook">Admission Webhook</a>:Per-pod annotation overrides</li>
+            <ul role="list">
+                <li><a href="/docs/configuration">Configuration</a>: every chart value with defaults and ranges</li>
+                <li><a href="/docs/operating-modes">Operating Modes</a>: the monitor &rarr; alert &rarr; isolate ladder</li>
+                <li><a href="/docs/production-hardening">Production Hardening</a>: sizing, posture and rollout guidance</li>
             </ul>
+
+            <nav class="docs-pager" aria-label="Documentation pages">
+                <a class="docs-pager-prev" href="/docs/configuration" rel="prev">
+                    <span class="docs-pager-dir">Previous</span>
+                    <span class="docs-pager-title">Configuration</span>
+                </a>
+                <a class="docs-pager-next" href="/docs/operating-modes" rel="next">
+                    <span class="docs-pager-dir">Next</span>
+                    <span class="docs-pager-title">Operating Modes</span>
+                </a>
+            </nav>
 
         </main>
     </div>
@@ -422,7 +444,13 @@ Applied PandoCorePolicy  mode=isolate resource_version="12345"</code></pre>
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <p class="footer-links"><a href="https://trust.pandocore.io">Trust Center</a></p>
+                <p class="footer-links">
+                    <a href="/docs/">Docs</a>
+                    <a href="/pricing">Pricing</a>
+                    <a href="/blog/">Blog</a>
+                    <a href="/contact">Contact</a>
+                    <a href="https://trust.pandocore.io">Trust Center</a>
+                </p>
                 <p>&copy; 2026 PandoCore Inc. All rights reserved.</p>
             </div>
         </div>

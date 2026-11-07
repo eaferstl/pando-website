@@ -3,77 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="PandoCore controller - the in-cluster StatefulSet that receives sensor evidence over mTLS, spools it durably, and delivers it to your SIEM, Slack and the portal.">
+    <meta name="description" content="The in-cluster StatefulSet that receives sensor evidence over mTLS, spools it durably, and delivers it to your SIEM, Slack and the portal.">
     <title>Controller | PandoCore Docs</title>
     <link rel="canonical" href="https://pandocore.io/docs/controller">
+
+    <!-- Social share preview: this page gets forwarded. -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Controller | PandoCore Docs">
+    <meta property="og:description" content="The in-cluster StatefulSet that receives sensor evidence over mTLS, spools it durably, and delivers it to your SIEM, Slack and the portal.">
+    <meta property="og:url" content="https://pandocore.io/docs/controller">
+    <meta property="og:image" content="https://pandocore.io/images/og-default.png">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" type="image/png" href="/images/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="/css/docs.css">
+    <noscript><link rel="stylesheet" href="/css/noscript.css"></noscript>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
-    <!-- Navigation -->
+    <!-- Navigation. Wrapped in a banner landmark: the site nav was a bare
+         nav element, so no page exposed a banner to assistive tech. -->
+    <header>
     <nav class="navbar">
         <div class="container">
             <div class="nav-wrapper">
                 <a href="/" class="logo">
-                    <img src="/images/logoTransparency.png" alt="PandoCore" width="184" height="240">
+                    <img src="/images/logo-nav.png" alt="PandoCore" width="92" height="120">
                     <div class="logo-text-wrapper">
                         <span class="logo-text">PandoCore</span>
                     </div>
                 </a>
-                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="primary-nav">
                     <span></span>
                     <span></span>
                     <span></span>
                 </button>
                 <div class="nav-overlay"></div>
-                <ul class="nav-links">
+                <ul class="nav-links" role="list" id="primary-nav">
                     <li><a href="/">Home</a></li>
                     <li><a href="/product">Product</a></li>
                     <li><a href="/pricing">Pricing</a></li>
                     <li><a href="/about">About</a></li>
                     <li><a href="/blog/">Blog</a></li>
-                    <li><a href="/docs/" class="active">Docs</a></li>
+                    <li><a href="/docs/" class="active" aria-current="page">Docs</a></li>
                     <li><a href="/contact" class="nav-contact">Contact</a></li>
                     <li><a href="https://portal.pandocore.io/signup" class="nav-signup">Sign Up</a></li>
                 </ul>
             </div>
         </div>
     </nav>
-
-    <!-- Docs Hero -->
-    <section class="docs-hero">
-        <div class="container">
-            <h2>Controller</h2>
-            <p>The in-cluster component that receives evidence and owns every outbound destination.</p>
-        </div>
-    </section>
+    </header>
 
     <!-- Documentation Layout -->
     <div class="docs-layout">
         <!-- Sidebar Navigation -->
-        <aside class="docs-sidebar">
-            <h3>Documentation</h3>
-            <ul class="docs-nav">
-                <li><a href="/docs/">Overview</a></li>
-                <li><a href="/docs/getting-started">Getting Started</a></li>
-                <li><a href="/docs/webhook">Admission Webhook</a></li>
-                <li><a href="/docs/controller" class="active">Controller</a></li>
-                <li><a href="/docs/dashboard">Dashboard</a></li>
-                <li><a href="/docs/configuration">Configuration</a></li>
-                <li><a href="/docs/policy">CRD Policy</a></li>
-                <li><a href="/docs/operating-modes">Operating Modes</a></li>
-                <li><a href="/docs/production-hardening">Production Hardening</a></li>
-                <li><a href="/docs/upgrading">Upgrading</a></li>
-                <li><a href="/docs/troubleshooting">Troubleshooting</a></li>
-                <li><a href="/docs/emergency">Emergency Procedures</a></li>
-                <li><a href="/docs/evidence-format">Evidence Format</a></li>
-                <li><a href="/docs/faq">FAQ</a></li>
-            </ul>
+        <aside class="docs-sidebar" aria-label="Documentation">
+            <details class="docs-nav-disclosure" open>
+                <summary class="docs-sidebar-title">Documentation</summary>
+                <ul class="docs-nav" role="list">
+                    <li><a href="/docs/">Overview</a></li>
+                    <li><a href="/docs/getting-started">Getting Started</a></li>
+                    <li><a href="/docs/controller" class="active" aria-current="page">Controller</a></li>
+                    <li><a href="/docs/dashboard">Dashboard</a></li>
+                    <li><a href="/docs/configuration">Configuration</a></li>
+                    <li><a href="/docs/policy">CRD Policy</a></li>
+                    <li><a href="/docs/operating-modes">Operating Modes</a></li>
+                    <li><a href="/docs/production-hardening">Production Hardening</a></li>
+                    <li><a href="/docs/upgrading">Upgrading</a></li>
+                    <li><a href="/docs/troubleshooting">Troubleshooting</a></li>
+                    <li><a href="/docs/emergency">Emergency Procedures</a></li>
+                    <li><a href="/docs/evidence-format">Evidence Format</a></li>
+                    <li><a href="/docs/faq">FAQ</a></li>
+                    <li><a href="/docs/webhook">Admission Webhook (deprecated)</a></li>
+                </ul>
+
+                <a href="https://portal.pandocore.io/signup" class="btn btn-primary docs-sidebar-cta">Start free</a>
+            </details>
         </aside>
 
         <!-- Main Content -->
@@ -85,6 +93,9 @@
             </div>
 
             <h1>Controller</h1>
+
+
+            <p class="docs-subtitle">The in-cluster component that receives evidence and owns every outbound destination.</p>
 
             <p>The controller is a StatefulSet that receives evidence from the node sensors over mTLS, writes it to a durable spool, and owns delivery to your SIEM, Slack and the portal. Centralising delivery is what keeps third-party credentials out of every node: the sensor holds none of them.</p>
 
@@ -141,7 +152,7 @@
 
             <p>The controller runs unprivileged and holds no Kubernetes API access at all:</p>
 
-            <ul>
+            <ul role="list">
                 <li><code>runAsNonRoot</code>, UID 1000, <code>readOnlyRootFilesystem</code>, <code>allowPrivilegeEscalation: false</code>, all capabilities dropped</li>
                 <li>No <code>hostPID</code>, <code>hostNetwork</code>, <code>hostIPC</code> or <code>hostPath</code> mounts</li>
                 <li>Its ServiceAccount is deliberately bound to no Role and no ClusterRole. The controller reads a file and answers a socket; it never calls the API server</li>
@@ -166,11 +177,22 @@
 
             <h2>Next Steps</h2>
 
-            <ul>
-                <li><a href="/docs/evidence-format">Evidence Format</a>:The record schema the controller receives and forwards</li>
-                <li><a href="/docs/configuration">Configuration</a>:Full env var and Helm reference</li>
-                <li><a href="/docs/production-hardening">Production Hardening</a>:Sizing, posture and rollout guidance</li>
+            <ul role="list">
+                <li><a href="/docs/evidence-format">Evidence Format</a>: the record schema the controller receives and forwards</li>
+                <li><a href="/docs/configuration">Configuration</a>: every chart value with defaults and ranges</li>
+                <li><a href="/docs/production-hardening">Production Hardening</a>: sizing, posture and rollout guidance</li>
             </ul>
+
+            <nav class="docs-pager" aria-label="Documentation pages">
+                <a class="docs-pager-prev" href="/docs/getting-started" rel="prev">
+                    <span class="docs-pager-dir">Previous</span>
+                    <span class="docs-pager-title">Getting Started</span>
+                </a>
+                <a class="docs-pager-next" href="/docs/dashboard" rel="next">
+                    <span class="docs-pager-dir">Next</span>
+                    <span class="docs-pager-title">Dashboard</span>
+                </a>
+            </nav>
 
         </main>
     </div>
@@ -179,7 +201,13 @@
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <p class="footer-links"><a href="https://trust.pandocore.io">Trust Center</a></p>
+                <p class="footer-links">
+                    <a href="/docs/">Docs</a>
+                    <a href="/pricing">Pricing</a>
+                    <a href="/blog/">Blog</a>
+                    <a href="/contact">Contact</a>
+                    <a href="https://trust.pandocore.io">Trust Center</a>
+                </p>
                 <p>&copy; 2026 PandoCore Inc. All rights reserved.</p>
             </div>
         </div>
