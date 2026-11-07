@@ -1,66 +1,66 @@
 [
-    {
-        "title": "Runtime Is the New Security Frontier",
-        "author": "Eliot Ferstl",
-        "date": "2026-07-15",
-        "excerpt": "Prevention and perimeter tools stop known threats at the door. The harder problem lives at runtime, after workloads start doing real work.",
-        "image": "/images/blog/runtime-frontier-cover.svg",
-        "url": "/blog/runtime-frontier.html"
-    },
-    {
-        "title": "Building Defense That Assumes Compromise",
-        "author": "Eliot Ferstl",
-        "date": "2026-07-22",
-        "excerpt": "Designing for a world where compromise is assumed changes what you build — it means planning for the moment defenses are already inside the perimeter.",
-        "image": "/images/blog/assume-compromise-cover.svg",
-        "url": "/blog/assume-compromise.html"
-    },
-    {
-        "title": "0.005% of What?",
-        "author": "Eliot Ferstl",
-        "date": "2026-07-29",
-        "excerpt": "Most published false positive rates in runtime security can't be verified by the reader. Here's how the same soak data produced two very different honest numbers.",
-        "image": "/images/blog/false-positive-denominator-cover.svg",
-        "url": "/blog/false-positive-denominator.html"
-    },
-    {
-        "title": "Three Silent Failures Between You and Sidecar Injection",
-        "author": "Eliot Ferstl",
-        "date": "2026-08-13",
-        "excerpt": "'kubectl label deployment' writes to the Deployment object's metadata, not to 'spec.template.metadata.labels', where pods actually get their labels. If your sidecar injection is label-selected, the command reports success and nothing happens. Here's why, and the fix.",
-        "image": "/images/blog/sidecar-injection-silent-failures-cover.svg",
-        "url": "/blog/sidecar-injection-silent-failures.html"
-    },
-    {
-        "title": "Why We Ship Our Security Webhook Fail-Open",
-        "author": "Eliot Ferstl",
-        "date": "2026-08-20",
-        "excerpt": "Anything that installs an admission webhook puts itself in the critical path of pod creation. One field, 'failurePolicy', decides whether the vendor's outage becomes yours. The textbook answer is fail-closed. We ship the opposite, on purpose.",
-        "image": "/images/blog/fail-open-webhook-cover.svg",
-        "url": "/blog/fail-open-webhook.html"
-    },
-    {
-        "title": "The Rules We Use To Define False Positives",
-        "author": "Eliot Ferstl",
-        "date": "2026-08-26",
-        "excerpt": "Our largest false positive soak to date is still running: 94 pods, 14 namespaces, 7 days, 0 attacks. Before the results are published, here's exactly how they'll be scored: the definitions, thresholds, and denominators we can't quietly adjust after seeing the data.",
-        "image": "/images/blog/false-positive-scoring-rules-cover.svg",
-        "url": "/blog/false-positive-scoring-rules.html"
-    },
-    {
-        "title": "One False Alert and Zero False Autonomous Actions in Over 15,000 Pod-Hours",
-        "author": "Eliot Ferstl",
-        "date": "2026-08-31",
-        "excerpt": "Our largest clean-run soak has closed: 94 pods, 14 namespaces, 7 days, 0 attacks. All four pre-registered bars passed. Here are the numbers and the coverage finding that constrains them.",
-        "image": "/images/blog/clean-run-soak-results-cover.svg",
-        "url": "/blog/clean-run-soak-results.html"
-    },
-    {
-        "title": "We're Dropping Sidecars In Favor Of A Node Sensor",
-        "author": "Eliot Ferstl",
-        "date": "2026-09-30",
-        "excerpt": "We built PandoCore as a detector container in every pod. We are replacing it with one process per node. The threat model, the privilege count, the visibility, and the resource reservation all point the same way. The node sensor is still in development; here is the argument for it.",
-        "image": "/images/blog/node-sensor-cover.svg",
-        "url": "/blog/node-sensor.html"
-    }
+  {
+    "title": "Runtime Is the New Security Frontier",
+    "author": "Eliot Ferstl",
+    "date": "2026-07-15",
+    "excerpt": "Prevention and perimeter tools stop known threats at the door. The harder problem lives at runtime, after workloads start doing real work.",
+    "image": "/images/blog/runtime-frontier-cover.svg",
+    "url": "/blog/runtime-frontier"
+  },
+  {
+    "title": "Building Defense That Assumes Compromise",
+    "author": "Eliot Ferstl",
+    "date": "2026-07-22",
+    "excerpt": "Designing for a world where compromise is assumed changes what you build: it means planning for the moment defenses are already inside the perimeter.",
+    "image": "/images/blog/assume-compromise-cover.svg",
+    "url": "/blog/assume-compromise"
+  },
+  {
+    "title": "0.005% of What?",
+    "author": "Eliot Ferstl",
+    "date": "2026-07-29",
+    "excerpt": "Most published false positive rates can't be verified by the reader. Here's how the same soak data produced two different honest numbers.",
+    "image": "/images/blog/false-positive-denominator-cover.svg",
+    "url": "/blog/false-positive-denominator"
+  },
+  {
+    "title": "Three Silent Failures Between You and Sidecar Injection",
+    "author": "Eliot Ferstl",
+    "date": "2026-08-13",
+    "excerpt": "'kubectl label deployment' writes to the Deployment's own metadata, not where pods get their labels. It reports success and nothing happens.",
+    "image": "/images/blog/sidecar-injection-silent-failures-cover.svg",
+    "url": "/blog/sidecar-injection-silent-failures"
+  },
+  {
+    "title": "Why We Ship Our Security Webhook Fail-Open",
+    "author": "Eliot Ferstl",
+    "date": "2026-08-20",
+    "excerpt": "An admission webhook puts itself in the critical path of pod creation. 'failurePolicy' decides whose outage becomes yours. We ship fail-open.",
+    "image": "/images/blog/fail-open-webhook-cover.svg",
+    "url": "/blog/fail-open-webhook"
+  },
+  {
+    "title": "The Rules We Use to Define False Positives",
+    "author": "Eliot Ferstl",
+    "date": "2026-08-26",
+    "excerpt": "Our largest false positive soak is still running. Here are the definitions, thresholds and denominators, published before the data.",
+    "image": "/images/blog/false-positive-scoring-rules-cover.svg",
+    "url": "/blog/false-positive-scoring-rules"
+  },
+  {
+    "title": "One False Alert and Zero False Autonomous Actions in Over 15,000 Pod-Hours",
+    "author": "Eliot Ferstl",
+    "date": "2026-08-31",
+    "excerpt": "Our largest clean-run soak has closed: 94 pods, 14 namespaces, 7 days, 0 attacks. One coverage finding constrains the result.",
+    "image": "/images/blog/clean-run-soak-results-cover.svg",
+    "url": "/blog/clean-run-soak-results"
+  },
+  {
+    "title": "We're Dropping Sidecars in Favor of a Node Sensor",
+    "author": "Eliot Ferstl",
+    "date": "2026-09-30",
+    "excerpt": "We built PandoCore as a detector container in every pod. We are replacing it with one process per node. Here is the argument for it.",
+    "image": "/images/blog/node-sensor-cover.svg",
+    "url": "/blog/node-sensor"
+  }
 ]

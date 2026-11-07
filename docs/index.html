@@ -6,124 +6,137 @@
     <meta name="description" content="PandoCore Documentation - Learn how to deploy and configure runtime protection for your Kubernetes workloads.">
     <title>Documentation | PandoCore</title>
     <link rel="canonical" href="https://pandocore.io/docs/">
-    <link rel="icon" type="image/png" href="../images/favicon.png">
+
+    <!-- Social share preview: this page gets forwarded. -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Documentation | PandoCore">
+    <meta property="og:description" content="PandoCore Documentation - Learn how to deploy and configure runtime protection for your Kubernetes workloads.">
+    <meta property="og:url" content="https://pandocore.io/docs/">
+    <meta property="og:image" content="https://pandocore.io/images/og-default.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="icon" type="image/png" href="/images/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/docs.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/docs.css">
+    <noscript><link rel="stylesheet" href="/css/noscript.css"></noscript>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
-    <!-- Navigation -->
+    <!-- Navigation. Wrapped in a banner landmark: the site nav was a bare
+         nav element, so no page exposed a banner to assistive tech. -->
+    <header>
     <nav class="navbar">
         <div class="container">
             <div class="nav-wrapper">
                 <a href="/" class="logo">
-                    <img src="../images/logoTransparency.png" alt="Pando Logo">
+                    <img src="/images/logo-nav.png" alt="PandoCore" width="92" height="120">
                     <div class="logo-text-wrapper">
                         <span class="logo-text">PandoCore</span>
                     </div>
                 </a>
-                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="primary-nav">
                     <span></span>
                     <span></span>
                     <span></span>
                 </button>
                 <div class="nav-overlay"></div>
-                <ul class="nav-links">
+                <ul class="nav-links" role="list" id="primary-nav">
                     <li><a href="/">Home</a></li>
                     <li><a href="/product">Product</a></li>
                     <li><a href="/pricing">Pricing</a></li>
                     <li><a href="/about">About</a></li>
                     <li><a href="/blog/">Blog</a></li>
-                    <li><a href="/docs/" class="active">Docs</a></li>
+                    <li><a href="/docs/" class="active" aria-current="page">Docs</a></li>
                     <li><a href="/contact" class="nav-contact">Contact</a></li>
                     <li><a href="https://portal.pandocore.io/signup" class="nav-signup">Sign Up</a></li>
                 </ul>
             </div>
         </div>
     </nav>
-
-    <!-- Docs Hero -->
-    <section class="docs-hero">
-        <div class="container">
-            <h2>PandoCore Documentation</h2>
-            <p>Everything you need to deploy, configure, and operate PandoCore runtime protection.</p>
-        </div>
-    </section>
+    </header>
 
     <!-- Documentation Layout -->
     <div class="docs-layout">
         <!-- Sidebar Navigation -->
-        <aside class="docs-sidebar">
-            <h3>Documentation</h3>
-            <ul class="docs-nav">
-                <li><a href="/docs/" class="active">Overview</a></li>
-                <li><a href="/docs/getting-started">Getting Started</a></li>
-                <li><a href="/docs/webhook">Admission Webhook</a></li>
-                <li><a href="/docs/controller">Controller</a></li>
-                <li><a href="/docs/dashboard">Dashboard</a></li>
-                <li><a href="/docs/configuration">Configuration</a></li>
-                <li><a href="/docs/policy">CRD Policy</a></li>
-                <li><a href="/docs/operating-modes">Operating Modes</a></li>
-                <li><a href="/docs/production-hardening">Production Hardening</a></li>
-                <li><a href="/docs/upgrading">Upgrading</a></li>
-                <li><a href="/docs/troubleshooting">Troubleshooting</a></li>
-                <li><a href="/docs/emergency">Emergency Procedures</a></li>
-                <li><a href="/docs/evidence-format">Evidence Format</a></li>
-                <li><a href="/docs/faq">FAQ</a></li>
-            </ul>
+        <aside class="docs-sidebar" aria-label="Documentation">
+            <details class="docs-nav-disclosure" open>
+                <summary class="docs-sidebar-title">Documentation</summary>
+                <ul class="docs-nav" role="list">
+                    <li><a href="/docs/" class="active" aria-current="page">Overview</a></li>
+                    <li><a href="/docs/getting-started">Getting Started</a></li>
+                    <li><a href="/docs/controller">Controller</a></li>
+                    <li><a href="/docs/dashboard">Dashboard</a></li>
+                    <li><a href="/docs/configuration">Configuration</a></li>
+                    <li><a href="/docs/policy">CRD Policy</a></li>
+                    <li><a href="/docs/operating-modes">Operating Modes</a></li>
+                    <li><a href="/docs/production-hardening">Production Hardening</a></li>
+                    <li><a href="/docs/upgrading">Upgrading</a></li>
+                    <li><a href="/docs/troubleshooting">Troubleshooting</a></li>
+                    <li><a href="/docs/emergency">Emergency Procedures</a></li>
+                    <li><a href="/docs/evidence-format">Evidence Format</a></li>
+                    <li><a href="/docs/faq">FAQ</a></li>
+                    <li><a href="/docs/webhook">Admission Webhook (deprecated)</a></li>
+                </ul>
+
+                <a href="https://portal.pandocore.io/signup" class="btn btn-primary docs-sidebar-cta">Start free</a>
+            </details>
         </aside>
 
         <!-- Main Content -->
         <main class="docs-content" id="main-content" tabindex="-1">
-            <h1>Overview</h1>
-            
-            <p>PandoCore is a runtime execution-integrity security system for Kubernetes. It continuously monitors your containerized workloads and responds instantly when anomalous behavior is detected, providing an additional layer of protection that operates during execution.</p>
+            <h1>PandoCore Documentation</h1>
+
+            <p class="docs-subtitle">Everything you need to deploy, configure, and operate PandoCore runtime protection.</p>
+
+            <p>PandoCore is a runtime execution-integrity security system for Kubernetes. It watches your containerized workloads as they run and responds when behaviour diverges from what that workload established as normal, adding a layer of protection that operates during execution rather than before it.</p>
+
+            <h2>Start Here</h2>
 
             <div class="docs-quick-links">
                 <a href="/docs/getting-started" class="docs-quick-link">
-                    <h4>🚀 Getting Started</h4>
-                    <p>Deploy PandoCore in your cluster in under 5 minutes using Helm.</p>
+                    <h3>Getting Started</h3>
+                    <p>Two Helm charts, one sensor pod per node, nothing to label.</p>
                 </a>
                 <a href="/docs/configuration" class="docs-quick-link">
-                    <h4>⚙️ Configuration</h4>
-                    <p>Complete reference for all Helm values and environment variables.</p>
+                    <h3>Configuration</h3>
+                    <p>Reference for the chart values and what each one changes.</p>
                 </a>
                 <a href="/docs/operating-modes" class="docs-quick-link">
-                    <h4>🔄 Operating Modes</h4>
-                    <p>Understand monitor, alert, isolate, enforce, and debug modes.</p>
+                    <h3>Operating Modes</h3>
+                    <p>Monitor, alert and isolate, and what sets the ceiling.</p>
                 </a>
                 <a href="/docs/emergency" class="docs-quick-link">
-                    <h4>🚨 Emergency Procedures</h4>
-                    <p>Quickly disable or remove PandoCore when needed.</p>
+                    <h3>Emergency Procedures</h3>
+                    <p>How to stop it quickly.</p>
                 </a>
             </div>
 
             <h2>What PandoCore Does</h2>
-            
-            <p>PandoCore deploys as a sidecar container within your Kubernetes pods. It monitors the behavioral characteristics of your running workloads and detects when execution patterns deviate significantly from established baselines. On detection, PandoCore can:</p>
-            
-            <ul>
-                <li><strong>Monitor:</strong> Detect anomalies and emit evidence without taking action</li>
-                <li><strong>Alert:</strong> Detect anomalies and send real-time notifications (Slack, webhook) without enforcement</li>
-                <li><strong>Isolate:</strong> Detect, alert, and contain the pod with a NetworkPolicy (egress denied except DNS), released automatically when behavior recovers, without terminating it</li>
-                <li><strong>Enforce:</strong> Detect, alert, isolate, and escalate to pod termination if the anomaly persists</li>
-                <li><strong>Debug:</strong> Provide verbose logging for troubleshooting and tuning</li>
+
+            <p>PandoCore installs as a node sensor: one DaemonSet pod per node that watches the workloads already running there, opt-out. Nothing is injected into your pods. When behaviour diverges from a workload's profile, PandoCore can:</p>
+
+            <ul role="list">
+                <li><strong>Monitor:</strong> detect and record evidence, taking no outward action</li>
+                <li><strong>Alert:</strong> detect and notify, through destinations configured on the controller</li>
+                <li><strong>Isolate:</strong> detect, alert, and contain the pod with a NetworkPolicy that denies egress except DNS, released automatically when behaviour recovers and without restarting the workload</li>
+                <li><strong>Debug:</strong> verbose logging for troubleshooting and tuning</li>
             </ul>
 
+            <p>Isolate is the ceiling of the supported install. See <a href="/docs/operating-modes">Operating Modes</a> for what sets it.</p>
+
             <h2>Architecture Overview</h2>
-            
-            <p>PandoCore operates as a Kubernetes-native sidecar that shares the pod lifecycle with your application:</p>
+
+            <p>Two components, both cluster-wide, installed once:</p>
 
             <div class="docs-callout info">
-                <div class="docs-callout-title">ℹ️ Sidecar Pattern</div>
-                <p>The sidecar container runs alongside your application within the same pod, sharing the process namespace. This allows PandoCore to observe your workload's behavior without any code changes to your application.</p>
+                <div class="docs-callout-title">One sensor per node, outside your pods</div>
+                <p>The sensor runs as a <code>hostPID</code> DaemonSet and reads the node's process namespace, so it observes the workloads on its node without running inside any of them and without any change to your application. That topology is also a real privilege posture: see <a href="/docs/production-hardening">Production Hardening</a> for what it runs as, and <a href="https://trust.pandocore.io">the trust center</a> for what it is not granted.</p>
             </div>
 
             <h3>Key Components</h3>
-            
+
             <table>
                 <thead>
                     <tr>
@@ -133,66 +146,62 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td><strong>Sidecar Container</strong></td>
-                        <td>The core monitoring component that runs alongside your application</td>
+                        <td><strong>Node sensor</strong></td>
+                        <td>A DaemonSet, one pod per node. Watches the workloads on its node and decides responses</td>
                     </tr>
                     <tr>
-                        <td><strong>Admission Webhook</strong></td>
-                        <td>Cluster-wide automatic sidecar injection via label <code>pandocore.io/protect=true</code></td>
+                        <td><strong>Controller</strong></td>
+                        <td>A StatefulSet that receives evidence, spools it durably, and owns every outbound destination</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Destinations mirror</strong></td>
+                        <td>An unprivileged Deployment that resolves per-namespace policy integrations for the controller</td>
                     </tr>
                     <tr>
                         <td><strong>PandoCorePolicy CRD</strong></td>
-                        <td>Declarative per-namespace policy configuration for GitOps workflows</td>
+                        <td>Declarative per-namespace configuration for GitOps workflows</td>
                     </tr>
                     <tr>
-                        <td><strong>Helm Chart</strong></td>
-                        <td>Configures RBAC, ConfigMaps, and provides the sidecar injection template</td>
+                        <td><strong>Metrics endpoint</strong></td>
+                        <td>Prometheus-compatible <code>/metrics</code>, plus shipped PrometheusRules for coverage and liveness</td>
                     </tr>
                     <tr>
-                        <td><strong>Metrics Endpoint</strong></td>
-                        <td>Prometheus-compatible <code>/metrics</code> endpoint for observability</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Evidence Output</strong></td>
-                        <td>Structured JSON logs suitable for SIEM integration</td>
+                        <td><strong>Evidence output</strong></td>
+                        <td>Signed, hash-chained JSON records suitable for SIEM integration</td>
                     </tr>
                 </tbody>
             </table>
 
             <h2>How It Works</h2>
-            
-            <p>When a pod starts with PandoCore:</p>
-            
-            <ol>
-                <li><strong>Learning Window:</strong> PandoCore builds a per-workload operational profile during a short startup window (configurable duration)</li>
-                <li><strong>Monitoring:</strong> Once the profile is ready, the sidecar begins detecting runtime behavioral anomalies</li>
-                <li><strong>Detection:</strong> Anomalies are classified by severity</li>
-                <li><strong>Response:</strong> Based on operating mode, PandoCore logs the event (monitor), sends alerts (alert), contains the pod with a NetworkPolicy (isolate), or runs the full graduated response of alert, isolation, and pod termination (enforce)</li>
+
+            <ol role="list">
+                <li><strong>The sensor picks up the pod.</strong> No label, patch or restart is involved; a pod opts out with <code>pandocore.io/protect: "false"</code> rather than opting in</li>
+                <li><strong>Learning window.</strong> PandoCore builds a profile for that workload over 30 minutes and at least 900 samples, whichever is later</li>
+                <li><strong>Detection.</strong> Deterministic checks arm when learning completes; the behavioural checks that rest on longer baselines keep warming for hours after that. Findings are classified by severity</li>
+                <li><strong>Response.</strong> According to the workload's mode and the license ceiling: record it (monitor), notify (alert), or contain the pod with a NetworkPolicy (isolate)</li>
             </ol>
 
-            <h2>Integration with Your Stack</h2>
-            
-            <p>PandoCore is designed to complement your existing security infrastructure:</p>
-            
-            <ul>
-                <li><strong>Observability:</strong> Prometheus metrics + Grafana dashboards included</li>
-                <li><strong>Log Aggregation:</strong> Structured JSON evidence integrates with Splunk, Elastic, Datadog, etc.</li>
-                <li><strong>Kubernetes Events:</strong> Enforcement actions emit K8s events for audit trails</li>
-                <li><strong>Alerting:</strong> Use your existing alerting infrastructure on PandoCore metrics</li>
+            <h2>Integration With Your Stack</h2>
+
+            <ul role="list">
+                <li><strong>Observability:</strong> Prometheus metrics, with alerting rules shipped in the chart</li>
+                <li><strong>Log aggregation:</strong> structured JSON evidence for Splunk, Elastic, Datadog and syslog</li>
+                <li><strong>Kubernetes events:</strong> detections and responses emit events for audit trails</li>
+                <li><strong>Alerting:</strong> use your existing alerting on PandoCore's metrics</li>
             </ul>
 
             <div class="docs-callout success">
-                <div class="docs-callout-title">✓ Zero Application Changes</div>
-                <p>PandoCore requires no modifications to your application code. Simply add the sidecar container to your existing deployments.</p>
+                <div class="docs-callout-title">No application changes</div>
+                <p>PandoCore needs no modification to your application code, no SDK and no rules to write. It also needs nothing added to your pod specs, since the sensor runs beside your workloads rather than inside them.</p>
             </div>
 
             <div class="docs-callout info">
-                <div class="docs-callout-title">Validated Results</div>
-                <p>PandoCore has been validated across more than 20,000 continuous pod-hours on GKE, running production-representative synthetic workloads, with <strong>2 false isolations and zero false terminations</strong>. See the <a href="/product#validation">full validation results</a>.</p>
+                <div class="docs-callout-title">Validated results</div>
+                <p>The node sensor has been validated across 3,966 engine-hours on GKE, cumulative rather than one unbroken run, against production-representative synthetic workloads, with zero false isolations from sensors that were permitted to isolate, 1,231 engine-hours of them on the exact build we ship. A zero is an upper bound rather than a rate: at most one false isolation in 1,324 engine-hours, at 95 percent confidence. See the <a href="/product#validation">full validation results</a>.</p>
             </div>
 
             <h2>Requirements</h2>
-            
+
             <table>
                 <thead>
                     <tr>
@@ -207,18 +216,28 @@
                     </tr>
                     <tr>
                         <td>Helm</td>
-                        <td>3.0+</td>
+                        <td>3.0+ (3.14+ recommended, for <code>--reset-then-reuse-values</code>)</td>
                     </tr>
                     <tr>
                         <td>kubectl</td>
                         <td>Compatible with your cluster version</td>
                     </tr>
+                    <tr>
+                        <td>Nodes</td>
+                        <td>Nodes you control. <code>hostPID</code> is required, so GKE Autopilot and EKS Fargate have no install path</td>
+                    </tr>
                 </tbody>
             </table>
 
             <h2>Next Steps</h2>
-            
-            <p>Ready to get started? Follow our <a href="/docs/getting-started">Getting Started guide</a> to deploy PandoCore in your cluster in under 5 minutes.</p>
+
+            <p>Start with the <a href="/docs/getting-started">Getting Started guide</a>.</p>
+            <nav class="docs-pager" aria-label="Documentation pages">
+                <a class="docs-pager-next" href="/docs/getting-started" rel="next">
+                    <span class="docs-pager-dir">Next</span>
+                    <span class="docs-pager-title">Getting Started</span>
+                </a>
+            </nav>
 
         </main>
     </div>
@@ -227,12 +246,18 @@
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <p class="footer-links"><a href="https://trust.pandocore.io">Trust Center</a></p>
+                <p class="footer-links">
+                    <a href="/docs/">Docs</a>
+                    <a href="/pricing">Pricing</a>
+                    <a href="/blog/">Blog</a>
+                    <a href="/contact">Contact</a>
+                    <a href="https://trust.pandocore.io">Trust Center</a>
+                </p>
                 <p>&copy; 2026 PandoCore Inc. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
-    <script src="../js/main.js"></script>
+    <script src="/js/main.js"></script>
 </body>
 </html>

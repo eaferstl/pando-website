@@ -6,74 +6,82 @@
     <meta name="description" content="PandoCore Emergency Procedures - How to quickly disable or remove PandoCore from your workloads.">
     <title>Emergency Procedures | PandoCore Docs</title>
     <link rel="canonical" href="https://pandocore.io/docs/emergency">
-    <link rel="icon" type="image/png" href="../images/favicon.png">
+
+    <!-- Social share preview: this page gets forwarded. -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Emergency Procedures | PandoCore Docs">
+    <meta property="og:description" content="PandoCore Emergency Procedures - How to quickly disable or remove PandoCore from your workloads.">
+    <meta property="og:url" content="https://pandocore.io/docs/emergency">
+    <meta property="og:image" content="https://pandocore.io/images/og-default.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="icon" type="image/png" href="/images/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/docs.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/docs.css">
+    <noscript><link rel="stylesheet" href="/css/noscript.css"></noscript>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
-    <!-- Navigation -->
+    <!-- Navigation. Wrapped in a banner landmark: the site nav was a bare
+         nav element, so no page exposed a banner to assistive tech. -->
+    <header>
     <nav class="navbar">
         <div class="container">
             <div class="nav-wrapper">
                 <a href="/" class="logo">
-                    <img src="../images/logoTransparency.png" alt="Pando Logo">
+                    <img src="/images/logo-nav.png" alt="PandoCore" width="92" height="120">
                     <div class="logo-text-wrapper">
                         <span class="logo-text">PandoCore</span>
                     </div>
                 </a>
-                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="primary-nav">
                     <span></span>
                     <span></span>
                     <span></span>
                 </button>
                 <div class="nav-overlay"></div>
-                <ul class="nav-links">
+                <ul class="nav-links" role="list" id="primary-nav">
                     <li><a href="/">Home</a></li>
                     <li><a href="/product">Product</a></li>
                     <li><a href="/pricing">Pricing</a></li>
                     <li><a href="/about">About</a></li>
                     <li><a href="/blog/">Blog</a></li>
-                    <li><a href="/docs/" class="active">Docs</a></li>
+                    <li><a href="/docs/" class="active" aria-current="page">Docs</a></li>
                     <li><a href="/contact" class="nav-contact">Contact</a></li>
                     <li><a href="https://portal.pandocore.io/signup" class="nav-signup">Sign Up</a></li>
                 </ul>
             </div>
         </div>
     </nav>
-
-    <!-- Docs Hero -->
-    <section class="docs-hero">
-        <div class="container">
-            <h2>Emergency Procedures</h2>
-            <p>How to quickly disable or remove PandoCore when needed.</p>
-        </div>
-    </section>
+    </header>
 
     <!-- Documentation Layout -->
     <div class="docs-layout">
         <!-- Sidebar Navigation -->
-        <aside class="docs-sidebar">
-            <h3>Documentation</h3>
-            <ul class="docs-nav">
-                <li><a href="/docs/">Overview</a></li>
-                <li><a href="/docs/getting-started">Getting Started</a></li>
-                <li><a href="/docs/webhook">Admission Webhook</a></li>
-                <li><a href="/docs/controller">Controller</a></li>
-                <li><a href="/docs/dashboard">Dashboard</a></li>
-                <li><a href="/docs/configuration">Configuration</a></li>
-                <li><a href="/docs/policy">CRD Policy</a></li>
-                <li><a href="/docs/operating-modes">Operating Modes</a></li>
-                <li><a href="/docs/production-hardening">Production Hardening</a></li>
-                <li><a href="/docs/upgrading">Upgrading</a></li>
-                <li><a href="/docs/troubleshooting">Troubleshooting</a></li>
-                <li><a href="/docs/emergency" class="active">Emergency Procedures</a></li>
-                <li><a href="/docs/evidence-format">Evidence Format</a></li>
-                <li><a href="/docs/faq">FAQ</a></li>
-            </ul>
+        <aside class="docs-sidebar" aria-label="Documentation">
+            <details class="docs-nav-disclosure" open>
+                <summary class="docs-sidebar-title">Documentation</summary>
+                <ul class="docs-nav" role="list">
+                    <li><a href="/docs/">Overview</a></li>
+                    <li><a href="/docs/getting-started">Getting Started</a></li>
+                    <li><a href="/docs/controller">Controller</a></li>
+                    <li><a href="/docs/dashboard">Dashboard</a></li>
+                    <li><a href="/docs/configuration">Configuration</a></li>
+                    <li><a href="/docs/policy">CRD Policy</a></li>
+                    <li><a href="/docs/operating-modes">Operating Modes</a></li>
+                    <li><a href="/docs/production-hardening">Production Hardening</a></li>
+                    <li><a href="/docs/upgrading">Upgrading</a></li>
+                    <li><a href="/docs/troubleshooting">Troubleshooting</a></li>
+                    <li><a href="/docs/emergency" class="active" aria-current="page">Emergency Procedures</a></li>
+                    <li><a href="/docs/evidence-format">Evidence Format</a></li>
+                    <li><a href="/docs/faq">FAQ</a></li>
+                    <li><a href="/docs/webhook">Admission Webhook (deprecated)</a></li>
+                </ul>
+
+                <a href="https://portal.pandocore.io/signup" class="btn btn-primary docs-sidebar-cta">Start free</a>
+            </details>
         </aside>
 
         <!-- Main Content -->
@@ -85,207 +93,240 @@
             </div>
 
             <h1>Emergency Procedures</h1>
-            
-            <p>This page provides procedures for quickly disabling or removing PandoCore from your workloads. Keep this information accessible for incident response scenarios.</p>
+
+
+            <p class="docs-subtitle">How to quickly disable or remove PandoCore when needed.</p>
+
+            <p>How to stop PandoCore acting, quickly, at whatever scope the situation needs. Nothing here requires a support ticket or a license change, and nothing here restarts your workloads.</p>
+
+            <div class="docs-callout success">
+                <div class="docs-callout-title">Containment is a NetworkPolicy, so it is reversible with ordinary tooling</div>
+                <p>The hardest automatic action on the supported install is a Kubernetes NetworkPolicy. Nothing deletes your pods: the sensor's ClusterRole withholds <code>pods: delete</code> by name and the sensor caps its own ceiling in code. So the worst case you are recovering from is a workload that lost egress, which you can see with <code>kubectl get networkpolicy</code> and undo in one command.</p>
+            </div>
 
             <h2>Quick Reference</h2>
-            
+
             <table>
                 <thead>
                     <tr>
-                        <th>Scenario</th>
-                        <th>Time</th>
+                        <th>Scope</th>
                         <th>Command</th>
+                        <th>Effect</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td>Stop enforcement (keep monitoring)</td>
-                        <td>30 seconds</td>
-                        <td><code>kubectl set env deployment/NAME -c pando-sidecar PANDO_MODE=monitor</code></td>
+                        <td>Release one contained pod</td>
+                        <td><code>kubectl delete networkpolicy &lt;name&gt; -n &lt;ns&gt;</code></td>
+                        <td>Egress restored at once</td>
                     </tr>
                     <tr>
-                        <td>Remove sidecar completely</td>
-                        <td>2 minutes</td>
-                        <td>Edit deployment to remove sidecar container</td>
+                        <td>Stop watching one pod</td>
+                        <td><code>kubectl label pod &lt;pod&gt; pandocore.io/protect=false --overwrite</code></td>
+                        <td>Engine retired on the next scan. No restart</td>
                     </tr>
                     <tr>
-                        <td>Uninstall all PandoCore components</td>
-                        <td>5 minutes</td>
-                        <td><code>helm uninstall pando-sidecar -n pando-system</code></td>
+                        <td>Stop one workload responding</td>
+                        <td><code>kubectl annotate deployment &lt;name&gt; pandocore.io/mode=monitor --overwrite</code></td>
+                        <td>Keeps watching, stops acting. Needs a restart</td>
+                    </tr>
+                    <tr>
+                        <td>Stop a whole namespace</td>
+                        <td><code>helm upgrade</code> with the namespace in <code>excludedNamespaces</code></td>
+                        <td>Everything in it unwatched</td>
+                    </tr>
+                    <tr>
+                        <td>Stop the whole cluster</td>
+                        <td><code>kubectl delete daemonset -n pando-system -l app.kubernetes.io/name=pando-node-sensor</code></td>
+                        <td>Every sensor gone. Helm release intact</td>
+                    </tr>
+                    <tr>
+                        <td>Remove entirely</td>
+                        <td><code>helm uninstall pando-node-sensor pando-controller -n pando-system</code></td>
+                        <td>Both charts removed</td>
                     </tr>
                 </tbody>
             </table>
 
-            <h2>Immediate: Stop Pod Termination (30 seconds)</h2>
-            
-            <p>If PandoCore is terminating pods you need running, switch to monitor mode immediately:</p>
+            <h2>Immediate: Release A Contained Pod</h2>
 
-            <pre><code># Stop enforcement but keep monitoring
-kubectl set env deployment/YOUR_DEPLOYMENT -c pando-sidecar PANDO_MODE=monitor</code></pre>
+            <p>If a workload has lost its network and you need it back now:</p>
 
-            <div class="docs-callout success">
-                <div class="docs-callout-title">✓ Safe and Reversible</div>
-                <p>This triggers a rolling restart. New pods will still run PandoCore, but it will only observe and log. It will <strong>not</strong> terminate pods. Evidence is still generated for review.</p>
+            <pre><code># Find the policy PandoCore wrote. It carries both of these labels
+kubectl get networkpolicy -n &lt;namespace&gt; \
+  -l app.kubernetes.io/managed-by=pandocore
+
+# Or go straight to the one for a given pod
+kubectl get networkpolicy -n &lt;namespace&gt; \
+  -l pandocore.io/isolation=&lt;pod&gt;
+
+# Remove it
+kubectl delete networkpolicy &lt;name&gt; -n &lt;namespace&gt;</code></pre>
+
+            <p>Each policy carries an owner reference to the pod it contains, so it is garbage-collected with that pod: if you delete the pod instead, the policy goes with it and no orphan is left behind.</p>
+
+            <div class="docs-callout warning">
+                <div class="docs-callout-title">This treats the symptom, not the cause</div>
+                <p>Deleting the policy restores egress but does not resolve the detection, so if the behaviour is still present the pod can be contained again. Pair it with one of the scope changes below, which is what stops it recurring. If the behaviour has genuinely subsided, PandoCore removes the policy itself and you do not need this at all.</p>
             </div>
 
-            <h3>For Multiple Deployments</h3>
-            
-            <pre><code># List all deployments with PandoCore sidecar
-kubectl get deployments --all-namespaces -o json | \
-  jq -r '.items[] | select(.spec.template.spec.containers[].name=="pando-sidecar") | 
-  "\(.metadata.namespace)/\(.metadata.name)"'
+            <h2>Stop Watching One Pod, With No Restart</h2>
 
-# Switch all to monitor mode
-for deploy in $(kubectl get deployments --all-namespaces -o json | \
-  jq -r '.items[] | select(.spec.template.spec.containers[].name=="pando-sidecar") | 
-  "\(.metadata.namespace) \(.metadata.name)"'); do
-    ns=$(echo $deploy | cut -d' ' -f1)
-    name=$(echo $deploy | cut -d' ' -f2)
-    kubectl set env deployment/$name -n $ns -c pando-sidecar PANDO_MODE=monitor
-done</code></pre>
+            <p>The opt-out label is evaluated every reconcile pass, not only when a pod starts, so it takes effect on a running pod without restarting anything:</p>
 
-            <h2>Full Removal: Remove the Sidecar (2 minutes)</h2>
-            
-            <p>To completely remove PandoCore from a specific deployment:</p>
+            <pre><code>kubectl label pod &lt;pod&gt; pandocore.io/protect=false --overwrite</code></pre>
 
-            <h3>Step 1: Edit the Deployment</h3>
-            
-            <pre><code>kubectl edit deployment/YOUR_DEPLOYMENT -n YOUR_NAMESPACE</code></pre>
+            <p>The engine for that pod is retired on the next scan. Remove the label to resume, which starts a fresh learning window for that workload.</p>
 
-            <h3>Step 2: Remove These Elements</h3>
-            
-            <p>In the editor, remove:</p>
-            
-            <ol>
-                <li>The <code>pando-sidecar</code> container from <code>spec.template.spec.containers</code></li>
-                <li><code>shareProcessNamespace: true</code> from <code>spec.template.spec</code> (if no other container needs it)</li>
-                <li>The <code>serviceAccountName: pando-sidecar</code> (if you want to revert to default)</li>
-            </ol>
+            <div class="docs-callout info">
+                <div class="docs-callout-title">The exact string matters</div>
+                <p>The comparison is byte-for-byte against <code>"false"</code>, with no trimming and no case folding. <code>False</code>, <code>FALSE</code> and <code>0</code> do not opt a pod out. If you are in a hurry, this is the mistake to avoid: the command will succeed and nothing will change.</p>
+            </div>
 
-            <h3>Alternative: Patch Command</h3>
-            
-            <pre><code># Remove shareProcessNamespace
-kubectl patch deployment YOUR_DEPLOYMENT -n YOUR_NAMESPACE \
-  --type=json \
-  -p='[{"op": "remove", "path": "/spec/template/spec/shareProcessNamespace"}]'
+            <p>A freed slot is refilled in the same pass, so on a node that is shedding at its engine cap, opting one pod out brings a previously unwatched pod under monitoring. Useful deliberately; worth knowing about before it surprises you.</p>
 
-# Note: Removing the container requires editing the deployment directly</code></pre>
+            <h2>Stop One Workload Responding, But Keep Watching It</h2>
 
-            <h2>Complete Uninstall (5 minutes)</h2>
-            
-            <p>To remove all PandoCore components from your cluster:</p>
+            <p>Usually the better emergency move. The workload stays watched and keeps producing evidence, and stops acting:</p>
 
-            <h3>Step 1: Uninstall Helm Release</h3>
-            
-            <pre><code>helm uninstall pando-sidecar -n pando-system</code></pre>
+            <pre><code>kubectl annotate deployment &lt;name&gt; pandocore.io/mode=monitor --overwrite
+kubectl rollout restart deployment/&lt;name&gt;</code></pre>
 
-            <h3>Step 2: Clean Up Namespace (Optional)</h3>
-            
-            <pre><code># Delete the PandoCore namespace and all resources
+            <p>The restart is required: the sensor reads a pod's annotations when it starts watching that pod. If you cannot restart the workload right now, use the opt-out label above instead, which needs no restart but also stops the evidence.</p>
+
+            <h2>Stop A Whole Namespace</h2>
+
+            <pre><code>helm upgrade pando-node-sensor \
+  oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-node-sensor \
+  --version 2.0.0 \
+  --namespace pando-system \
+  --reset-then-reuse-values \
+  --set 'excludedNamespaces={kube-system,kube-public,kube-node-lease,&lt;your-namespace&gt;}'</code></pre>
+
+            <div class="docs-callout warning">
+                <div class="docs-callout-title">Write the list out in full</div>
+                <p>This value replaces the list rather than adding to it, so include the defaults you want to keep. And setting it to <code>[]</code> does not mean "exclude nothing": an empty list is read as unconfigured and falls back to the built-in eleven.</p>
+            </div>
+
+            <h2>Stop The Whole Cluster</h2>
+
+            <p>A DaemonSet cannot be scaled to zero, so the fastest cluster-wide stop is to delete the DaemonSet object and leave the Helm release in place:</p>
+
+            <pre><code>kubectl delete daemonset -n pando-system \
+  -l app.kubernetes.io/name=pando-node-sensor</code></pre>
+
+            <p>Every sensor pod goes with it and nothing is watched. The Helm release, the license Secret and the controller are untouched, so <code>helm upgrade</code> brings the DaemonSet back when you are ready, with a fresh learning window per workload.</p>
+
+            <p>If you would rather keep the DaemonSet but have it schedule nowhere, give it a label no node carries:</p>
+
+            <pre><code>helm upgrade pando-node-sensor ... \
+  --reset-then-reuse-values \
+  --set nodeSelector.pandocore\\.io/disabled=true</code></pre>
+
+            <h2>Complete Uninstall</h2>
+
+            <pre><code># Both charts
+helm uninstall pando-node-sensor -n pando-system
+helm uninstall pando-controller -n pando-system
+
+# Any isolation policies still in place
+kubectl get networkpolicy --all-namespaces \
+  -l app.kubernetes.io/managed-by=pandocore
+
+# The namespace, if nothing else lives there
 kubectl delete namespace pando-system</code></pre>
 
-            <h3>Step 3: Remove Sidecars from Deployments</h3>
-            
-            <p>The Helm uninstall removes RBAC and ConfigMaps, but sidecars remain in your deployments until you remove them. See the "Full Removal" section above for each deployment.</p>
+            <p>Nothing has to be removed from your workloads, because nothing was ever added to them. There are no sidecars to strip out of deployment manifests and no pod specs to revert; the opt-out labels you may have added are inert once the sensor is gone.</p>
+
+            <div class="docs-callout warning">
+                <div class="docs-callout-title">Check the controller's spool before you delete its volumes</div>
+                <p>The controller's <code>spool-*</code> PersistentVolumeClaims hold evidence it has acknowledged and not yet delivered. <code>helm uninstall</code> does not remove them, which is deliberate. Delete them only once you are satisfied that evidence has reached its destinations, or you are discarding it knowingly.</p>
+            </div>
 
             <h2>Diagnosing Before Disabling</h2>
-            
-            <p>Before disabling PandoCore, check what triggered the response:</p>
 
-            <h3>View Recent Evidence</h3>
-            
-            <pre><code># View the most recent detection event
-kubectl logs -n YOUR_NAMESPACE YOUR_POD -c pando-sidecar --previous | \
-  grep "enforcement_triggered\|anomaly_detected" | tail -5</code></pre>
+            <p>If you have a minute before acting, these three make the difference between a fix and a guess:</p>
 
-            <h3>View Kubernetes Events</h3>
+            <pre><code># What does the sensor think it is doing?
+kubectl exec -n pando-system &lt;sensor-pod&gt; -- wget -qO- http://localhost:9090/status
 
-            <pre><code>kubectl get events -n YOUR_NAMESPACE --sort-by='.lastTimestamp' | grep -i pando</code></pre>
+# What fired, and against which pod?
+kubectl get events -n &lt;namespace&gt; --field-selector involvedObject.name=&lt;pod&gt;
 
-            <h2>Common Causes and Solutions</h2>
+# What is actually in place right now?
+kubectl get networkpolicy --all-namespaces</code></pre>
+
+            <p><code>/status</code> reports the engine count, the license ceiling and any node clamp. A clamped node is held to Monitor by a portal-side verdict rather than by anything in your cluster, and <code>node_clamp: none</code> means no clamp applies.</p>
+
+            <h2>Common Causes</h2>
 
             <table>
                 <thead>
                     <tr>
                         <th>Symptom</th>
-                        <th>Likely Cause</th>
-                        <th>Solution</th>
+                        <th>Likely cause</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td>Termination during deployment</td>
-                        <td>New code changes baseline behavior</td>
-                        <td>Trigger re-learn: <code>wget --post-data='' http://localhost:9090/relearn</code></td>
+                        <td>A workload is contained repeatedly</td>
+                        <td>Behaviour genuinely outside its profile, or a profile built during unusual conditions</td>
+                        <td>Put it in <code>monitor</code>, then restart it to re-profile. Loosen <code>sensitivity</code> in a policy if it recurs</td>
                     </tr>
                     <tr>
-                        <td>Termination during autoscaling</td>
-                        <td>Load spike outside learned baseline</td>
-                        <td>Raise sensitivity: <code>PANDO_SENSITIVITY=2.0</code></td>
+                        <td>Alerts immediately after a deploy</td>
+                        <td>The workload's behaviour changed and the profile describes the old release</td>
+                        <td>Expected. A restarted pod re-profiles; wait out the learning window</td>
                     </tr>
                     <tr>
-                        <td>Termination during CronJob</td>
-                        <td>Periodic batch processing</td>
-                        <td>Raise sensitivity: <code>PANDO_SENSITIVITY=2.0</code></td>
+                        <td>Nothing is being watched on a node</td>
+                        <td>Sensor refusing, or no sensor scheduled</td>
+                        <td>Check <code>/readyz</code> and the logs. See <a href="/docs/troubleshooting">Troubleshooting</a></td>
                     </tr>
                     <tr>
-                        <td>Repeated terminations</td>
-                        <td>Workload is inherently variable</td>
-                        <td>Run in monitor mode longer, then adjust sensitivity</td>
+                        <td>Some pods on a node are never watched</td>
+                        <td>The node is at its engine cap</td>
+                        <td>Check <code>pando_node_sensor_pods_unmonitored{reason="cap"}</code>. Spread the workload or raise <code>maxEngines</code> with resources to match</td>
+                    </tr>
+                    <tr>
+                        <td>A node alerts on nothing while others do</td>
+                        <td>A portal-side node clamp holding it to Monitor</td>
+                        <td>Check the clamp line in <code>/status</code> and the portal, not your license</td>
                     </tr>
                 </tbody>
             </table>
 
-            <h2>Sensitivity Adjustment</h2>
+            <h2>Loosening Sensitivity</h2>
 
-            <p>If PandoCore is responding to legitimate workload behavior, raise sensitivity instead of disabling:</p>
+            <p>Per namespace, through a policy, rather than per workload:</p>
 
-            <pre><code># Make the sidecar more permissive
-kubectl set env deployment/YOUR_DEPLOYMENT -c pando-sidecar \
-  PANDO_SENSITIVITY=2.0
-kubectl rollout restart deployment/YOUR_DEPLOYMENT</code></pre>
+            <pre><code>kubectl patch pandocorepolicy default -n &lt;namespace&gt; \
+  --type merge -p '{"spec":{"sensitivity":"low"}}'</code></pre>
 
-            <h2>Trigger Re-Learning</h2>
-            
-            <p>If your application's normal behavior has changed (new deployment, config change), trigger a re-learn instead of disabling:</p>
+            <p><code>PANDO_SENSITIVITY</code> still exists but belongs to the DaemonSet on the node sensor, so it applies node-wide rather than to one workload. See <a href="/docs/policy">CRD Policy</a>.</p>
 
-            <pre><code># Via HTTP endpoint
-kubectl exec YOUR_POD -c pando-sidecar -- \
-  wget -qO- --post-data='' http://localhost:9090/relearn</code></pre>
+            <h2>Re-Profiling A Workload</h2>
 
-            <div class="docs-callout info">
-                <div class="docs-callout-title">ℹ️ Re-Learning</div>
-                <p>This resets the sidecar to its learning phase, recalibrating the baseline to the current behavior. The sidecar won't enforce during the learning period.</p>
-            </div>
+            <p>There is no re-learn endpoint on the sensor. One sensor holds an engine per watched pod on its node, so a node-wide rebuild is not a meaningful operation. A workload re-profiles when its pods restart:</p>
+
+            <pre><code>kubectl rollout restart deployment/&lt;name&gt;</code></pre>
+
+            <p>Expect 30 minutes and at least 900 samples, whichever is later, before the new profile is armed.</p>
 
             <h2>Emergency Contacts</h2>
-            
-            <p>If you're experiencing issues during your pilot that aren't resolved by these procedures, contact PandoCore support directly with:</p>
-            
-            <ol>
-                <li>The evidence JSON from the detection event</li>
-                <li>What your workload was doing at the time</li>
-                <li>Your current sensitivity setting</li>
-                <li>Sidecar logs from around the time of the issue</li>
-            </ol>
 
-            <h2>Printable Quick Reference</h2>
-            
-            <div class="docs-callout warning">
-                <div class="docs-callout-title">📋 Emergency Commands</div>
-                <pre><code># STOP ENFORCEMENT (30 seconds)
-kubectl set env deployment/NAME -c pando-sidecar PANDO_MODE=monitor
-
-# TRIGGER RE-LEARN
-kubectl exec POD -c pando-sidecar -- wget -qO- --post-data='' http://localhost:9090/relearn
-
-# RAISE SENSITIVITY
-kubectl set env deployment/NAME -c pando-sidecar PANDO_SENSITIVITY=2.0
-
-# VIEW RECENT EVENTS
-kubectl logs POD -c pando-sidecar --previous | grep enforcement_triggered</code></pre>
-            </div>
+            <p>Reach <a href="/contact">support</a>, or reply to your onboarding email thread. If a pod is contained and you need it back immediately, delete the NetworkPolicy first and tell us afterwards; you do not need our permission to undo a containment in your own cluster.</p>
+            <nav class="docs-pager" aria-label="Documentation pages">
+                <a class="docs-pager-prev" href="/docs/troubleshooting" rel="prev">
+                    <span class="docs-pager-dir">Previous</span>
+                    <span class="docs-pager-title">Troubleshooting</span>
+                </a>
+                <a class="docs-pager-next" href="/docs/evidence-format" rel="next">
+                    <span class="docs-pager-dir">Next</span>
+                    <span class="docs-pager-title">Evidence Format</span>
+                </a>
+            </nav>
 
         </main>
     </div>
@@ -294,12 +335,18 @@ kubectl logs POD -c pando-sidecar --previous | grep enforcement_triggered</code>
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <p class="footer-links"><a href="https://trust.pandocore.io">Trust Center</a></p>
+                <p class="footer-links">
+                    <a href="/docs/">Docs</a>
+                    <a href="/pricing">Pricing</a>
+                    <a href="/blog/">Blog</a>
+                    <a href="/contact">Contact</a>
+                    <a href="https://trust.pandocore.io">Trust Center</a>
+                </p>
                 <p>&copy; 2026 PandoCore Inc. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
-    <script src="../js/main.js"></script>
+    <script src="/js/main.js"></script>
 </body>
 </html>

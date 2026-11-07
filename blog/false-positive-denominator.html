@@ -10,39 +10,42 @@
     <meta property="og:type" content="article">
     <meta property="og:title" content="0.005% of What?">
     <meta property="og:description" content="Most published false positive rates in runtime security can't be verified by the reader. Here's how one soak dataset produced three honest-sounding numbers.">
-    <meta property="og:image" content="https://pandocore.io/images/blog/false-positive-denominator-cover.svg">
+    <meta property="og:image" content="https://pandocore.io/images/blog/false-positive-denominator-cover.png">
     <meta name="twitter:card" content="summary_large_image">
 
     <link rel="icon" type="image/png" href="/images/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/styles.css?v=2">
+    <link rel="stylesheet" href="/css/styles.css">
+    <noscript><link rel="stylesheet" href="/css/noscript.css"></noscript>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
-    <!-- Navigation -->
+    <!-- Navigation. Wrapped in a banner landmark: the site nav was a bare
+         nav element, so no page exposed a banner to assistive tech. -->
+    <header>
     <nav class="navbar">
         <div class="container">
             <div class="nav-wrapper">
                 <a href="/" class="logo">
-                    <img src="/images/logoTransparency.png" alt="Pando Logo">
+                    <img src="/images/logo-nav.png" alt="PandoCore" width="92" height="120">
                     <div class="logo-text-wrapper">
                         <span class="logo-text">PandoCore</span>
                     </div>
                 </a>
-                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="primary-nav">
                     <span></span>
                     <span></span>
                     <span></span>
                 </button>
                 <div class="nav-overlay"></div>
-                <ul class="nav-links">
+                <ul class="nav-links" role="list" id="primary-nav">
                     <li><a href="/">Home</a></li>
                     <li><a href="/product">Product</a></li>
                     <li><a href="/pricing">Pricing</a></li>
                     <li><a href="/about">About</a></li>
-                    <li><a href="/blog/" class="active">Blog</a></li>
+                    <li><a href="/blog/" class="active" aria-current="page">Blog</a></li>
                     <li><a href="/docs/">Docs</a></li>
                     <li><a href="/contact" class="nav-contact">Contact</a></li>
                     <li><a href="https://portal.pandocore.io/signup" class="nav-signup">Sign Up</a></li>
@@ -50,9 +53,11 @@
             </div>
         </div>
     </nav>
+    </header>
 
     <!-- Post header -->
-    <section id="main-content" tabindex="-1" class="page-hero">
+    <main id="main-content" tabindex="-1">
+    <section class="page-hero">
         <div class="wave-container">
             <div class="wave wave-layer-1"></div>
             <div class="wave wave-layer-2"></div>
@@ -69,17 +74,22 @@
             <img class="blog-cover" src="/images/blog/false-positive-denominator-cover.svg" alt="A percentage sitting over a question mark, above a row of sample ticks with one flagged">
 
             <article class="blog-article">
-                <p><strong>Summary:</strong> Most published false positive rates in runtime security can't be verified by the reader &mdash; here's how the same soak data produced a 0.00358% rate and 1.3 false positives per pod-hour, and the three things a vendor must publish before you believe either.</p>
+                <aside class="blog-addendum">
+                    <p><strong>Update, November 6, 2026.</strong> The 0.00358% rate and the 1.3 false positives per pod-hour worked through below were measured on the injected sidecar, which is deprecated. Both were retired from our marketing on November 1, 2026, and neither is a current figure.</p>
+                    <p>The argument is the point of the post, and it still holds: a rate the reader cannot check is not a claim. By its own five questions, the denominator has since moved from pod-hours to engine-hours, one hour in which the node sensor's per-pod detection instance was fully warmed and permitted to isolate, so these numbers cannot be placed beside the ones we publish now. Those are on the <a href="/product#validation">product page</a>.</p>
+                </aside>
+
+                <p><strong>Summary:</strong> Most published false positive rates in runtime security can't be verified by the reader: here's how the same soak data produced a 0.00358% rate and 1.3 false positives per pod-hour, and the three things a vendor must publish before you believe either.</p>
 
                 <p>I recorded a flattering number. This post is about how I did it, why it was technically true, and why you shouldn't have believed it. <em>Note: this is from an outdated soak test and our FP has improved since then.</em></p>
 
-                <p>A false positive rate of &ldquo;sub-0.005%&rdquo; sounds settled until you ask one question: 0.005% of <em>what</em>? Most FP rates published in runtime security can't be checked by the person reading them. Not because the vendor is lying &mdash; the number is usually real &mdash; but because a bare percentage is unfalsifiable. There's nothing to audit.</p>
+                <p>A false positive rate of &ldquo;sub-0.005%&rdquo; sounds settled until you ask one question: 0.005% of <em>what</em>? Most FP rates published in runtime security can't be checked by the person reading them. Not because the vendor is lying (the number is usually real) but because a bare percentage is unfalsifiable. There's nothing to audit.</p>
 
                 <h2>Why a bare rate is unfalsifiable</h2>
                 <p>To verify a rate, you need three things, and vendors almost never publish any of them:</p>
 
-                <ul>
-                    <li><strong>The denominator.</strong> A rate is a fraction. If you don't know what's on the bottom, the top is meaningless. Per what &mdash; per alert, per event, per sample, per pod-hour?</li>
+                <ul role="list">
+                    <li><strong>The denominator.</strong> A rate is a fraction. If you don't know what's on the bottom, the top is meaningless. Per what: per alert, per event, per sample, per pod-hour?</li>
                     <li><strong>The event definition.</strong> What counts as one alert? If a detector fires 40 times in a burst on the same process, is that 40 false positives or one? Deduplication policy alone can move a rate by an order of magnitude.</li>
                     <li><strong>The labeling method.</strong> Who decided each alert was false, and how? &ldquo;An analyst reviewed them&rdquo; is not a method. This is where rates quietly cheat.</li>
                 </ul>
@@ -91,20 +101,20 @@
 
                 <p>Same data, three honest-sounding headlines:</p>
 
-                <ul>
+                <ul role="list">
                     <li><strong>0.00358% false positive rate</strong> (per sample)</li>
                     <li><strong>1.3 false positives per pod-hour</strong></li>
                     <li><strong>~31 false positives per pod-day</strong></li>
                 </ul>
 
-                <p>Every one of these is arithmetically true. One of them sounds like a solved problem. One of them sounds like an alert-fatigue incident waiting to happen. And notice the perverse incentive: sample <em>faster</em> and the per-sample rate <em>improves</em>, while the operator's actual experience &mdash; alerts per day &mdash; doesn't change at all. You can engineer a better-looking rate without touching the detector.</p>
+                <p>Every one of these is arithmetically true. One of them sounds like a solved problem. One of them sounds like an alert-fatigue incident waiting to happen. And notice the perverse incentive: sample <em>faster</em> and the per-sample rate <em>improves</em>, while the operator's actual experience (alerts per day) doesn't change at all. You can engineer a better-looking rate without touching the detector.</p>
 
                 <blockquote>The denominator that matters is the one an operator lives in: pod-hours. Nobody triages samples. People triage alerts, on shifts, measured in hours.</blockquote>
 
                 <h2>One rate hides a spread</h2>
                 <p>The aggregate also lies by averaging. In a recent soak across 10 workloads:</p>
 
-                <ul>
+                <ul role="list">
                     <li>Databases (postgres, redis): <strong>0</strong> false positives</li>
                     <li>Web and JVM apps: <strong>~0.11</strong> per pod-hour</li>
                     <li>A Go service: <strong>~0.34</strong> per pod-hour</li>
@@ -113,26 +123,26 @@
                 <p>Same detector, same run, a 3x spread between the noisiest workload classes and dead silence from the databases. If your fleet is mostly postgres, my honest average overstates your pain. If you run JIT-heavy JVM services, it understates it. An aggregate FP rate tells you almost nothing about <em>your</em> cluster until you know the workload mix behind it.</p>
 
                 <h2>The labeling trick</h2>
-                <p>The part nobody talks about: how do you know an alert was false? My answer is a clean soak &mdash; a long run with no attacks injected, on known-benign workloads. Under that setup every single trip is, by construction, a false positive. No analyst judgment, no ambiguity, no quiet reclassification of embarrassing alerts as &ldquo;informational.&rdquo;</p>
+                <p>The part nobody talks about: how do you know an alert was false? My answer is a clean soak: a long run with no attacks injected, on known-benign workloads. Under that setup every single trip is, by construction, a false positive. No analyst judgment, no ambiguity, no quiet reclassification of embarrassing alerts as &ldquo;informational.&rdquo;</p>
 
-                <p>A clean soak buys you honest labels. It's also the harshest possible grading &mdash; which is exactly why it's credible.</p>
+                <p>A clean soak buys you honest labels. It's also the harshest possible grading, which is exactly why it's credible.</p>
 
-                <h2>Rates are fragile &mdash; so here's what I'll publish</h2>
+                <h2>Rates are fragile, so here's what I'll publish</h2>
                 <p>An FP rate also decays outside its test conditions. How long was the run? A 2-hour demo and a 2,888 pod-hour soak (my longest single run) are not the same evidence. What was running? Ten toy nginx pods behave nothing like a production JVM fleet.</p>
 
                 <p>So here's the standard I'm holding myself to, and the one you should demand from anyone who quotes you a rate:</p>
 
-                <ol>
-                    <li><strong>Denominator</strong> &mdash; per pod-hour, not per sample</li>
-                    <li><strong>Event definition</strong> &mdash; what counts as one alert, including dedup policy</li>
-                    <li><strong>Labeling method</strong> &mdash; clean soak, no attacks, every trip counts</li>
-                    <li><strong>Workload mix</strong> &mdash; what was actually running, with per-workload breakdown</li>
-                    <li><strong>Duration</strong> &mdash; total pod-hours, and whether it's one run or an aggregate across versions</li>
+                <ol role="list">
+                    <li><strong>Denominator</strong>: per pod-hour, not per sample</li>
+                    <li><strong>Event definition</strong>: what counts as one alert, including dedup policy</li>
+                    <li><strong>Labeling method</strong>: clean soak, no attacks, every trip counts</li>
+                    <li><strong>Workload mix</strong>: what was actually running, with per-workload breakdown</li>
+                    <li><strong>Duration</strong>: total pod-hours, and whether it's one run or an aggregate across versions</li>
                 </ol>
 
                 <p>My numbers above: 5,000+ pod-hours aggregate across code versions, longest single run 2,888 pod-hours, all first-hand telemetry.</p>
 
-                <p>Next time a vendor hands you a percentage with an impressive number of zeros in it, ask the five questions. If they can't answer, the rate isn't wrong &mdash; it's unfalsifiable. Which is worse.</p>
+                <p>Next time a vendor hands you a percentage with an impressive number of zeros in it, ask the five questions. If they can't answer, the rate isn't wrong: it's unfalsifiable. Which is worse.</p>
             </article>
 
             <p class="blog-back">
@@ -142,15 +152,23 @@
     </section>
 
     <!-- Footer -->
+    </main>
+
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <p class="footer-links"><a href="https://trust.pandocore.io">Trust Center</a></p>
+                <p class="footer-links">
+                    <a href="/docs/">Docs</a>
+                    <a href="/pricing">Pricing</a>
+                    <a href="/blog/">Blog</a>
+                    <a href="/contact">Contact</a>
+                    <a href="https://trust.pandocore.io">Trust Center</a>
+                </p>
                 <p>&copy; 2026 PandoCore Inc. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
-    <script src="/js/main.js?v=2"></script>
+    <script src="/js/main.js"></script>
 </body>
 </html>

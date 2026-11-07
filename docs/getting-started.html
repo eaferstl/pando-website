@@ -3,77 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Get started with PandoCore. Deploy runtime protection for your Kubernetes workloads in under 5 minutes with a 2-command install.">
+    <meta name="description" content="Install PandoCore on a Kubernetes cluster: two Helm charts, one sensor pod per node, nothing injected into your workloads and nothing to label.">
     <title>Getting Started | PandoCore Docs</title>
     <link rel="canonical" href="https://pandocore.io/docs/getting-started">
-    <link rel="icon" type="image/png" href="../images/favicon.png">
+
+    <!-- Social share preview: this page gets forwarded. -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Getting Started | PandoCore Docs">
+    <meta property="og:description" content="Install PandoCore on a Kubernetes cluster: two Helm charts, one sensor pod per node, nothing injected into your workloads and nothing to label.">
+    <meta property="og:url" content="https://pandocore.io/docs/getting-started">
+    <meta property="og:image" content="https://pandocore.io/images/og-default.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="icon" type="image/png" href="/images/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/docs.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/docs.css">
+    <noscript><link rel="stylesheet" href="/css/noscript.css"></noscript>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
-    <!-- Navigation -->
+    <!-- Navigation. Wrapped in a banner landmark: the site nav was a bare
+         nav element, so no page exposed a banner to assistive tech. -->
+    <header>
     <nav class="navbar">
         <div class="container">
             <div class="nav-wrapper">
                 <a href="/" class="logo">
-                    <img src="../images/logoTransparency.png" alt="Pando Logo">
+                    <img src="/images/logo-nav.png" alt="PandoCore" width="92" height="120">
                     <div class="logo-text-wrapper">
                         <span class="logo-text">PandoCore</span>
                     </div>
                 </a>
-                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="primary-nav">
                     <span></span>
                     <span></span>
                     <span></span>
                 </button>
                 <div class="nav-overlay"></div>
-                <ul class="nav-links">
+                <ul class="nav-links" role="list" id="primary-nav">
                     <li><a href="/">Home</a></li>
                     <li><a href="/product">Product</a></li>
                     <li><a href="/pricing">Pricing</a></li>
                     <li><a href="/about">About</a></li>
                     <li><a href="/blog/">Blog</a></li>
-                    <li><a href="/docs/" class="active">Docs</a></li>
+                    <li><a href="/docs/" class="active" aria-current="page">Docs</a></li>
                     <li><a href="/contact" class="nav-contact">Contact</a></li>
                     <li><a href="https://portal.pandocore.io/signup" class="nav-signup">Sign Up</a></li>
                 </ul>
             </div>
         </div>
     </nav>
-
-    <!-- Docs Hero -->
-    <section class="docs-hero">
-        <div class="container">
-            <h2>Getting Started</h2>
-            <p>Two commands to a protected cluster. Expand from there at your own pace.</p>
-        </div>
-    </section>
+    </header>
 
     <!-- Documentation Layout -->
     <div class="docs-layout">
         <!-- Sidebar Navigation -->
-        <aside class="docs-sidebar">
-            <h3>Documentation</h3>
-            <ul class="docs-nav">
-                <li><a href="/docs/">Overview</a></li>
-                <li><a href="/docs/getting-started" class="active">Getting Started</a></li>
-                <li><a href="/docs/webhook">Admission Webhook</a></li>
-                <li><a href="/docs/controller">Controller</a></li>
-                <li><a href="/docs/dashboard">Dashboard</a></li>
-                <li><a href="/docs/configuration">Configuration</a></li>
-                <li><a href="/docs/policy">CRD Policy</a></li>
-                <li><a href="/docs/operating-modes">Operating Modes</a></li>
-                <li><a href="/docs/production-hardening">Production Hardening</a></li>
-                <li><a href="/docs/upgrading">Upgrading</a></li>
-                <li><a href="/docs/troubleshooting">Troubleshooting</a></li>
-                <li><a href="/docs/emergency">Emergency Procedures</a></li>
-                <li><a href="/docs/evidence-format">Evidence Format</a></li>
-                <li><a href="/docs/faq">FAQ</a></li>
-            </ul>
+        <aside class="docs-sidebar" aria-label="Documentation">
+            <details class="docs-nav-disclosure" open>
+                <summary class="docs-sidebar-title">Documentation</summary>
+                <ul class="docs-nav" role="list">
+                    <li><a href="/docs/">Overview</a></li>
+                    <li><a href="/docs/getting-started" class="active" aria-current="page">Getting Started</a></li>
+                    <li><a href="/docs/controller">Controller</a></li>
+                    <li><a href="/docs/dashboard">Dashboard</a></li>
+                    <li><a href="/docs/configuration">Configuration</a></li>
+                    <li><a href="/docs/policy">CRD Policy</a></li>
+                    <li><a href="/docs/operating-modes">Operating Modes</a></li>
+                    <li><a href="/docs/production-hardening">Production Hardening</a></li>
+                    <li><a href="/docs/upgrading">Upgrading</a></li>
+                    <li><a href="/docs/troubleshooting">Troubleshooting</a></li>
+                    <li><a href="/docs/emergency">Emergency Procedures</a></li>
+                    <li><a href="/docs/evidence-format">Evidence Format</a></li>
+                    <li><a href="/docs/faq">FAQ</a></li>
+                    <li><a href="/docs/webhook">Admission Webhook (deprecated)</a></li>
+                </ul>
+
+                <a href="https://portal.pandocore.io/signup" class="btn btn-primary docs-sidebar-cta">Start free</a>
+            </details>
         </aside>
 
         <!-- Main Content -->
@@ -86,197 +94,181 @@
 
             <h1>Getting Started</h1>
 
-            <p>PandoCore ships as a Kubernetes admission webhook that injects a behavioral monitoring sidecar into labeled pods. No application code changes, no SDK, no rules to write.</p>
+
+            <p class="docs-subtitle">Two commands to install, and nothing to label or restart.</p>
+
+            <p>PandoCore ships as a node sensor: one DaemonSet pod per node that watches the workloads already running there, plus a cluster controller that owns delivery of evidence. No application code changes, no SDK, no rules to write, and nothing injected into your pods.</p>
 
             <div class="docs-callout info">
                 <div class="docs-callout-title">Prerequisites</div>
-                <ul>
+                <ul role="list">
                     <li>Kubernetes 1.25+ with <code>kubectl</code> configured</li>
                     <li>Helm 3.0+</li>
-                    <li>A PandoCore license key and registry credentials from <a href="https://portal.pandocore.io">portal.pandocore.io</a></li>
+                    <li>Nodes you control. The sensor needs <code>hostPID</code> and a host path, so managed node-less runtimes have no install path: see the note below</li>
+                    <li>A PandoCore license key from <a href="https://portal.pandocore.io">portal.pandocore.io</a>. Signup issues one immediately</li>
                 </ul>
             </div>
 
-            <h2>2-Command Install</h2>
+            <div class="docs-callout warning">
+                <div class="docs-callout-title">GKE Autopilot and EKS Fargate are not supported</div>
+                <p>The sensor runs as a <code>hostPID</code> DaemonSet with a host path mount. Neither is permitted on GKE Autopilot or EKS Fargate, so there is no install path on either. Standard GKE is the configuration this release was validated on.</p>
+            </div>
 
-            <p>This is the minimum path to a protected workload. Grab the <code>helm install</code> line from your portal dashboard (it comes pre-filled with your license key and your namespaces), then patch a deployment.</p>
+            <h2>Install</h2>
 
-            <pre><code># 1. Install the admission webhook (one-time, cluster-wide)
-helm install pando-webhook \
-  oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-webhook \
+            <p>Two charts, controller first. The controller is what the sensor delivers evidence to, so installing it second leaves the sensor with nowhere to send anything.</p>
+
+            <pre><code># 1. The controller: receives evidence and owns every outbound destination
+helm install pando-controller \
+  oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-controller \
+  --version 2.0.0 \
   --namespace pando-system --create-namespace \
-  --set licenseKey="YOUR_LICENSE_KEY" \
-  --set 'protectedNamespaces={your-app-namespace}'
+  --set license.key="YOUR_LICENSE_KEY"
 
-# 2. Protect a deployment
-kubectl patch deployment your-app -n your-app-namespace \
-  -p '{"spec":{"template":{"metadata":{"labels":{"pandocore.io/protect":"true"}}}}}'</code></pre>
+# 2. The node sensor: one pod per node
+helm install pando-node-sensor \
+  oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-node-sensor \
+  --version 2.0.0 \
+  --namespace pando-system \
+  --set license.key="YOUR_LICENSE_KEY"</code></pre>
 
-            <p>The webhook injects the sidecar on the next pod start. Run <code>kubectl get pods</code> and you'll see <code>2/2</code> containers.</p>
+            <p>That is the whole install. There is no third step: the sensor protects the workloads on its node without being told which ones, so no labelling, patching or restarting is involved. Your portal dashboard carries both lines pre-filled with your license key and the current chart version.</p>
 
             <div class="docs-callout warning">
-                <div class="docs-callout-title">Patch the pod template, not the Deployment</div>
-                <p>The label has to land on <code>spec.template.metadata.labels</code>, which is what the <code>patch</code> above does. <code>kubectl label deployment</code> sets it on the Deployment object instead, so no pod ever carries it, the webhook skips every one, and your pods come up <code>Ready</code> with no sidecar and <strong>no error message</strong>. The patch also triggers the rollout on its own, so no separate <code>rollout restart</code> is needed.</p>
+                <div class="docs-callout-title"><code>--version</code> is not optional</div>
+                <p>Installing an OCI chart without <code>--version</code> fails outright rather than resolving to the newest release. Take the version from your portal dashboard, or from <code>helm show chart</code> against the same reference.</p>
             </div>
 
-            <div class="docs-callout warning">
-                <div class="docs-callout-title">Don't omit <code>protectedNamespaces</code></div>
-                <p>It is the only thing that creates the cluster-scoped RoleBinding the sidecar needs to read the <code>kubernetes</code> Endpoints object. Without it, an isolation NetworkPolicy is written with no API-server exception, so an isolated pod cannot reach the API server to release itself and stays quarantined until the pod is deleted. The install otherwise looks completely healthy, which is what makes this one worth getting right up front.</p>
-            </div>
+            <div class="docs-callout info">
+                <div class="docs-callout-title">Keeping the license out of your values file</div>
+                <p>Both charts accept an externally managed Secret instead of an inline key, which is what you want wherever the values file is committed:</p>
+                <pre><code>kubectl create secret generic pando-license \
+  -n pando-system --from-literal=license-key="YOUR_LICENSE_KEY"
 
-            <div class="docs-callout warning">
-                <div class="docs-callout-title">One-time setup per app namespace</div>
-                <p>The webhook itself runs in <code>pando-system</code>, but your protected workloads live in their own namespaces. For each namespace where you'll protect apps, you need a copy of the license Secret and a <code>pando-sidecar</code> ServiceAccount. Run this once per app namespace:</p>
-                <pre><code>NS=your-app-namespace
-
-# Copy the license secret into the app namespace
-kubectl get secret pando-license -n pando-system -o yaml \
-  | sed "s/namespace: pando-system/namespace: $NS/" \
-  | kubectl apply -f -
-
-# Create the sidecar service account + role binding
-kubectl create serviceaccount pando-sidecar -n $NS
-kubectl create rolebinding pando-sidecar \
-  --clusterrole=pando-sidecar \
-  --serviceaccount=$NS:pando-sidecar -n $NS</code></pre>
-                <p>Then label the deployment as normal. See <a href="/docs/webhook">Webhook Reference</a> for details.</p>
+helm install pando-node-sensor ... \
+  --set license.existingSecret.name=pando-license</code></pre>
+                <p>Either way the pod reads it through a <code>secretKeyRef</code>, so the credential is never a literal in the rendered pod spec. Create the Secret with <code>--from-literal</code> rather than from a file: the key is not trimmed, and a trailing newline fails validation.</p>
             </div>
 
             <h2>What Just Happened</h2>
 
-            <p>After step 1, you have a mutating admission webhook watching for pods with the <code>pandocore.io/protect=true</code> label. When one starts:</p>
+            <p>The DaemonSet placed one sensor pod on each schedulable node. Each sensor watches the pods on its own node, opt-out, and runs a short <strong>learning window</strong> per workload (30 minutes, and at least 900 samples, whichever is later) to build an operational profile. Deterministic checks arm when learning completes; the behavioural checks that depend on longer baselines keep warming for hours after that.</p>
 
-            <ol>
-                <li>The webhook injects a <code>pando-sidecar</code> container alongside your app container</li>
-                <li>The sidecar attaches to the shared process namespace and runs a short <strong>learning window</strong> (30 minutes by default) to build a per-workload operational profile</li>
-                <li>Once learning is complete, the sidecar begins detecting and (depending on mode) alerting or enforcing</li>
-            </ol>
+            <p>Because the model is opt-out, the question is no longer which pods are watched but which are not. Four classes are excluded whatever the configuration says:</p>
 
-            <div class="docs-callout success">
-                <div class="docs-callout-title">Safe by default</div>
-                <p>New installs ship in <strong>monitor</strong> mode. The sidecar observes and logs but never terminates pods until you explicitly opt into enforcement. This lets you validate on real workloads with zero production risk.</p>
+            <ul role="list">
+                <li>The sensor's own pod</li>
+                <li>Pods using <code>hostPID</code></li>
+                <li>Pods using <code>hostNetwork</code></li>
+                <li>Pods carrying the opt-out label below</li>
+            </ul>
+
+            <pre><code>metadata:
+  labels:
+    pandocore.io/protect: "false"</code></pre>
+
+            <div class="docs-callout warning">
+                <div class="docs-callout-title">The opt-out string is exact</div>
+                <p>The comparison is byte-for-byte against <code>"false"</code>, with no trimming and no case folding. <code>"False"</code>, <code>"0"</code> and <code>"no"</code> do not opt a pod out. The label's sense is the reverse of the deprecated webhook's, where <code>"true"</code> opted a pod <em>in</em>; that old value now has no effect at all.</p>
+            </div>
+
+            <div class="docs-callout warning">
+                <div class="docs-callout-title">There is a per-node coverage cap</div>
+                <p>Each sensor runs at most 70 monitored pods per node by default (<code>maxEngines</code>). Pods beyond the cap get no engine, and they are shed in a stable order, so the same pods stay unwatched across restarts rather than rotating. This is reported rather than silent: the gauge <code>pando_node_sensor_pods_unmonitored{reason="cap"}</code> counts them, and the chart ships a PrometheusRule that alerts on it. Treat a non-zero value as a coverage gap, not a capacity hint.</p>
             </div>
 
             <h2>Verify It's Working</h2>
 
-            <pre><code># Confirm sidecar injected (should show 2/2)
-kubectl get pods -l app=your-app
+            <pre><code># One sensor pod per node, all Ready
+kubectl get pods -n pando-system -l app.kubernetes.io/name=pando-node-sensor -o wide
 
-# Watch the sidecar come up
-kubectl logs -f &lt;pod-name&gt; -c pando-sidecar
+# Follow a sensor's logs
+kubectl logs -f -n pando-system &lt;sensor-pod&gt;
 
-# Check readiness (503 during learning, 200 after)
-kubectl exec &lt;pod-name&gt; -c pando-sidecar -- wget -qO- http://localhost:9090/readyz
+# Readiness: 503 during learning and while refusing, 200 once armed
+kubectl exec -n pando-system &lt;sensor-pod&gt; -- wget -qO- http://localhost:9090/readyz
 
-# Detection metrics
-kubectl exec &lt;pod-name&gt; -c pando-sidecar -- wget -qO- http://localhost:9090/metrics</code></pre>
+# What this sensor currently sees
+kubectl exec -n pando-system &lt;sensor-pod&gt; -- wget -qO- http://localhost:9090/status</code></pre>
 
-            <p>If the sidecar doesn't inject or the logs show license errors, see <a href="/docs/troubleshooting">Troubleshooting</a>.</p>
+            <div class="docs-callout info">
+                <div class="docs-callout-title">Select on the component label, not the protect label</div>
+                <p>The sensor's own pod carries <code>pandocore.io/protect: "false"</code>, because it excludes itself. A Prometheus job or <code>kubectl</code> selector written against <code>protect=true</code> matches nothing and reports a clean scrape of nothing, which looks identical to healthy. Select on <code>app.kubernetes.io/name=pando-node-sensor</code>.</p>
+            </div>
+
+            <p><code>/healthz</code> returns 200 even while the sensor is refusing to monitor, deliberately, so the kubelet does not crash-loop the refusal logs away. <code>/readyz</code> is the one that gates. If pods will not start or the logs show license errors, see <a href="/docs/troubleshooting">Troubleshooting</a>.</p>
 
             <hr>
 
             <h2>Progressive Rollout</h2>
 
-            <p>Everything above gets you to "installed and observing." The sections below walk you from passive monitoring to full production hardening, in the order most teams adopt them. Apply as much as matches your comfort level.</p>
+            <p>Everything above gets you to installed and alerting. The sections below go from there to production, in the order most teams adopt them.</p>
 
-            <h3>1. Enable Enforcement</h3>
+            <h3>1. Let It Respond</h3>
 
-            <p>Once you've watched a workload in monitor mode for a few days and are satisfied with the detections, flip it to <code>isolate</code> mode. On a trip the sidecar now applies a NetworkPolicy that contains the pod, instead of only logging.</p>
+            <p>A free license detects and alerts, and never contains. The response ceiling is a property of the license, so raising it is a billing change rather than a configuration change: on a paid license the sensor may apply containment, and the install above starts doing so without being reinstalled.</p>
 
-            <pre><code># Per-deployment: annotation overrides cluster default
-kubectl annotate deployment your-app pandocore.io/mode=isolate --overwrite
-kubectl rollout restart deployment/your-app
+            <p>Below that ceiling, mode is set per workload with an annotation:</p>
 
-# Or cluster-wide: change the default for newly-created pods
-helm upgrade pando-webhook \
-  oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-webhook \
-  --reuse-values \
-  --set defaultMode=isolate</code></pre>
+            <pre><code>kubectl annotate deployment your-app pandocore.io/mode=isolate --overwrite
+kubectl rollout restart deployment/your-app</code></pre>
 
-            <p>Most teams run <strong>monitor → alert → isolate</strong> over the course of a few weeks per workload; each step adds one automated response action on top of the prior. See <a href="/docs/operating-modes">Operating Modes</a> for the full mode ladder.</p>
+            <p>The sensor reads a pod's annotations when it starts watching that pod, so the restart is what applies the change to workloads already running. The annotation can only narrow what the license already permits, never widen it, and a value it cannot parse is warned about by name and falls back to the node-wide default rather than leaving the pod unwatched. See <a href="/docs/operating-modes">Operating Modes</a> for the ladder and <a href="/pricing">Pricing</a> for what each license permits.</p>
 
             <div class="docs-callout info">
-                <div class="docs-callout-title">What isolate does on a trip</div>
-                <p>PandoCore applies a NetworkPolicy that blocks pod egress (except DNS) and contains the attack without killing the pod. If drift subsides, the policy is removed automatically. This is the right durable mode for stateful workloads (databases, caches, queues) where pod restart is expensive.</p>
+                <div class="docs-callout-title">What containment does</div>
+                <p>PandoCore writes a Kubernetes NetworkPolicy that denies the pod's egress except DNS, holding the workload in place without restarting it. The right durable response for stateful workloads where a restart is expensive. If the behaviour subsides, the policy is removed again.</p>
+                <p>The sensor applies and removes that policy from outside the pod, which is why the policy needs no API-server exception and why ingress can be denied as well. The bidirectional half of that depends on your CNI permitting host-to-pod traffic regardless of policy, which Cilium and therefore GKE Dataplane V2 guarantee; on other CNIs treat containment as egress-only.</p>
             </div>
 
-            <h3>2. Wire Up Slack Alerts</h3>
+            <h3>2. Point Evidence Where You Want It</h3>
 
-            <p>Real-time notifications on detection. Set <code>PANDO_MODE=alert</code> or <code>isolate</code> and provide a Slack incoming webhook URL:</p>
+            <p>Every detection emits a structured, signed JSON evidence record. The controller owns delivery, so SIEM, Slack and webhook destinations are configured once on the controller rather than per workload, and no workload pod ever holds a third-party credential. See <a href="/docs/controller">Controller</a> for the destination settings and <a href="/docs/evidence-format">Evidence Format</a> for the schema.</p>
 
-            <pre><code>helm upgrade pando-webhook \
-  oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-webhook \
-  --reuse-values \
-  --set defaultMode=alert \
-  --set slackWebhookURL="https://hooks.slack.com/services/T.../B.../xxx"</code></pre>
+            <h3>3. Manage Behaviour Declaratively</h3>
 
-            <p>Alerts are color-coded by severity (critical, high, warning, info) and include pod name, severity, and the action taken.</p>
+            <p>For anything beyond a handful of namespaces, use the <code>PandoCorePolicy</code> CRD. One YAML file in your GitOps repo controls mode, sensitivity and alert destinations per namespace. See <a href="/docs/policy">CRD Policy</a> for the schema.</p>
 
-            <h3>3. Tune Sensitivity</h3>
+            <div class="docs-callout warning">
+                <div class="docs-callout-title">Per-namespace integrations need the mirror</div>
+                <p>Integrations declared in a <code>PandoCorePolicy</code> reach the controller through the destinations mirror, which the sensor chart installs by default. If you set <code>mirror.enabled=false</code>, nothing writes the destinations Secret and those per-namespace integrations will not take effect. The controller's own destinations are unaffected.</p>
+            </div>
 
-            <p>Most workloads don't need any tuning. When they do, the single lever is <code>PANDO_SENSITIVITY</code>. Higher = more permissive, lower = more sensitive.</p>
+            <h3>4. Decide What Is Out Of Scope</h3>
 
-            <pre><code># Workload is too chatty, reduce false positives
-kubectl set env deployment/your-app -c pando-sidecar PANDO_SENSITIVITY=3.0
+            <p>Eleven namespaces are excluded by default, covering <code>kube-system</code> and the GKE managed namespaces. To protect one of them anyway, add it to <code>includedNamespaces</code>.</p>
 
-# Workload is tightly deterministic, catch subtler anomalies
-kubectl set env deployment/your-app -c pando-sidecar PANDO_SENSITIVITY=1.5</code></pre>
+            <pre><code>helm upgrade pando-node-sensor ... \
+  --set 'includedNamespaces={my-platform-namespace}'</code></pre>
 
-            <p>The webhook also applies runtime-aware defaults for common runtime families. See <a href="/docs/configuration">Configuration Reference</a>.</p>
+            <div class="docs-callout danger">
+                <div class="docs-callout-title">Two sharp edges in namespace scoping</div>
+                <p><strong>Do not list <code>pando-system</code> in <code>includedNamespaces</code>.</strong> The opt-in is read before the exclusion rules and overrides the own-component exclusion as well as the namespace list, so listing it puts PandoCore's own pods back under monitoring. An early soak run in that configuration took 67 false positives in six minutes, 34 of them from the controller pod.</p>
+                <p><strong>Setting <code>excludedNamespaces: []</code> does not mean "exclude nothing".</strong> An empty list is read as unconfigured and falls back to the built-in eleven. Use <code>includedNamespaces</code> to protect a default-excluded namespace; emptying the exclusion list will not do it.</p>
+            </div>
 
-            <h3>4. Graduated Response</h3>
+            <h3>5. Tune The Cadence, Carefully</h3>
 
-            <p>Instead of jumping straight to pod termination, configure a response chain that isolates the pod first (via an emergency <code>NetworkPolicy</code>) and only terminates if detection persists.</p>
+            <p>The sensor samples every 1000 ms by default. The floor is 250 ms, and a value below it is refused by name at startup rather than quietly clamped. Shortening the interval costs roughly four times as much CPU at 250 ms as at the default, so lower it only alongside a larger request.</p>
 
-            <pre><code># Alert, then isolate, then escalate to terminate if the pod doesn't recover
-kubectl set env deployment/your-app -c pando-sidecar \
-  PANDO_RESPONSE_ACTIONS="alert,isolate,terminate"</code></pre>
+            <pre><code>helm upgrade pando-node-sensor ... --set sampleIntervalMs=1000</code></pre>
 
-            <p>If the pod returns to baseline during the recovery window, isolation is lifted automatically. See <a href="/docs/operating-modes">Operating Modes</a>.</p>
+            <h3>6. Alert On The Sensor Itself</h3>
 
-            <h3>5. GitOps via CRD Policy</h3>
-
-            <p>For anything beyond a handful of deployments, manage configuration declaratively with the <code>PandoCorePolicy</code> CRD. One YAML file in your GitOps repo controls mode, sensitivity, thresholds and alert destinations across multiple namespaces.</p>
-
-            <pre><code>apiVersion: pandocore.io/v1alpha1
-kind: PandoCorePolicy
-metadata:
-  name: default
-  namespace: production
-spec:
-  mode: isolate
-  sensitivity: medium
-  integrations:
-    slackWebhook:
-      urlSecretRef:
-        name: pando-slack
-        key: url</code></pre>
-
-            <p>See <a href="/docs/policy">CRD Policy</a> for the full schema.</p>
-
-            <h3>6. SIEM / Evidence Pipeline</h3>
-
-            <p>Every detection emits a structured JSON evidence envelope. By default it's posted to the PandoCore portal, but you can point the webhook at any endpoint that accepts JSON POSTs: SIEM, incident management, custom pipeline, whatever.</p>
-
-            <pre><code>kubectl set env deployment/your-app -c pando-sidecar \
-  PANDO_EVIDENCE_WEBHOOK_URL="https://your-siem.example.com/ingest"</code></pre>
-
-            <p>See <a href="/docs/evidence-format">Evidence Format</a> for the full schema.</p>
+            <p>The chart ships PrometheusRules covering the conditions that a sensor cannot report on its own behalf: the series going absent, a refusal at startup, shedding at the cap, and a cadence that has stretched past its configured interval. Absence is the one condition no self-report can distinguish from healthy, which is why it is alerted on from outside. See <a href="/docs/production-hardening">Production Hardening</a>.</p>
 
             <hr>
 
-            <h2>Alternative: Manual Injection</h2>
+            <h2>What This Costs Per Node</h2>
 
-            <p>If you can't install the admission webhook (restricted clusters, air-gapped environments), use the standalone injection script:</p>
+            <p>The sensor requests <strong>250m CPU and 256Mi</strong> per node and is limited to <strong>2 cores and 1Gi</strong>. One pod per node, whatever that node is running.</p>
 
-            <pre><code># Install sidecar infrastructure only
-helm install pando \
-  oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-sidecar \
-  --set licenseKey="YOUR_LICENSE_KEY"
+            <p>Measured warm and enforcing on the shipping build, across two runs: <strong>130.4 mCPU</strong> at the p95 with a <strong>106.9 MiB</strong> working set over a 24-hour warm window, and <strong>127.3 mCPU</strong> with <strong>110.6 MiB</strong> over a 34-hour run. The working set stayed flat in both, so there is no leak to grow into the limit, and there was no CFS throttling, no OOMKill and no sensor restart. The request is sized for the 70-pod cap rather than for the engine counts these runs carried.</p>
 
-# Inject into a specific deployment
-PANDO_LICENSE_KEY="YOUR_LICENSE_KEY" \
-  ./inject-pandocore.sh your-app your-namespace</code></pre>
+            <div class="docs-callout info">
+                <div class="docs-callout-title">The install refuses nodes that cannot fit the sensor</div>
+                <p>A Helm preflight check compares the sensor's CPU request against each node's allocatable CPU and fails the install rather than letting pods sit <code>Pending</code> on nodes that will never fit them, because a green install that leaves a node unwatched is the failure it exists to catch. It runs only against a live cluster, so <code>helm template</code> and <code>--dry-run=client</code> skip it, as does a credential that cannot list nodes. Bypass it deliberately with <code>--set preflight.nodeCapacity=false</code>.</p>
+            </div>
 
             <h2>Quick Reference</h2>
 
@@ -289,44 +281,59 @@ PANDO_LICENSE_KEY="YOUR_LICENSE_KEY" \
                 </thead>
                 <tbody>
                     <tr>
-                        <td>View sidecar logs</td>
-                        <td><code>kubectl logs &lt;pod&gt; -c pando-sidecar</code></td>
+                        <td>List sensors</td>
+                        <td><code>kubectl get pods -n pando-system -l app.kubernetes.io/name=pando-node-sensor -o wide</code></td>
                     </tr>
                     <tr>
-                        <td>Check health</td>
-                        <td><code>kubectl exec &lt;pod&gt; -c pando-sidecar -- wget -qO- http://localhost:9090/healthz</code></td>
+                        <td>View sensor logs</td>
+                        <td><code>kubectl logs -n pando-system &lt;sensor-pod&gt;</code></td>
+                    </tr>
+                    <tr>
+                        <td>Check readiness</td>
+                        <td><code>kubectl exec -n pando-system &lt;sensor-pod&gt; -- wget -qO- http://localhost:9090/readyz</code></td>
                     </tr>
                     <tr>
                         <td>View metrics</td>
-                        <td><code>kubectl exec &lt;pod&gt; -c pando-sidecar -- wget -qO- http://localhost:9090/metrics</code></td>
+                        <td><code>kubectl exec -n pando-system &lt;sensor-pod&gt; -- wget -qO- http://localhost:9090/metrics</code></td>
                     </tr>
                     <tr>
-                        <td>Switch to isolate mode</td>
-                        <td><code>kubectl set env deployment/&lt;name&gt; -c pando-sidecar PANDO_MODE=isolate</code></td>
+                        <td>Check coverage gaps</td>
+                        <td><code>pando_node_sensor_pods_unmonitored</code> in Prometheus</td>
                     </tr>
                     <tr>
-                        <td>Trigger re-learning</td>
-                        <td><code>kubectl exec &lt;pod&gt; -c pando-sidecar -- wget -qO- --post-data='' http://localhost:9090/relearn</code></td>
+                        <td>Set a workload's mode</td>
+                        <td><code>kubectl annotate deployment &lt;name&gt; pandocore.io/mode=isolate --overwrite</code></td>
                     </tr>
                     <tr>
-                        <td>Disable for a pod</td>
-                        <td><code>kubectl label pod &lt;name&gt; pandocore.io/protect-</code></td>
+                        <td>Opt a workload out</td>
+                        <td><code>kubectl label pod &lt;name&gt; pandocore.io/protect=false</code></td>
                     </tr>
                 </tbody>
             </table>
 
             <h2>Next Steps</h2>
 
-            <ul>
-                <li><a href="/docs/operating-modes">Operating Modes</a>: Monitor → Alert → Enforce escalation model</li>
-                <li><a href="/docs/configuration">Configuration Reference</a>: Every environment variable with defaults and ranges</li>
-                <li><a href="/docs/policy">CRD Policy</a>: Declarative GitOps configuration</li>
-                <li><a href="/docs/production-hardening">Production Hardening</a>: Resource limits, namespace exclusions, backup</li>
-                <li><a href="/docs/upgrading">Upgrading</a>: How to bump sidecar and webhook versions</li>
-                <li><a href="/docs/troubleshooting">Troubleshooting</a>: Sidecar not injecting, license errors, false positives</li>
-                <li><a href="/docs/evidence-format">Evidence Format</a>: Integrate with your SIEM</li>
-                <li><a href="/docs/emergency">Emergency Procedures</a>: Quick disable if needed</li>
+            <ul role="list">
+                <li><a href="/docs/operating-modes">Operating Modes</a>: the response ladder and what sets the ceiling</li>
+                <li><a href="/docs/configuration">Configuration Reference</a>: every chart value with defaults and ranges</li>
+                <li><a href="/docs/controller">Controller</a>: evidence delivery and outbound destinations</li>
+                <li><a href="/docs/policy">CRD Policy</a>: declarative per-namespace configuration</li>
+                <li><a href="/docs/production-hardening">Production Hardening</a>: privileges, exclusions and alerting</li>
+                <li><a href="/docs/upgrading">Upgrading</a>: moving off the deprecated webhook, and bumping versions</li>
+                <li><a href="/docs/troubleshooting">Troubleshooting</a>: refusals, license errors, coverage gaps</li>
+                <li><a href="/docs/emergency">Emergency Procedures</a>: how to stop it quickly</li>
             </ul>
+
+            <nav class="docs-pager" aria-label="Documentation pages">
+                <a class="docs-pager-prev" href="/docs/" rel="prev">
+                    <span class="docs-pager-dir">Previous</span>
+                    <span class="docs-pager-title">Overview</span>
+                </a>
+                <a class="docs-pager-next" href="/docs/controller" rel="next">
+                    <span class="docs-pager-dir">Next</span>
+                    <span class="docs-pager-title">Controller</span>
+                </a>
+            </nav>
 
         </main>
     </div>
@@ -335,12 +342,18 @@ PANDO_LICENSE_KEY="YOUR_LICENSE_KEY" \
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <p class="footer-links"><a href="https://trust.pandocore.io">Trust Center</a></p>
+                <p class="footer-links">
+                    <a href="/docs/">Docs</a>
+                    <a href="/pricing">Pricing</a>
+                    <a href="/blog/">Blog</a>
+                    <a href="/contact">Contact</a>
+                    <a href="https://trust.pandocore.io">Trust Center</a>
+                </p>
                 <p>&copy; 2026 PandoCore Inc. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
-    <script src="../js/main.js"></script>
+    <script src="/js/main.js"></script>
 </body>
 </html>

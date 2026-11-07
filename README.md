@@ -1,6 +1,6 @@
 # Pando Website
 
-Professional website for Pando - advancing security and reliability for traditional compute infrastructure.
+Marketing site and documentation for PandoCore, runtime threat detection for Kubernetes.
 
 ## Overview
 
@@ -11,6 +11,7 @@ This is a static website built with HTML, CSS, and vanilla JavaScript. It featur
 - **About Page** (`about.html`) - Team background, mission, and approach
 - **Blog** (`blog/`) - Posts rendered from the `blog/posts.json` manifest (see below)
 - **Contact Page** (`contact.html`) - Professional contact form for inquiries
+- **Documentation** (`docs/*.html`) - The live documentation site, 14 pages, styled by `css/docs.css`
 - **Trust Center** (`trust/index.html`) - Single-page security/data-handling overview; served at `trust.pandocore.io` and linked in every page footer
 
 ### Publishing a blog post
@@ -30,6 +31,7 @@ pandoWebsite/
 ├── pricing.html            # Pricing page
 ├── about.html              # About page
 ├── contact.html            # Contact form page
+├── 404.html                # Not-found page; Cloudflare Pages serves it automatically
 ├── blog/
 │   ├── index.html          # Blog landing (renders cards from posts.json)
 │   ├── _template.html      # Copy this to start a new post
@@ -37,16 +39,29 @@ pandoWebsite/
 │   └── *.html              # Individual post pages
 ├── trust/
 │   └── index.html          # Trust Center (served at trust.pandocore.io)
+├── docs/
+│   ├── index.html          # Documentation site (14 pages, all *.html, prev/next paged)
+│   └── *.md                # Historical planning docs; see Documentation below
 ├── css/
-│   └── styles.css         # Main stylesheet
+│   ├── styles.css          # Main stylesheet
+│   ├── docs.css            # Documentation site styles
+│   └── noscript.css        # Loaded only from <noscript>: static nav fallback
 ├── js/
-│   └── main.js            # JavaScript for forms and interactions
+│   └── main.js             # Mobile nav, blog index rendering, contact form
 ├── images/
-│   ├── blog/              # Blog cover images
-│   ├── logoHeader.png     # Logo for navigation
-│   └── logoNew.png        # Additional branding assets
-├── docs/                  # Documentation (design specs, content guidelines)
-└── README.md              # This file
+│   ├── blog/               # Blog cover art: an .svg for the page, a .png for og:image
+│   ├── logo-nav.png        # 92x120 nav logo on every page (2x its 46x60 slot)
+│   ├── og-default.png      # 1200x630 share card, the og:image on every page but the posts
+│   ├── logoTransparency.png # 184x240 original; kept only so older shared links resolve
+│   ├── founder.jpg         # About page portrait
+│   └── favicon.png         # 64x64; it was a 512x512 at 221 KB on all 29 pages
+├── sitemap.xml             # Generated from each page's canonical URL
+├── _headers                # Cloudflare Pages header rules
+├── CLAUDE.md               # Working rules for this repository
+├── PRODUCT.md              # Audience, positioning, copy constraints
+├── DESIGN.md               # The design system
+├── PHASE1-MARKERS.md       # Open claim markers and withdrawn claims
+└── README.md               # This file
 ```
 
 ## Quick Start
@@ -84,7 +99,8 @@ Then visit `http://localhost:8000` in your browser.
 ## Features
 
 ### Design
-- **Responsive Design**: Mobile-first approach with breakpoints at 768px and 1024px
+- **Responsive Design**: Mobile-first. 768px and 1024px are the intended breakpoints; the
+  sheets carry ten in practice, listed in CLAUDE.md. Verify at 390 / 768 / 901 / 1024 / 1440
 - **Accessible**: WCAG 2.1 Level AA compliance goals
 - **Professional Branding**: Custom color palette built on black forest, floral white, and azure mist
 - **Modern UI**: Clean, minimal design with smooth transitions
@@ -153,13 +169,24 @@ Before deployment:
 
 ## Documentation
 
-Detailed documentation is available in the `docs/` directory:
+Two different things live under `docs/`, and the distinction matters:
 
-- **FILE_STRUCTURE.md** - Complete file structure and purposes
-- **CONTENT_REQUIREMENTS.md** - Detailed content specifications
-- **MESSAGING_GUIDELINES.md** - Tone, voice, and messaging approach
-- **DESIGN_SPECIFICATIONS.md** - Visual design requirements
-- **DEPLOYMENT.md** - Hosting and deployment instructions
+- **`docs/*.html` is the live documentation site.** Fourteen pages, served at
+  `pandocore.io/docs/`, linked from every page's navigation. Edit these when the product
+  changes.
+- **`docs/*.md` are historical planning documents** (`FILE_STRUCTURE.md`,
+  `CONTENT_REQUIREMENTS.md`, `MESSAGING_GUIDELINES.md`, `DESIGN_SPECIFICATIONS.md`,
+  `DEPLOYMENT.md`, `EMAILJS_SETUP.md`, `IMPROVEMENTS.md`,
+  `PROFESSIONAL_DESIGN_IMPROVEMENTS.md`). They record how the site was planned and are not
+  maintained. **Do not read them as current guidance.**
+
+The guidance that is current lives at the repository root:
+
+- **`CLAUDE.md`** - working rules: stack, CSS conventions, scope discipline, git workflow
+- **`PRODUCT.md`** - who the site is for, positioning, and the copy constraints that bind
+  every published claim
+- **`DESIGN.md`** - the design system
+- **`PHASE1-MARKERS.md`** - claims that are pending, withdrawn, or blocked on a release
 
 ## Key Design Principles
 
@@ -221,7 +248,7 @@ For questions or issues:
 
 ## License
 
-All rights reserved. © 2024 Pando.
+All rights reserved. © 2026 PandoCore Inc.
 
 This technology is subject to pending patent applications. All proprietary information is confidential.
 

@@ -6,7 +6,7 @@ The contact form uses EmailJS to send email submissions without requiring a back
 ## Current Configuration
 
 ### EmailJS Credentials
-- **Public Key**: QOE9Vl1cBq8l2TlPN
+- **Public Key**: VdBU9EQjbYtG0R6UG (rotated 2026-11-06)
 - **Service ID**: service_1q1byab (Gmail)
 - **Template ID**: template_1zf3ykh
 

@@ -3,46 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Our largest false positive soak to date is still running: 94 pods, 14 namespaces, 7 days, 0 attacks. Before the results are published, here's exactly how they'll be scored: the definitions, thresholds, and denominators we can't quietly adjust after seeing the data.">
-    <title>PandoCore | The Rules We Use To Define False Positives</title>
+    <meta name="description" content="Our largest false positive soak is still running. Here are the definitions, thresholds and denominators it will be scored against, published before the data.">
+    <title>PandoCore | The Rules We Use to Define False Positives</title>
     <link rel="canonical" href="https://pandocore.io/blog/false-positive-scoring-rules">
 
     <meta property="og:type" content="article">
-    <meta property="og:title" content="The Rules We Use To Define False Positives">
-    <meta property="og:description" content="Our largest false positive soak to date is still running: 94 pods, 14 namespaces, 7 days, 0 attacks. Before the results are published, here's exactly how they'll be scored: the definitions, thresholds, and denominators we can't quietly adjust after seeing the data.">
-    <meta property="og:image" content="https://pandocore.io/images/blog/false-positive-scoring-rules-cover.svg">
+    <meta property="og:title" content="The Rules We Use to Define False Positives">
+    <meta property="og:description" content="Our largest false positive soak is still running. Here are the definitions, thresholds and denominators it will be scored against, published before the data.">
+    <meta property="og:image" content="https://pandocore.io/images/blog/false-positive-scoring-rules-cover.png">
     <meta name="twitter:card" content="summary_large_image">
 
     <link rel="icon" type="image/png" href="/images/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/styles.css?v=2">
+    <link rel="stylesheet" href="/css/styles.css">
+    <noscript><link rel="stylesheet" href="/css/noscript.css"></noscript>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
-    <!-- Navigation -->
+    <!-- Navigation. Wrapped in a banner landmark: the site nav was a bare
+         nav element, so no page exposed a banner to assistive tech. -->
+    <header>
     <nav class="navbar">
         <div class="container">
             <div class="nav-wrapper">
                 <a href="/" class="logo">
-                    <img src="/images/logoTransparency.png" alt="Pando Logo">
+                    <img src="/images/logo-nav.png" alt="PandoCore" width="92" height="120">
                     <div class="logo-text-wrapper">
                         <span class="logo-text">PandoCore</span>
                     </div>
                 </a>
-                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="primary-nav">
                     <span></span>
                     <span></span>
                     <span></span>
                 </button>
                 <div class="nav-overlay"></div>
-                <ul class="nav-links">
+                <ul class="nav-links" role="list" id="primary-nav">
                     <li><a href="/">Home</a></li>
                     <li><a href="/product">Product</a></li>
                     <li><a href="/pricing">Pricing</a></li>
                     <li><a href="/about">About</a></li>
-                    <li><a href="/blog/" class="active">Blog</a></li>
+                    <li><a href="/blog/" class="active" aria-current="page">Blog</a></li>
                     <li><a href="/docs/">Docs</a></li>
                     <li><a href="/contact" class="nav-contact">Contact</a></li>
                     <li><a href="https://portal.pandocore.io/signup" class="nav-signup">Sign Up</a></li>
@@ -50,15 +53,17 @@
             </div>
         </div>
     </nav>
+    </header>
 
     <!-- Post header -->
-    <section id="main-content" tabindex="-1" class="page-hero">
+    <main id="main-content" tabindex="-1">
+    <section class="page-hero">
         <div class="wave-container">
             <div class="wave wave-layer-1"></div>
             <div class="wave wave-layer-2"></div>
         </div>
         <div class="container">
-            <h1>The Rules We Use To Define False Positives</h1>
+            <h1>The Rules We Use to Define False Positives</h1>
             <p class="page-subtitle">August 26, 2026 &middot; By Eliot Ferstl</p>
         </div>
     </section>
@@ -69,6 +74,11 @@
             <img class="blog-cover" src="/images/blog/false-positive-scoring-rules-cover.svg" alt="Four separate counters, each with its own pass threshold marked above it, under the run's scope: 94 pods, 14 namespaces, 7 days, 0 attacks">
 
             <article class="blog-article">
+                <aside class="blog-addendum">
+                    <p><strong>Update, November 6, 2026.</strong> The scoring rules below are still how we grade a soak, and that has not changed. The run they were written for was measured on the injected sidecar, which is deprecated, and its figures were retired from our marketing on November 1, 2026.</p>
+                    <p>Two of the bars no longer mean here what they mean now. The denominator moved from pod-hours to engine-hours, an engine being the node sensor's per-pod detection instance, so a rate written against one cannot be compared with a rate written against the other. And the termination bar is structural rather than measured: the sensor's Kubernetes permissions withhold pod deletion outright, so the ceiling ends at isolation. What we publish today is on the <a href="/product#validation">product page</a>.</p>
+                </aside>
+
                 <p>A false positive rate without an event definition, a denominator, and a labeling method is marketing. We wrote that in <a href="/blog/false-positive-denominator.html">our first post</a>. This is the other half: our largest soak to date is running right now. 94 protected pods across 14 namespaces, seven days, mostly stock upstream images (nginx, Postgres, Mongo, Kafka, Elasticsearch, RabbitMQ, plus JVM, Go, Python, and Node services). The results aren't in. So we're publishing the scoring rules first. Whatever the numbers turn out to be, they get graded against what's written here, in a post that went out before we saw them.</p>
 
                 <p>The run deploys zero attacks. That's the entire labeling method: every trip in this window is by definition a false positive. No adjudication, no &ldquo;we reviewed each alert and determined.&rdquo; Nothing gets subtracted.</p>
@@ -91,15 +101,23 @@
     </section>
 
     <!-- Footer -->
+    </main>
+
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <p class="footer-links"><a href="https://trust.pandocore.io">Trust Center</a></p>
+                <p class="footer-links">
+                    <a href="/docs/">Docs</a>
+                    <a href="/pricing">Pricing</a>
+                    <a href="/blog/">Blog</a>
+                    <a href="/contact">Contact</a>
+                    <a href="https://trust.pandocore.io">Trust Center</a>
+                </p>
                 <p>&copy; 2026 PandoCore Inc. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
-    <script src="/js/main.js?v=2"></script>
+    <script src="/js/main.js"></script>
 </body>
 </html>

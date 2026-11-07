@@ -5,35 +5,40 @@
   HOW TO PUBLISH A NEW POST
   ============================================================
   1. Copy this file to blog/<your-slug>.html  (e.g. blog/runtime-drift.html)
-  2. Fill in every <!-- EDIT --> marker below.
+  2. Fill in every EDIT marker below.
   3. Put your cover image in images/blog/ and reference it with a
-     root-absolute path (e.g. /images/blog/your-slug-cover.jpg).
+     root-absolute path (e.g. /images/blog/your-slug-cover.svg).
+     Ship the cover twice: the SVG for the in-page <img> and posts.json, and a
+     1200x675 PNG of the same artwork for og:image. Slack, LinkedIn and X do
+     not render an SVG og:image, so an SVG there shares as no image at all.
   4. Add a matching entry to blog/posts.json so the post shows on /blog/.
-  Do NOT rename this file or list it in posts.json — it is the template only.
+  Do NOT rename this file or list it in posts.json; it is the template only.
   ============================================================
 -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Template only. Cloudflare Pages serves this path, so keep it out of the index. -->
+    <meta name="robots" content="noindex, nofollow">
     <!-- EDIT: one-sentence description (also used as the excerpt) -->
     <meta name="description" content="Short summary of this post.">
     <!-- EDIT: post title -->
     <title>PandoCore | Post Title</title>
-    <!-- EDIT: canonical URL — must match the file name (/blog/your-slug) -->
+    <!-- EDIT: canonical URL, must match the file name (/blog/your-slug) -->
     <link rel="canonical" href="https://pandocore.io/blog/your-slug">
 
-    <!-- Social share preview — EDIT all four to match this post -->
+    <!-- Social share preview. EDIT all four to match this post -->
     <meta property="og:type" content="article">
     <meta property="og:title" content="Post Title">
     <meta property="og:description" content="Short summary of this post.">
-    <meta property="og:image" content="https://pandocore.io/images/blog/your-slug-cover.jpg">
+    <meta property="og:image" content="https://pandocore.io/images/blog/your-slug-cover.png">
     <meta name="twitter:card" content="summary_large_image">
 
     <link rel="icon" type="image/png" href="/images/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/styles.css?v=2">
+    <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
@@ -42,7 +47,7 @@
         <div class="container">
             <div class="nav-wrapper">
                 <a href="/" class="logo">
-                    <img src="/images/logoTransparency.png" alt="Pando Logo">
+                    <img src="/images/logo-nav.png" alt="PandoCore" width="92" height="120">
                     <div class="logo-text-wrapper">
                         <span class="logo-text">PandoCore</span>
                     </div>
@@ -53,7 +58,7 @@
                     <span></span>
                 </button>
                 <div class="nav-overlay"></div>
-                <ul class="nav-links">
+                <ul class="nav-links" role="list">
                     <li><a href="/">Home</a></li>
                     <li><a href="/product">Product</a></li>
                     <li><a href="/pricing">Pricing</a></li>
@@ -68,7 +73,8 @@
     </nav>
 
     <!-- Post header -->
-    <section id="main-content" tabindex="-1" class="page-hero">
+    <main id="main-content" tabindex="-1">
+    <section class="page-hero">
         <div class="wave-container">
             <div class="wave wave-layer-1"></div>
             <div class="wave wave-layer-2"></div>
@@ -85,17 +91,17 @@
     <section class="content-section">
         <div class="container">
             <!-- EDIT: cover image (root-absolute path) -->
-            <img class="blog-cover" src="/images/blog/your-slug-cover.jpg" alt="Describe the cover image">
+            <img class="blog-cover" src="/images/blog/your-slug-cover.svg" alt="Describe the cover image">
 
             <!-- EDIT: write your post inside this <article>. Use <p>, <h2>,
-                 <h3>, <ul>/<li>, <blockquote>, <a href> as needed. -->
+                 <h3>, <ul role="list">/<li>, <blockquote>, <a href> as needed. -->
             <article class="blog-article">
                 <p>Opening paragraph.</p>
 
                 <h2>A section heading</h2>
                 <p>Body text.</p>
 
-                <ul>
+                <ul role="list">
                     <li>A point.</li>
                     <li>Another point.</li>
                 </ul>
@@ -108,15 +114,23 @@
     </section>
 
     <!-- Footer -->
+    </main>
+
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <p class="footer-links"><a href="https://trust.pandocore.io">Trust Center</a></p>
+                <p class="footer-links">
+                    <a href="/docs/">Docs</a>
+                    <a href="/pricing">Pricing</a>
+                    <a href="/blog/">Blog</a>
+                    <a href="/contact">Contact</a>
+                    <a href="https://trust.pandocore.io">Trust Center</a>
+                </p>
                 <p>&copy; 2026 PandoCore Inc. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
-    <script src="/js/main.js?v=2"></script>
+    <script src="/js/main.js"></script>
 </body>
 </html>

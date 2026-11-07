@@ -6,36 +6,47 @@
     <meta name="description" content="Insights on runtime security, adaptive defense, and secure computing from the PandoCore team.">
     <title>PandoCore | Blog</title>
     <link rel="canonical" href="https://pandocore.io/blog">
+
+    <!-- Social share preview: this page gets forwarded. -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="PandoCore | Blog">
+    <meta property="og:description" content="Insights on runtime security, adaptive defense, and secure computing from the PandoCore team.">
+    <meta property="og:url" content="https://pandocore.io/blog">
+    <meta property="og:image" content="https://pandocore.io/images/og-default.png">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" type="image/png" href="/images/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/styles.css?v=2">
+    <link rel="stylesheet" href="/css/styles.css">
+    <noscript><link rel="stylesheet" href="/css/noscript.css"></noscript>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
-    <!-- Navigation -->
+    <!-- Navigation. Wrapped in a banner landmark: the site nav was a bare
+         nav element, so no page exposed a banner to assistive tech. -->
+    <header>
     <nav class="navbar">
         <div class="container">
             <div class="nav-wrapper">
                 <a href="/" class="logo">
-                    <img src="/images/logoTransparency.png" alt="Pando Logo">
+                    <img src="/images/logo-nav.png" alt="PandoCore" width="92" height="120">
                     <div class="logo-text-wrapper">
                         <span class="logo-text">PandoCore</span>
                     </div>
                 </a>
-                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="primary-nav">
                     <span></span>
                     <span></span>
                     <span></span>
                 </button>
                 <div class="nav-overlay"></div>
-                <ul class="nav-links">
+                <ul class="nav-links" role="list" id="primary-nav">
                     <li><a href="/">Home</a></li>
                     <li><a href="/product">Product</a></li>
                     <li><a href="/pricing">Pricing</a></li>
                     <li><a href="/about">About</a></li>
-                    <li><a href="/blog/" class="active">Blog</a></li>
+                    <li><a href="/blog/" class="active" aria-current="page">Blog</a></li>
                     <li><a href="/docs/">Docs</a></li>
                     <li><a href="/contact" class="nav-contact">Contact</a></li>
                     <li><a href="https://portal.pandocore.io/signup" class="nav-signup">Sign Up</a></li>
@@ -43,9 +54,11 @@
             </div>
         </div>
     </nav>
+    </header>
 
     <!-- Page Hero -->
-    <section id="main-content" tabindex="-1" class="page-hero">
+    <main id="main-content" tabindex="-1">
+    <section class="page-hero">
         <div class="wave-container">
             <div class="wave wave-layer-1"></div>
             <div class="wave wave-layer-2"></div>
@@ -59,22 +72,45 @@
     <!-- Blog Grid -->
     <section class="content-section alt-bg blog-list">
         <div class="container">
+            <h2 class="blog-list-heading">All Posts</h2>
+            <p class="blog-list-note">Posts dated before November 2026 were measured on the injected sidecar, which is deprecated. Their figures were retired from our marketing on November 1, 2026 and each carries a dated note saying so. What we publish now is on the <a href="/product#validation">product page</a>.</p>
+
             <div class="blog-grid">
-                <p class="blog-empty">Loading posts&hellip;</p>
+                <!-- js/main.js replaces this with cards from blog/posts.json. It is
+                     the no-JavaScript and fetch-failure fallback, and it has to stay:
+                     these posts are linked from nowhere else on the site. -->
+                <ul class="blog-fallback" role="list">
+                    <li><a href="/blog/node-sensor">We're Dropping Sidecars in Favor of a Node Sensor</a> <span class="blog-fallback-date">September 30, 2026</span></li>
+                    <li><a href="/blog/clean-run-soak-results">One False Alert and Zero False Autonomous Actions in Over 15,000 Pod-Hours</a> <span class="blog-fallback-date">August 31, 2026</span></li>
+                    <li><a href="/blog/false-positive-scoring-rules">The Rules We Use to Define False Positives</a> <span class="blog-fallback-date">August 26, 2026</span></li>
+                    <li><a href="/blog/fail-open-webhook">Why We Ship Our Security Webhook Fail-Open</a> <span class="blog-fallback-date">August 20, 2026</span></li>
+                    <li><a href="/blog/sidecar-injection-silent-failures">Three Silent Failures Between You and Sidecar Injection</a> <span class="blog-fallback-date">August 13, 2026</span></li>
+                    <li><a href="/blog/false-positive-denominator">0.005% of What?</a> <span class="blog-fallback-date">July 29, 2026</span></li>
+                    <li><a href="/blog/assume-compromise">Building Defense That Assumes Compromise</a> <span class="blog-fallback-date">July 22, 2026</span></li>
+                    <li><a href="/blog/runtime-frontier">Runtime Is the New Security Frontier</a> <span class="blog-fallback-date">July 15, 2026</span></li>
+                </ul>
             </div>
         </div>
     </section>
 
     <!-- Footer -->
+    </main>
+
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <p class="footer-links"><a href="https://trust.pandocore.io">Trust Center</a></p>
+                <p class="footer-links">
+                    <a href="/docs/">Docs</a>
+                    <a href="/pricing">Pricing</a>
+                    <a href="/blog/">Blog</a>
+                    <a href="/contact">Contact</a>
+                    <a href="https://trust.pandocore.io">Trust Center</a>
+                </p>
                 <p>&copy; 2026 PandoCore Inc. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
-    <script src="/js/main.js?v=2"></script>
+    <script src="/js/main.js"></script>
 </body>
 </html>

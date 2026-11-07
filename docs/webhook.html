@@ -3,77 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="PandoCore admission webhook - Automatic sidecar injection for Kubernetes workloads.">
-    <title>Admission Webhook | PandoCore Docs</title>
+    <meta name="description" content="The PandoCore admission webhook and the injected sidecar it created are deprecated. PandoCore now installs as a node sensor DaemonSet with a cluster controller.">
+    <title>Admission Webhook (Deprecated) | PandoCore Docs</title>
     <link rel="canonical" href="https://pandocore.io/docs/webhook">
-    <link rel="icon" type="image/png" href="../images/favicon.png">
+
+    <!-- Social share preview: this page gets forwarded. -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Admission Webhook (Deprecated) | PandoCore Docs">
+    <meta property="og:description" content="The PandoCore admission webhook and the injected sidecar it created are deprecated. PandoCore now installs as a node sensor DaemonSet with a cluster controller.">
+    <meta property="og:url" content="https://pandocore.io/docs/webhook">
+    <meta property="og:image" content="https://pandocore.io/images/og-default.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="icon" type="image/png" href="/images/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/docs.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/docs.css">
+    <noscript><link rel="stylesheet" href="/css/noscript.css"></noscript>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
-    <!-- Navigation -->
+    <!-- Navigation. Wrapped in a banner landmark: the site nav was a bare
+         nav element, so no page exposed a banner to assistive tech. -->
+    <header>
     <nav class="navbar">
         <div class="container">
             <div class="nav-wrapper">
                 <a href="/" class="logo">
-                    <img src="../images/logoTransparency.png" alt="Pando Logo">
+                    <img src="/images/logo-nav.png" alt="PandoCore" width="92" height="120">
                     <div class="logo-text-wrapper">
                         <span class="logo-text">PandoCore</span>
                     </div>
                 </a>
-                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="primary-nav">
                     <span></span>
                     <span></span>
                     <span></span>
                 </button>
                 <div class="nav-overlay"></div>
-                <ul class="nav-links">
+                <ul class="nav-links" role="list" id="primary-nav">
                     <li><a href="/">Home</a></li>
                     <li><a href="/product">Product</a></li>
                     <li><a href="/pricing">Pricing</a></li>
                     <li><a href="/about">About</a></li>
                     <li><a href="/blog/">Blog</a></li>
-                    <li><a href="/docs/" class="active">Docs</a></li>
+                    <li><a href="/docs/" class="active" aria-current="page">Docs</a></li>
                     <li><a href="/contact" class="nav-contact">Contact</a></li>
                     <li><a href="https://portal.pandocore.io/signup" class="nav-signup">Sign Up</a></li>
                 </ul>
             </div>
         </div>
     </nav>
-
-    <!-- Docs Hero -->
-    <section class="docs-hero">
-        <div class="container">
-            <h1>Admission Webhook</h1>
-            <p>Automatic sidecar injection via Kubernetes MutatingAdmissionWebhook.</p>
-        </div>
-    </section>
+    </header>
 
     <!-- Documentation Layout -->
     <div class="docs-layout">
         <!-- Sidebar Navigation -->
-        <aside class="docs-sidebar">
-            <h3>Documentation</h3>
-            <ul class="docs-nav">
-                <li><a href="/docs/">Overview</a></li>
-                <li><a href="/docs/getting-started">Getting Started</a></li>
-                <li><a href="/docs/webhook" class="active">Admission Webhook</a></li>
-                <li><a href="/docs/controller">Controller</a></li>
-                <li><a href="/docs/dashboard">Dashboard</a></li>
-                <li><a href="/docs/configuration">Configuration</a></li>
-                <li><a href="/docs/policy">CRD Policy</a></li>
-                <li><a href="/docs/operating-modes">Operating Modes</a></li>
-                <li><a href="/docs/production-hardening">Production Hardening</a></li>
-                <li><a href="/docs/upgrading">Upgrading</a></li>
-                <li><a href="/docs/troubleshooting">Troubleshooting</a></li>
-                <li><a href="/docs/emergency">Emergency Procedures</a></li>
-                <li><a href="/docs/evidence-format">Evidence Format</a></li>
-                <li><a href="/docs/faq">FAQ</a></li>
-            </ul>
+        <aside class="docs-sidebar" aria-label="Documentation">
+            <details class="docs-nav-disclosure" open>
+                <summary class="docs-sidebar-title">Documentation</summary>
+                <ul class="docs-nav" role="list">
+                    <li><a href="/docs/">Overview</a></li>
+                    <li><a href="/docs/getting-started">Getting Started</a></li>
+                    <li><a href="/docs/controller">Controller</a></li>
+                    <li><a href="/docs/dashboard">Dashboard</a></li>
+                    <li><a href="/docs/configuration">Configuration</a></li>
+                    <li><a href="/docs/policy">CRD Policy</a></li>
+                    <li><a href="/docs/operating-modes">Operating Modes</a></li>
+                    <li><a href="/docs/production-hardening">Production Hardening</a></li>
+                    <li><a href="/docs/upgrading">Upgrading</a></li>
+                    <li><a href="/docs/troubleshooting">Troubleshooting</a></li>
+                    <li><a href="/docs/emergency">Emergency Procedures</a></li>
+                    <li><a href="/docs/evidence-format">Evidence Format</a></li>
+                    <li><a href="/docs/faq">FAQ</a></li>
+                    <li><a href="/docs/webhook" class="active" aria-current="page">Admission Webhook (deprecated)</a></li>
+                </ul>
+
+                <a href="https://portal.pandocore.io/signup" class="btn btn-primary docs-sidebar-cta">Start free</a>
+            </details>
         </aside>
 
         <!-- Main Content -->
@@ -84,193 +92,33 @@
                 Admission Webhook
             </div>
 
-            <h2>How It Works</h2>
+            <h1>Admission Webhook</h1>
 
-            <p>The PandoCore admission webhook uses Kubernetes' <a href="https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#mutatingadmissionwebhook">MutatingAdmissionWebhook</a> API to automatically inject the PandoCore sidecar into pods at creation time.</p>
 
-            <p>When a pod is created with the label <code>pandocore.io/protect: "true"</code>, the webhook intercepts the request and adds:</p>
+            <p class="docs-subtitle">Deprecated. PandoCore installs as a node sensor.</p>
 
-            <ul>
-                <li>The <code>pando-sidecar</code> container with health probes, resource limits, and security context</li>
-                <li><code>shareProcessNamespace: true</code> (required for sidecar observation)</li>
-                <li>The <code>pando-sidecar</code> service account reference</li>
-                <li>License key from a Kubernetes Secret (not inline)</li>
-                <li>Downward API environment variables (<code>POD_NAME</code>, <code>POD_NAMESPACE</code>)</li>
-            </ul>
-
-            <p>This is the same injection performed by <code>inject-pandocore.sh</code>, but automated cluster-wide.</p>
-
-            <h2>Label Reference</h2>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Label / Annotation</th>
-                        <th>Type</th>
-                        <th>Values</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><code>pandocore.io/protect</code></td>
-                        <td>Label</td>
-                        <td><code>"true"</code></td>
-                        <td>Enables sidecar injection for pods with this label</td>
-                    </tr>
-                    <tr>
-                        <td><code>pandocore.io/mode</code></td>
-                        <td>Annotation</td>
-                        <td><code>"monitor"</code>, <code>"alert"</code>, <code>"isolate"</code>, <code>"enforce"</code>, <code>"debug"</code></td>
-                        <td>Overrides the default operating mode for this pod. See <a href="/docs/operating-modes">Operating Modes</a>.</td>
-                    </tr>
-                    <tr>
-                        <td><code>pandocore.io/profile</code></td>
-                        <td>Annotation</td>
-                        <td><code>"http-server"</code></td>
-                        <td>Marks the workload as an HTTP server regardless of image name or CMD. Applies HTTP-tuned detection behavior and sensitivity. Use this when your framework (Django, FastAPI, Flask, Express, Rails, etc.) runs on a language base image or inside a shell-wrapped entrypoint.</td>
-                    </tr>
-                    <tr>
-                        <td><code>pandocore.io/audit-network</code></td>
-                        <td>Annotation</td>
-                        <td><code>"true"</code> or <code>"false"</code></td>
-                        <td>Per-pod override for the cluster-wide <code>networkAudit.enabled</code> Helm value. When enabled, the sidecar baselines the set of remote IPs during learning and emits attestation evidence on connections to addresses outside the baseline + allowlist. Detects in-process exfil beacons and C2 callbacks that entropy drift alone cannot disambiguate.</td>
-                    </tr>
-                    <tr>
-                        <td><code>pandocore.io/network-allowlist</code></td>
-                        <td>Annotation</td>
-                        <td>Comma-separated CIDRs</td>
-                        <td>Per-pod override for <code>networkAudit.allowlistCIDRs</code>. Connections to addresses inside any allowlisted CIDR are never flagged. Example: <code>"10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"</code>.</td>
-                    </tr>
-                </tbody>
-            </table>
-
-            <h3>HTTP-server auto-detection</h3>
-
-            <p>The webhook sets <code>PANDO_HTTP_SERVER=true</code> automatically from any of three signals, so you rarely need to set the profile annotation by hand:</p>
-
-            <ol>
-                <li><strong>Image-pattern match.</strong> Purpose-built web-server images: <code>nginx</code>, <code>caddy</code>, <code>apache</code>, <code>traefik</code>, <code>envoy</code>, <code>haproxy</code>, <code>lighttpd</code>, <code>openresty</code>, <code>httpd</code>.</li>
-                <li><strong>CMD/args basename match.</strong> Common Python, Node, and Ruby framework server entrypoints running on language base images (<code>python:*</code>, <code>node:*</code>, etc.) are auto-tagged by the webhook.</li>
-                <li><strong>Profile annotation.</strong> <code>pandocore.io/profile: http-server</code> on the pod template.</li>
-            </ol>
-
-            <div class="docs-callout info">
-                <div class="docs-callout-title">Shell-wrapped entrypoints</div>
-                <p>CMD/args basename matching looks at <code>command[0]</code>. If your Dockerfile or Helm chart uses <code>sh -c "exec uvicorn main:app --host 0.0.0.0"</code>, the webhook sees <code>sh</code>, not <code>uvicorn</code>, and will not auto-tag. Add <code>pandocore.io/profile: http-server</code> to the pod template to cover this case.</p>
+            <div class="docs-callout warning">
+                <div class="docs-callout-title">Deprecated, November 2026</div>
+                <p>The admission webhook, and the injected sidecar it created, are deprecated and receive no further release. PandoCore now installs as a node sensor: one DaemonSet pod per node, plus a cluster controller. Nothing is injected into your workloads, and no webhook sits in the path of pod creation.</p>
             </div>
 
-            <p>Workloads that are <em>not</em> HTTP servers (Celery workers, ETL jobs, Jupyter notebooks, ML batch jobs) should be left untagged; the default profile is tuned for their behavior, and incorrectly marking them would mistune sensitivity.</p>
+            <h2>What replaced it</h2>
 
-            <h2>Configuration</h2>
+            <p>The webhook mutated pods at admission time, adding a detector container to pods labelled <code>pandocore.io/protect: "true"</code>. The node sensor instead watches the workloads already running on its node, so there is no admission step, no pod mutation, and no restart needed to start or stop watching a workload.</p>
 
-            <p>The webhook is configured via Helm values:</p>
+            <p>The label still matters, with its sense reversed: a pod now opts <em>out</em>, with the exact string <code>pandocore.io/protect: "false"</code>. The old <code>"true"</code> value has no effect.</p>
 
-            <table>
-                <thead>
-                    <tr>
-                        <th>Value</th>
-                        <th>Default</th>
-                        <th>Description</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><code>licenseKey</code></td>
-                        <td><em>(required)</em></td>
-                        <td>Your PandoCore license key</td>
-                    </tr>
-                    <tr>
-                        <td><code>defaultMode</code></td>
-                        <td><code>monitor</code></td>
-                        <td>Default operating mode for injected sidecars. One of <code>monitor</code>, <code>alert</code>, <code>isolate</code>, <code>enforce</code>.</td>
-                    </tr>
-                    <tr>
-                        <td><code>excludedNamespaces</code></td>
-                        <td><code>[kube-system, kube-public, kube-node-lease]</code></td>
-                        <td>Namespaces where injection is always skipped</td>
-                    </tr>
-                    <tr>
-                        <td><code>sidecar.image</code></td>
-                        <td>Latest sidecar from registry</td>
-                        <td>Sidecar container image to inject</td>
-                    </tr>
-                    <tr>
-                        <td><code>replicas</code></td>
-                        <td><code>2</code></td>
-                        <td>Webhook server replicas (2 recommended for HA)</td>
-                    </tr>
-                    <tr>
-                        <td><code>tls.certManager</code></td>
-                        <td><code>false</code></td>
-                        <td>Use cert-manager for TLS (otherwise self-signed)</td>
-                    </tr>
-                    <tr>
-                        <td><code>networkAudit.enabled</code></td>
-                        <td><code>false</code></td>
-                        <td>Cluster-wide default for the network connection audit (Phase H5.2). Per-pod override via the <code>pandocore.io/audit-network</code> annotation.</td>
-                    </tr>
-                    <tr>
-                        <td><code>networkAudit.allowlistCIDRs</code></td>
-                        <td><code>"10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,127.0.0.0/8,fd00::/8"</code></td>
-                        <td>Comma-separated CIDRs that are never flagged as unexpected. Default covers RFC1918, loopback, and ULA. Per-pod override via the <code>pandocore.io/network-allowlist</code> annotation.</td>
-                    </tr>
-                </tbody>
-            </table>
+            <h2>Where to go instead</h2>
 
-            <h2>Per-Namespace Setup</h2>
-
-            <p>Each namespace with protected pods needs two resources:</p>
-
-            <pre><code># 1. ServiceAccount for the sidecar
-kubectl create serviceaccount pando-sidecar -n your-namespace
-
-# 2. RoleBinding to the cluster-wide sidecar ClusterRole
-kubectl create rolebinding pando-sidecar \
-  --clusterrole=pando-sidecar \
-  --serviceaccount=your-namespace:pando-sidecar \
-  -n your-namespace
-
-# 3. Copy the license Secret into the namespace
-kubectl create secret generic pando-license \
-  --from-literal=license-key="YOUR_LICENSE_KEY" \
-  -n your-namespace</code></pre>
-
-            <h2>Upgrading</h2>
-
-            <pre><code># Upgrade the webhook (picks up new sidecar image + webhook config)
-helm upgrade pando-webhook \
-  oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-webhook \
-  --set licenseKey="YOUR_LICENSE_KEY"
-
-# Existing pods are NOT affected. To inject the new sidecar version,
-# restart protected deployments:
-kubectl rollout restart deployment/your-app -n your-namespace</code></pre>
-
-            <h2 id="troubleshooting">Troubleshooting</h2>
-
-            <h3>Sidecar not being injected</h3>
-            <ul>
-                <li>Verify the label: <code>kubectl get pod &lt;name&gt; --show-labels</code></li>
-                <li>Check the namespace is not excluded: <code>helm get values pando-webhook -n pando-system</code></li>
-                <li>Check webhook logs: <code>kubectl logs -n pando-system -l app.kubernetes.io/name=pando-webhook</code></li>
-                <li>Verify the webhook is registered: <code>kubectl get mutatingwebhookconfigurations</code></li>
+            <ul role="list">
+                <li><a href="/docs/getting-started">Getting Started</a> installs the node sensor and the controller.</li>
+                <li><a href="/docs/configuration">Configuration</a> covers the opt-out label and the per-node settings.</li>
+                <li><a href="/docs/operating-modes">Operating Modes</a> covers what the sensor is permitted to do, and how to raise that ceiling.</li>
+                <li><a href="/docs/upgrading">Upgrading</a> is the path off the webhook if you are running it today.</li>
+                <li><a href="https://trust.pandocore.io">Trust Center</a> states what the sensor runs as, what it reads, and what it is not granted.</li>
             </ul>
 
-            <h3>TLS certificate issues</h3>
-            <ul>
-                <li>Check the TLS setup job completed: <code>kubectl get jobs -n pando-system</code></li>
-                <li>Verify the TLS secret exists: <code>kubectl get secret -n pando-system | grep tls</code></li>
-                <li>If using cert-manager, check the Certificate resource: <code>kubectl get certificates -n pando-system</code></li>
-            </ul>
-
-            <h3>Pod creation failing</h3>
-            <p>The webhook is configured with <code>failurePolicy: Ignore</code>, so webhook failures will not block pod creation. If pods are failing for other reasons after injection, check:</p>
-            <ul>
-                <li>The license Secret exists in the pod's namespace</li>
-                <li>The <code>pando-sidecar</code> ServiceAccount exists in the pod's namespace</li>
-                <li>The sidecar image is pullable (check image pull secrets)</li>
-            </ul>
+            <p>This page keeps its URL so existing links and bookmarks do not break.</p>
         </main>
     </div>
 
@@ -278,12 +126,18 @@ kubectl rollout restart deployment/your-app -n your-namespace</code></pre>
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <p class="footer-links"><a href="https://trust.pandocore.io">Trust Center</a></p>
+                <p class="footer-links">
+                    <a href="/docs/">Docs</a>
+                    <a href="/pricing">Pricing</a>
+                    <a href="/blog/">Blog</a>
+                    <a href="/contact">Contact</a>
+                    <a href="https://trust.pandocore.io">Trust Center</a>
+                </p>
                 <p>&copy; 2026 PandoCore Inc. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
-    <script src="../js/main.js"></script>
+    <script src="/js/main.js"></script>
 </body>
 </html>

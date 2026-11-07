@@ -4,9 +4,19 @@
  */
 
 // EmailJS Configuration
-// These values are replaced during build by environment variables
+//
+// These literals ship exactly as written. There is no build step and nothing
+// substitutes them, whatever an older comment here used to claim; that comment
+// was wrong and it is the reason a rotated key could sit unfixed.
+//
+// The public key is not a secret. EmailJS sends it as `user_id` and it is meant
+// to ship in client-side JS, so editing it here is the fix, not a workaround.
+//
+// A wrong key fails silently: the form reports no error and the message is
+// never delivered. After rotating, submit the form once on the deployed site
+// and confirm the mail arrives. Nothing on the page will tell you otherwise.
 const EMAILJS_CONFIG = {
-    publicKey: 'QOE9Vl1cBq8l2TlPN',
+    publicKey: 'VdBU9EQjbYtG0R6UG',
     serviceId: 'service_1q1byab',
     templateId: 'template_1zf3ykh'
 };
@@ -25,13 +35,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Smooth scroll for anchor links
-    initializeSmoothScroll();
     
     // Initialize mobile menu
     initializeMobileMenu();
 
     // Render blog cards (only runs on the blog index page)
     initializeBlogIndex();
+
+    // Add copy controls to command blocks
+    initializeCopyButtons();
+
+    // Collapse the docs sidebar list on narrow viewports
+    initializeDocsSidebar();
+
+    // Reveal the mobile conversion bar once the hero scrolls away
+    initializeMobileCtaBar();
 });
 
 /**
@@ -73,7 +91,12 @@ function initializeBlogIndex() {
             });
         })
         .catch(function() {
-            showBlogMessage(grid, 'Posts are unavailable right now. Please try again later.');
+            // Leave the static fallback list in place. Replacing it put the
+            // reader at a hard dead end on the only route to eight posts.
+            const note = document.createElement('p');
+            note.className = 'blog-empty';
+            note.textContent = 'Could not load the full post list. Every post is linked below.';
+            grid.insertBefore(note, grid.firstChild);
         });
 }
 
@@ -105,6 +128,9 @@ function buildBlogCard(post) {
         body.appendChild(meta);
     }
 
+    // h3 under the "All Posts" h2 in blog/index.html. That heading is what keeps
+    // the outline from skipping; promoting the cards themselves to h2 instead
+    // would have given h2 a fourth size on the site.
     const title = document.createElement('h3');
     title.className = 'blog-card-title';
     title.textContent = post.title || 'Untitled';
@@ -176,7 +202,9 @@ function initializeMobileMenu() {
         }
         
         // Prevent body scroll when menu is open
-        document.body.style.overflow = navLinks.classList.contains('active') ? 'hidden' : '';
+        const isOpen = navLinks.classList.contains('active');
+        document.body.style.overflow = isOpen ? 'hidden' : '';
+        setPageInert(isOpen);
     });
     
     // Close menu when clicking overlay
@@ -202,10 +230,35 @@ function initializeMobileMenu() {
     
     // Close menu on window resize to desktop
     window.addEventListener('resize', debounce(function() {
-        if (window.innerWidth > 767 && navLinks.classList.contains('active')) {
+        // 1023, matching the nav drawer's media query in styles.css. If these
+        // two ever disagree the drawer is stuck open or cannot be closed.
+        if (window.innerWidth > 1023 && navLinks.classList.contains('active')) {
             closeMobileMenu();
         }
     }, 100));
+}
+
+/**
+ * Make everything outside the navbar inert while the drawer is open.
+ *
+ * The drawer is a modal: an overlay is painted over the page and body scroll is
+ * locked. Without this, Tab walked the eight drawer links and then carried on
+ * into the page behind the overlay, and because the scroll lock still held, the
+ * stops past the fold could not be scrolled to or even seen. WCAG 2.4.3.
+ *
+ * The header is deliberately left alone - it holds the drawer, the toggle and
+ * the logo, which all stay visible and operable. The skip link goes inert with
+ * its target, because skipping into inert content would do nothing.
+ *
+ * `inert` is a no-op in browsers that do not support it, which leaves the old
+ * behaviour rather than a broken drawer.
+ */
+function setPageInert(isInert) {
+    document
+        .querySelectorAll('.skip-to-main, main, footer, .mobile-cta-bar')
+        .forEach(function(el) {
+            el.inert = isInert;
+        });
 }
 
 /**
@@ -228,8 +281,20 @@ function closeMobileMenu() {
     if (navOverlay) {
         navOverlay.classList.remove('active');
     }
-    
+
     document.body.style.overflow = '';
+    setPageInert(false);
+
+    // Return focus to the control that opened it, but only if focus is still
+    // inside the drawer we are closing. The links go visibility: hidden, so
+    // without this the active element is destroyed and focus falls to <body>:
+    // the next Tab restarts in the page content, past the whole navbar.
+    // Guarded because this also runs on resize and on link activation, and
+    // stealing focus back from a page the reader has just navigated to, or
+    // from wherever they happen to be at 1024px, would be worse than the bug.
+    if (mobileMenuToggle && navLinks && navLinks.contains(document.activeElement)) {
+        mobileMenuToggle.focus();
+    }
 }
 
 /**
@@ -260,10 +325,14 @@ function initializeContactForm(form) {
         validateMessage(this.value);
     });
 
-    // Clear error on focus
+    // Clear the error once the field is being corrected, not on focus. On focus
+    // it wiped the message the instant a keyboard user tabbed into the field,
+    // so a screen reader never got to read it.
     [nameInput, emailInput, subjectInput, messageInput].forEach(input => {
-        input.addEventListener('focus', function() {
-            clearError(this);
+        input.addEventListener('input', function() {
+            if (this.hasAttribute('aria-invalid')) {
+                clearError(this);
+            }
         });
     });
 
@@ -279,6 +348,25 @@ function initializeContactForm(form) {
 
         if (!isNameValid || !isEmailValid || !isSubjectValid || !isMessageValid) {
             showFormStatus('error', 'Please fix the errors above before submitting.');
+            // Then send the reader to the first problem. Focus used to stay on
+            // the submit button, so on a phone the only signal was a status
+            // line and four messages they had already scrolled past, with
+            // nothing indicating which field to go back to.
+            const firstInvalid = form.querySelector('[aria-invalid="true"]');
+            if (firstInvalid) {
+                firstInvalid.focus();
+            }
+            return false;
+        }
+
+        // The EmailJS SDK is a third-party script. If it was blocked, failed to
+        // load, or is still in flight, emailjs.send() throws a ReferenceError
+        // from inside this handler: the button sticks on "Sending...", the live
+        // region never updates, and the message is gone. That is the silent
+        // failure the config comment at the top of this file warns about, on the
+        // only inbound channel the site has.
+        if (typeof emailjs === 'undefined' || typeof emailjs.send !== 'function') {
+            showFormStatus('error', 'The message form could not load, so this would not have reached us. Please email', 'eliot@pandocore.io');
             return false;
         }
 
@@ -309,7 +397,9 @@ function initializeContactForm(form) {
                 submitButton.textContent = 'Send Message';
             }, function(error) {
                 console.error('FAILED...', error);
-                showFormStatus('error', 'Failed to send message. Please try again or contact us directly via LinkedIn or X.');
+                // Names a route that exists on this page. It used to point at an
+                // X link, and there has never been one here.
+                showFormStatus('error', 'Could not send your message. Please try again, or email', 'eliot@pandocore.io');
                 
                 // Re-enable button
                 submitButton.disabled = false;
@@ -398,15 +488,14 @@ function validateMessage(value) {
  * Show error message for a field
  */
 function showError(errorElement, message) {
-    if (errorElement) {
-        errorElement.textContent = message;
-        errorElement.style.display = 'block';
-        
-        // Add error styling to input
-        const input = errorElement.previousElementSibling;
-        if (input) {
-            input.style.borderColor = 'var(--error-red)';
-        }
+    if (!errorElement) return;
+    // No display toggling: role="alert" only fires for content that appears in
+    // an element already in the layout, and an empty .error-message is 0px tall
+    // anyway. No inline borderColor either - aria-invalid carries the styling.
+    errorElement.textContent = message;
+    const input = errorElement.previousElementSibling;
+    if (input && input.matches('input, select, textarea')) {
+        input.setAttribute('aria-invalid', 'true');
     }
 }
 
@@ -417,49 +506,49 @@ function clearError(input) {
     const errorElement = input.nextElementSibling;
     if (errorElement && errorElement.classList.contains('error-message')) {
         errorElement.textContent = '';
-        errorElement.style.display = 'none';
     }
-    input.style.borderColor = '';
+    input.removeAttribute('aria-invalid');
 }
 
 /**
- * Show form submission status
+ * Show form submission status.
+ *
+ * `fallbackEmail` appends a mailto link after the message, for the paths where
+ * the form itself is what broke and a second route is the only useful thing we
+ * can offer. Built with createElement so the status line never takes markup.
  */
-function showFormStatus(type, message) {
+function showFormStatus(type, message, fallbackEmail) {
     const formStatus = document.getElementById('formStatus');
     if (formStatus) {
+        // No display toggling. The element carries role="status" aria-live, and
+        // a live region that is display: none is not in the accessibility tree,
+        // so setting its text first and revealing it second changed the text
+        // while nothing was observing: the submit result could land silently.
+        // It is always rendered now and collapses while empty (.form-status:empty).
         formStatus.className = 'form-status ' + type;
         formStatus.textContent = message;
-        formStatus.style.display = 'block';
-        
+
+        if (fallbackEmail) {
+            const link = document.createElement('a');
+            link.href = 'mailto:' + fallbackEmail;
+            link.textContent = fallbackEmail;
+            formStatus.appendChild(document.createTextNode(' '));
+            formStatus.appendChild(link);
+            formStatus.appendChild(document.createTextNode('.'));
+        }
+
         // Scroll to status message
         formStatus.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 }
 
-/**
- * Initialize smooth scrolling for anchor links
- */
-function initializeSmoothScroll() {
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-            const href = this.getAttribute('href');
-            
-            // Only handle internal anchors, not empty ones
-            if (href && href !== '#') {
-                e.preventDefault();
-                const target = document.querySelector(href);
-                
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            }
-        });
-    });
-}
+// Anchor scrolling is deliberately left to the browser. `html { scroll-behavior:
+// smooth; scroll-padding-top }` in styles.css does the scroll, and the
+// prefers-reduced-motion block there turns it off. A click handler that called
+// preventDefault() here set no hash (so Back left the site), never moved focus to
+// the target despite its tabindex="-1" (WCAG 2.4.1), passed behavior: 'smooth'
+// explicitly (overriding reduced motion in Chrome) and ignored scroll-padding-top
+// (landing targets under the sticky nav). Do not reintroduce it.
 
 /**
  * Handle Netlify form success (redirect after submission)
@@ -484,6 +573,35 @@ handleFormSuccess();
  * Utility: Debounce function for input validation
  * Helps prevent excessive validation during typing
  */
+/**
+ * The docs sidebar list ships with `open` so it is correct on a desktop with no
+ * JavaScript, and so a phone without JavaScript still gets every link. Here we
+ * close it at the width where docs.css turns it into a wrapped chip cloud: open,
+ * those 14 links pushed the h1 roughly 700px down the page.
+ *
+ * 1023 matches the `@media (max-width: 1023px)` block in css/docs.css, and it
+ * is the same width the nav drawer uses. The two have to move together. It was
+ * 900, which left 901-1023 running a hamburger nav beside a fixed sidebar and
+ * squeezed the content column to 545px - narrower than at 900.
+ */
+function initializeDocsSidebar() {
+    const disclosure = document.querySelector('.docs-nav-disclosure');
+    if (!disclosure) return;
+
+    let wide = window.innerWidth > 1023;
+    disclosure.open = wide;
+
+    // Only act when the breakpoint is actually crossed, so a reader who opened
+    // the list on a phone does not have it shut on them by a scrollbar resize.
+    window.addEventListener('resize', debounce(function() {
+        const nowWide = window.innerWidth > 1023;
+        if (nowWide !== wide) {
+            wide = nowWide;
+            disclosure.open = nowWide;
+        }
+    }, 150));
+}
+
 function debounce(func, wait) {
     let timeout;
     return function executedFunction(...args) {
@@ -494,4 +612,116 @@ function debounce(func, wait) {
         clearTimeout(timeout);
         timeout = setTimeout(later, wait);
     };
+}
+
+/**
+ * Adds a copy control to every command block.
+ *
+ * The block it exists for is the two-chart install on the homepage: a reader
+ * who was forwarded the link is there to run those commands, and on a phone the
+ * `<pre>` scrolls horizontally, so the chart coordinates are the part they
+ * cannot reach. Selecting wrapped text by hand on a touch screen is the worst
+ * case this fixes.
+ *
+ * Nothing is injected when the Clipboard API is unavailable: a visible button
+ * that silently fails is worse than no button. `writeText` needs a secure
+ * context, so this is a no-op over plain http other than localhost.
+ */
+function initializeCopyButtons() {
+    if (!navigator.clipboard || typeof navigator.clipboard.writeText !== 'function') {
+        return;
+    }
+
+    const blocks = document.querySelectorAll('.content-wrapper pre, .docs-content pre');
+
+    blocks.forEach(function(pre) {
+        const code = pre.querySelector('code');
+        if (!code || pre.parentElement.classList.contains('code-block-wrapper')) {
+            return;
+        }
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'code-block-wrapper';
+        pre.parentNode.insertBefore(wrapper, pre);
+        wrapper.appendChild(pre);
+
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'copy-button';
+        button.textContent = 'Copy';
+        // The block has no accessible name of its own, so say what is copied.
+        button.setAttribute('aria-label', 'Copy command to clipboard');
+        wrapper.appendChild(button);
+
+        let revert = null;
+
+        button.addEventListener('click', function() {
+            navigator.clipboard.writeText(code.textContent).then(function() {
+                setState('Copied', 'Command copied to clipboard', true);
+            }).catch(function() {
+                // Permission denied or a non-secure context that slipped past
+                // the guard above. Say so rather than showing a false success.
+                setState('Press Ctrl+C', 'Copying failed, select the text and copy manually', false);
+            });
+        });
+
+        function setState(label, description, copied) {
+            button.textContent = label;
+            button.setAttribute('aria-label', description);
+            button.classList.toggle('copied', copied);
+            window.clearTimeout(revert);
+            revert = window.setTimeout(function() {
+                button.textContent = 'Copy';
+                button.setAttribute('aria-label', 'Copy command to clipboard');
+                button.classList.remove('copied');
+            }, 2000);
+        }
+    });
+}
+
+
+/**
+ * Reveal the fixed mobile "Start free" bar once the hero buttons scroll out of
+ * view, and hide it again when they return.
+ *
+ * Only index.html carries the bar, so this is a no-op everywhere else. The bar
+ * is hidden above 1024px by CSS alone; the observer still runs there, which is
+ * harmless, because toggling a class on an element with `display: none` paints
+ * nothing. Bailing out without IntersectionObserver leaves the bar in its
+ * CSS resting state, translated off-screen, rather than stuck open.
+ */
+function initializeMobileCtaBar() {
+    const bar = document.getElementById('mobile-cta-bar');
+
+    if (!bar || typeof IntersectionObserver !== 'function') {
+        return;
+    }
+
+    // Every in-page call to action. While any one of them is on screen the bar
+    // is a duplicate of a button the reader can already press, which is most
+    // visible at the very bottom where the pilot CTA and the bar would show
+    // two identical "Start free" buttons at once. .pricing-cta is in the list
+    // because /pricing's Free card carries its own "Start free".
+    const inPageCtas = document.querySelectorAll('.hero-buttons, .cta-actions, .pricing-cta');
+
+    if (!inPageCtas.length) {
+        return;
+    }
+
+    const onScreen = new Set();
+
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+            if (entry.isIntersecting) {
+                onScreen.add(entry.target);
+            } else {
+                onScreen.delete(entry.target);
+            }
+        });
+        bar.classList.toggle('is-visible', onScreen.size === 0);
+    });
+
+    inPageCtas.forEach(function(el) {
+        observer.observe(el);
+    });
 }

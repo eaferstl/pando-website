@@ -3,77 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="PandoCore controller - An in-cluster StatefulSet that receives sidecar evidence over mTLS, spools it durably, and delivers it to your SIEM, Slack and the portal.">
+    <meta name="description" content="The in-cluster StatefulSet that receives sensor evidence over mTLS, spools it durably, and delivers it to your SIEM, Slack and the portal.">
     <title>Controller | PandoCore Docs</title>
     <link rel="canonical" href="https://pandocore.io/docs/controller">
-    <link rel="icon" type="image/png" href="../images/favicon.png">
+
+    <!-- Social share preview: this page gets forwarded. -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Controller | PandoCore Docs">
+    <meta property="og:description" content="The in-cluster StatefulSet that receives sensor evidence over mTLS, spools it durably, and delivers it to your SIEM, Slack and the portal.">
+    <meta property="og:url" content="https://pandocore.io/docs/controller">
+    <meta property="og:image" content="https://pandocore.io/images/og-default.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="icon" type="image/png" href="/images/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/docs.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/docs.css">
+    <noscript><link rel="stylesheet" href="/css/noscript.css"></noscript>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
-    <!-- Navigation -->
+    <!-- Navigation. Wrapped in a banner landmark: the site nav was a bare
+         nav element, so no page exposed a banner to assistive tech. -->
+    <header>
     <nav class="navbar">
         <div class="container">
             <div class="nav-wrapper">
                 <a href="/" class="logo">
-                    <img src="../images/logoTransparency.png" alt="Pando Logo">
+                    <img src="/images/logo-nav.png" alt="PandoCore" width="92" height="120">
                     <div class="logo-text-wrapper">
                         <span class="logo-text">PandoCore</span>
                     </div>
                 </a>
-                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="primary-nav">
                     <span></span>
                     <span></span>
                     <span></span>
                 </button>
                 <div class="nav-overlay"></div>
-                <ul class="nav-links">
+                <ul class="nav-links" role="list" id="primary-nav">
                     <li><a href="/">Home</a></li>
                     <li><a href="/product">Product</a></li>
                     <li><a href="/pricing">Pricing</a></li>
                     <li><a href="/about">About</a></li>
                     <li><a href="/blog/">Blog</a></li>
-                    <li><a href="/docs/" class="active">Docs</a></li>
+                    <li><a href="/docs/" class="active" aria-current="page">Docs</a></li>
                     <li><a href="/contact" class="nav-contact">Contact</a></li>
                     <li><a href="https://portal.pandocore.io/signup" class="nav-signup">Sign Up</a></li>
                 </ul>
             </div>
         </div>
     </nav>
-
-    <!-- Docs Hero -->
-    <section class="docs-hero">
-        <div class="container">
-            <h2>Controller</h2>
-            <p>An optional in-cluster component that takes evidence delivery off the sidecar.</p>
-        </div>
-    </section>
+    </header>
 
     <!-- Documentation Layout -->
     <div class="docs-layout">
         <!-- Sidebar Navigation -->
-        <aside class="docs-sidebar">
-            <h3>Documentation</h3>
-            <ul class="docs-nav">
-                <li><a href="/docs/">Overview</a></li>
-                <li><a href="/docs/getting-started">Getting Started</a></li>
-                <li><a href="/docs/webhook">Admission Webhook</a></li>
-                <li><a href="/docs/controller" class="active">Controller</a></li>
-                <li><a href="/docs/dashboard">Dashboard</a></li>
-                <li><a href="/docs/configuration">Configuration</a></li>
-                <li><a href="/docs/policy">CRD Policy</a></li>
-                <li><a href="/docs/operating-modes">Operating Modes</a></li>
-                <li><a href="/docs/production-hardening">Production Hardening</a></li>
-                <li><a href="/docs/upgrading">Upgrading</a></li>
-                <li><a href="/docs/troubleshooting">Troubleshooting</a></li>
-                <li><a href="/docs/emergency">Emergency Procedures</a></li>
-                <li><a href="/docs/evidence-format">Evidence Format</a></li>
-                <li><a href="/docs/faq">FAQ</a></li>
-            </ul>
+        <aside class="docs-sidebar" aria-label="Documentation">
+            <details class="docs-nav-disclosure" open>
+                <summary class="docs-sidebar-title">Documentation</summary>
+                <ul class="docs-nav" role="list">
+                    <li><a href="/docs/">Overview</a></li>
+                    <li><a href="/docs/getting-started">Getting Started</a></li>
+                    <li><a href="/docs/controller" class="active" aria-current="page">Controller</a></li>
+                    <li><a href="/docs/dashboard">Dashboard</a></li>
+                    <li><a href="/docs/configuration">Configuration</a></li>
+                    <li><a href="/docs/policy">CRD Policy</a></li>
+                    <li><a href="/docs/operating-modes">Operating Modes</a></li>
+                    <li><a href="/docs/production-hardening">Production Hardening</a></li>
+                    <li><a href="/docs/upgrading">Upgrading</a></li>
+                    <li><a href="/docs/troubleshooting">Troubleshooting</a></li>
+                    <li><a href="/docs/emergency">Emergency Procedures</a></li>
+                    <li><a href="/docs/evidence-format">Evidence Format</a></li>
+                    <li><a href="/docs/faq">FAQ</a></li>
+                    <li><a href="/docs/webhook">Admission Webhook (deprecated)</a></li>
+                </ul>
+
+                <a href="https://portal.pandocore.io/signup" class="btn btn-primary docs-sidebar-cta">Start free</a>
+            </details>
         </aside>
 
         <!-- Main Content -->
@@ -86,30 +94,35 @@
 
             <h1>Controller</h1>
 
-            <p>The controller is a StatefulSet that receives evidence from sidecars over mTLS, writes it to a durable spool, and owns delivery to your SIEM, Slack and the portal. Without it, each sidecar handles its own delivery from an <code>emptyDir</code> that dies with the pod.</p>
 
-            <div class="docs-callout info">
-                <div class="docs-callout-title">Optional, and separately installed</div>
-                <p>The controller is its own Helm chart, currently <code>0.1.0</code>. The <code>pando-webhook</code> chart does not install it, and sidecars run and detect without it.</p>
+            <p class="docs-subtitle">The in-cluster component that receives evidence and owns every outbound destination.</p>
+
+            <p>The controller is a StatefulSet that receives evidence from the node sensors over mTLS, writes it to a durable spool, and owns delivery to your SIEM, Slack and the portal. Centralising delivery is what keeps third-party credentials out of every node: the sensor holds none of them.</p>
+
+            <div class="docs-callout warning">
+                <div class="docs-callout-title">Install it first, and install it</div>
+                <p>The controller is its own Helm chart and the node sensor chart does not install it. Install the controller first: the sensor mounts its client certificate Secret with <code>optional: false</code>, so a sensor installed without a controller fails to start rather than running with nowhere to send evidence. See <a href="/docs/getting-started">Getting Started</a> for the order.</p>
             </div>
 
             <h2>Install</h2>
 
             <pre><code>helm install pando-controller \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-controller \
+  --version 2.0.0 \
   --namespace pando-system --create-namespace \
   --set license.key="YOUR_LICENSE_KEY"</code></pre>
 
+            <p><code>--version</code> is not optional: installing an OCI chart without it fails outright rather than resolving to the newest release.</p>
+
             <p><code>license.key</code> is required unless you set <code>license.existingSecret.name</code> instead. <code>portalURL</code> is also required, and already carries the right default.</p>
 
-            <h2>Pointing Sidecars at It</h2>
+            <h2>How Sensors Find It</h2>
 
-            <p>Installing the chart does not route anything to it. Two steps connect the two halves:</p>
+            <p>Nothing to wire by hand. The sensor composes the controller's evidence URL from the <code>controller.*</code> values in its own chart, which default to the service name, namespace and port this chart publishes, so the two agree out of the box.</p>
 
-            <ol>
-                <li>Set <code>PANDO_CONTROLLER_URL</code> in the <code>pando-webhook</code> chart to the controller's evidence URL, which is <code>https://&lt;release&gt;-pando-controller.pando-system.svc:9443</code> with the defaults above</li>
-                <li>Mirror the <code>pando-controller-client-tls</code> Secret into every protected workload's namespace, so sidecars hold a client certificate</li>
-            </ol>
+            <p>That composition is deliberate rather than a convenience. An early live run dialled a hand-written <code>:8443</code> while the controller's Service has only ever published its evidence listener on <code>:9443</code>: the sensor reported a healthy channel, started its engines, and would have failed at the first detection, with hundreds of chart assertions green over it. If you override the controller's service name, namespace or port, override the matching <code>controller.*</code> value on the sensor rather than writing a URL.</p>
+
+            <p>The client certificate Secret, <code>pando-controller-client-tls</code>, is mounted by the sensor chart in <code>pando-system</code>. There is nothing to mirror into your workload namespaces, because nothing of PandoCore's runs there.</p>
 
             <h2>Ports</h2>
 
@@ -139,7 +152,7 @@
 
             <p>The controller runs unprivileged and holds no Kubernetes API access at all:</p>
 
-            <ul>
+            <ul role="list">
                 <li><code>runAsNonRoot</code>, UID 1000, <code>readOnlyRootFilesystem</code>, <code>allowPrivilegeEscalation: false</code>, all capabilities dropped</li>
                 <li>No <code>hostPID</code>, <code>hostNetwork</code>, <code>hostIPC</code> or <code>hostPath</code> mounts</li>
                 <li>Its ServiceAccount is deliberately bound to no Role and no ClusterRole. The controller reads a file and answers a socket; it never calls the API server</li>
@@ -149,7 +162,7 @@
 
             <p>Each replica gets a PersistentVolumeClaim, <code>2Gi</code> by default. The default is 2 replicas, so that is two cluster-level volumes, not one per protected pod. It does not grow with the fleet.</p>
 
-            <p>The controller answers <code>202</code> only after an <code>fsync</code>, and replays whatever is on disk at startup. That is what makes it safe for the sidecar to drop a record once it has been accepted.</p>
+            <p>The controller answers <code>202</code> only after an <code>fsync</code>, and replays whatever is on disk at startup. That is what makes it safe for a sensor to drop a record once it has been accepted.</p>
 
             <div class="docs-callout warning">
                 <div class="docs-callout-title">The spool is a delivery hop, not a history</div>
@@ -158,15 +171,28 @@
 
             <h2>Per-Namespace Destinations</h2>
 
-            <p>When <code>destinations.enabled</code> is set, the controller mounts a Secret written by the admission webhook and re-reads it every 30 seconds. If the <code>pando-webhook</code> chart is not installed the mount is empty, the controller logs that once, and each namespace falls back to the portal and the environment baseline. The mount is optional by design, so the controller still starts.</p>
+            <p>When <code>destinations.enabled</code> is set, the controller mounts a Secret written by the destinations mirror and re-reads it every 30 seconds. The mirror is an unprivileged Deployment installed by the sensor chart, and it exists for a privilege reason: resolving a policy's <code>secretRef</code> needs cluster-wide <code>secrets get</code>, and that grant must not sit on a <code>hostPID</code> pod running as uid 0 on every node. One replica holds it instead.</p>
+
+            <p>If <code>mirror.enabled=false</code> on the sensor chart, nothing writes that Secret: the mount is empty, the controller logs it once, and each namespace falls back to the portal and the environment baseline. The mount is optional by design so the controller still starts, which means per-namespace integrations declared in a policy fail quietly rather than loudly. Check the controller's log line if a policy's destination seems to do nothing.</p>
 
             <h2>Next Steps</h2>
 
-            <ul>
-                <li><a href="/docs/evidence-format">Evidence Format</a>:The record schema the controller receives and forwards</li>
-                <li><a href="/docs/configuration">Configuration</a>:Full env var and Helm reference</li>
-                <li><a href="/docs/production-hardening">Production Hardening</a>:Sizing, posture and rollout guidance</li>
+            <ul role="list">
+                <li><a href="/docs/evidence-format">Evidence Format</a>: the record schema the controller receives and forwards</li>
+                <li><a href="/docs/configuration">Configuration</a>: every chart value with defaults and ranges</li>
+                <li><a href="/docs/production-hardening">Production Hardening</a>: sizing, posture and rollout guidance</li>
             </ul>
+
+            <nav class="docs-pager" aria-label="Documentation pages">
+                <a class="docs-pager-prev" href="/docs/getting-started" rel="prev">
+                    <span class="docs-pager-dir">Previous</span>
+                    <span class="docs-pager-title">Getting Started</span>
+                </a>
+                <a class="docs-pager-next" href="/docs/dashboard" rel="next">
+                    <span class="docs-pager-dir">Next</span>
+                    <span class="docs-pager-title">Dashboard</span>
+                </a>
+            </nav>
 
         </main>
     </div>
@@ -175,12 +201,18 @@
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <p class="footer-links"><a href="https://trust.pandocore.io">Trust Center</a></p>
+                <p class="footer-links">
+                    <a href="/docs/">Docs</a>
+                    <a href="/pricing">Pricing</a>
+                    <a href="/blog/">Blog</a>
+                    <a href="/contact">Contact</a>
+                    <a href="https://trust.pandocore.io">Trust Center</a>
+                </p>
                 <p>&copy; 2026 PandoCore Inc. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
-    <script src="../js/main.js"></script>
+    <script src="/js/main.js"></script>
 </body>
 </html>

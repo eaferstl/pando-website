@@ -3,37 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="PandoCore pricing: simple per-node plans for Kubernetes runtime security. Starter, Growth, and Enterprise tiers with transparent per-node rates.">
+    <meta name="description" content="PandoCore pricing: free on unlimited nodes for detection and alerting, $15 per node per month to add autonomous isolation. Free, Growth and Enterprise tiers.">
     <title>PandoCore | Pricing</title>
     <link rel="canonical" href="https://pandocore.io/pricing">
-    <link rel="icon" type="image/png" href="images/favicon.png">
+
+    <!-- Social share preview: this page gets forwarded. -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="PandoCore | Pricing">
+    <meta property="og:description" content="PandoCore pricing: free on unlimited nodes for detection and alerting, $15 per node per month to add autonomous isolation. Free, Growth and Enterprise tiers.">
+    <meta property="og:url" content="https://pandocore.io/pricing">
+    <meta property="og:image" content="https://pandocore.io/images/og-default.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="icon" type="image/png" href="/images/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <noscript><link rel="stylesheet" href="/css/noscript.css"></noscript>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
-    <!-- Navigation -->
+    <!-- Navigation. Wrapped in a banner landmark: the site nav was a bare
+         nav element, so no page exposed a banner to assistive tech. -->
+    <header>
     <nav class="navbar">
         <div class="container">
             <div class="nav-wrapper">
                 <a href="/" class="logo">
-                    <img src="images/logoTransparency.png" alt="Pando Logo">
+                    <img src="/images/logo-nav.png" alt="PandoCore" width="92" height="120">
                     <div class="logo-text-wrapper">
                         <span class="logo-text">PandoCore</span>
                     </div>
                 </a>
-                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="primary-nav">
                     <span></span>
                     <span></span>
                     <span></span>
                 </button>
                 <div class="nav-overlay"></div>
-                <ul class="nav-links">
+                <ul class="nav-links" role="list" id="primary-nav">
                     <li><a href="/">Home</a></li>
                     <li><a href="/product">Product</a></li>
-                    <li><a href="/pricing" class="active">Pricing</a></li>
+                    <li><a href="/pricing" class="active" aria-current="page">Pricing</a></li>
                     <li><a href="/about">About</a></li>
                     <li><a href="/blog/">Blog</a></li>
                     <li><a href="/docs/">Docs</a></li>
@@ -43,16 +54,18 @@
             </div>
         </div>
     </nav>
+    </header>
 
     <!-- Pricing Hero -->
-    <section id="main-content" tabindex="-1" class="page-hero">
+    <main id="main-content" tabindex="-1">
+    <section class="page-hero">
         <div class="wave-container">
             <div class="wave wave-layer-1"></div>
             <div class="wave wave-layer-2"></div>
         </div>
         <div class="container">
-            <h1>Simple, Per-Node Pricing</h1>
-            <p class="page-subtitle">Pay for the nodes you protect, and only those. Install PandoCore on every node in your fleet from day one. Monitor-only nodes are never billed, so your bill tracks the coverage you choose, not the size of your cluster.</p>
+            <h1>Free to detect. Paid to contain.</h1>
+            <p class="page-subtitle">Run PandoCore on as many nodes as you like, for nothing, and it will tell you when a workload starts behaving differently. You pay when you want it to act on that by itself.</p>
         </div>
     </section>
 
@@ -60,25 +73,26 @@
     <section class="content-section alt-bg">
         <div class="container">
             <div class="pricing-grid">
-                <!-- Starter -->
+                <!-- Free (plan key: starter) -->
                 <div class="pricing-card">
                     <div class="pricing-card-header">
-                        <h3 class="pricing-tier-name">Starter</h3>
-                        <p class="pricing-tier-tagline">For first clusters and evaluation</p>
+                        <h2 class="pricing-tier-name">Free</h2>
+                        <p class="pricing-tier-tagline">Detects and alerts. Never contains.</p>
                     </div>
                     <div class="pricing-price">
                         <span class="pricing-price-amount">Free</span>
                     </div>
                     <div class="pricing-meta">
-                        <div class="pricing-meta-row"><strong>5 protected nodes</strong> included</div>
-                        <div class="pricing-meta-row">Additional nodes monitor-only, never billed</div>
+                        <div class="pricing-meta-row"><strong>Unlimited nodes</strong></div>
                     </div>
-                    <ul class="pricing-features">
+                    <ul class="pricing-features" role="list">
+                        <li>Unlimited protected nodes</li>
                         <li>1 cluster</li>
-                        <li>Response modes up to autonomous isolation</li>
-                        <li>7-day event history</li>
-                        <li>No alert integrations</li>
-                        <li>Auto-issued on signup</li>
+                        <li>Detection and alerting</li>
+                        <li class="feature-absent"><span class="sr-only">Not included: </span>Autonomous isolation</li>
+                        <li class="feature-absent"><span class="sr-only">Not included: </span>External integrations</li>
+                        <li>7-day event history in the portal</li>
+                        <li>Auto-issued on signup, no card and no call</li>
                     </ul>
                     <a href="https://portal.pandocore.io/signup" class="btn btn-primary pricing-cta">Start free</a>
                 </div>
@@ -87,8 +101,8 @@
                 <div class="pricing-card pricing-card-featured">
                     <div class="pricing-badge">Recommended</div>
                     <div class="pricing-card-header">
-                        <h3 class="pricing-tier-name">Growth</h3>
-                        <p class="pricing-tier-tagline">For production clusters at scale</p>
+                        <h2 class="pricing-tier-name">Growth</h2>
+                        <p class="pricing-tier-tagline">Adds autonomous isolation</p>
                     </div>
                     <div class="pricing-price">
                         <span class="pricing-price-amount">$15</span>
@@ -96,41 +110,50 @@
                     </div>
                     <div class="pricing-meta">
                         <div class="pricing-meta-row">Up to <strong>150 protected nodes</strong></div>
-                        <div class="pricing-meta-row">Monitor-only nodes never billed</div>
                     </div>
-                    <ul class="pricing-features">
-                        <li>Any number of clusters</li>
-                        <li>All response modes, up to autonomous termination</li>
-                        <li>All integrations (SIEM, Slack, PagerDuty)</li>
+                    <ul class="pricing-features" role="list">
+                        <li>Up to 150 protected nodes</li>
+                        <li>Unlimited clusters</li>
+                        <li>Detection and alerting</li>
+                        <li>Autonomous isolation on novel behaviour, with alerting as the floor</li>
+                        <li>SIEM (Splunk, Elastic, Datadog, syslog) and Slack integrations</li>
                         <li>90-day event history</li>
+                        <li>Issued against an invoice</li>
                     </ul>
-                    <a href="https://calendar.proton.me/bookings#wchS9JFz7Sg34QFZ593-UxZnQx0lhS0q_JtB-zyAnTQ=" target="_blank" rel="noopener noreferrer" class="btn btn-primary pricing-cta">Contact Us</a>
+                    <a href="https://calendar.proton.me/bookings#wchS9JFz7Sg34QFZ593-UxZnQx0lhS0q_JtB-zyAnTQ=" target="_blank" rel="noopener noreferrer" class="btn btn-secondary pricing-cta" aria-label="Let's talk about the Growth plan">Let's Talk</a>
                 </div>
 
                 <!-- Enterprise -->
                 <div class="pricing-card">
                     <div class="pricing-card-header">
-                        <h3 class="pricing-tier-name">Enterprise</h3>
+                        <h2 class="pricing-tier-name">Enterprise</h2>
                         <p class="pricing-tier-tagline">For regulated and multi-cluster fleets</p>
                     </div>
                     <div class="pricing-price">
                         <span class="pricing-price-amount">Custom</span>
                     </div>
                     <div class="pricing-meta">
-                        <div class="pricing-meta-row">No node limits</div>
+                        <div class="pricing-meta-row">No node limit</div>
                     </div>
-                    <ul class="pricing-features">
-                        <li>Any number of clusters</li>
-                        <li>All response modes, up to autonomous termination</li>
-                        <li>All integrations (SIEM, Slack, PagerDuty)</li>
-                        <li>1-year+ event history</li>
-                        <li>Compliance export</li>
+                    <ul class="pricing-features" role="list">
+                        <li>No node limit</li>
+                        <li>Unlimited clusters</li>
+                        <li>Detection and alerting</li>
+                        <li>Autonomous isolation on novel behaviour, with alerting as the floor</li>
+                        <li>SIEM (Splunk, Elastic, Datadog, syslog) and Slack integrations</li>
+                        <li>13-month event history</li>
+                        <li>Issued against an invoice</li>
                     </ul>
-                    <a href="https://calendar.proton.me/bookings#wchS9JFz7Sg34QFZ593-UxZnQx0lhS0q_JtB-zyAnTQ=" target="_blank" rel="noopener noreferrer" class="btn btn-primary pricing-cta">Let's Talk</a>
+                    <a href="https://calendar.proton.me/bookings#wchS9JFz7Sg34QFZ593-UxZnQx0lhS0q_JtB-zyAnTQ=" target="_blank" rel="noopener noreferrer" class="btn btn-secondary pricing-cta" aria-label="Let's talk about the Enterprise plan">Let's Talk</a>
                 </div>
             </div>
 
-            <p class="pricing-footnote">Billing is based on the second-highest weekly protected-node count recorded in a calendar month, not the single monthly peak, and weeks with no heartbeat count as zero, so your worst week is free and one spike never inflates your bill. Billed monthly, no proration. Monitor-only nodes are never billed. Usage is measured via a weekly heartbeat from each protected node, with no reconciliation required. Need a different plan? Contact us and we'll move you over.</p>
+            <div class="pricing-billing">
+                <h2 class="section-title">How billing works</h2>
+                <p>Billing is based on the second-highest weekly protected-node count recorded in a calendar month, not the single monthly peak, and weeks with no heartbeat count as zero, so your worst week is free and one spike never inflates your bill. Billed monthly, no proration. Only protected nodes are billed. Usage is measured via a weekly heartbeat from each protected node, with no reconciliation required. Need a different plan? Contact us and we'll move you over.</p>
+                <p>Growth is issued by hand against an invoice, so there is no billing toggle to flip. Talk to us and we will set it up.</p>
+            </div>
+            <p class="pricing-footnote">Every tier installs the same way: see <a href="/docs/getting-started">Getting Started</a> and <a href="/docs/operating-modes">Operating Modes</a>.</p>
         </div>
     </section>
 
@@ -150,8 +173,8 @@
                     <div class="check-row">
                         <span class="check-mark">✓</span>
                         <div>
-                            <span class="fw-600">Admission Controller</span>
-                            <p class="detail-note">Automatic sidecar injection for labeled namespaces.</p>
+                            <span class="fw-600">One Sensor Per Node</span>
+                            <p class="detail-note">A DaemonSet watches the workloads on each node. Nothing is injected into your pods.</p>
                         </div>
                     </div>
                     <div class="check-row">
@@ -193,7 +216,7 @@
                         <span class="check-mark">✓</span>
                         <div>
                             <span class="fw-600">Direct Engineering Support</span>
-                            <p class="detail-note">Hands-on deployment help from the team that built the sidecar, on every plan.</p>
+                            <p class="detail-note">Hands-on deployment help from the team that built the sensor, on every plan.</p>
                         </div>
                     </div>
                 </div>
@@ -209,7 +232,7 @@
         <div class="container">
             <div class="cta-content">
                 <h2>Ready to Get Started?</h2>
-                <p>Sign up in under a minute. Your account starts in demo mode. Once we've reviewed your signup and issued your license, your dashboard unlocks and you can deploy the sidecar to your cluster.</p>
+                <p>Sign up in under a minute. Your Free license is issued automatically, with no review step and no card, so your dashboard is ready and you can install the node sensor on your cluster straight away.</p>
 
                 <div class="cta-actions">
                     <a href="https://portal.pandocore.io/signup" class="btn btn-primary">Start free</a>
@@ -220,15 +243,27 @@
     </section>
 
     <!-- Footer -->
+    </main>
+
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <p class="footer-links"><a href="https://trust.pandocore.io">Trust Center</a></p>
+                <p class="footer-links">
+                    <a href="/docs/">Docs</a>
+                    <a href="/pricing">Pricing</a>
+                    <a href="/blog/">Blog</a>
+                    <a href="/contact">Contact</a>
+                    <a href="https://trust.pandocore.io">Trust Center</a>
+                </p>
                 <p>&copy; 2026 PandoCore Inc. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
-    <script src="js/main.js"></script>
+    <script src="/js/main.js"></script>
+    <div class="mobile-cta-bar" id="mobile-cta-bar">
+        <a href="https://portal.pandocore.io/signup" class="btn btn-primary">Start free</a>
+    </div>
+
 </body>
 </html>
