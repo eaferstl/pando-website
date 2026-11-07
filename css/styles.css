@@ -789,13 +789,16 @@ ul {
    Page Hero (About & Contact)
    =================================== */
 
-/* Left-aligned, like the index hero. Centred, the h1 ran the full 1152px
-   container while the subtitle was centred at its 622px measure, so the band
-   held two axes and neither was the content column's. */
+/* Centred band. The index hero is left-aligned because a visual column
+   balances it; this band has no second column, so left-aligning it pinned the
+   headline to the container's left edge and left a 496px void on the right at
+   1440, 176px off the spine the page body uses. Centred, the h1 and the
+   subtitle share one axis - the centre - and the band reads as its own
+   composition, the way the conversion bands do via .cta-content. */
 .page-hero {
     background: var(--floral-white);
     padding: var(--spacing-xxl) 0 120px 0;
-    text-align: left;
+    text-align: center;
     color: var(--coffee-bean);
     position: relative;
     overflow: hidden;
@@ -831,10 +834,11 @@ ul {
     color: var(--coffee-bean);
     font-size: var(--text-3xl);
     margin-bottom: var(--spacing-sm);
-    /* Capped so the headline does not run the whole container. No auto left
-       margin: the left edge is the band's one axis. --measure is wrong here,
-       because `ch` scales with font-size and 56ch of a 40px h1 is ~1100px. */
+    /* Capped so the headline does not run the whole container, and centred
+       on it. --measure is wrong here, because `ch` scales with font-size and
+       56ch of a 40px h1 is ~1100px. */
     max-width: var(--content-max-width);
+    margin-left: auto;
     margin-right: auto;
     text-wrap: balance;
     position: relative;
@@ -847,10 +851,10 @@ ul {
     opacity: 0.85;
     position: relative;
     z-index: 1;
-    text-align: left;
     /* Was 100%, which opted this out of the global `p` cap and ran the subtitle
        to 1152px. It is prose and it gets the prose measure. */
     max-width: var(--measure);
+    margin-left: auto;
     margin-right: auto;
 }
 
