@@ -31,6 +31,7 @@ pandoWebsite/
 ├── pricing.html            # Pricing page
 ├── about.html              # About page
 ├── contact.html            # Contact form page
+├── 404.html                # Not-found page; Cloudflare Pages serves it automatically
 ├── blog/
 │   ├── index.html          # Blog landing (renders cards from posts.json)
 │   ├── _template.html      # Copy this to start a new post
@@ -39,17 +40,21 @@ pandoWebsite/
 ├── trust/
 │   └── index.html          # Trust Center (served at trust.pandocore.io)
 ├── docs/
-│   ├── index.html          # Documentation site (14 pages, all *.html)
+│   ├── index.html          # Documentation site (14 pages, all *.html, prev/next paged)
 │   └── *.md                # Historical planning docs; see Documentation below
 ├── css/
 │   ├── styles.css          # Main stylesheet
-│   └── docs.css            # Documentation site styles
+│   ├── docs.css            # Documentation site styles
+│   └── noscript.css        # Loaded only from <noscript>: static nav fallback
 ├── js/
 │   └── main.js             # Mobile nav, blog index rendering, contact form
 ├── images/
-│   ├── blog/               # Blog cover images
-│   ├── logoTransparency.png # Logo used in every page's navigation
-│   └── logoHeader.png      # Alternate logo asset
+│   ├── blog/               # Blog cover art: an .svg for the page, a .png for og:image
+│   ├── logo-nav.png        # 92x120 nav logo on every page (2x its 46x60 slot)
+│   ├── og-default.png      # 1200x630 share card, the og:image on every page but the posts
+│   ├── logoTransparency.png # 184x240 original; kept only so older shared links resolve
+│   ├── founder.jpg         # About page portrait
+│   └── favicon.png         # 64x64; it was a 512x512 at 221 KB on all 29 pages
 ├── sitemap.xml             # Generated from each page's canonical URL
 ├── _headers                # Cloudflare Pages header rules
 ├── CLAUDE.md               # Working rules for this repository
@@ -94,7 +99,8 @@ Then visit `http://localhost:8000` in your browser.
 ## Features
 
 ### Design
-- **Responsive Design**: Mobile-first approach with breakpoints at 768px and 1024px
+- **Responsive Design**: Mobile-first. 768px and 1024px are the intended breakpoints; the
+  sheets carry ten in practice, listed in CLAUDE.md. Verify at 390 / 768 / 901 / 1024 / 1440
 - **Accessible**: WCAG 2.1 Level AA compliance goals
 - **Professional Branding**: Custom color palette built on black forest, floral white, and azure mist
 - **Modern UI**: Clean, minimal design with smooth transitions

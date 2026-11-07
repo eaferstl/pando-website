@@ -21,9 +21,13 @@
 - **YOU MUST use CSS variables, never raw hex.** Palette lives in `:root` of [css/styles.css](css/styles.css): `--black-forest`, `--floral-white`, `--amber-honey`, `--coffee-bean`, `--azure-mist`. Spacing/typography tokens are also defined there — use them.
 - No inline `style=` or `<style>` blocks in HTML. (The old `mobile-preview.html` exception is gone; the file was deleted 2026-11-02.)
 - `styles.css` is sectioned with `/* === ... === */` headers — add new rules to the matching section, don't append at the bottom.
-- Mobile-first. The intended breakpoints are 768px and 1024px, but the sheet actually
-  carries seven: 480, 560, 767, 768, 900, 1023 and 1024. Read the one you are editing
-  before adding another. Two of them are load-bearing:
+- Mobile-first. The intended breakpoints are 768px and 1024px, but the two sheets
+  actually carry ten. Counted 2026-11-07, with the three that were undocumented:
+  `styles.css` — 480, 560, 767, 768, 900, 999, 1023, 1024, 1230; `docs.css` — 600, 1023.
+  999 collapses `.hero-split` to one column (below it the headline broke to four
+  lines with an orphan); 1230 collapses the product page's `.k8s-cluster-visual`
+  diagram; docs' 600 drops `.docs-quick-links` to one column and shrinks `pre`.
+  Read the one you are editing before adding another. Two are load-bearing:
   - **1023px is coupled to JavaScript.** The nav drawer's media query
     (`@media (max-width: 1023px)` in `styles.css`) and `js/main.js`'s resize handler
     (`window.innerWidth > 1023`) must move together. If they disagree the drawer is

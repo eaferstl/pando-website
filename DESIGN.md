@@ -115,7 +115,30 @@ A grounded forest-and-cream base, warmed by a single amber accent and cooled by 
 - **Azure Mist** (#E1F0F4): A cool, pale blue-green. The deliberate counterweight to the palette's warmth and, notably, the fill of the **primary CTA button**. Its coolness is the point: it keeps the system from reading as warm-by-default and gives the main action a calm, un-shouty presence.
 
 ### Tertiary
-- **Honey Amber** (#DF9F15): The one warm accent and the logo color — a status-light gold. Used sparingly for hover underlines, small icon accents, and moments of emphasis. It is currently overused across the site and should be pulled back to true accent duty. Never a background, never a siren.
+- **Honey Amber** (#DF9F15): The one warm accent and the logo color — a status-light gold. Used sparingly for hover underlines, small icon accents, and moments of emphasis. Never a background, never a siren. The note that once stood here, that amber was overused and needed pulling back, is retired: measured on 2026-11-06, amber-bearing elements total 1.0% of the About page's area against a ≤10% rule. It is now correctly rationed.
+
+### Status inks
+
+The three status hues are brand tokens, sized for borders and fills where the bar is 3:1. Each also has an **ink** variant for the one place it is used as text: a bold 16px title on its own 10% wash, which is not WCAG "large" and therefore needs 4.5:1. Measured on the grounds each actually paints on:
+
+| token | value | ground | ratio |
+|---|---|---|---|
+| `--honey-ink` | `#8A620C` | docs warning callout, `rgb(252 245 232)` | 5.05:1 |
+| `--error-ink` | `#AF2727` | docs danger callout, `rgb(251 234 234)` | 5.75:1 |
+| | | contact form status, `rgb(243 224 216)` | 5.24:1 |
+| `--success-ink` | `#2D7230` | docs success callout, `rgb(235 244 236)` | 5.25:1 |
+
+The brand tokens they replace measured 2.13:1, 4.28:1/3.90:1 and 3.66:1 respectively. Do not "simplify" an ink back to its brand token; each one regresses a measured failure.
+
+### Muted text is a colour, never an opacity
+
+`--muted-ink` (`#70665C`) is the one way to de-emphasise text. Added 2026-11-07, replacing `opacity` on five elements that measured 2.68:1 (`.ns-empty`), 3.42:1 (`.code-comment`), 3.50:1 (the docs breadcrumb separator, on twelve pages) and 4.07:1 (`.pricing-price-period`), with `.pricing-tier-tagline` sitting on the line at 4.64:1.
+
+`opacity` fades the glyphs against a ground it does not touch, and it compounds down the ancestor chain: `.ns-empty` ran at 0.6 inside a parent at 0.7, so 0.42 of the colour reached the screen. Darkening the token cannot fix it — at a 0.7 chain nothing short of `--coffee-bean` itself clears 4.5:1, which is to say the text cannot be muted at all while an ancestor fades it. The parent fade on `.excluded-ns` was removed for that reason; its dashed border and `excluded` tag already carry the meaning.
+
+Measured as a solid colour, `--muted-ink` holds **5.06:1 at worst** across every ground it paints on (white, the `.code-block` wash, the namespace box, `--floral-white`). Never pair it with an `opacity`.
+
+**Measure contrast from pixels, not from the DOM.** Two probes written against this sheet reported confidently wrong numbers: one walked DOM ancestors for the ground and missed absolutely-positioned siblings; one composited the whole `elementsFromPoint` stack, including the sticky navbar painted *over* the text, and turned light rows black. A third read the focus ring 55ms into a 300ms `transition: all` and reported 1.02:1 on a ring that settles at 16.34:1. Decode a screenshot, and take the foreground from computed `color` times the opacity chain.
 
 ### Neutral
 - **Floral White** (#F7F4EB): Warm cream. Section and surface backgrounds, form wrappers. Carries the human warmth — used in restraint.
@@ -166,6 +189,12 @@ polarity rule above replaces "one rendering everywhere", which could not survive
 **The one exception, scoped deliberately.** Code gets a monospace stack, because a Helm command, a label selector and an image digest have to be read character by character, and that is the one job a proportional face cannot do. It lives in `--font-mono` and appears only inside `code` and `pre`. This is an exception for legibility, not a licence to introduce a second voice: a monospace face used for headings, labels or body copy is the "mono as shorthand for technical" costume the system rejects elsewhere.
 
 **The Earned-Line Rule.** Body copy stays at or below ~70ch. Long claims get broken into short, scannable lines rather than dense paragraphs — the reader is a busy platform lead skimming for proof.
+
+**The One Spine Rule.** Added 2026-11-06. On a content section, the heading, the prose, the lists and any trailing note all start on the same left edge: the content column's. Section headings are direct children of `.container`, so they take `max-width: var(--content-max-width)` with auto side margins to land on that edge rather than on the container's; trailing notes keep their `--measure` cap and reach the edge with `margin-left: max(0px, calc((100% - var(--content-max-width)) / 2))`, which clamps to flush below ~800px. Before this, index carried ten distinct text left edges at 1440 — headings centred on the page axis 89px right of the column they headed — and product carried twenty-three. Conversion bands are the deliberate exception: inside `.cta-content` the heading, list and buttons are one centred composition and stay centred.
+
+A component with its own internal layout is not a spine violation. `.feature-row` on `/product` is an icon column beside a text column, so its h3 and p start 112px right of the page spine, exactly as a card's contents do. Putting them on the spine means removing the icon column, which is a design decision and not a layout fix.
+
+**Rules are drawn to their content, not to their container.** A separator or a bordered box has no character count, so the measure argument that justifies differing prose right edges does not reach it. `.problem-item` is capped at `--measure-narrow` so its `border-top` ends where its text ends; `.docs-callout` is capped at `--measure` plus its padding. Before this, each separator ran 299–308px past the text it divided at 1440, and a 900px callout held ~560px of text.
 
 ## 4. Elevation
 
@@ -233,3 +262,15 @@ An abstract SVG constellation of workload nodes — each wrapped in its own azur
 - **Don't** build compliance-theater visuals: framework logo rows, badge/seal clusters, checkbox-grid "coverage" graphics, or progress meters implying an audit is being passed. The compliance-first audience makes this the nearest trap. Control mappings live in the `/product#compliance` table, as a table, and nowhere else.
 - **Don't** pair Inter with a second typeface or use gradient text (`background-clip: text`).
 - **Don't** rest surfaces on soft ambient shadows or add `scale()` hover pops — they read as consumer SaaS.
+
+## 7. Known and Deliberate
+
+Recorded 2026-11-06, after two full-site reviews raised each of these as a finding. They are decisions, not oversights. Disagree with the decision if you like, but do not report them as defects.
+
+- **`trust/index.html` carries no site nav and no footer, on purpose.** It is served from a separate subdomain (`trust.pandocore.io`) and routes home through its wordmark. Adding the shared chrome would deepen the page's dependence on root-absolute assets served by a host whose asset serving is not verified from this repo. The site-wide footer's single link, identical on all 29 other pages, points here.
+- **Inter is the only typeface, and that is the system working.** `single-font` and `overused-font` fire on all 30 pages. Section 1 mandates single-family typographic discipline and section 6 forbids pairing a second face.
+- **`em-dash-overuse` is a false positive wherever it fires.** The rule matches `--` as well as `—`. Verified by byte scan on 2026-11-06: zero U+2014 characters anywhere in the tree. Every hit is a Helm or kubectl flag (`--set`, `--namespace`, `--insecure-ignore-tlog=true`) or the `-----BEGIN PUBLIC KEY-----` armour on the trust page.
+- **`docs/webhook.html` is far shorter than its siblings because it is a tombstone.** It documents the retired admission webhook: what replaced it, and where to go instead. The length is correct.
+- **Prose is capped at `--measure` while code blocks and tables run to the 900px `.docs-content` cap.** Differing right edges down a page are the measure working rather than a layout inconsistency: `ch` scales with font-size, so one uniform 56ch cap renders at different pixel widths per type size while holding the same character count. Amended 2026-11-06: this covers *prose*, and only prose. It does not license a separator rule, a bordered container or a heading axis to disagree with the text it belongs to — those have no character count, and all three were fixed under the One Spine Rule in section 3. A review that cites this entry for anything other than two paragraphs ending at different x is citing it wrongly.
+- **`/pricing` ranks Free as the primary CTA and Growth as secondary, on purpose.** "Start free" is the primary call to action on every page of the site, so the Free card carries `btn-primary` and Growth and Enterprise both carry `btn-secondary` reading "Let's Talk". A review will read this as an inversion, because the Recommended tier is the one wearing the quieter button. It is not: the funnel is self-serve signup first, and the paid tiers are issued by hand against an invoice, so the paid CTA is a conversation and is styled as one. Recorded 2026-11-07 after a third review raised it. What *was* a real defect, and is fixed, is that the two "Let's Talk" buttons shared one label and one URL with nothing to tell them apart; they now carry distinct `aria-label`s naming their tier.
+- **Blog posts predating November 2026 keep their retired, sidecar-era figures.** They are history, each carries a dated addendum saying the numbers were withdrawn from marketing on 2026-11-01, and `blog/index.html` says so above the grid. They must not be edited to match current figures, and their numbers must not be laundered back into marketing.
