@@ -3,35 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="PandoCore - Runtime threat detection for Kubernetes. One sensor pod per node, free on unlimited nodes. Maps to SOC 2, ISO 27001, PCI DSS and HIPAA, with a signed evidence record for every detection.">
+    <meta name="description" content="Runtime security that runs itself. One sensor per Kubernetes node, free on unlimited nodes, with signed evidence mapped to SOC 2, ISO 27001, PCI DSS and HIPAA.">
     <title>PandoCore | Runtime Threat Detection for Kubernetes</title>
     <link rel="canonical" href="https://pandocore.io/">
+
+    <!-- Social share preview: this page gets forwarded. -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="PandoCore | Runtime Threat Detection for Kubernetes">
+    <meta property="og:description" content="Runtime security that runs itself. One sensor per Kubernetes node, free on unlimited nodes, with signed evidence mapped to SOC 2, ISO 27001, PCI DSS and HIPAA.">
+    <meta property="og:url" content="https://pandocore.io/">
+    <meta property="og:image" content="https://pandocore.io/images/og-default.png">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" type="image/png" href="/images/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/styles.css">
+    <noscript><link rel="stylesheet" href="/css/noscript.css"></noscript>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
-    <!-- Navigation -->
+    <!-- Navigation. Wrapped in a banner landmark: the site nav was a bare
+         nav element, so no page exposed a banner to assistive tech. -->
+    <header>
     <nav class="navbar">
         <div class="container">
             <div class="nav-wrapper">
                 <a href="/" class="logo">
-                    <img src="/images/logoTransparency.png" alt="PandoCore" width="184" height="240">
+                    <img src="/images/logo-nav.png" alt="PandoCore" width="92" height="120">
                     <div class="logo-text-wrapper">
                         <span class="logo-text">PandoCore</span>
                     </div>
                 </a>
-                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="primary-nav">
                     <span></span>
                     <span></span>
                     <span></span>
                 </button>
                 <div class="nav-overlay"></div>
-                <ul class="nav-links">
-                    <li><a href="/" class="active">Home</a></li>
+                <ul class="nav-links" role="list" id="primary-nav">
+                    <li><a href="/" class="active" aria-current="page">Home</a></li>
                     <li><a href="/product">Product</a></li>
                     <li><a href="/pricing">Pricing</a></li>
                     <li><a href="/about">About</a></li>
@@ -43,6 +54,7 @@
             </div>
         </div>
     </nav>
+    </header>
 
     <!-- Hero Section -->
     <main id="main-content" tabindex="-1">
@@ -54,15 +66,12 @@
         <div class="container">
             <div class="hero-split">
                 <div class="hero-content-left">
-                    <h1>Runtime threat detection for Kubernetes</h1>
-                    <p class="hero-subtitle">One sensor pod per node learns what normal looks like for each workload, and flags it when that changes.</p>
-                    <p class="hero-support">Every detection becomes signed evidence mapped to SOC 2, ISO 27001, PCI DSS and HIPAA controls. Free on unlimited nodes, and no security team required.</p>
+                    <h1>Runtime security that runs itself</h1>
+                    <p class="hero-subtitle">One sensor per Kubernetes node learns how each workload normally behaves, and flags what changes as signed evidence mapped to SOC 2, ISO 27001, PCI DSS and HIPAA controls.</p>
                     <div class="hero-buttons">
                         <a href="https://portal.pandocore.io/signup" class="btn btn-primary">Start free</a>
                         <a href="/product#compliance" class="btn btn-secondary">See the controls</a>
                     </div>
-                    <p class="detail-note mt-md"><a href="#footprint">Platform engineer? The install, the privileges and the limits</a></p>
-                    <p class="detail-note"><a href="#pilot">Pilot program: 30% off, founder on call</a></p>
                 </div>
                 <div class="hero-visual">
                     <svg viewBox="5 4 311 193" class="grove-graphic" role="img" aria-label="Thirteen watched Kubernetes workloads across a cluster, each learning its own normal behavior, connected through a single shared core.">
@@ -210,19 +219,6 @@
     </section>
 
     <!-- Timing Section -->
-    <section class="timing-section">
-        <div class="container">
-            <h2>What Changed in 2026</h2>
-            <div class="timing-content">
-                <p>More of what runs in your cluster now arrives without a person reading it line by line. That includes AI-generated services, autonomous agents, and dependencies pulled in at build time. Rules written for last year's threats can't anticipate any of it, but a workload's own behavior still shows you the moment it changes.</p>
-                <div class="cta-actions">
-                    <a href="https://portal.pandocore.io/signup" class="btn btn-primary">Start free</a>
-                    <a href="#pilot" class="btn btn-secondary">See the pilot terms</a>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- What It Solves Section -->
     <section class="use-cases-section">
         <div class="container">
@@ -232,8 +228,7 @@
                     <div class="feature-content">
                         <h3>An answer for the questionnaire</h3>
                         <p class="feature-quote">"Yes, we monitor production at runtime."</p>
-                        <p>Two Helm charts, with no rules to write and no security hire. PandoCore starts learning what normal looks like for each workload immediately and begins flagging changes after <a href="/docs/faq">a 30-minute learning phase</a>, and the behavioural checks that rest on longer baselines keep warming for about ten hours after that. Free covers detection and alerting on as many nodes as you like; containment is what the paid tiers add.</p>
-                        <p class="fw-600 mt-md"><a href="/pricing">What Free covers, and what it does not</a></p>
+                        <p>Two Helm charts, with no rules to write and no security hire. PandoCore starts learning immediately and begins flagging changes after <a href="/docs/faq">a 30-minute learning phase</a>. Free covers detection and alerting on as many nodes as you like; containment is what the paid tiers add.</p>
                     </div>
                 </div>
                 <div class="feature-row">
@@ -241,7 +236,6 @@
                         <h3>Evidence your auditor can inspect</h3>
                         <p class="feature-quote">"Here's the record."</p>
                         <p>Every detection becomes an <a href="/docs/evidence-format">Ed25519-signed evidence record</a> mapped to SOC 2, ISO 27001, PCI DSS and HIPAA controls, so tampering is detectable. Your auditor decides what it's worth. PandoCore gives them something real to look at.</p>
-                        <p class="fw-600 mt-md"><a href="/product#compliance">See the controls</a></p>
                     </div>
                 </div>
                 <div class="feature-row">
@@ -249,7 +243,6 @@
                         <h3>Response that can't overreach</h3>
                         <p class="feature-quote">"Safe to leave on."</p>
                         <p>The hardest thing PandoCore can do to a workload is cut its network egress. It cannot delete a pod, and that is not a promise: the sensor's Kubernetes permissions withhold pod deletion outright, so termination is unreachable whatever its licence says. You can set it more conservative, never less.</p>
-                        <p class="fw-600 mt-md"><a href="/docs/operating-modes">How the ceiling is enforced</a></p>
                     </div>
                 </div>
             </div>
@@ -257,16 +250,22 @@
     </section>
 
     <!-- Engineer-grade band. Deep-linkable: PRODUCT.md requires that a CTO can
-         forward this page and the platform engineer lands on the install shape
-         and the privilege posture without a second visit. -->
+         forward this page and the platform engineer land on the privilege
+         posture without a second visit. -->
     <section class="content-section alt-bg" id="footprint">
         <div class="container">
             <div class="content-wrapper">
-                <h2>What You Are Actually Installing</h2>
+                <h2>The access it needs, and what it is denied</h2>
 
-                <p>Two Helm charts, controller first. The controller receives evidence and owns delivery; the sensor is a DaemonSet that puts one pod on each node. A sensor installed without a controller will not start, which is deliberate: it would otherwise run with nowhere to send what it found. Nothing is added to your workloads, so there is nothing to label and no pod to restart.</p>
+                <p>The sensor runs as a <code>hostPID</code> DaemonSet, as uid 0, with <code>CAP_SYS_PTRACE</code>, reading the node's process namespace read-only. That is a real privilege, and what bounds it is the grant rather than a promise: its ClusterRole withholds <code>pods:&nbsp;delete</code>, <code>pods:&nbsp;patch</code> and <code>endpoints:&nbsp;get</code> by name. Each sensor watches up to 70 pods per node, and a Prometheus gauge reports any past that.</p>
 
-                <pre><code># 1. The controller: receives evidence and owns every outbound destination
+                <p><strong>It will not run on GKE Autopilot or EKS Fargate.</strong> Both forbid <code>hostPID</code>, so there is no install path on either. Standard GKE is the configuration this release was validated on.</p>
+
+                <h3>What you would actually run</h3>
+
+                <p>Two charts, and nothing to label afterwards. Your portal dashboard carries both lines pre-filled with your license key and the current chart version.</p>
+
+                <pre><code># 1. The cluster controller
 helm install pando-controller \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-controller \
   --version 2.0.0 \
@@ -280,30 +279,9 @@ helm install pando-node-sensor \
   --namespace pando-system \
   --set license.key="YOUR_LICENSE_KEY"</code></pre>
 
-                <p><code>--version</code> is mandatory: an OCI chart installed without it fails rather than resolving to the newest release. Your portal dashboard carries both lines with the key and the current version filled in, and the <a href="/docs/getting-started">install guide</a> covers the rest.</p>
+                <p>The sensor requests <strong>250m CPU and 256Mi</strong> per node and is limited to <strong>2 cores and 1Gi</strong>. Those are per node, for the whole node, not per workload. Measured warm and enforcing on the shipping build, across two runs: a 130.4 mCPU p95 with a 106.9 MiB working set over a 24-hour warm window, and 127.3 mCPU with 110.6 MiB over a 34-hour run. No CFS throttling, no OOMKill and no sensor restart in 77 hours.</p>
 
-                <h3>What it costs a node</h3>
-
-                <dl class="figure-list">
-                    <dt>Requested, per node</dt>
-                    <dd>250m CPU and 256Mi of memory.</dd>
-                    <dt>Limited to, per node</dt>
-                    <dd>2 cores and 1Gi.</dd>
-                    <dt>Measured, warm and enforcing</dt>
-                    <dd>A 130.4 mCPU p95 with a 106.9 MiB working set over a 24-hour warm window, and 127.3 mCPU with 110.6 MiB on a second 34-hour run. The working set stayed flat in both, with no CFS throttling and no OOMKills.</dd>
-                    <dt>The controller, once per cluster</dt>
-                    <dd>100m CPU and 128Mi requested, limited to 500m and 512Mi.</dd>
-                </dl>
-
-                <p>The sensor watches the pods on its node by default. A pod opts out with the exact label <code>pandocore.io/protect: "false"</code>, and four classes are excluded whatever the configuration says. Each sensor watches up to 70 pods per node; past that, pods get no engine and a Prometheus gauge reports them, because a coverage gap you cannot see is worse than one you can.</p>
-
-                <h3>The access it needs, and what it is denied</h3>
-
-                <p>The sensor runs as a <code>hostPID</code> DaemonSet, as uid 0, with <code>CAP_SYS_PTRACE</code>, reading the node's process namespace read-only. That is a real privilege, and it is the reason the previous per-pod design was retired: one process per node sees what it needs without anything running inside your containers.</p>
-
-                <p>What bounds it is the grant rather than a promise. The sensor's ClusterRole withholds <code>pods:&nbsp;delete</code>, <code>pods:&nbsp;patch</code> and <code>endpoints:&nbsp;get</code> by name, each with its reason recorded in the chart, so the hardest action available to it is a NetworkPolicy. The cluster-wide secret access that per-namespace integrations need is held by a separate unprivileged component, not by the pod running on every node. The <a href="https://trust.pandocore.io">trust center</a> lists the full grant and the failure modes.</p>
-
-                <p><strong>It will not run on GKE Autopilot or EKS Fargate.</strong> Both forbid <code>hostPID</code>, so there is no install path on either, and we would rather you learn that here than at the end of an install. Standard GKE is the configuration this release was validated on.</p>
+                <p><a href="/docs/getting-started">Getting Started</a> has the rest: the externally managed Secret to use where your values file is committed, the opt-out label, and what the learning window does before anything can be detected.</p>
             </div>
         </div>
     </section>
@@ -326,7 +304,6 @@ helm install pando-node-sensor \
                     </ul>
                 </div>
                 <p class="cta-statement">No one has taken PandoCore evidence through an audit yet. Pilot partners are the first.</p>
-                <div class="detail-note mt-md">Free on unlimited nodes, with no card and no call.</div>
                 <div class="cta-actions mt-md">
                     <a href="https://portal.pandocore.io/signup" class="btn btn-primary">Start free</a>
                     <a href="https://calendar.proton.me/bookings#t7PnTu8h9XjlEF-4k5YC13Liug1tcvhOBYDtz-ONZt0=" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Apply for the pilot</a>
@@ -341,7 +318,13 @@ helm install pando-node-sensor \
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <p class="footer-links"><a href="https://trust.pandocore.io">Trust Center</a></p>
+                <p class="footer-links">
+                    <a href="/docs/">Docs</a>
+                    <a href="/pricing">Pricing</a>
+                    <a href="/blog/">Blog</a>
+                    <a href="/contact">Contact</a>
+                    <a href="https://trust.pandocore.io">Trust Center</a>
+                </p>
                 <p>&copy; 2026 PandoCore Inc. All rights reserved.</p>
             </div>
         </div>

@@ -6,33 +6,44 @@
     <meta name="description" content="PandoCore - Runtime threat detection for Kubernetes, with the audit evidence to prove it. Maps to SOC 2, ISO 27001, PCI DSS, and HIPAA.">
     <title>PandoCore | Product</title>
     <link rel="canonical" href="https://pandocore.io/product">
+
+    <!-- Social share preview: this page gets forwarded. -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="PandoCore | Product">
+    <meta property="og:description" content="PandoCore - Runtime threat detection for Kubernetes, with the audit evidence to prove it. Maps to SOC 2, ISO 27001, PCI DSS, and HIPAA.">
+    <meta property="og:url" content="https://pandocore.io/product">
+    <meta property="og:image" content="https://pandocore.io/images/og-default.png">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" type="image/png" href="/images/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/styles.css">
+    <noscript><link rel="stylesheet" href="/css/noscript.css"></noscript>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
-    <!-- Navigation -->
+    <!-- Navigation. Wrapped in a banner landmark: the site nav was a bare
+         nav element, so no page exposed a banner to assistive tech. -->
+    <header>
     <nav class="navbar">
         <div class="container">
             <div class="nav-wrapper">
                 <a href="/" class="logo">
-                    <img src="/images/logoTransparency.png" alt="PandoCore" width="184" height="240">
+                    <img src="/images/logo-nav.png" alt="PandoCore" width="92" height="120">
                     <div class="logo-text-wrapper">
                         <span class="logo-text">PandoCore</span>
                     </div>
                 </a>
-                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="primary-nav">
                     <span></span>
                     <span></span>
                     <span></span>
                 </button>
                 <div class="nav-overlay"></div>
-                <ul class="nav-links">
+                <ul class="nav-links" role="list" id="primary-nav">
                     <li><a href="/">Home</a></li>
-                    <li><a href="/product" class="active">Product</a></li>
+                    <li><a href="/product" class="active" aria-current="page">Product</a></li>
                     <li><a href="/pricing">Pricing</a></li>
                     <li><a href="/about">About</a></li>
                     <li><a href="/blog/">Blog</a></li>
@@ -43,6 +54,7 @@
             </div>
         </div>
     </nav>
+    </header>
 
     <!-- Product Hero -->
     <main id="main-content" tabindex="-1">
@@ -96,6 +108,7 @@
                     </div>
                 </div>
             </div>
+            <p class="section-outro">Installing it is two Helm charts: see <a href="/docs/getting-started">Getting Started</a>, or the <a href="/docs/configuration">configuration reference</a> for every value it takes.</p>
         </div>
     </section>
 
@@ -110,7 +123,7 @@
                 <div class="k8s-cluster-visual">
                     <div class="cluster-container">
                         <div class="cluster-header">
-                            <svg class="k8s-icon" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                            <svg class="k8s-icon" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                 <path d="M16 2L4 8v16l12 6 12-6V8L16 2zm0 2.18l9.5 4.75-9.5 4.75-9.5-4.75L16 4.18zM5.5 9.82l9.5 4.75v9.5l-9.5-4.75v-9.5zm21 0v9.5l-9.5 4.75v-9.5l9.5-4.75z" fill="currentColor"/>
                             </svg>
                             <span class="cluster-label">Your Kubernetes Cluster</span>
@@ -182,7 +195,7 @@
 
                     <!-- Flow arrow to external portal -->
                     <div class="cluster-egress">
-                        <svg class="egress-arrow" viewBox="0 0 80 20" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+                        <svg class="egress-arrow" viewBox="0 0 80 20" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
                             <defs>
                                 <marker id="egress-head" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
                                     <polygon points="0 0, 8 3, 0 6" fill="var(--black-forest)"/>
@@ -197,7 +210,7 @@
                     <div class="external-destinations">
                         <div class="destination-card primary-dest">
                             <div class="dest-icon">
-                                <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" class="inline-icon">
+                                <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" class="inline-icon" aria-hidden="true">
                                     <rect width="32" height="32" rx="6" fill="var(--amber-honey)"/>
                                     <circle cx="16" cy="16" r="7" stroke="var(--coffee-bean)" stroke-width="2" fill="none"/>
                                     <path d="M9 16h14M16 9v14" stroke="var(--coffee-bean)" stroke-width="1.5" opacity="0.7"/>
@@ -233,7 +246,7 @@
                         </div>
                         <div class="destination-card">
                             <div class="dest-icon">
-                                <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" class="inline-icon">
+                                <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" class="inline-icon" aria-hidden="true">
                                     <rect width="32" height="32" rx="6" fill="var(--black-forest)"/>
                                     <path d="M10 16h12M10 16l4-4M10 16l4 4" stroke="var(--floral-white)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="translate(0,0)"/>
                                     <path d="M22 10v12" stroke="var(--floral-white)" stroke-width="2" stroke-linecap="round"/>
@@ -250,9 +263,9 @@
 
                 <!-- Flow callouts -->
                 <div class="cluster-flow-callouts">
-                    <div class="callout-item"><span class="callout-num">1</span>One sensor per node watches the workloads on that node, unless a pod <em>opts out</em></div>
-                    <div class="callout-item"><span class="callout-num">2</span>The controller decides response and owns evidence delivery</div>
-                    <div class="callout-item"><span class="callout-num">3</span>Evidence streams to the portal, Slack, or your webhook</div>
+                    <div class="callout-item"><span class="callout-num">1</span><span class="callout-text">One sensor per node watches the workloads on that node, unless a pod <em>opts out</em></span></div>
+                    <div class="callout-item"><span class="callout-num">2</span><span class="callout-text">The controller decides response and owns evidence delivery</span></div>
+                    <div class="callout-item"><span class="callout-num">3</span><span class="callout-text">Evidence streams to the portal, Slack, or your webhook</span></div>
                 </div>
 
                 <h3 class="zoom-heading">Zoom in: on a protected node</h3>
@@ -261,7 +274,7 @@
                 <div class="k8s-pod-visual">
                     <div class="pod-container">
                         <div class="pod-header">
-                            <svg class="k8s-icon" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+                            <svg class="k8s-icon" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                 <path d="M16 2L4 8v16l12 6 12-6V8L16 2zm0 2.18l9.5 4.75-9.5 4.75-9.5-4.75L16 4.18zM5.5 9.82l9.5 4.75v9.5l-9.5-4.75v-9.5zm21 0v9.5l-9.5 4.75v-9.5l9.5-4.75z" fill="currentColor"/>
                             </svg>
                             <span class="pod-label">Kubernetes Node</span>
@@ -272,7 +285,7 @@
                             <div class="container-box app-container">
                                 <div class="container-header">
                                     <span class="container-icon">
-                                        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" class="inline-icon">
+                                        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" class="inline-icon" aria-hidden="true">
                                             <rect width="32" height="32" rx="6" fill="var(--black-forest)"/>
                                             <path d="M16 7l-8 4v10l8 4 8-4V11l-8-4zm0 2l5.5 2.75L16 14.5l-5.5-2.75L16 9zm-6 4.5l5 2.5v5.5l-5-2.5V13.5zm12 0v5.5l-5 2.5V16l5-2.5z" fill="var(--floral-white)"/>
                                         </svg>
@@ -296,7 +309,7 @@
                             <!-- Observation arrow -->
                             <div class="shared-namespace">
                                 <div class="namespace-arrow">
-                                    <svg viewBox="0 0 60 100" xmlns="http://www.w3.org/2000/svg">
+                                    <svg viewBox="0 0 60 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                         <defs>
                                             <marker id="arrowhead-right" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
                                                 <polygon points="0 0, 10 3.5, 0 7" fill="var(--black-forest)"/>
@@ -316,7 +329,7 @@
                             <div class="container-box agent-container">
                                 <div class="container-header agent-header">
                                     <span class="container-icon">
-                                        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" class="inline-icon">
+                                        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" class="inline-icon" aria-hidden="true">
                                             <rect width="32" height="32" rx="6" fill="var(--amber-honey)"/>
                                             <ellipse cx="16" cy="16" rx="6" ry="9" fill="var(--floral-white)"/>
                                             <path d="M16 7c0 0 2 4 2 9s-2 9-2 9" stroke="var(--amber-honey)" stroke-width="1.5" fill="none"/>
@@ -329,7 +342,7 @@
                                     <div class="protection-features">
                                         <div class="protection-item">
                                             <span class="protection-icon">
-                                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="inline-icon-sm">
+                                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="inline-icon-sm" aria-hidden="true">
                                                     <rect width="24" height="24" rx="4" fill="var(--black-forest)"/>
                                                     <path d="M14 4L8 13h4l-2 7 6-9h-4l2-7z" fill="var(--floral-white)"/>
                                                 </svg>
@@ -338,7 +351,7 @@
                                         </div>
                                         <div class="protection-item">
                                             <span class="protection-icon">
-                                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="inline-icon-sm">
+                                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="inline-icon-sm" aria-hidden="true">
                                                     <rect width="24" height="24" rx="4" fill="var(--black-forest)"/>
                                                     <rect x="8" y="10" width="8" height="7" rx="1" fill="var(--floral-white)"/>
                                                     <path d="M9 10V8a3 3 0 0 1 6 0v2" stroke="var(--floral-white)" stroke-width="1.5" fill="none"/>
@@ -348,7 +361,7 @@
                                         </div>
                                         <div class="protection-item">
                                             <span class="protection-icon">
-                                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="inline-icon-sm">
+                                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="inline-icon-sm" aria-hidden="true">
                                                     <rect width="24" height="24" rx="4" fill="var(--black-forest)"/>
                                                     <circle cx="12" cy="12" r="4" stroke="var(--floral-white)" stroke-width="1.5" fill="none"/>
                                                     <circle cx="12" cy="12" r="1.5" fill="var(--floral-white)"/>
@@ -369,7 +382,7 @@
                         <div class="pod-benefits">
                             <div class="benefit-item">
                                 <span class="benefit-icon">
-                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="inline-icon-sm">
+                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="inline-icon-sm" aria-hidden="true">
                                         <rect width="24" height="24" rx="4" fill="var(--black-forest)"/>
                                         <path d="M12 6v3m0 6v3m-6-6h3m6 0h3" stroke="var(--floral-white)" stroke-width="1.5" stroke-linecap="round"/>
                                         <circle cx="12" cy="12" r="3" stroke="var(--floral-white)" stroke-width="1.5" fill="none"/>
@@ -379,7 +392,7 @@
                             </div>
                             <div class="benefit-item">
                                 <span class="benefit-icon">
-                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="inline-icon-sm">
+                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="inline-icon-sm" aria-hidden="true">
                                         <rect width="24" height="24" rx="4" fill="var(--black-forest)"/>
                                         <circle cx="12" cy="12" r="5" stroke="var(--floral-white)" stroke-width="1.5" fill="none"/>
                                         <path d="M12 7v10M7 12h10" stroke="var(--floral-white)" stroke-width="1" opacity="0.7"/>
@@ -390,7 +403,7 @@
                             </div>
                             <div class="benefit-item">
                                 <span class="benefit-icon">
-                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="inline-icon-sm">
+                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="inline-icon-sm" aria-hidden="true">
                                         <rect width="24" height="24" rx="4" fill="var(--black-forest)"/>
                                         <path d="M6 9l6-3 6 3v6l-6 3-6-3V9z" stroke="var(--floral-white)" stroke-width="1.5" fill="none"/>
                                         <path d="M6 9l6 3 6-3M12 12v6" stroke="var(--floral-white)" stroke-width="1.5"/>
@@ -400,7 +413,7 @@
                             </div>
                             <div class="benefit-item">
                                 <span class="benefit-icon">
-                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="inline-icon-sm">
+                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="inline-icon-sm" aria-hidden="true">
                                         <rect width="24" height="24" rx="4" fill="var(--black-forest)"/>
                                         <circle cx="12" cy="12" r="4" stroke="var(--floral-white)" stroke-width="1.5" fill="none"/>
                                         <circle cx="12" cy="12" r="1.5" fill="var(--floral-white)"/>
@@ -413,80 +426,7 @@
                     </div>
                 </div>
 
-                <!-- Existing Security Stack (simplified) -->
-                <div class="existing-stack-section">
-                    <h3 class="section-kicker">Works With Your Existing Security</h3>
-                    <div class="existing-tools-grid">
-                        <div class="tool-item">
-                            <span class="tool-icon">
-                                <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" class="inline-icon">
-                                    <rect width="32" height="32" rx="6" fill="var(--black-forest)"/>
-                                    <rect x="10" y="14" width="12" height="10" rx="2" fill="var(--floral-white)"/>
-                                    <path d="M12 14v-3a4 4 0 0 1 8 0v3" stroke="var(--floral-white)" stroke-width="2" fill="none"/>
-                                    <circle cx="16" cy="19" r="1.5" fill="var(--black-forest)"/>
-                                </svg>
-                            </span>
-                            <span class="tool-name">Encryption</span>
-                        </div>
-                        <div class="tool-item">
-                            <span class="tool-icon">
-                                <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" class="inline-icon">
-                                    <rect width="32" height="32" rx="6" fill="var(--black-forest)"/>
-                                    <circle cx="11" cy="16" r="4" fill="var(--floral-white)"/>
-                                    <path d="M15 16h8M20 13l3 3-3 3" stroke="var(--floral-white)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </span>
-                            <span class="tool-name">Authentication</span>
-                        </div>
-                        <div class="tool-item">
-                            <span class="tool-icon">
-                                <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" class="inline-icon">
-                                    <rect width="32" height="32" rx="6" fill="var(--black-forest)"/>
-                                    <circle cx="16" cy="16" r="7" stroke="var(--floral-white)" stroke-width="2" fill="none"/>
-                                    <path d="M16 9v14M9 16h14" stroke="var(--floral-white)" stroke-width="1.5" opacity="0.7"/>
-                                    <ellipse cx="16" cy="16" rx="7" ry="3" stroke="var(--floral-white)" stroke-width="1.5" fill="none" opacity="0.7"/>
-                                </svg>
-                            </span>
-                            <span class="tool-name">Service Mesh</span>
-                        </div>
-                        <div class="tool-item">
-                            <span class="tool-icon">
-                                <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" class="inline-icon">
-                                    <rect width="32" height="32" rx="6" fill="var(--black-forest)"/>
-                                    <rect x="8" y="18" width="4" height="6" fill="var(--floral-white)"/>
-                                    <rect x="14" y="12" width="4" height="12" fill="var(--floral-white)"/>
-                                    <rect x="20" y="8" width="4" height="16" fill="var(--floral-white)"/>
-                                </svg>
-                            </span>
-                            <span class="tool-name">Observability</span>
-                        </div>
-                        <div class="tool-item">
-                            <span class="tool-icon">
-                                <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" class="inline-icon">
-                                    <rect width="32" height="32" rx="6" fill="var(--black-forest)"/>
-                                    <rect x="10" y="14" width="12" height="10" rx="2" fill="var(--floral-white)"/>
-                                    <path d="M12 14v-3a4 4 0 0 1 8 0v3" stroke="var(--floral-white)" stroke-width="2" fill="none"/>
-                                </svg>
-                            </span>
-                            <span class="tool-name">Secrets Management</span>
-                        </div>
-                        <div class="tool-item">
-                            <span class="tool-icon">
-                                <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" class="inline-icon">
-                                    <rect width="32" height="32" rx="6" fill="var(--black-forest)"/>
-                                    <circle cx="16" cy="10" r="3" fill="var(--floral-white)"/>
-                                    <circle cx="9" cy="22" r="3" fill="var(--floral-white)"/>
-                                    <circle cx="23" cy="22" r="3" fill="var(--floral-white)"/>
-                                    <path d="M16 13v3M13 19l-2 1M19 19l2 1" stroke="var(--floral-white)" stroke-width="2" stroke-linecap="round"/>
-                                    <path d="M16 16l-5 3M16 16l5 3" stroke="var(--floral-white)" stroke-width="2" stroke-linecap="round"/>
-                                </svg>
-                            </span>
-                            <span class="tool-name">Network Policies</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <p class="stack-summary">PandoCore is not a replacement for any of these. It adds a behavioral detection and response layer at runtime, alongside the controls you already run.</p>
+                <p class="stack-summary">PandoCore is not a replacement for encryption, authentication, a service mesh, observability, secrets management or network policies. It adds a behavioral detection and response layer at runtime, alongside the controls you already run.</p>
             </div>
         </div>
     </section>
@@ -595,12 +535,12 @@
         <div class="container">
             <h2 class="section-title">Security Principles</h2>
             <div class="content-wrapper mw-container">
-                <p class="section-intro">Our approach to security and reliability is built on fundamental principles:</p>
+                <p class="section-intro">Three things shape how PandoCore behaves at runtime:</p>
                 <div class="feature-rows">
                     <div class="feature-row">
                         <div class="feature-visual">
                             <div class="card-icon">
-                                <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                                <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                     <rect width="64" height="64" rx="16" class="icon-bg"/>
                                     <g class="icon-shape">
                                         <rect x="18" y="20" width="4" height="6"/>
@@ -619,14 +559,14 @@
                             </div>
                         </div>
                         <div class="feature-content">
-                            <h3>Active Attack Resistance</h3>
-                            <p>Designed to detect and respond to common attack vectors including debugging attempts, memory inspection, code modification, and timing analysis. The system actively monitors execution to identify anomalous conditions.</p>
+                            <h3>Behaviour, Not Signatures</h3>
+                            <p>PandoCore responds to how a workload behaves rather than to a signature of whatever attacked it, so an attack it has never seen still has to diverge from that workload's own baseline to have an effect. It reads the node's process namespace, and anything that never executes there is outside what it can see.</p>
                         </div>
                     </div>
                     <div class="feature-row">
                         <div class="feature-visual">
                             <div class="card-icon">
-                                <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                                <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                     <rect width="64" height="64" rx="16" class="icon-bg"/>
                                     <path d="M32 16l-14 8v12c0 8.7 6 16.8 14 19 8-2.2 14-10.3 14-19V24l-14-8zm0 4.5l10 5.7v10.8c0 6.5-4.5 12.6-10 14.3-5.5-1.7-10-7.8-10-14.3V26.2l10-5.7z" class="icon-shape"/>
                                 </svg>
@@ -634,21 +574,21 @@
                         </div>
                         <div class="feature-content">
                             <h3>Multi-Layered Defense</h3>
-                            <p>Cybersecurity requires multiple mechanisms working in concert. We encourage a layered approach where PandoCore works in tandem with encryption, authentication controls and observation. This ensures that compromise of any single element doesn't undermine overall protection.</p>
+                            <p>PandoCore is one layer, not a perimeter. It runs alongside encryption, authentication controls and observability and assumes those are already doing their jobs. If one of them fails, a behavioural layer narrows what that failure buys an attacker; it does not cancel it.</p>
                         </div>
                     </div>
                     <div class="feature-row">
                         <div class="feature-visual">
                             <div class="card-icon">
-                                <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+                                <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                     <rect width="64" height="64" rx="16" class="icon-bg"/>
-                                    <polyline points="18,32 28,42 48,22" stroke="var(--floral-white)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <polyline points="18,32 28,42 48,22" class="icon-shape" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
                             </div>
                         </div>
                         <div class="feature-content">
                             <h3>Validated Performance</h3>
-                            <p>Validated across 3,966 engine-hours on GKE, cumulative rather than one unbroken run, against production-representative synthetic workloads, with zero false isolations from sensors that were permitted to isolate, 1,231 engine-hours of them on the exact build we ship. Every capability is backed by measured results from soak testing against diverse production-representative applications.</p>
+                            <p>Validated across 3,966 engine-hours on GKE, cumulative rather than one unbroken run, against production-representative synthetic workloads, with zero false isolations from sensors that were permitted to isolate, 1,231 engine-hours of them on the exact build we ship. Those runs measured CPU, memory and false isolations. They are not a measure of detection coverage, and we do not present them as one.</p>
                         </div>
                     </div>
                 </div>
@@ -660,37 +600,11 @@
         </div>
     </section>
 
-    <!-- Developer Experience Section: temporarily disabled, trialling a shorter page.
-         To restore, uncomment this block AND flip the Validation section below
-         back to plain "content-section" so the alt-bg stripe keeps alternating.
-            <section class="content-section alt-bg">
-        <div class="container">
-            <h2 class="section-title mb-xl">Developer Experience</h2>
-            <div class="content-wrapper mw-container">
-                <div class="split-focus">
-                    <div class="focus-card">
-                        <h3>Easy to Adopt</h3>
-                        <ul class="focus-list" role="list">
-                            <li>Deploys as a node-level agent alongside your existing Kubernetes workloads, with nothing injected into your pods</li>
-                            <li>No modifications required to your application code; protection is transparent</li>
-                            <li>Compatible with existing CI/CD pipelines, testing frameworks, and deployment processes</li>
-                            <li>Fits into your current orchestration and security tooling workflows</li>
-                        </ul>
-                    </div>
-                    <div class="focus-card">
-                        <h3>Flexible & Powerful</h3>
-                        <ul class="focus-list" role="list">
-                            <li>Customizable parameters allow tuning security properties to match specific use case requirements</li>
-                            <li>Sensible defaults enable quick deployment while advanced options support specialized needs</li>
-                            <li>Works with containerized workloads across cloud, edge, and on-premises environments</li>
-                            <li>Complements your existing runtime security tools; adds a behavioral detection-and-response layer alongside your rule-based tooling</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    -->
+    <!-- The Developer Experience section was removed here on 2026-11-07, not
+         commented out: 31 lines of dead markup shipped on every load of this
+         page. It is in git if the shorter page does not hold up. Restoring it
+         also means flipping the Validation section below back to plain
+         "content-section" so the alt-bg stripe keeps alternating. -->
 
     <!-- Validation Results Section -->
     <section class="content-section alt-bg" id="validation">
@@ -701,18 +615,9 @@
 
                 <p class="validation-claim">Zero false isolations across 3,966 engine-hours of sensors that were permitted to isolate, 1,231 of them on the exact build we ship.</p>
 
-                <div class="validation-grid">
-                    <div>
-                        <div class="stat-number">110.6 MiB</div>
-                        <div class="detail-note">Working Set, Per Node</div>
-                    </div>
-                    <div>
-                        <div class="stat-number">24</div>
-                        <div class="detail-note">Workload Types</div>
-                    </div>
-                </div>
+                <p>Measured warm and enforcing on the shipping build, across two runs: a 130.4 mCPU p95 with a 106.9 MiB working set over a 24-hour warm window, and 127.3 mCPU with 110.6 MiB over a 34-hour run. The working set held a flat slope in both, so there is no leak to grow into the limit.</p>
 
-                <p class="section-note">Cumulative across two runs rather than one unbroken window, measured on one node per run, against production-representative synthetic workloads rather than customer traffic. A zero bounds the rate rather than being one: at most one false isolation in 1,324 engine-hours, at 95 percent confidence. Profiling is automatic across web servers, databases, and JIT and interpreted runtimes, with no manual tuning required. These figures are from the node sensor; the earlier per-pod collector's numbers are not carried forward.</p>
+                <p class="section-note">Cumulative across two runs rather than one unbroken window, measured on one node per run, against production-representative synthetic workloads rather than customer traffic. A zero bounds the rate rather than being one: at most one false isolation in 1,324 engine-hours, at 95 percent confidence. Profiling is automatic across the 24 workload types these runs covered, spanning web servers, databases, and JIT and interpreted runtimes, with no manual tuning required. These figures are from the node sensor; the earlier per-pod collector's numbers are not carried forward.</p>
             </div>
         </div>
     </section>
@@ -735,7 +640,7 @@
                     <div class="social-links">
                         <div class="social-icons">
                             <a href="https://www.linkedin.com/company/pando-core/" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="LinkedIn">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                                     <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
                                 </svg>
                             </a>
@@ -752,12 +657,22 @@
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <p class="footer-links"><a href="https://trust.pandocore.io">Trust Center</a></p>
+                <p class="footer-links">
+                    <a href="/docs/">Docs</a>
+                    <a href="/pricing">Pricing</a>
+                    <a href="/blog/">Blog</a>
+                    <a href="/contact">Contact</a>
+                    <a href="https://trust.pandocore.io">Trust Center</a>
+                </p>
                 <p>&copy; 2026 PandoCore Inc. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
     <script src="/js/main.js"></script>
+    <div class="mobile-cta-bar" id="mobile-cta-bar">
+        <a href="https://portal.pandocore.io/signup" class="btn btn-primary">Start free</a>
+    </div>
+
 </body>
 </html>

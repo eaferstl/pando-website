@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="kubectl label deployment writes to the Deployment object's metadata, not to spec.template.metadata.labels, where pods actually get their labels. If your sidecar injection is label-selected, the command reports success and nothing happens. Here's why, and the fix.">
+    <meta name="description" content="kubectl label deployment writes to the Deployment's own metadata, not where pods get their labels. It reports success and nothing happens. Here's the fix.">
     <title>PandoCore | Three Silent Failures Between You and Sidecar Injection</title>
     <link rel="canonical" href="https://pandocore.io/blog/sidecar-injection-silent-failures">
 
     <meta property="og:type" content="article">
     <meta property="og:title" content="Three Silent Failures Between You and Sidecar Injection">
-    <meta property="og:description" content="kubectl label deployment writes to the Deployment object's metadata, not to spec.template.metadata.labels, where pods actually get their labels. If your sidecar injection is label-selected, the command reports success and nothing happens. Here's why, and the fix.">
-    <meta property="og:image" content="https://pandocore.io/images/blog/sidecar-injection-silent-failures-cover.svg">
+    <meta property="og:description" content="kubectl label deployment writes to the Deployment's own metadata, not where pods get their labels. It reports success and nothing happens. Here's the fix.">
+    <meta property="og:image" content="https://pandocore.io/images/blog/sidecar-injection-silent-failures-cover.png">
     <meta name="twitter:card" content="summary_large_image">
 
     <link rel="icon" type="image/png" href="/images/favicon.png">
@@ -18,31 +18,34 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/styles.css">
+    <noscript><link rel="stylesheet" href="/css/noscript.css"></noscript>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
-    <!-- Navigation -->
+    <!-- Navigation. Wrapped in a banner landmark: the site nav was a bare
+         nav element, so no page exposed a banner to assistive tech. -->
+    <header>
     <nav class="navbar">
         <div class="container">
             <div class="nav-wrapper">
                 <a href="/" class="logo">
-                    <img src="/images/logoTransparency.png" alt="PandoCore" width="184" height="240">
+                    <img src="/images/logo-nav.png" alt="PandoCore" width="92" height="120">
                     <div class="logo-text-wrapper">
                         <span class="logo-text">PandoCore</span>
                     </div>
                 </a>
-                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="primary-nav">
                     <span></span>
                     <span></span>
                     <span></span>
                 </button>
                 <div class="nav-overlay"></div>
-                <ul class="nav-links">
+                <ul class="nav-links" role="list" id="primary-nav">
                     <li><a href="/">Home</a></li>
                     <li><a href="/product">Product</a></li>
                     <li><a href="/pricing">Pricing</a></li>
                     <li><a href="/about">About</a></li>
-                    <li><a href="/blog/" class="active">Blog</a></li>
+                    <li><a href="/blog/" class="active" aria-current="page">Blog</a></li>
                     <li><a href="/docs/">Docs</a></li>
                     <li><a href="/contact" class="nav-contact">Contact</a></li>
                     <li><a href="https://portal.pandocore.io/signup" class="nav-signup">Sign Up</a></li>
@@ -50,9 +53,11 @@
             </div>
         </div>
     </nav>
+    </header>
 
     <!-- Post header -->
-    <section id="main-content" tabindex="-1" class="page-hero">
+    <main id="main-content" tabindex="-1">
+    <section class="page-hero">
         <div class="wave-container">
             <div class="wave wave-layer-1"></div>
             <div class="wave wave-layer-2"></div>
@@ -99,10 +104,18 @@
     </section>
 
     <!-- Footer -->
+    </main>
+
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <p class="footer-links"><a href="https://trust.pandocore.io">Trust Center</a></p>
+                <p class="footer-links">
+                    <a href="/docs/">Docs</a>
+                    <a href="/pricing">Pricing</a>
+                    <a href="/blog/">Blog</a>
+                    <a href="/contact">Contact</a>
+                    <a href="https://trust.pandocore.io">Trust Center</a>
+                </p>
                 <p>&copy; 2026 PandoCore Inc. All rights reserved.</p>
             </div>
         </div>

@@ -3,48 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Contact PandoCore to discuss collaboration opportunities and learn more about our secure computing innovations.">
+    <meta name="description" content="Talk to PandoCore about running the node sensor on your cluster, custom pricing, or anything in the docs. We reply within 1-3 business days.">
     <title>PandoCore | Contact</title>
     <link rel="canonical" href="https://pandocore.io/contact">
+
+    <!-- Social share preview: this page gets forwarded. -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="PandoCore | Contact">
+    <meta property="og:description" content="Talk to PandoCore about running the node sensor on your cluster, custom pricing, or anything in the docs. We reply within 1-3 business days.">
+    <meta property="og:url" content="https://pandocore.io/contact">
+    <meta property="og:image" content="https://pandocore.io/images/og-default.png">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" type="image/png" href="/images/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/styles.css">
-    <!-- EmailJS SDK -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <noscript><link rel="stylesheet" href="/css/noscript.css"></noscript>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
-    <!-- Navigation -->
+    <!-- Navigation. Wrapped in a banner landmark: the site nav was a bare
+         nav element, so no page exposed a banner to assistive tech. -->
+    <header>
     <nav class="navbar">
         <div class="container">
             <div class="nav-wrapper">
                 <a href="/" class="logo">
-                    <img src="/images/logoTransparency.png" alt="PandoCore" width="184" height="240">
+                    <img src="/images/logo-nav.png" alt="PandoCore" width="92" height="120">
                     <div class="logo-text-wrapper">
                         <span class="logo-text">PandoCore</span>
                     </div>
                 </a>
-                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="primary-nav">
                     <span></span>
                     <span></span>
                     <span></span>
                 </button>
                 <div class="nav-overlay"></div>
-                <ul class="nav-links">
+                <ul class="nav-links" role="list" id="primary-nav">
                     <li><a href="/">Home</a></li>
                     <li><a href="/product">Product</a></li>
                     <li><a href="/pricing">Pricing</a></li>
                     <li><a href="/about">About</a></li>
                     <li><a href="/blog/">Blog</a></li>
                     <li><a href="/docs/">Docs</a></li>
-                    <li><a href="/contact" class="nav-contact active">Contact</a></li>
+                    <li><a href="/contact" class="nav-contact active" aria-current="page">Contact</a></li>
                     <li><a href="https://portal.pandocore.io/signup" class="nav-signup">Sign Up</a></li>
                 </ul>
             </div>
         </div>
     </nav>
+    </header>
 
     <!-- Contact Hero -->
     <main id="main-content" tabindex="-1">
@@ -53,25 +63,8 @@
             <div class="wave wave-layer-1"></div>
         </div>
         <div class="container">
-            <h1>Get In Touch</h1>
-            <p class="page-subtitle">We welcome inquiries from anyone interested in our tech</p>
-            
-            <!-- Social Media Links -->
-            <div class="social-links">
-                <div class="social-icons">
-                    <a href="https://www.linkedin.com/company/pando-core/" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="LinkedIn">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
-                        </svg>
-                    </a>
-                    <a href="https://calendar.proton.me/bookings#wchS9JFz7Sg34QFZ593-UxZnQx0lhS0q_JtB-zyAnTQ=" target="_blank" rel="noopener noreferrer" class="book-now-link" aria-label="Book a meeting">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/>
-                        </svg>
-                        <span>Book now</span>
-                    </a>
-                </div>
-            </div>
+            <h1>Talk to us</h1>
+            <p class="page-subtitle">One inbox, read by the people who build the sensor. We reply within one to three business days.</p>
         </div>
     </section>
 
@@ -84,15 +77,15 @@
         <div class="container">
             <div class="contact-wrapper">
                 <div class="contact-info">
-                    <p class="contact-subtitle">Please reach out if you are:</p>
+                    <p class="contact-subtitle">Worth writing to us about:</p>
                     <ul class="info-list" role="list">
-                        <li>an enterprise seeking custom pricing</li>
-                        <li>facing execution time security challenges</li>
-                        <li>responsible for securing Kubernetes workloads without a dedicated security team</li>
-                        <li>an organization seeking enhanced infrastructure security</li>
-                        <li>curious about what PandoCore is or how we provide better security</li>
+                        <li>you run Kubernetes and want to know what the sensor would see on your nodes</li>
+                        <li>you are past 150 nodes, or in a regulated environment, and need Enterprise pricing</li>
+                        <li>you are responsible for securing clusters without a dedicated security team</li>
+                        <li>something in the <a href="/docs/">docs</a> is wrong, or you hit a failure <a href="/docs/troubleshooting">troubleshooting</a> does not cover</li>
+                        <li>you do not believe one of our claims: name it and we will show you the measurement behind it</li>
                     </ul>
-                    <p>Please allow 1-3 business days for a response.</p>
+                    <p>Prefer plain email? <a href="mailto:eliot@pandocore.io">eliot@pandocore.io</a> reaches the same place.</p>
                     
                     <div class="privacy-note">
                         <h2>Privacy</h2>
@@ -101,40 +94,58 @@
                 </div>
 
                 <div class="contact-form-wrapper">
-                    <form id="contactForm" class="contact-form">
+                    <form id="contactForm" class="contact-form" novalidate>
                         <div class="form-group">
                             <label for="name">Name <span class="required">*</span></label>
-                            <input type="text" id="name" name="name" required>
-                            <span class="error-message" id="nameError"></span>
+                            <input type="text" id="name" name="name" required autocomplete="name" aria-describedby="nameError">
+                            <span class="error-message" id="nameError" role="alert"></span>
                         </div>
 
                         <div class="form-group">
                             <label for="email">Email <span class="required">*</span></label>
-                            <input type="email" id="email" name="email" required>
-                            <span class="error-message" id="emailError"></span>
+                            <input type="email" id="email" name="email" required autocomplete="email" aria-describedby="emailError">
+                            <span class="error-message" id="emailError" role="alert"></span>
                         </div>
 
                         <div class="form-group">
                             <label for="organization">Organization / Company</label>
-                            <input type="text" id="organization" name="organization">
+                            <input type="text" id="organization" name="organization" autocomplete="organization">
                         </div>
 
                         <div class="form-group">
                             <label for="subject">Subject <span class="required">*</span></label>
-                            <input type="text" id="subject" name="subject" required>
-                            <span class="error-message" id="subjectError"></span>
+                            <input type="text" id="subject" name="subject" required aria-describedby="subjectError">
+                            <span class="error-message" id="subjectError" role="alert"></span>
                         </div>
 
                         <div class="form-group">
                             <label for="message">Message <span class="required">*</span></label>
-                            <textarea id="message" name="message" rows="6" required></textarea>
-                            <span class="error-message" id="messageError"></span>
+                            <textarea id="message" name="message" rows="6" required aria-describedby="messageError"></textarea>
+                            <span class="error-message" id="messageError" role="alert"></span>
                         </div>
 
-                        <button type="submit" class="btn btn-primary btn-submit">Send Message</button>
-                        
                         <div class="form-status" id="formStatus" role="status" aria-live="polite"></div>
+
+                        <button type="submit" class="btn btn-primary btn-submit">Send Message</button>
                     </form>
+                </div>
+            </div>
+
+            <div class="social-links">
+                <p class="social-intro">Prefer a conversation?</p>
+                <div class="social-icons">
+                    <a href="https://www.linkedin.com/company/pando-core/" target="_blank" rel="noopener noreferrer" class="btn btn-secondary contact-action">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                        </svg>
+                        <span>LinkedIn</span>
+                    </a>
+                    <a href="https://calendar.proton.me/bookings#wchS9JFz7Sg34QFZ593-UxZnQx0lhS0q_JtB-zyAnTQ=" target="_blank" rel="noopener noreferrer" class="btn btn-secondary contact-action">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/>
+                        </svg>
+                        <span>Let's Talk</span>
+                    </a>
                 </div>
             </div>
         </div>
@@ -146,12 +157,25 @@
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <p class="footer-links"><a href="https://trust.pandocore.io">Trust Center</a></p>
+                <p class="footer-links">
+                    <a href="/docs/">Docs</a>
+                    <a href="/pricing">Pricing</a>
+                    <a href="/blog/">Blog</a>
+                    <a href="/contact">Contact</a>
+                    <a href="https://trust.pandocore.io">Trust Center</a>
+                </p>
                 <p>&copy; 2026 PandoCore Inc. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
+    <!-- EmailJS SDK. In the body and ahead of main.js, not in <head>: it is
+         only needed on submit, and in <head> it was a render-blocking
+         third-party request on the critical path of this page. Ordered before
+         main.js because main.js calls emailjs.init() as it runs. Pinned to an
+         exact version rather than the floating @4, so the bytes that execute
+         here cannot change without a deploy. -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4.4.1/dist/email.min.js"></script>
     <script src="/js/main.js"></script>
 </body>
 </html>

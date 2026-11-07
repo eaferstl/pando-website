@@ -10,7 +10,7 @@
     <meta property="og:type" content="article">
     <meta property="og:title" content="Building Defense That Assumes Compromise">
     <meta property="og:description" content="Designing for a world where compromise is assumed changes what you build. It means planning for the moment defenses are already inside the perimeter.">
-    <meta property="og:image" content="https://pandocore.io/images/blog/assume-compromise-cover.svg">
+    <meta property="og:image" content="https://pandocore.io/images/blog/assume-compromise-cover.png">
     <meta name="twitter:card" content="summary_large_image">
 
     <link rel="icon" type="image/png" href="/images/favicon.png">
@@ -18,31 +18,34 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/styles.css">
+    <noscript><link rel="stylesheet" href="/css/noscript.css"></noscript>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
-    <!-- Navigation -->
+    <!-- Navigation. Wrapped in a banner landmark: the site nav was a bare
+         nav element, so no page exposed a banner to assistive tech. -->
+    <header>
     <nav class="navbar">
         <div class="container">
             <div class="nav-wrapper">
                 <a href="/" class="logo">
-                    <img src="/images/logoTransparency.png" alt="PandoCore" width="184" height="240">
+                    <img src="/images/logo-nav.png" alt="PandoCore" width="92" height="120">
                     <div class="logo-text-wrapper">
                         <span class="logo-text">PandoCore</span>
                     </div>
                 </a>
-                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="primary-nav">
                     <span></span>
                     <span></span>
                     <span></span>
                 </button>
                 <div class="nav-overlay"></div>
-                <ul class="nav-links">
+                <ul class="nav-links" role="list" id="primary-nav">
                     <li><a href="/">Home</a></li>
                     <li><a href="/product">Product</a></li>
                     <li><a href="/pricing">Pricing</a></li>
                     <li><a href="/about">About</a></li>
-                    <li><a href="/blog/" class="active">Blog</a></li>
+                    <li><a href="/blog/" class="active" aria-current="page">Blog</a></li>
                     <li><a href="/docs/">Docs</a></li>
                     <li><a href="/contact" class="nav-contact">Contact</a></li>
                     <li><a href="https://portal.pandocore.io/signup" class="nav-signup">Sign Up</a></li>
@@ -50,9 +53,11 @@
             </div>
         </div>
     </nav>
+    </header>
 
     <!-- Post header -->
-    <section id="main-content" tabindex="-1" class="page-hero">
+    <main id="main-content" tabindex="-1">
+    <section class="page-hero">
         <div class="wave-container">
             <div class="wave wave-layer-1"></div>
             <div class="wave wave-layer-2"></div>
@@ -77,7 +82,7 @@
                 <p>If you assume the perimeter holds, you put almost everything into the wall. If you assume it doesn't, you invest in seeing clearly once someone is past it. The goal moves away from perfect prevention, which nobody achieves, and toward shortening the time between when something goes wrong and when a person understands it.</p>
 
                 <h2>What the assumption forces you to build</h2>
-                <ul>
+                <ul role="list">
                     <li><strong>Visibility that survives failure.</strong> Your defenses have to keep working even when individual pieces are degraded, misconfigured, or under active attack.</li>
                     <li><strong>Evidence, not just alerts.</strong> An alert tells you something happened. Evidence lets a responder reconstruct what happened and decide what to do, and that's the part that actually matters here.</li>
                     <li><strong>Adaptation over static rules.</strong> Attackers change their behavior, so a defense pinned to yesterday's idea of normal ages badly. The system has to keep learning what healthy looks like.</li>
@@ -96,10 +101,18 @@
     </section>
 
     <!-- Footer -->
+    </main>
+
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
-                <p class="footer-links"><a href="https://trust.pandocore.io">Trust Center</a></p>
+                <p class="footer-links">
+                    <a href="/docs/">Docs</a>
+                    <a href="/pricing">Pricing</a>
+                    <a href="/blog/">Blog</a>
+                    <a href="/contact">Contact</a>
+                    <a href="https://trust.pandocore.io">Trust Center</a>
+                </p>
                 <p>&copy; 2026 PandoCore Inc. All rights reserved.</p>
             </div>
         </div>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="PandoCore Trust Center: what the node sensor collects, what leaves your cluster, how it fails, the privileges it holds, evidence integrity, supply chain, disclosure policy, and our compliance roadmap.">
+    <meta name="description" content="What the node sensor collects, what leaves your cluster, how it fails, the privileges it holds, evidence integrity, supply chain and our compliance roadmap.">
     <title>PandoCore | Trust Center</title>
     <link rel="canonical" href="https://trust.pandocore.io/">
     <link rel="icon" type="image/png" href="/images/favicon.png">
@@ -12,13 +12,14 @@
     <meta property="og:title" content="PandoCore Trust Center">
     <meta property="og:description" content="What the node sensor collects, what leaves your cluster, how it fails, the privileges it holds, evidence integrity, supply chain, disclosure, and our compliance roadmap.">
     <meta property="og:url" content="https://trust.pandocore.io/">
-    <meta property="og:image" content="https://pandocore.io/images/logoTransparency.png">
-    <meta name="twitter:card" content="summary">
+    <meta property="og:image" content="https://pandocore.io/images/og-default.png">
+    <meta name="twitter:card" content="summary_large_image">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/styles.css">
+    <noscript><link rel="stylesheet" href="/css/noscript.css"></noscript>
 </head>
 <body>
     <a href="#main-content" class="skip-to-main">Skip to main content</a>
@@ -30,26 +31,39 @@
 
         <p>PandoCore runs on your Kubernetes nodes, so you should know exactly what it does with your data, what privileges it holds, how it behaves when things break, and where we stand on formal compliance. Here is the honest picture, including the parts that are not flattering.</p>
 
-        <section>
+        <nav class="trust-toc" aria-label="Sections">
+            <ul role="list">
+                <li><a href="#what-we-collect">What we collect, and what leaves your cluster</a></li>
+                <li><a href="#what-is-watched">What is watched, and what is not</a></li>
+                <li><a href="#failure-modes">Failure modes</a></li>
+                <li><a href="#evidence-integrity">Evidence integrity</a></li>
+                <li><a href="#supply-chain">Supply chain</a></li>
+                <li><a href="#reporting-a-vulnerability">Reporting a vulnerability</a></li>
+                <li><a href="#compliance-roadmap">Compliance roadmap</a></li>
+                <li><a href="#what-changed">What changed, and what it cost</a></li>
+            </ul>
+        </nav>
+
+        <section id="what-we-collect">
             <h2>What we collect, and what leaves your cluster</h2>
             <p>The node sensor reads kernel-exposed counters about the processes of the workloads on its node (memory, process, and network statistics from the host <code>/proc</code> filesystem, mounted read-only), then turns them into normalized drift signals. It does not read your application's data, memory contents, network payloads, environment variables, or secrets.</p>
             <p><strong>Stays in your cluster.</strong> A detection produces a structured evidence record written to the sensor's stdout, visible in your own pod logs, and emitted as a Kubernetes event on the workload it concerns. The optional network audit that records remote IP addresses is off by default.</p>
             <p><strong>Goes to PandoCore (<code>portal.pandocore.io</code>).</strong> Two things reach us on a default install:</p>
-            <ul>
+            <ul role="list">
                 <li>A licensing and billing heartbeat, roughly weekly, plus a one-time cluster registration. These carry your license key, generated node and cluster identifiers, and the sensor version, but no detection data.</li>
                 <li>Detection evidence. By default the sensor forwards evidence records to the portal, through the cluster controller. You can turn this off completely with a single Helm value, or leave forwarding on but tell the portal not to store it. Either way, concrete identifiers inside a record (file paths, remote IPs, image digests) can be redacted before the record leaves the node.</li>
             </ul>
             <p><strong>Goes only where you point it.</strong> Beyond the portal, evidence is delivered to the destinations you configure: your SIEM (Splunk, Elastic, Datadog, syslog), a Slack channel, or your own webhook. Nothing is sent to a third party you did not set up.</p>
         </section>
 
-        <section>
+        <section id="what-is-watched">
             <h2>What is watched, and what is not</h2>
             <p><strong>Selection is opt-out, which is the reverse of the retired sidecar.</strong> Pods on a node are watched by default, and the exact label <code>pandocore.io/protect: "false"</code> excludes one. The match is case-sensitive and literal, so <code>"False"</code> and <code>"0"</code> do not exclude anything. If you are carrying the old opt-in label from the sidecar era, note that it no longer selects anything: <code>protect: "true"</code> is a no-op on the node sensor, and removing it does not stop a pod being watched.</p>
             <p>Four exclusions are not policy and an operator cannot opt a namespace back into them: PandoCore's own pod, pods sharing the host PID namespace, pods sharing the host network namespace, and a pod carrying its own <code>protect: "false"</code>. Your cluster's managed system namespaces are excluded too.</p>
             <p><strong>A coverage limit worth knowing before you hit it.</strong> Each sensor runs a bounded number of per-workload engines, 70 by default. On a node packed beyond that, the pods past the limit get no engine and are genuinely unmonitored rather than partially monitored. The limit is raisable to 500, and at a typical 15 to 20 pods per node it does not bind, but it is a hard ceiling rather than a soft one. The sensor publishes the count at <code>pando_node_sensor_pods_unmonitored{reason="cap"}</code>, and in that metric family <code>cap</code> is the one value that means something is wrong rather than something was deliberately excluded. If you run dense nodes, that is the number to alert on.</p>
         </section>
 
-        <section>
+        <section id="failure-modes">
             <h2>Failure modes</h2>
             <p>Out of the box the sensor runs in monitor mode: it observes and records, and does not block, isolate, or delete anything. Containment is something you opt into, and on the free tier it is not available at all.</p>
             <p>It is designed to fail open. If the portal is unreachable, if its Kubernetes permissions are missing, or if the sensor itself crashes, your workloads keep running. The sensor observes from its own pod rather than from inside yours, and it is not in the path of your traffic, so it cannot take your application down with it.</p>
@@ -59,7 +73,7 @@
             <p>The sensor requests 250m CPU and 256Mi of memory per node, and is limited to 2 cores and 1Gi. Those are per node, for the whole node, not per workload. Size your instance types with the request in mind: the chart deliberately refuses to install rather than leave a node silently unmonitored, so on a node that cannot allocate the request the Helm install stops and names the node instead of reporting success.</p>
         </section>
 
-        <section>
+        <section id="evidence-integrity">
             <h2>Evidence integrity</h2>
             <p>Each evidence record carries a SHA-256 digest over its canonical contents, along with the previous record's hash and a sequence number. Together these form a hash chain: altering or reordering a record changes its digest and breaks the link, so tampering is detectable and the chain is independently verifiable. Signing makes tampering visible; it does not prevent it.</p>
             <p>Every record is also signed with an Ed25519 key that the sensor generates in its own process. The private half of that key never leaves that process. It is never written to disk or logged, and nothing is provisioned from outside, so there is no signing key for us to distribute or leak.</p>
@@ -70,17 +84,17 @@
             <p><strong>What retention does and does not mean.</strong> Your plan states a retention window, 7 days on Free, 90 days on Growth and 13 months on Enterprise. That is a window records are kept for, and it is a floor rather than a deletion schedule. It is not a query interface: the portal shows recent events, and a long-range evidence query path is not built yet. If you need to hold evidence for an auditor over a year, keep forwarding it to your own SIEM as well.</p>
         </section>
 
-        <section>
+        <section id="supply-chain">
             <h2>Supply chain</h2>
             <p><strong>Every production image is signed, and you can check it yourself.</strong> The release pipeline signs all five images it publishes with cosign, <strong>by digest rather than by tag</strong>, so a signature always covers the exact image you run and cannot be moved onto a different one by retagging. Signing uses a Cloud KMS asymmetric key, protection level HSM, algorithm EC_SIGN_P256_SHA256. The first signed production release is v2.0.0, published on 2026-11-06. Each signature names the release it came from, so a verified image ties back to a tagged build rather than to our word for it.</p>
             <p>Each published image carries two software bill of materials attestations, one SPDX and one CycloneDX, generated with syft. All five images are signed and attested.</p>
             <p><strong>The verification key is published here rather than handed to you out of band.</strong> The public half of the signing key is committed at <code>deploy/keys/cosign-public-prod.pem</code>, and it is reproduced below so you can diff the two against each other. The file's own digest is <code>sha256:dc0145d97692207e64d9e79f94d46c823d48364922f88d0db3b9e3899dfd14d8</code>.</p>
-            <pre><code>-----BEGIN PUBLIC KEY-----
+            <pre tabindex="0" role="region" aria-label="Production cosign public key"><code>-----BEGIN PUBLIC KEY-----
 MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEK8ZkvwNaDWKx6lfTG+v2QhKJ67Ah
 mVSyehm4Nav5NyCk7ScI6cM3u5UXjps/hr+DPnLiAp5BABg5zeBYJDfjUg==
 -----END PUBLIC KEY-----</code></pre>
             <p><strong>We sign with a key and do not publish to a transparency log.</strong> That is a deliberate choice, and it changes the command you need. Signatures are never uploaded to Rekor, so a bare <code>cosign verify</code> goes looking for a log entry, finds none, and fails. That failure is the expected result and not a broken signature. Skip the log check explicitly:</p>
-            <pre><code>cosign verify \
+            <pre tabindex="0" role="region" aria-label="cosign verify command"><code>cosign verify \
   --key cosign-public-prod.pem \
   --insecure-ignore-tlog=true \
   us-central1-docker.pkg.dev/pandocore-prod/node-sensor/pando-node-sensor@sha256:a06b5bec9a6214fc1460fc195dec11f7c751dd5dc83872bb72fdfcd0c7de8a40</code></pre>
@@ -88,12 +102,12 @@ mVSyehm4Nav5NyCk7ScI6cM3u5UXjps/hr+DPnLiAp5BABg5zeBYJDfjUg==
             <p><strong>Signing and SBOMs cover all five images. Vulnerability scanning does not.</strong> Trivy gates the node sensor image on critical and high-severity findings that have a fix available, and blocks the build on them. The sidecar image is scanned but not gated. The controller, the admission webhook and the enforcer are not scanned at all. Extending that is outstanding work, and until it lands it would be wrong to let "we scan our images" stand without the qualifier.</p>
         </section>
 
-        <section>
+        <section id="reporting-a-vulnerability">
             <h2>Reporting a vulnerability</h2>
             <p>If you find a security issue, email <a href="mailto:eliot@pandocore.io">eliot@pandocore.io</a>. We welcome good-faith security research and will not pursue action against researchers who act in good faith, avoid privacy violations and service disruption, and give us a reasonable chance to fix an issue before disclosing it publicly. We are a small team, so we cannot promise a formal SLA, but we will acknowledge your report quickly and keep you posted. We do not run a paid bug bounty yet.</p>
         </section>
 
-        <section>
+        <section id="compliance-roadmap">
             <h2>Compliance roadmap</h2>
             <p>We will be straight about this: PandoCore does not hold SOC 2 or any third-party security attestation today. We are targeting a SOC 2 Type 1 report in Q4 2027, with a Type 2 to follow shortly after.</p>
             <p>In the meantime, the practices above are how we operate: a narrow Kubernetes grant with pod deletion withheld by name; a signed container supply chain with published SBOMs; a fail-open, monitor-by-default posture; and evidence egress you control.</p>
@@ -101,7 +115,7 @@ mVSyehm4Nav5NyCk7ScI6cM3u5UXjps/hr+DPnLiAp5BABg5zeBYJDfjUg==
             <p>Our detection figures were re-measured on the node sensor. The earlier numbers came from the retired per-pod collector and do not carry over to a different architecture, so they were withdrawn rather than restated. The replacement measurement is zero false isolations across 3,966 engine-hours of sensors that were permitted to isolate, 1,231 of them on the exact build we ship. A zero bounds the rate rather than being one: at most one false isolation in 1,324 engine-hours, at 95 percent confidence. The <a href="https://pandocore.io/product#validation">product page</a> carries the detail.</p>
         </section>
 
-        <section>
+        <section id="what-changed">
             <h2>What changed, and what it cost</h2>
             <p>PandoCore used to ship as a sidecar: one detector container injected into every pod it protected. It now ships as a node sensor, one DaemonSet pod per node, alongside a cluster controller. The injected sidecar and its mutating admission webhook are deprecated and receive no further release. The node sensor plus the controller is the one supported install.</p>
             <p><strong>The cluster controller.</strong> A StatefulSet that receives evidence from sensors over mTLS and owns delivery to your SIEM, Slack and the portal. It runs unprivileged and holds no Kubernetes API permissions at all. It is documented in <a href="/docs/controller">the controller docs</a>.</p>
