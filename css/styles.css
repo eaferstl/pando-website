@@ -2227,6 +2227,45 @@ header {
     margin-right: 40px; /* Match the Fun Fact's left offset */
 }
 
+/* A conversion point partway down, at the head of the longest section. The
+   page's only call to action was the closing band at 94% scroll depth, which a
+   reader reaches after the 15-row compliance table and the validation figures.
+   Capped and centred on --content-max-width so it sits on the same left edge
+   as the section title and intro above it rather than on the table's wider
+   container.
+
+   Deliberately quieter than the closing band: one line and one button, no
+   heading. Both sentences are existing approved copy, from /pricing's Free
+   tier and its description, rather than new claims written for this spot. */
+.mid-cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-sm) var(--spacing-md);
+    max-width: var(--content-max-width);
+    margin: 0 auto var(--spacing-lg) auto;
+    padding: var(--spacing-md);
+    background: var(--white);
+    border: 1px solid rgb(var(--forest-rgb) / 0.2);
+    border-radius: var(--radius-md);
+}
+
+/* `flex: 1 1 18rem` and not the measure alone. At its full 56ch the line plus
+   the button came to 740px inside 736px of content box, so the row wrapped and
+   the button dropped under the text by four pixels' worth of overflow. The
+   measure stays as a ceiling for the wide case. */
+.mid-cta p {
+    flex: 1 1 18rem;
+    margin: 0;
+    max-width: var(--measure);
+    color: var(--coffee-bean);
+}
+
+.mid-cta .btn {
+    flex: 0 0 auto;
+}
+
 /* ===================================
    CTA Section
    =================================== */
