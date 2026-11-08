@@ -48,6 +48,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Collapse the docs sidebar list on narrow viewports
     initializeDocsSidebar();
 
+    // Build the docs search control (only runs where a docs sidebar exists)
+    initializeDocsSearch();
+
     // Reveal the mobile conversion bar once the hero scrolls away
     initializeMobileCtaBar();
 });
@@ -600,6 +603,231 @@ function initializeDocsSidebar() {
         }
     }, 150));
 }
+
+/**
+ * Documentation search.
+ *
+ * The control is built here rather than written into the 14 pages, so a reader
+ * without JS never meets an input that cannot do anything, and the index is
+ * fetched on first use rather than on load: 15 KB gzipped is not worth
+ * spending on everyone who never searches.
+ *
+ * It is inserted ahead of the <details> that holds the nav list, because below
+ * 1024px that disclosure is closed and the sidebar scrolls away with the page.
+ * Inside it, the search box would be invisible on a phone.
+ *
+ * Results are built with createElement and textContent. The index is our own
+ * file, but it is still fetched content rendered into the page, and the rule
+ * for that here is the same one buildBlogCard follows.
+ */
+function initializeDocsSearch() {
+    const sidebar = document.querySelector('.docs-sidebar');
+    if (!sidebar) return;
+
+    const form = document.createElement('form');
+    form.className = 'docs-search';
+    form.setAttribute('role', 'search');
+    form.addEventListener('submit', function (event) { event.preventDefault(); });
+
+    const label = document.createElement('label');
+    label.className = 'sr-only';
+    label.htmlFor = 'docs-search-input';
+    label.textContent = 'Search the documentation';
+
+    const input = document.createElement('input');
+    input.type = 'search';
+    input.id = 'docs-search-input';
+    input.className = 'docs-search-input';
+    input.placeholder = 'Search docs';
+    input.autocomplete = 'off';
+    input.setAttribute('aria-describedby', 'docs-search-status');
+
+    const status = document.createElement('p');
+    status.className = 'docs-search-status';
+    status.id = 'docs-search-status';
+    status.setAttribute('aria-live', 'polite');
+
+    const results = document.createElement('ul');
+    results.className = 'docs-search-results';
+    results.setAttribute('role', 'list');
+
+    form.appendChild(label);
+    form.appendChild(input);
+    form.appendChild(status);
+    form.appendChild(results);
+    sidebar.insertBefore(form, sidebar.firstChild);
+
+    let records = null;
+    let pending = null;
+    let failed = false;
+
+    function loadIndex() {
+        if (records) return Promise.resolve(records);
+        if (pending) return pending;
+        pending = fetch('/docs/search-index.json')
+            .then(function (response) {
+                if (!response.ok) throw new Error('Failed to load the search index');
+                return response.json();
+            })
+            .then(function (pages) {
+                records = [];
+                pages.forEach(function (page) {
+                    page.headings.forEach(function (heading) {
+                        records.push({
+                            page: page.title,
+                            url: page.url + '#' + heading.slug,
+                            heading: heading.text,
+                            depth: heading.depth,
+                            headingLower: heading.text.toLowerCase(),
+                            haystack: (heading.text + ' ' + page.title + ' ' + heading.body).toLowerCase()
+                        });
+                    });
+                });
+                return records;
+            });
+        return pending;
+    }
+
+    function rank(terms, query) {
+        const hits = [];
+        records.forEach(function (record) {
+            let score = 0;
+            for (let i = 0; i < terms.length; i++) {
+                const term = terms[i];
+                // Every term has to appear somewhere, or the result is noise.
+                if (record.haystack.indexOf(term) === -1) return;
+                if (record.headingLower === term) score += 100;
+                else if (record.headingLower.indexOf(term) === 0) score += 50;
+                else if (record.headingLower.indexOf(term) !== -1) score += 25;
+                else score += 1;
+            }
+            // The whole query outranks any one word inside it. Scoring terms
+            // alone put the heading "Mode" above "Isolate Mode" for the query
+            // "isolate mode", because an exact hit on one term beat a partial
+            // hit on both.
+            if (record.headingLower === query) score += 200;
+            else if (record.headingLower.indexOf(query) !== -1) score += 80;
+            // A section outranks a subsection when nothing else separates them.
+            if (record.depth === 2) score += 2;
+            hits.push({ record: record, score: score });
+        });
+        hits.sort(function (a, b) {
+            return b.score - a.score || a.record.heading.localeCompare(b.record.heading);
+        });
+        return hits.slice(0, 12);
+    }
+
+    // Wraps each matched run in <mark> without ever assigning markup.
+    function highlight(text, terms) {
+        const fragment = document.createDocumentFragment();
+        const lower = text.toLowerCase();
+        let index = 0;
+        while (index < text.length) {
+            let at = -1;
+            let length = 0;
+            terms.forEach(function (term) {
+                const found = lower.indexOf(term, index);
+                if (found !== -1 && (at === -1 || found < at)) {
+                    at = found;
+                    length = term.length;
+                }
+            });
+            if (at === -1) {
+                fragment.appendChild(document.createTextNode(text.slice(index)));
+                break;
+            }
+            if (at > index) fragment.appendChild(document.createTextNode(text.slice(index, at)));
+            const mark = document.createElement('mark');
+            mark.textContent = text.slice(at, at + length);
+            fragment.appendChild(mark);
+            index = at + length;
+        }
+        return fragment;
+    }
+
+    function render(hits, terms) {
+        results.textContent = '';
+        hits.forEach(function (hit) {
+            const item = document.createElement('li');
+            const link = document.createElement('a');
+            link.href = hit.record.url;
+
+            const heading = document.createElement('span');
+            heading.className = 'docs-search-result-heading';
+            heading.appendChild(highlight(hit.record.heading, terms));
+
+            const page = document.createElement('span');
+            page.className = 'docs-search-result-page';
+            page.textContent = hit.record.page;
+
+            link.appendChild(heading);
+            link.appendChild(page);
+            item.appendChild(link);
+            results.appendChild(item);
+        });
+    }
+
+    function clear() {
+        results.textContent = '';
+        status.textContent = '';
+    }
+
+    function run() {
+        const query = input.value.trim();
+        if (query.length < 2) {
+            clear();
+            return;
+        }
+        if (failed) return;
+        loadIndex()
+            .then(function () {
+                const lowered = query.toLowerCase();
+                const terms = lowered.split(/\s+/).filter(Boolean);
+                const hits = rank(terms, lowered);
+                render(hits, terms);
+                if (!hits.length) {
+                    status.textContent = 'No matches. Try a shorter term.';
+                } else {
+                    status.textContent = hits.length === 1 ? '1 result' : hits.length + ' results';
+                }
+            })
+            .catch(function () {
+                // The nav list is static markup and is untouched, so a reader
+                // who lands here still has all 14 pages a click away.
+                failed = true;
+                clear();
+                status.textContent = 'Search is unavailable. The page list below still works.';
+            });
+    }
+
+    input.addEventListener('input', debounce(run, 150));
+    // Warm the fetch on focus so the first keystroke does not wait on it.
+    input.addEventListener('focus', function () { if (!failed) loadIndex().catch(function () {}); });
+
+    form.addEventListener('keydown', function (event) {
+        const links = Array.prototype.slice.call(results.querySelectorAll('a'));
+        if (event.key === 'Escape') {
+            input.value = '';
+            clear();
+            input.focus();
+            return;
+        }
+        if (!links.length) return;
+        const at = links.indexOf(document.activeElement);
+        if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            links[at === -1 ? 0 : Math.min(at + 1, links.length - 1)].focus();
+        } else if (event.key === 'ArrowUp') {
+            event.preventDefault();
+            if (at <= 0) input.focus();
+            else links[at - 1].focus();
+        } else if (event.key === 'Enter' && document.activeElement === input) {
+            event.preventDefault();
+            links[0].click();
+        }
+    });
+}
+
 
 function debounce(func, wait) {
     let timeout;

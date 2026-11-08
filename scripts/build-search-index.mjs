@@ -25,7 +25,14 @@ import { fileURLToPath } from 'node:url';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const DOCS = join(ROOT, 'docs');
 const OUT = join(DOCS, 'search-index.json');
-const SNIPPET = 220;
+// Each heading carries the whole text of its section, not an excerpt. The body
+// is matched against and never displayed, so truncating it only loses recall:
+// at 220 characters a search for "helm install" missed getting-started#install,
+// because the commands sit further down the section than the cut. Full text is
+// 37 KB gzipped against 15 KB, and it is fetched lazily on the first keystroke,
+// so only a reader who actually searches pays for it. The cap below is a guard
+// against one pathological section, not a budget.
+const MAX_BODY = 4000;
 
 const ENTITIES = {
   '&lt;': '<', '&gt;': '>', '&amp;': '&', '&quot;': '"', '&apos;': "'",
@@ -82,7 +89,7 @@ function build() {
       text: mk.text,
       slug: mk.id,
       depth: mk.tag === 'h2' ? 2 : 3,
-      body: clip(toText(body.slice(mk.end, i + 1 < marks.length ? marks[i + 1].at : body.length)), SNIPPET),
+      body: clip(toText(body.slice(mk.end, i + 1 < marks.length ? marks[i + 1].at : body.length)), MAX_BODY),
     }));
 
     pages.push({ title, url: urlFor(file), headings });

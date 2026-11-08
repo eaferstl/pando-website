@@ -31,6 +31,101 @@
     border: 1px solid rgb(var(--forest-rgb) / 0.15);
 }
 
+/* Docs search. The markup is built by js/main.js and inserted ahead of the
+   disclosure, so these rules style nothing until the script runs: a reader
+   without JS gets the static page list and no dead control. */
+.docs-search {
+    margin-bottom: var(--spacing-md);
+}
+
+.docs-search-input {
+    width: 100%;
+    padding: 10px 12px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    color: var(--coffee-bean);
+    background: var(--white);
+    border: 1px solid rgb(var(--forest-rgb) / 0.25);
+    border-radius: 6px;
+}
+
+.docs-search-input::placeholder {
+    /* A colour, not an opacity: placeholder text carries the only label this
+       control shows and has to clear 4.5:1 like any other text. */
+    color: var(--muted-ink);
+    opacity: 1;
+}
+
+.docs-search-input:focus-visible {
+    outline: 2px solid var(--black-forest);
+    outline-offset: 2px;
+}
+
+.docs-search-status {
+    margin: var(--spacing-xs) 0 0 0;
+    font-size: 0.8rem;
+    color: var(--muted-ink);
+}
+
+.docs-search-status:empty {
+    margin: 0;
+}
+
+.docs-search-results {
+    list-style: none;
+    padding: 0;
+    margin: var(--spacing-xs) 0 0 0;
+}
+
+.docs-search-results:not(:empty) {
+    margin-top: var(--spacing-sm);
+    padding-top: var(--spacing-sm);
+    border-top: 1px solid rgb(var(--forest-rgb) / 0.15);
+}
+
+.docs-search-results li {
+    margin-bottom: var(--spacing-xs);
+}
+
+/* Block, with its own padding, so each result is a target in its own right
+   rather than a line of text to hit. 44px tall at the two-line default. */
+.docs-search-results a {
+    display: block;
+    padding: 8px 12px;
+    border-radius: 6px;
+    color: var(--coffee-bean);
+    text-decoration: none;
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+}
+
+.docs-search-results a:hover,
+.docs-search-results a:focus-visible {
+    background-color: rgb(var(--forest-rgb) / 0.08);
+    color: var(--black-forest);
+}
+
+.docs-search-result-heading {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+/* The page a result lives on. Without it every hit is an orphan heading, and
+   "Install" alone does not say which of the three installs it is. */
+.docs-search-result-page {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--muted-ink);
+}
+
+/* The honey wash is the brand's own highlight. Text colour is restated rather
+   than inherited because the UA default for mark is near-black on yellow. */
+.docs-search-results mark {
+    background: var(--amber-honey);
+    color: var(--black-forest);
+    border-radius: 2px;
+}
+
 /* A <summary>, so the 14-link list can collapse on a phone. On desktop the
    disclosure stays open and this just reads as the label it always was. */
 .docs-sidebar-title {
