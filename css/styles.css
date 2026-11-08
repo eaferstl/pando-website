@@ -3091,8 +3091,24 @@ header {
     color: var(--coffee-bean);
 }
 
-.compliance-table tbody tr:nth-child(even) {
+/* Four frameworks, four row groups, shaded by group rather than by row. A
+   `tr:nth-child(even)` zebra restarts its count inside each tbody, so groups of
+   3, 4, 4 and 4 put two unshaded rows together at every boundary: the striping
+   would fight the grouping it is sitting on. Shading the group makes the
+   boundary the point. No words changed to do this; the framework is already
+   named in every row, so the rule and the shading carry what the grouping adds. */
+.compliance-table tbody:nth-of-type(even) tr {
     background-color: var(--white);
+}
+
+.compliance-table tbody + tbody th,
+.compliance-table tbody + tbody td {
+    border-top: 0;
+}
+
+.compliance-table tbody + tbody tr:first-child th,
+.compliance-table tbody + tbody tr:first-child td {
+    border-top: 2px solid rgb(var(--forest-rgb) / 0.25);
 }
 
 @media (max-width: 1023px) {
@@ -3124,10 +3140,6 @@ header {
         background-color: var(--white);
         border: 1px solid rgb(var(--forest-rgb) / 0.12);
         border-radius: var(--border-radius);
-    }
-
-    .compliance-table tbody tr:nth-child(even) {
-        background-color: var(--white);
     }
 
     .compliance-table th,
