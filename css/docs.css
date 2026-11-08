@@ -464,7 +464,6 @@
 .docs-subtitle {
     font-size: 1.15rem;
     color: var(--coffee-bean);
-    opacity: 0.9;
     margin-bottom: var(--spacing-lg);
     max-width: var(--measure);
 }
