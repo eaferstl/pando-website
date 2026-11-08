@@ -85,7 +85,7 @@
     <section class="content-section alt-bg" id="what-it-does">
         <div class="container">
             <h2 class="section-title">What PandoCore Does</h2>
-            <div class="content-wrapper mw-container">
+            <div class="content-wrapper">
                 <p class="section-intro mb-md">Traditional runtime security tools require you to write detection rules for every threat you want to catch. If you don't write the rule, you miss the attack.</p>
                 <p class="section-intro"><strong>PandoCore takes a different approach.</strong> It automatically learns what normal looks like for each workload, then continuously monitors for deviations. When anomalous behavior is detected, it responds with a graduated action chain: alert, then isolate. On a first encounter that reached isolation, detection to containment took about 60 seconds without a human in the loop, measured twice on live infrastructure.</p>
                 
@@ -128,7 +128,7 @@
     <section class="content-section" id="architecture">
         <div class="container">
             <h2 class="section-title">Complements Your Security Stack</h2>
-            <div class="content-wrapper mw-container">
+            <div class="content-wrapper">
                 <p class="section-intro">PandoCore runs as a node-level agent and a cluster controller in its own namespace. Nothing is injected into your pods, and your workloads are not modified or restarted to be protected.</p>
 
                 <!-- K8s Cluster-level Visual -->
@@ -404,7 +404,7 @@
     <section class="content-section" id="validation">
         <div class="container">
             <h2 class="section-title">Validated Against Real Workloads</h2>
-            <div class="content-wrapper mw-container">
+            <div class="content-wrapper">
                 <p class="section-intro">The node sensor has been run against production-representative workloads in extended soak runs on GKE. No manual configuration or tuning was performed, and every workload ran with default settings.</p>
 
                 <p class="validation-claim">Zero false isolations across 3,966 engine-hours of sensors that were permitted to isolate, 1,231 of them on the exact build we ship.</p>
