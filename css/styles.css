@@ -166,6 +166,13 @@
     --radius-circle: 50%;
     --border-radius: var(--radius-sm);
 
+    /* Clearance for the sticky banner: its tallest rendered height, 96px at
+       390 and 76px from 768 up, plus --spacing-sm of air. Consumed by
+       scroll-padding-top, so an anchor never lands under the nav, and by the
+       docs sidebar's own sticky offset, for the same reason. The sheet's
+       previous 100px left a heading 4px clear of the nav at 390. */
+    --nav-offset: calc(96px + var(--spacing-sm));
+
     /* Layering. Only six declarations in this sheet are genuine layers; the
        many bare `z-index: 1` uses lift content over a ::before wash and are
        deliberately left alone. --z-skip-link must stay above --z-nav or the
@@ -200,7 +207,7 @@
 html {
     font-size: var(--font-size-base);
     scroll-behavior: smooth;
-    scroll-padding-top: 100px;
+    scroll-padding-top: var(--nav-offset);
 }
 
 body {
@@ -319,13 +326,24 @@ ul {
    Navigation
    =================================== */
 
+/* The banner carries the sticky, not .navbar. On .navbar it was inert: this
+   <header> wraps the navbar and nothing else, so the containing block was
+   exactly the navbar's own height and a sticky box had nowhere to travel. The
+   nav scrolled away on all 29 pages that have one, while this sheet's own
+   comments assumed it stayed, --z-skip-link above --z-nav "or the skip link
+   paints behind the sticky navbar" among them. The drawer and its scrim are
+   position: fixed inside .navbar, and sticky creates the stacking context
+   either way, so their layering is unchanged. */
+header {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-nav);
+}
+
 .navbar {
     background-color: var(--black-forest);
     padding: var(--spacing-xs) 0;
     box-shadow: 0 2px 8px rgb(var(--neutral-rgb) / 0.1);
-    position: sticky;
-    top: 0;
-    z-index: var(--z-nav);
 }
 
 .nav-wrapper {

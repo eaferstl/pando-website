@@ -22,8 +22,8 @@
 
 .docs-sidebar {
     position: sticky;
-    top: 20px;
-    max-height: calc(100vh - 40px);
+    top: var(--nav-offset);
+    max-height: calc(100vh - var(--nav-offset) - 20px);
     overflow-y: auto;
     padding: var(--spacing-lg);
     background: var(--floral-white);
