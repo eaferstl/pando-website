@@ -228,7 +228,7 @@
                         </div>
                         <div class="destination-card">
                             <div class="dest-icon">
-                                <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" class="inline-icon" aria-label="Slack">
+                                <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" class="inline-icon" aria-hidden="true">
                                     <rect width="32" height="32" rx="6" fill="var(--black-forest)"/>
                                     <g fill="var(--floral-white)">
                                         <rect x="8" y="13" width="3" height="3" rx="1.5"/>
@@ -272,164 +272,6 @@
                     <div class="callout-item"><span class="callout-num">3</span><span class="callout-text">Evidence streams to the portal, Slack, or your webhook</span></div>
                 </div>
 
-                <h3 class="zoom-heading">Zoom in: on a protected node</h3>
-
-                <!-- Node-level Visual -->
-                <div class="k8s-pod-visual">
-                    <div class="pod-container">
-                        <div class="pod-header">
-                            <svg class="k8s-icon" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                <path d="M16 2L4 8v16l12 6 12-6V8L16 2zm0 2.18l9.5 4.75-9.5 4.75-9.5-4.75L16 4.18zM5.5 9.82l9.5 4.75v9.5l-9.5-4.75v-9.5zm21 0v9.5l-9.5 4.75v-9.5l9.5-4.75z" fill="currentColor"/>
-                            </svg>
-                            <span class="pod-label">Kubernetes Node</span>
-                        </div>
-
-                        <div class="pod-contents">
-                            <!-- Workloads on the node -->
-                            <div class="container-box app-container">
-                                <div class="container-header">
-                                    <span class="container-icon">
-                                        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" class="inline-icon" aria-hidden="true">
-                                            <rect width="32" height="32" rx="6" fill="var(--black-forest)"/>
-                                            <path d="M16 7l-8 4v10l8 4 8-4V11l-8-4zm0 2l5.5 2.75L16 14.5l-5.5-2.75L16 9zm-6 4.5l5 2.5v5.5l-5-2.5V13.5zm12 0v5.5l-5 2.5V16l5-2.5z" fill="var(--floral-white)"/>
-                                        </svg>
-                                    </span>
-                                    <span class="container-title">Your Workloads</span>
-                                </div>
-                                <div class="container-body">
-                                    <div class="code-block">
-                                        <span class="code-comment"># Unmodified, not restarted</span>
-                                        <span class="code-line">api-7d9f     Running</span>
-                                        <span class="code-line">worker-2b4c  Running</span>
-                                        <span class="code-line">cache-8e1a   Running</span>
-                                    </div>
-                                </div>
-                                <div class="container-footer">
-                                    <span class="status-dot running"></span>
-                                    <span>Running</span>
-                                </div>
-                            </div>
-
-                            <!-- Observation arrow -->
-                            <div class="shared-namespace">
-                                <div class="namespace-arrow">
-                                    <svg viewBox="0 0 60 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                        <defs>
-                                            <marker id="arrowhead-right" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                                                <polygon points="0 0, 10 3.5, 0 7" fill="var(--black-forest)"/>
-                                            </marker>
-                                            <marker id="arrowhead-left" markerWidth="10" markerHeight="7" refX="1" refY="3.5" orient="auto">
-                                                <polygon points="10 0, 0 3.5, 10 7" fill="var(--black-forest)"/>
-                                            </marker>
-                                        </defs>
-                                        <line x1="10" y1="30" x2="50" y2="30" stroke="var(--black-forest)" stroke-width="2" marker-end="url(#arrowhead-right)" opacity="0.6"/>
-                                        <line x1="50" y1="70" x2="10" y2="70" stroke="var(--black-forest)" stroke-width="2" marker-end="url(#arrowhead-left)" opacity="0.6"/>
-                                    </svg>
-                                </div>
-                                <span class="namespace-label">Observed<br/>On Node</span>
-                            </div>
-
-                            <!-- PandoCore Node Agent -->
-                            <div class="container-box agent-container">
-                                <div class="container-header agent-header">
-                                    <span class="container-icon">
-                                        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" class="inline-icon" aria-hidden="true">
-                                            <rect width="32" height="32" rx="6" fill="var(--amber-honey)"/>
-                                            <ellipse cx="16" cy="16" rx="6" ry="9" fill="var(--floral-white)"/>
-                                            <path d="M16 7c0 0 2 4 2 9s-2 9-2 9" stroke="var(--amber-honey)" stroke-width="1.5" fill="none"/>
-                                            <path d="M13 10c2 1 4 1 6 0M13 22c2-1 4-1 6 0" stroke="var(--amber-honey)" stroke-width="1" fill="none"/>
-                                        </svg>
-                                    </span>
-                                    <span class="container-title">PandoCore Node Agent</span>
-                                </div>
-                                <div class="container-body agent-body">
-                                    <div class="protection-features">
-                                        <div class="protection-item">
-                                            <span class="protection-icon">
-                                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="inline-icon-sm" aria-hidden="true">
-                                                    <rect width="24" height="24" rx="4" fill="var(--black-forest)"/>
-                                                    <path d="M14 4L8 13h4l-2 7 6-9h-4l2-7z" fill="var(--floral-white)"/>
-                                                </svg>
-                                            </span>
-                                            <span>Baseline Learning</span>
-                                        </div>
-                                        <div class="protection-item">
-                                            <span class="protection-icon">
-                                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="inline-icon-sm" aria-hidden="true">
-                                                    <rect width="24" height="24" rx="4" fill="var(--black-forest)"/>
-                                                    <rect x="8" y="10" width="8" height="7" rx="1" fill="var(--floral-white)"/>
-                                                    <path d="M9 10V8a3 3 0 0 1 6 0v2" stroke="var(--floral-white)" stroke-width="1.5" fill="none"/>
-                                                </svg>
-                                            </span>
-                                            <span>Anomaly Detection</span>
-                                        </div>
-                                        <div class="protection-item">
-                                            <span class="protection-icon">
-                                                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="inline-icon-sm" aria-hidden="true">
-                                                    <rect width="24" height="24" rx="4" fill="var(--black-forest)"/>
-                                                    <circle cx="12" cy="12" r="4" stroke="var(--floral-white)" stroke-width="1.5" fill="none"/>
-                                                    <circle cx="12" cy="12" r="1.5" fill="var(--floral-white)"/>
-                                                </svg>
-                                            </span>
-                                            <span>Signed Evidence</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="container-footer agent-footer">
-                                    <span class="status-dot protected"></span>
-                                    <span>Monitoring</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Node-level properties -->
-                        <div class="pod-benefits">
-                            <div class="benefit-item">
-                                <span class="benefit-icon">
-                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="inline-icon-sm" aria-hidden="true">
-                                        <rect width="24" height="24" rx="4" fill="var(--black-forest)"/>
-                                        <path d="M12 6v3m0 6v3m-6-6h3m6 0h3" stroke="var(--floral-white)" stroke-width="1.5" stroke-linecap="round"/>
-                                        <circle cx="12" cy="12" r="3" stroke="var(--floral-white)" stroke-width="1.5" fill="none"/>
-                                    </svg>
-                                </span>
-                                <span>One Agent Per Node</span>
-                            </div>
-                            <div class="benefit-item">
-                                <span class="benefit-icon">
-                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="inline-icon-sm" aria-hidden="true">
-                                        <rect width="24" height="24" rx="4" fill="var(--black-forest)"/>
-                                        <circle cx="12" cy="12" r="5" stroke="var(--floral-white)" stroke-width="1.5" fill="none"/>
-                                        <path d="M12 7v10M7 12h10" stroke="var(--floral-white)" stroke-width="1" opacity="0.7"/>
-                                        <ellipse cx="12" cy="12" rx="5" ry="2" stroke="var(--floral-white)" stroke-width="1" fill="none" opacity="0.7"/>
-                                    </svg>
-                                </span>
-                                <span>No Injection</span>
-                            </div>
-                            <div class="benefit-item">
-                                <span class="benefit-icon">
-                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="inline-icon-sm" aria-hidden="true">
-                                        <rect width="24" height="24" rx="4" fill="var(--black-forest)"/>
-                                        <path d="M6 9l6-3 6 3v6l-6 3-6-3V9z" stroke="var(--floral-white)" stroke-width="1.5" fill="none"/>
-                                        <path d="M6 9l6 3 6-3M12 12v6" stroke="var(--floral-white)" stroke-width="1.5"/>
-                                    </svg>
-                                </span>
-                                <span>Survives Pod Restarts</span>
-                            </div>
-                            <div class="benefit-item">
-                                <span class="benefit-icon">
-                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" class="inline-icon-sm" aria-hidden="true">
-                                        <rect width="24" height="24" rx="4" fill="var(--black-forest)"/>
-                                        <circle cx="12" cy="12" r="4" stroke="var(--floral-white)" stroke-width="1.5" fill="none"/>
-                                        <circle cx="12" cy="12" r="1.5" fill="var(--floral-white)"/>
-                                        <path d="M12 6v2M12 16v2M6 12h2M16 12h2M8 8l1.5 1.5M14.5 14.5L16 16M8 16l1.5-1.5M14.5 9.5L16 8" stroke="var(--floral-white)" stroke-width="1" stroke-linecap="round"/>
-                                    </svg>
-                                </span>
-                                <span>No Code Changes</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <p class="stack-summary">PandoCore is not a replacement for encryption, authentication, a service mesh, observability, secrets management or network policies. It adds a behavioral detection and response layer at runtime, alongside the controls you already run.</p>
             </div>
         </div>
@@ -438,10 +280,10 @@
     <!-- Compliance Section -->
     <section class="content-section alt-bg" id="compliance">
         <div class="container">
-            <h2 class="section-title">Compliance Controls</h2>
+            <h2 class="section-title" id="compliance-controls">Compliance Controls</h2>
             <p class="section-intro">PandoCore is a runtime threat detection control for Kubernetes. It does not make you compliant; your auditor decides that. It gives you a control that runs continuously and evidence that it ran.</p>
 
-            <table class="compliance-table" role="table">
+            <table class="compliance-table" role="table" aria-labelledby="compliance-controls">
                 <thead role="rowgroup">
                     <tr role="row">
                         <th scope="col" role="columnheader">Framework and control</th>
@@ -639,17 +481,6 @@
                 <div class="cta-actions">
                     <a href="https://portal.pandocore.io/signup" class="btn btn-primary">Start free</a>
                     <a href="https://calendar.proton.me/bookings#wchS9JFz7Sg34QFZ593-UxZnQx0lhS0q_JtB-zyAnTQ=" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Let's Talk</a>
-                    
-                    <!-- Social Media Links -->
-                    <div class="social-links">
-                        <div class="social-icons">
-                            <a href="https://www.linkedin.com/company/pando-core/" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="LinkedIn">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
-                                </svg>
-                            </a>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
