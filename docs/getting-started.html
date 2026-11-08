@@ -114,7 +114,7 @@
                 <p>The sensor runs as a <code>hostPID</code> DaemonSet with a host path mount. Neither is permitted on GKE Autopilot or EKS Fargate, so there is no install path on either. Standard GKE is the configuration this release was validated on.</p>
             </div>
 
-            <h2>Install</h2>
+            <h2 id="install">Install</h2>
 
             <p>Two charts, controller first. The controller is what the sensor delivers evidence to, so installing it second leaves the sensor with nowhere to send anything.</p>
 
@@ -150,7 +150,7 @@ helm install pando-node-sensor ... \
                 <p>Either way the pod reads it through a <code>secretKeyRef</code>, so the credential is never a literal in the rendered pod spec. Create the Secret with <code>--from-literal</code> rather than from a file: the key is not trimmed, and a trailing newline fails validation.</p>
             </div>
 
-            <h2>What Just Happened</h2>
+            <h2 id="what-just-happened">What Just Happened</h2>
 
             <p>The DaemonSet placed one sensor pod on each schedulable node. Each sensor watches the pods on its own node, opt-out, and runs a short <strong>learning window</strong> per workload (30 minutes, and at least 900 samples, whichever is later) to build an operational profile. Deterministic checks arm when learning completes; the behavioural checks that depend on longer baselines keep warming for hours after that.</p>
 
@@ -177,7 +177,7 @@ helm install pando-node-sensor ... \
                 <p>Each sensor runs at most 70 monitored pods per node by default (<code>maxEngines</code>). Pods beyond the cap get no engine, and they are shed in a stable order, so the same pods stay unwatched across restarts rather than rotating. This is reported rather than silent: the gauge <code>pando_node_sensor_pods_unmonitored{reason="cap"}</code> counts them, and the chart ships a PrometheusRule that alerts on it. Treat a non-zero value as a coverage gap, not a capacity hint.</p>
             </div>
 
-            <h2>Verify It's Working</h2>
+            <h2 id="verify-its-working">Verify It's Working</h2>
 
             <pre><code># One sensor pod per node, all Ready
 kubectl get pods -n pando-system -l app.kubernetes.io/name=pando-node-sensor -o wide
@@ -200,11 +200,11 @@ kubectl exec -n pando-system &lt;sensor-pod&gt; -- wget -qO- http://localhost:90
 
             <hr>
 
-            <h2>Progressive Rollout</h2>
+            <h2 id="progressive-rollout">Progressive Rollout</h2>
 
             <p>Everything above gets you to installed and alerting. The sections below go from there to production, in the order most teams adopt them.</p>
 
-            <h3>1. Let It Respond</h3>
+            <h3 id="let-it-respond">1. Let It Respond</h3>
 
             <p>A free license detects and alerts, and never contains. The response ceiling is a property of the license, so raising it is a billing change rather than a configuration change: on a paid license the sensor may apply containment, and the install above starts doing so without being reinstalled.</p>
 
@@ -221,11 +221,11 @@ kubectl rollout restart deployment/your-app</code></pre>
                 <p>The sensor applies and removes that policy from outside the pod, which is why the policy needs no API-server exception and why ingress can be denied as well. The bidirectional half of that depends on your CNI permitting host-to-pod traffic regardless of policy, which Cilium and therefore GKE Dataplane V2 guarantee; on other CNIs treat containment as egress-only.</p>
             </div>
 
-            <h3>2. Point Evidence Where You Want It</h3>
+            <h3 id="point-evidence-where-you-want-it">2. Point Evidence Where You Want It</h3>
 
             <p>Every detection emits a structured, signed JSON evidence record. The controller owns delivery, so SIEM, Slack and webhook destinations are configured once on the controller rather than per workload, and no workload pod ever holds a third-party credential. See <a href="/docs/controller">Controller</a> for the destination settings and <a href="/docs/evidence-format">Evidence Format</a> for the schema.</p>
 
-            <h3>3. Manage Behaviour Declaratively</h3>
+            <h3 id="manage-behaviour-declaratively">3. Manage Behaviour Declaratively</h3>
 
             <p>For anything beyond a handful of namespaces, use the <code>PandoCorePolicy</code> CRD. One YAML file in your GitOps repo controls mode, sensitivity and alert destinations per namespace. See <a href="/docs/policy">CRD Policy</a> for the schema.</p>
 
@@ -234,7 +234,7 @@ kubectl rollout restart deployment/your-app</code></pre>
                 <p>Integrations declared in a <code>PandoCorePolicy</code> reach the controller through the destinations mirror, which the sensor chart installs by default. If you set <code>mirror.enabled=false</code>, nothing writes the destinations Secret and those per-namespace integrations will not take effect. The controller's own destinations are unaffected.</p>
             </div>
 
-            <h3>4. Decide What Is Out Of Scope</h3>
+            <h3 id="decide-what-is-out-of-scope">4. Decide What Is Out Of Scope</h3>
 
             <p>Eleven namespaces are excluded by default, covering <code>kube-system</code> and the GKE managed namespaces. To protect one of them anyway, add it to <code>includedNamespaces</code>.</p>
 
@@ -247,19 +247,19 @@ kubectl rollout restart deployment/your-app</code></pre>
                 <p><strong>Setting <code>excludedNamespaces: []</code> does not mean "exclude nothing".</strong> An empty list is read as unconfigured and falls back to the built-in eleven. Use <code>includedNamespaces</code> to protect a default-excluded namespace; emptying the exclusion list will not do it.</p>
             </div>
 
-            <h3>5. Tune The Cadence, Carefully</h3>
+            <h3 id="tune-the-cadence-carefully">5. Tune The Cadence, Carefully</h3>
 
             <p>The sensor samples every 1000 ms by default. The floor is 250 ms, and a value below it is refused by name at startup rather than quietly clamped. Shortening the interval costs roughly four times as much CPU at 250 ms as at the default, so lower it only alongside a larger request.</p>
 
             <pre><code>helm upgrade pando-node-sensor ... --set sampleIntervalMs=1000</code></pre>
 
-            <h3>6. Alert On The Sensor Itself</h3>
+            <h3 id="alert-on-the-sensor-itself">6. Alert On The Sensor Itself</h3>
 
             <p>The chart ships PrometheusRules covering the conditions that a sensor cannot report on its own behalf: the series going absent, a refusal at startup, shedding at the cap, and a cadence that has stretched past its configured interval. Absence is the one condition no self-report can distinguish from healthy, which is why it is alerted on from outside. See <a href="/docs/production-hardening">Production Hardening</a>.</p>
 
             <hr>
 
-            <h2>What This Costs Per Node</h2>
+            <h2 id="what-this-costs-per-node">What This Costs Per Node</h2>
 
             <p>The sensor requests <strong>250m CPU and 256Mi</strong> per node and is limited to <strong>2 cores and 1Gi</strong>. One pod per node, whatever that node is running.</p>
 
@@ -270,7 +270,7 @@ kubectl rollout restart deployment/your-app</code></pre>
                 <p>A Helm preflight check compares the sensor's CPU request against each node's allocatable CPU and fails the install rather than letting pods sit <code>Pending</code> on nodes that will never fit them, because a green install that leaves a node unwatched is the failure it exists to catch. It runs only against a live cluster, so <code>helm template</code> and <code>--dry-run=client</code> skip it, as does a credential that cannot list nodes. Bypass it deliberately with <code>--set preflight.nodeCapacity=false</code>.</p>
             </div>
 
-            <h2>Quick Reference</h2>
+            <h2 id="quick-reference">Quick Reference</h2>
 
             <table>
                 <thead>
@@ -311,7 +311,7 @@ kubectl rollout restart deployment/your-app</code></pre>
                 </tbody>
             </table>
 
-            <h2>Next Steps</h2>
+            <h2 id="next-steps">Next Steps</h2>
 
             <ul role="list">
                 <li><a href="/docs/operating-modes">Operating Modes</a>: the response ladder and what sets the ceiling</li>

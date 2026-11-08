@@ -108,7 +108,7 @@
                 </ol>
             </div>
 
-            <h2>Quick Start</h2>
+            <h2 id="quick-start">Quick Start</h2>
 
             <p>Create a file called <code>pando-policy.yaml</code>:</p>
 
@@ -132,7 +132,7 @@ spec:
 NAME      MODE      SENSITIVITY   AGE
 default   isolate   high          5s</code></pre>
 
-            <h2>Full Policy Reference</h2>
+            <h2 id="full-policy-reference">Full Policy Reference</h2>
 
             <p>Every field is optional. Any field you leave out falls back to the environment, and then to the built-in defaults. On the node sensor that environment is the DaemonSet's own, which is node-wide rather than per-workload.</p>
 
@@ -172,7 +172,7 @@ spec:
         name: pando-pagerduty
         key: routingKey</code></pre>
 
-            <h2>Precedence</h2>
+            <h2 id="precedence">Precedence</h2>
 
             <p>PandoCore uses a layered configuration model:</p>
 
@@ -211,9 +211,9 @@ spec:
                 <li>The read failed: whatever was already applied stays applied, so an API blip never disarms a node.</li>
             </ul>
 
-            <h2>Spec Fields</h2>
+            <h2 id="spec-fields">Spec Fields</h2>
 
-            <h3>mode</h3>
+            <h3 id="mode">mode</h3>
 
             <table>
                 <thead>
@@ -242,7 +242,7 @@ spec:
                 </tbody>
             </table>
 
-            <h3>sensitivity</h3>
+            <h3 id="sensitivity">sensitivity</h3>
 
             <table>
                 <thead>
@@ -269,7 +269,7 @@ spec:
 
             <p>For finer numeric control, set <code>thresholds</code> below. The <code>PANDO_SENSITIVITY</code> environment variable is the other route (see <a href="/docs/configuration">Configuration</a>), but on the node sensor it belongs to the DaemonSet and so applies node-wide rather than to one workload.</p>
 
-            <h3>thresholds</h3>
+            <h3 id="thresholds">thresholds</h3>
 
             <p>Tighten the auto-learned drift gates. A lower number is a tighter gate. Thresholds can only tighten what learning derived, never loosen it; use <code>sensitivity</code> to loosen. Setting either field overrides the sensitivity preset for that gate. Both bounds are exclusive, and the CRD rejects a value at or outside them at admission, so a bad number is an error on your <code>kubectl</code> command rather than a surprise at runtime.</p>
 
@@ -295,7 +295,7 @@ spec:
                 </tbody>
             </table>
 
-            <h3>integrations</h3>
+            <h3 id="integrations">integrations</h3>
 
             <p>Per-namespace evidence destinations. The admission webhook reads this block cluster-wide, resolves every Secret reference against a Secret in the policy's own namespace, and hands the resolved set to the controller, which delivers each namespace's evidence to that namespace's destinations.</p>
 
@@ -345,9 +345,9 @@ spec:
 
             <p>Every destination also takes <code>enabled</code>, which defaults to true. Setting it to <code>false</code> pauses that destination, which is not the same as leaving the block out: a paused destination still overrides the controller's own baseline, while an absent one lets the baseline apply.</p>
 
-            <h2>Examples</h2>
+            <h2 id="examples">Examples</h2>
 
-            <h3>Production Namespace</h3>
+            <h3 id="production-namespace">Production Namespace</h3>
 
             <pre><code>apiVersion: pandocore.io/v1alpha1
 kind: PandoCorePolicy
@@ -366,7 +366,7 @@ spec:
         name: pando-slack
         key: url</code></pre>
 
-            <h3>Staging Namespace (Monitor Only)</h3>
+            <h3 id="staging-namespace-monitor-only">Staging Namespace (Monitor Only)</h3>
 
             <pre><code>apiVersion: pandocore.io/v1alpha1
 kind: PandoCorePolicy
@@ -377,7 +377,7 @@ spec:
   mode: monitor
   sensitivity: high</code></pre>
 
-            <h2>Verifying</h2>
+            <h2 id="verifying">Verifying</h2>
 
             <p>Check that the CRD is registered:</p>
 
@@ -403,11 +403,11 @@ Applied PandoCorePolicy  mode=isolate resource_version="12345"</code></pre>
                 <p><code>mode</code>, <code>sensitivity</code>, <code>thresholds</code> and <code>integrations</code> are the whole of it, and they are all that PandoCore reads from a policy. Anything else under <code>spec</code> is not part of the schema, so the API server drops it before the object is stored. If you need something the four do not cover, <a href="/contact">talk to support</a>.</p>
             </div>
 
-            <h2>Polling Interval</h2>
+            <h2 id="polling-interval">Polling Interval</h2>
 
             <p>The sensor polls for policy changes every 30 seconds by default, through <code>PANDO_POLICY_POLL_INTERVAL_SECS</code>. It belongs to the DaemonSet and is therefore node-wide, so there is one poll interval covering the pods on a node rather than one per workload.</p>
 
-            <h2>GitOps Integration</h2>
+            <h2 id="gitops-integration">GitOps Integration</h2>
 
             <p>Because <code>PandoCorePolicy</code> is a standard Kubernetes resource, it integrates naturally with GitOps workflows:</p>
 
@@ -418,7 +418,7 @@ Applied PandoCorePolicy  mode=isolate resource_version="12345"</code></pre>
                 <li>Track policy history with <code>git log</code></li>
             </ul>
 
-            <h2>Next Steps</h2>
+            <h2 id="next-steps">Next Steps</h2>
 
             <ul role="list">
                 <li><a href="/docs/configuration">Configuration</a>: every chart value with defaults and ranges</li>

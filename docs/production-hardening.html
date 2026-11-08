@@ -99,13 +99,13 @@
 
             <p>A default PandoCore install is production-safe, but a few things are worth settling before you let it respond to anything at scale. This page walks through the ones that actually matter.</p>
 
-            <h2>1. Spend Time On A Free License First</h2>
+            <h2 id="spend-time-on-a-free-license-first">1. Spend Time On A Free License First</h2>
 
             <p>The most important hardening step is discipline rather than configuration. A free license detects and alerts and never contains, on as many nodes as you want to install it on, so the validation period is not a trial mode you have to remember to leave: it is simply the tier. Run it across the fleet, read what it reports, and decide from evidence whether the detections are ones you would have wanted acted on.</p>
 
             <p>The response ceiling is a property of the license rather than a chart value, so nothing in your cluster has to change when you decide to raise it. See <a href="/docs/operating-modes">Operating Modes</a> for the ladder.</p>
 
-            <h2>2. Size The Per-Node Request</h2>
+            <h2 id="size-the-per-node-request">2. Size The Per-Node Request</h2>
 
             <p>The sensor requests <strong>250m CPU and 256Mi</strong> per node and is limited to <strong>2 cores and 1Gi</strong>. That is one pod per node rather than one per workload, so the figure to plan against is per node and does not grow with your deployment count.</p>
 
@@ -117,7 +117,7 @@
 
             <p>Check actual usage with <code>kubectl top pod -n pando-system</code> after a week. Raise the request before shortening the sampling cadence, never after: at the 250 ms floor the same build costs roughly four times as much CPU as at the 1000 ms default, and CPU is shared by request under contention.</p>
 
-            <h2>3. Decide What Is Out Of Scope</h2>
+            <h2 id="decide-what-is-out-of-scope">3. Decide What Is Out Of Scope</h2>
 
             <p>Eleven namespaces are excluded by default, covering <code>kube-system</code> and the GKE managed namespaces. Add your own infrastructure namespaces to that list: cert-manager, service meshes, CI runners, and anything else whose behaviour you do not want profiled.</p>
 
@@ -132,7 +132,7 @@
 
             <p>Four classes stay excluded whatever the configuration says, and <code>includedNamespaces</code> does not override them: the sensor's own pod, <code>hostPID</code> pods, <code>hostNetwork</code> pods, and any pod carrying <code>pandocore.io/protect: "false"</code>. An operator opting a namespace in has not acquired the pod owner's decision.</p>
 
-            <h2>4. Pin The Chart Version</h2>
+            <h2 id="pin-the-chart-version">4. Pin The Chart Version</h2>
 
             <p>Both charts resolve their image tag from the chart version, so pinning the chart pins what runs. Installing an OCI chart without <code>--version</code> fails outright rather than drifting to the newest release, which is the behaviour you want here; keep the version explicit in whatever applies your releases.</p>
 
@@ -141,7 +141,7 @@
   --version 2.0.0 \
   --reuse-values</code></pre>
 
-            <h2>5. Run The Controller With Two Replicas</h2>
+            <h2 id="run-the-controller-with-two-replicas">5. Run The Controller With Two Replicas</h2>
 
             <p>The sensor is a DaemonSet and needs no replica planning: one pod per node is the topology. The controller is the component with an availability question, because a single replica means a node drain or a rolling update is a window in which sensors have nowhere to deliver evidence.</p>
 
@@ -149,7 +149,7 @@
 
             <pre><code>helm upgrade pando-controller ... --set replicas=2</code></pre>
 
-            <h2>6. Back Up The License Secret</h2>
+            <h2 id="back-up-the-license-secret">6. Back Up The License Secret</h2>
 
             <p>The license Secret (<code>pando-license</code> in <code>pando-system</code>) is the one thing worth keeping a copy of. You can always reissue from the portal, but a copy makes recovery a one-liner.</p>
 
@@ -160,13 +160,13 @@
                 <p>Each sensor keeps working state under <code>/var/lib/pando</code> on its node, as a hostPath rather than a PersistentVolumeClaim, deliberately: a restored state directory is refused as older than the pod reading it. Profiles rebuild on start, which is the intent, since a profile should describe the workload running now rather than a stale snapshot. Evidence durability is the controller's job, not the node's.</p>
             </div>
 
-            <h2>7. Point Evidence Somewhere Humans Watch</h2>
+            <h2 id="point-evidence-somewhere-humans-watch">7. Point Evidence Somewhere Humans Watch</h2>
 
             <p>Detections without a consumer are log entries. The controller owns every outbound destination, so SIEM, Slack and webhook delivery are configured once there rather than per workload, and no workload pod ever holds a third-party credential. See <a href="/docs/controller">Controller</a> and <a href="/docs/evidence-format">Evidence Format</a>.</p>
 
             <p>Test the path before you need it, and confirm an alert lands where you expect.</p>
 
-            <h2>8. Alert On The Sensor Itself</h2>
+            <h2 id="alert-on-the-sensor-itself">8. Alert On The Sensor Itself</h2>
 
             <p>The chart ships PrometheusRules for the conditions a sensor cannot report on its own behalf. The one to wire first is coverage: <code>pando_node_sensor_pods_unmonitored{reason="cap"}</code> is a gauge of pods that got no engine because the node hit its cap, and those are pods you wanted watched. It is not a capacity hint.</p>
 
@@ -183,13 +183,13 @@
                 <p>The sensor's own pod carries <code>pandocore.io/protect: "false"</code>. A Prometheus job written against <code>protect=true</code> matches nothing and reports a clean scrape of nothing, which is indistinguishable from healthy on a dashboard. Select on <code>app.kubernetes.io/name=pando-node-sensor</code>.</p>
             </div>
 
-            <h2>9. Use CRD Policy For Anything Non-Trivial</h2>
+            <h2 id="use-crd-policy-for-anything-non-trivial">9. Use CRD Policy For Anything Non-Trivial</h2>
 
             <p>Configuring a handful of deployments by annotation is fine. Managing dozens of services across namespaces with <code>kubectl annotate</code> is not. Commit a <code>PandoCorePolicy</code> resource to your GitOps repo so mode, sensitivity and alert destinations are version-controlled alongside everything else. See <a href="/docs/policy">CRD Policy</a>.</p>
 
             <p>Per-namespace integrations declared in a policy reach the controller through the destinations mirror, which the sensor chart installs by default. Setting <code>mirror.enabled=false</code> leaves them inert.</p>
 
-            <h2>10. Understand What The Sensor Runs As</h2>
+            <h2 id="understand-what-the-sensor-runs-as">10. Understand What The Sensor Runs As</h2>
 
             <p>This is the section to read before you install, and it is a real increase in node surface compared with the deprecated sidecar. The sensor runs as a <code>hostPID</code> DaemonSet, as uid 0, with <code>CAP_SYS_PTRACE</code>, mounting the node's <code>/proc</code> read-only and a host path for its own state. The node's PID namespace is the whole point of the topology: the sensor sits outside every pod it watches, so that namespace is the only way it sees their processes.</p>
 
@@ -202,7 +202,7 @@
 
             <p>What bounds it instead is the grant. The sensor's ClusterRole holds pods get/list/watch, events create, networkpolicies create/delete/get, the three workload-owner kinds get, policies list, services list, and namespaces get scoped to <code>kube-system</code>. <code>pods: patch</code>, <code>pods: delete</code> and <code>endpoints: get</code> are withheld by name, each with its reason recorded in the chart. The cluster-wide <code>secrets get</code> that per-namespace integrations need does not sit on this pod at all: the destinations mirror is a separate unprivileged Deployment precisely so that grant is not held by a hostPID pod running as uid 0 on every node.</p>
 
-            <h2>11. Three Annotations The Sensor Cannot Honour</h2>
+            <h2 id="three-annotations-the-sensor-cannot-honour">11. Three Annotations The Sensor Cannot Honour</h2>
 
             <p>If you are migrating from the webhook, these three do nothing now:</p>
 
@@ -221,7 +221,7 @@
                 <p><code>seLinuxLevel</code> is empty by default and is ignored where SELinux is not the enforcing module for containers, which covers GKE's Container-Optimized OS (AppArmor) and EKS AL2023 (SELinux permissive). On Bottlerocket it is required for the file-age routes to work at all: every container runs as <code>container_t</code> with its own category pair, so without a clearance the sensor's pair does not dominate the target's and the path walk is refused.</p>
             </div>
 
-            <h2>Production Hardening Checklist</h2>
+            <h2 id="production-hardening-checklist">Production Hardening Checklist</h2>
 
             <ul role="list">
                 <li>Ran on a free license across the fleet long enough to judge the detections before raising the response ceiling</li>

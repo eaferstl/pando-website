@@ -109,7 +109,7 @@ kubectl exec -n pando-system &lt;sensor-pod&gt; -- wget -qO- http://localhost:90
                 <p><code>/status</code> reports the engine count, the license ceiling and any node clamp. It answers most of the questions below in one call.</p>
             </div>
 
-            <h2>A Workload Is Not Being Watched</h2>
+            <h2 id="a-workload-is-not-being-watched">A Workload Is Not Being Watched</h2>
 
             <p>Symptom: a pod is running, but it never appears in detections and no engine was started for it.</p>
 
@@ -123,7 +123,7 @@ kubectl exec -n pando-system &lt;sensor-pod&gt; -- wget -qO- http://localhost:90
 # Is the pod opted out?
 kubectl get pod &lt;pod&gt; -o jsonpath='{.metadata.labels}'</code></pre>
 
-            <h3>Common causes</h3>
+            <h3 id="common-causes">Common causes</h3>
 
             <ul role="list">
                 <li><strong>The node is over the engine cap.</strong> Each sensor runs at most <code>maxEngines</code> monitored pods (70 by default). Pods beyond it get no engine, and they are shed in a stable order, so the same pods stay unwatched across restarts rather than rotating. Check <code>pando_node_sensor_pods_unmonitored{reason="cap"}</code>. This is the most likely cause on a dense node, and it is a coverage gap rather than a capacity hint.</li>
@@ -133,7 +133,7 @@ kubectl get pod &lt;pod&gt; -o jsonpath='{.metadata.labels}'</code></pre>
                 <li><strong>No sensor is scheduled on that node.</strong> The DaemonSet tolerates everything by default, so this usually means a <code>nodeSelector</code> was set, or the node cannot allocate the sensor's CPU request. The install preflight refuses the latter case at install time; if it was bypassed with <code>preflight.nodeCapacity=false</code>, the sensor pod will sit <code>Pending</code> instead.</li>
             </ul>
 
-            <h2>A Sensor Is Refusing Or Crash-Looping</h2>
+            <h2 id="a-sensor-is-refusing-or-crash-looping">A Sensor Is Refusing Or Crash-Looping</h2>
 
             <p>Symptom: the sensor pod is running but <code>/readyz</code> returns 503 indefinitely, or the pod is in <code>CrashLoopBackOff</code>.</p>
 
@@ -165,7 +165,7 @@ kubectl describe pod -n pando-system &lt;sensor-pod&gt;</code></pre>
                 <p>The sensor mounts the controller's client certificate Secret with <code>optional: false</code>, so a missing Secret fails the pod rather than starting a sensor whose evidence has nowhere to go. If the pod will not start at all and the events mention a missing Secret, that is this.</p>
             </div>
 
-            <h3>Memory or CPU pressure</h3>
+            <h3 id="memory-or-cpu-pressure">Memory or CPU pressure</h3>
 
             <p>The sensor requests 250m CPU and 256Mi per node, and is limited to 2 cores and 1Gi. If you have shortened the sampling cadence, raise the request to match: at the 250 ms floor the same build costs roughly four times as much CPU as at the 1000 ms default, and CPU is shared by request under contention.</p>
 
@@ -181,7 +181,7 @@ kubectl describe pod -n pando-system &lt;sensor-pod&gt;</code></pre>
 
             <pre><code>kubectl exec -n pando-system &lt;sensor-pod&gt; -- wget -qO- http://localhost:9090/readyz</code></pre>
 
-            <h3>Tuning options, in order of preference</h3>
+            <h3 id="tuning-options-in-order-of-preference">Tuning options, in order of preference</h3>
 
             <ol role="list">
                 <li><strong>Loosen <code>sensitivity</code> in a PandoCorePolicy</strong> for that namespace. <code>low</code>, <code>medium</code> or <code>high</code>, where a higher preset is a tighter gate. This is the right lever because it is per-namespace and version-controlled. See <a href="/docs/policy">CRD Policy</a>.
@@ -201,7 +201,7 @@ kubectl rollout restart deployment/your-app</code></pre>
                 <p><code>PANDO_SENSITIVITY</code> still exists, but on the node sensor it belongs to the DaemonSet, so it applies node-wide rather than to one workload. Use a PandoCorePolicy for per-namespace tuning, and <code>thresholds</code> within it for finer numeric control. Thresholds can only tighten what learning derived, never loosen it; use <code>sensitivity</code> to loosen.</p>
             </div>
 
-            <h2>Sensor Running But No Data</h2>
+            <h2 id="sensor-running-but-no-data">Sensor Running But No Data</h2>
 
             <p>Symptom: the sensor is ready, but <code>/metrics</code> looks empty or the portal dashboard shows no activity.</p>
 
@@ -219,7 +219,7 @@ kubectl logs -n pando-system -l app.kubernetes.io/name=pando-controller --tail=1
                 <li><strong>Per-namespace integrations are inert.</strong> Integrations declared in a PandoCorePolicy reach the controller through the destinations mirror. If <code>mirror.enabled=false</code>, nothing writes the destinations Secret and those integrations do nothing. The controller's own destinations are unaffected.</li>
             </ul>
 
-            <h2>A Pod Was Contained Unexpectedly</h2>
+            <h2 id="a-pod-was-contained-unexpectedly">A Pod Was Contained Unexpectedly</h2>
 
             <p>Symptom: a workload lost network egress and you need to understand why.</p>
 
@@ -239,7 +239,7 @@ kubectl get events -n &lt;namespace&gt; --field-selector involvedObject.name=&lt
 
             <p>If it was clearly a false positive, see <a href="#too-many-alerts">Too Many Alerts</a> above. To stop PandoCore responding immediately while you investigate, see <a href="/docs/emergency">Emergency Procedures</a>.</p>
 
-            <h2>Getting Help</h2>
+            <h2 id="getting-help">Getting Help</h2>
 
             <p>Collect the following before reaching out:</p>
 

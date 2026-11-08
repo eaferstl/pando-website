@@ -99,11 +99,11 @@
 
             <p>There are three places to see what PandoCore is doing, and which one you want depends on the question. The portal is for detections and entitlements, Prometheus is for coverage and health, and <code>kubectl</code> is for what is true in the cluster right now.</p>
 
-            <h2>Portal Dashboard</h2>
+            <h2 id="portal-dashboard">Portal Dashboard</h2>
 
             <p>Evidence is delivered by the controller to <a href="https://portal.pandocore.io">portal.pandocore.io</a>, which is where detections, their reasons and their outcomes are read. No extra configuration is needed: the portal is a destination the controller carries by default.</p>
 
-            <h3>Event data flow</h3>
+            <h3 id="event-data-flow">Event data flow</h3>
 
             <ol role="list">
                 <li>A sensor detects behaviour diverging from a workload's profile</li>
@@ -118,7 +118,7 @@
                 <p>The trip record is sealed and shipped before the response chain resolves, because there is no action without a durable record first. So the first record carries the <em>intended</em> response and the receipt carries the outcome. They are correlated by <code>trip_evidence_id</code>, not by sharing an id. See <a href="/docs/evidence-format">Evidence Format</a>.</p>
             </div>
 
-            <h3>What the portal shows</h3>
+            <h3 id="what-the-portal-shows">What the portal shows</h3>
 
             <ul role="list">
                 <li><strong>Detections</strong>, with the reason, severity, pod, namespace and the response taken</li>
@@ -133,7 +133,7 @@
                 <p>Your plan's retention figure is the period the portal undertakes to keep evidence for. Nothing deletes an event at the end of it, so it is not a promise that older evidence is gone, and it is not an availability claim about querying it. If you need evidence for a defined period under your own control, deliver it to your SIEM and apply your retention policy there.</p>
             </div>
 
-            <h2>Coverage And Health, In Prometheus</h2>
+            <h2 id="coverage-and-health-in-prometheus">Coverage And Health, In Prometheus</h2>
 
             <p>The portal shows what was detected. It does not tell you whether a node stopped being watched, and that is the question worth alerting on.</p>
 
@@ -172,7 +172,7 @@
                 <p><strong>On GKE managed Prometheus the shipped rules are inert.</strong> It honours neither the chart's scrape annotations nor a <code>PrometheusRule</code>, so set <code>metrics.podMonitoring.enabled=true</code> to get scraping at all, and port the coverage and absence rules across by hand. See <a href="/docs/configuration">Configuration</a>.</p>
             </div>
 
-            <h2>Right Now, With kubectl</h2>
+            <h2 id="right-now-with-kubectl">Right Now, With kubectl</h2>
 
             <pre><code># One sensor per node, all Ready
 kubectl get pods -n pando-system -l app.kubernetes.io/name=pando-node-sensor -o wide
@@ -190,7 +190,7 @@ kubectl get events -n &lt;namespace&gt; --field-selector reason=PandoCollapse
 # Collapse-grade conditions where nothing acted
 kubectl get events -n &lt;namespace&gt; --field-selector reason=PandoRefrained</code></pre>
 
-            <h3>What a detection looks like as an event</h3>
+            <h3 id="what-a-detection-looks-like-as-an-event">What a detection looks like as an event</h3>
 
             <table>
                 <thead>
@@ -227,7 +227,7 @@ kubectl get events -n &lt;namespace&gt; --field-selector reason=PandoRefrained</
 
             <p><code>/status</code> reports the license ceiling and any node clamp as separate lines, deliberately: a clamped node is held to monitor by a portal-side verdict rather than by your license, so an operator reading one must not be sent to upgrade a license that was never the constraint. <code>node_clamp: none</code> means no clamp applies and the node is fully protected.</p>
 
-            <h2>In-Cluster Dashboard</h2>
+            <h2 id="in-cluster-dashboard">In-Cluster Dashboard</h2>
 
             <div class="docs-callout warning">
                 <div class="docs-callout-title">Deprecated with the admission webhook</div>
@@ -235,26 +235,26 @@ kubectl get events -n &lt;namespace&gt; --field-selector reason=PandoRefrained</
                 <p>Use the portal for detections, Prometheus for coverage and health, and <code>kubectl</code> for current state. Between them they cover everything it showed, and the Prometheus route covers the coverage question it never answered.</p>
             </div>
 
-            <h2>Troubleshooting</h2>
+            <h2 id="troubleshooting">Troubleshooting</h2>
 
-            <h3>The portal shows no activity</h3>
+            <h3 id="the-portal-shows-no-activity">The portal shows no activity</h3>
             <ol role="list">
                 <li>Confirm the sensors are ready: <code>/readyz</code> returns 503 during learning and while refusing</li>
                 <li>Confirm the controller is running and receiving. It is what delivers to the portal, so healthy sensors with an empty portal is a controller question</li>
                 <li>Check the controller's logs for delivery errors, and your egress rules for blocked outbound calls</li>
             </ol>
 
-            <h3>Prometheus shows no PandoCore data</h3>
+            <h3 id="prometheus-shows-no-pandocore-data">Prometheus shows no PandoCore data</h3>
             <ol role="list">
                 <li>Check your job selects <code>app.kubernetes.io/name=pando-node-sensor</code> rather than the protect label</li>
                 <li>Confirm the metrics port is 9090</li>
                 <li>On GKE managed Prometheus, confirm <code>metrics.podMonitoring.enabled=true</code></li>
             </ol>
 
-            <h3>Some pods never appear</h3>
+            <h3 id="some-pods-never-appear">Some pods never appear</h3>
             <p>Check <code>pando_node_sensor_pods_unmonitored{reason="cap"}</code> first. Then check whether the pod is opted out, in an excluded namespace, or using <code>hostPID</code> or <code>hostNetwork</code>. See <a href="/docs/troubleshooting">Troubleshooting</a>.</p>
 
-            <h2>Next Steps</h2>
+            <h2 id="next-steps">Next Steps</h2>
 
             <ul role="list">
                 <li><a href="/docs/evidence-format">Evidence Format</a>: the record schema and its wire fields</li>

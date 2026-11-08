@@ -126,7 +126,7 @@
                 </tbody>
             </table>
 
-            <h2>Node Sensor Helm Values</h2>
+            <h2 id="node-sensor-helm-values">Node Sensor Helm Values</h2>
 
             <table>
                 <thead>
@@ -267,7 +267,7 @@
                 <p>This matters because the coverage and absence rules are the ones that tell you a node has stopped being watched. If you run managed Prometheus, port those two across by hand rather than assuming the chart covered you.</p>
             </div>
 
-            <h2>Per-Pod Annotations</h2>
+            <h2 id="per-pod-annotations">Per-Pod Annotations</h2>
 
             <p>Six annotations apply to one workload. Each is read when the sensor starts watching a pod, so a change applies to pods created after it; <code>kubectl rollout restart</code> is what applies it to pods already running.</p>
 
@@ -311,7 +311,7 @@
                 <p><code>mode</code> and <code>profile</code> are matched exactly, with no trimming and no case folding. <code>audit-network</code> is trimmed and lowercased. <code>network-allowlist</code> is taken verbatim and <code>egress-allowlist-hosts</code> is trimmed. That inconsistency is inherited from the webhook deliberately, so that migrating to the sensor does not change what an annotation you already had means. A <code>mode</code> value that does not match falls back to the node-wide default and the sensor warns naming the pod.</p>
             </div>
 
-            <h3>The opt-out label</h3>
+            <h3 id="the-opt-out-label">The opt-out label</h3>
 
             <p>Not an annotation, and the one setting that does not need a restart:</p>
 
@@ -319,19 +319,19 @@
 
             <p>It is evaluated every reconcile pass, so a running pod stops being watched on the next scan. The comparison is byte-for-byte against <code>"false"</code>, with no trimming and no case folding, so <code>False</code> and <code>0</code> do not opt a pod out. The deprecated webhook's <code>"true"</code> value has no effect at all.</p>
 
-            <h2>Three Annotations The Sensor Cannot Honour</h2>
+            <h2 id="three-annotations-the-sensor-cannot-honour">Three Annotations The Sensor Cannot Honour</h2>
 
             <p><code>pandocore.io/full-proc-signals</code>, <code>pandocore.io/provenance-enforce</code> and <code>pandocore.io/node-enforcer</code> were applied at admission, by rewriting a pod before it was created. A sensor is outside the pod and runs after it exists, so none of them can be applied. The sensor warns once per pod carrying one, and the pod is still watched. See <a href="/docs/production-hardening">Production Hardening</a>.</p>
 
-            <h2>What You Can't Configure</h2>
+            <h2 id="what-you-cant-configure">What You Can't Configure</h2>
 
             <p>Detection internals are managed automatically and not user-tunable. Use <code>sensitivity</code> in a policy, and <code>thresholds</code> within it for finer numeric control. If neither settles a workload, <a href="/contact">contact support</a>.</p>
 
             <p>Two ceilings are also not configuration. The sensor caps its response at isolate in code, and its ClusterRole withholds <code>pods: delete</code> by name, so no value raises it. And a portal-side node clamp is a commercial verdict rather than a cluster setting.</p>
 
-            <h2>Examples</h2>
+            <h2 id="examples">Examples</h2>
 
-            <h3>Production install</h3>
+            <h3 id="production-install">Production install</h3>
 
             <pre><code>helm install pando-node-sensor \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-node-sensor \
@@ -341,12 +341,12 @@
   --set 'excludedNamespaces={kube-system,kube-public,kube-node-lease,cert-manager,istio-system}' \
   --set metrics.podMonitoring.enabled=true</code></pre>
 
-            <h3>One workload, narrowed to monitor</h3>
+            <h3 id="one-workload-narrowed-to-monitor">One workload, narrowed to monitor</h3>
 
             <pre><code>kubectl annotate deployment your-app pandocore.io/mode=monitor --overwrite
 kubectl rollout restart deployment/your-app</code></pre>
 
-            <h2>Next Steps</h2>
+            <h2 id="next-steps">Next Steps</h2>
 
             <ul role="list">
                 <li><a href="/docs/policy">CRD Policy</a>: per-namespace mode, sensitivity, thresholds and integrations</li>
