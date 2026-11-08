@@ -1807,7 +1807,8 @@ ul {
     color: var(--black-forest);
 }
 
-.ns-tag {
+.ns-tag,
+.mini-pod-state {
     font-size: 0.65rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -1913,9 +1914,16 @@ ul {
     color: var(--black-forest);
 }
 
-.mini-container.mini-watched {
-    background: var(--black-forest);
-    color: var(--floral-white);
+/* The pod carries its own watched state, as a tag, the way .ns-tag marks a
+   namespace. It was a second .mini-container beside App, which drew two equal
+   containers inside one pod outline while the opted-out pod drew one: a picture
+   of an injected container, on the page whose intro says nothing is injected.
+   The HTML had already moved to node-sensor language; this had not. */
+.mini-pod-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
 }
 
 .ns-empty {
