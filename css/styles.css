@@ -898,6 +898,49 @@ header {
     }
 }
 
+/* The way into a long page. #compliance and #validation have had ids for some
+   time with nothing on the page pointing at them, and /product runs to about
+   13,000px at 390. Centred, because it reads as the closing line of the centred
+   hero band above rather than as the opening line of the content column, which
+   starts at the section below. Same ground as the hero and as the alt-bg
+   section under it, so the three read as one band.
+
+   The hero's own padding is left alone, so the wave band closes the hero and
+   this strip starts after it. */
+.page-toc {
+    background: var(--floral-white);
+    padding-bottom: var(--spacing-xl);
+}
+
+.page-toc ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--spacing-xs) var(--spacing-sm);
+}
+
+/* Padded to a 44px target rather than left as a text box: these are navigation
+   links, so WCAG 2.5.8's inline-text exception does not cover them. */
+.page-toc a {
+    display: inline-block;
+    padding: 11px var(--spacing-sm);
+    border: 1px solid rgb(var(--forest-rgb) / 0.25);
+    border-radius: var(--radius-pill);
+    color: var(--coffee-bean);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+}
+
+.page-toc a:hover {
+    background-color: var(--black-forest);
+    color: var(--floral-white);
+}
+
 /* ===================================
    Buttons
    =================================== */

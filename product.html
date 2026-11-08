@@ -69,8 +69,20 @@
         </div>
     </section>
 
+    <nav class="page-toc" aria-label="On this page">
+        <div class="container">
+            <ul role="list">
+                <li><a href="#what-it-does">What it does</a></li>
+                <li><a href="#architecture">Your security stack</a></li>
+                <li><a href="#compliance">Compliance controls</a></li>
+                <li><a href="#validation">Validation</a></li>
+                <li><a href="#footprint">Access and limits</a></li>
+            </ul>
+        </div>
+    </nav>
+
     <!-- What It Is Section -->
-    <section class="content-section alt-bg">
+    <section class="content-section alt-bg" id="what-it-does">
         <div class="container">
             <h2 class="section-title">What PandoCore Does</h2>
             <div class="content-wrapper mw-container">
@@ -113,7 +125,7 @@
     </section>
 
     <!-- Integration Section - Security Stack -->
-    <section class="content-section">
+    <section class="content-section" id="architecture">
         <div class="container">
             <h2 class="section-title">Complements Your Security Stack</h2>
             <div class="content-wrapper mw-container">
@@ -464,6 +476,24 @@
                 <p>Measured warm and enforcing on the shipping build, across two runs: a 130.4 mCPU p95 with a 106.9 MiB working set over a 24-hour warm window, and 127.3 mCPU with 110.6 MiB over a 34-hour run. The working set held a flat slope in both, so there is no leak to grow into the limit.</p>
 
                 <p class="section-note">Cumulative across two runs rather than one unbroken window, measured on one node per run, against production-representative synthetic workloads rather than customer traffic. A zero bounds the rate rather than being one: at most one false isolation in 1,324 engine-hours, at 95 percent confidence. Profiling is automatic across the 24 workload types these runs covered, spanning web servers, databases, and JIT and interpreted runtimes, with no manual tuning required. These figures are from the node sensor; the earlier per-pod collector's numbers are not carried forward.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Access and limits. Ported from index.html's #footprint, minus its
+         install block: a second marketing page carrying a pinned chart
+         version is wrong the moment the chart moves. The per-node resource
+         figures are left there too, because #validation above already
+         carries them and one page should state a number once. -->
+    <section class="content-section" id="footprint">
+        <div class="container">
+            <h2 class="section-title">The access it needs, and what it is denied</h2>
+            <div class="content-wrapper">
+                <p>The sensor runs as a <code>hostPID</code> DaemonSet, as uid 0, with <code>CAP_SYS_PTRACE</code>, reading the node's process namespace read-only. That is a real privilege, and what bounds it is the grant rather than a promise: its ClusterRole withholds <code>pods:&nbsp;delete</code>, <code>pods:&nbsp;patch</code> and <code>endpoints:&nbsp;get</code> by name. Each sensor watches up to 70 pods per node, and a Prometheus gauge reports any past that.</p>
+
+                <p><strong>It will not run on GKE Autopilot or EKS Fargate.</strong> Both forbid <code>hostPID</code>, so there is no install path on either. Standard GKE is the configuration this release was validated on.</p>
+
+                <p><a href="/docs/getting-started">Getting Started</a> has the rest: the externally managed Secret to use where your values file is committed, the opt-out label, and what the learning window does before anything can be detected.</p>
             </div>
         </div>
     </section>
