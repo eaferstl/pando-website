@@ -2,6 +2,10 @@
 # picked up immediately instead of being served stale from browser cache.
 /css/styles.css
   Cache-Control: no-cache
+/css/docs.css
+  Cache-Control: no-cache
+/css/noscript.css
+  Cache-Control: no-cache
 /js/main.js
   Cache-Control: no-cache
 /blog/posts.json

@@ -56,6 +56,7 @@ pandoWebsite/
 │   ├── founder.jpg         # About page portrait
 │   └── favicon.png         # 64x64; it was a 512x512 at 221 KB on all 29 pages
 ├── sitemap.xml             # Generated from each page's canonical URL
+├── robots.txt              # Crawl policy; points crawlers at sitemap.xml
 ├── _headers                # Cloudflare Pages header rules
 ├── CLAUDE.md               # Working rules for this repository
 ├── PRODUCT.md              # Audience, positioning, copy constraints
