@@ -386,7 +386,6 @@ function initializeContactForm(form) {
         // Send email using EmailJS
         emailjs.send(EMAILJS_CONFIG.serviceId, EMAILJS_CONFIG.templateId, templateParams)
             .then(function(response) {
-                console.log('SUCCESS!', response.status, response.text);
                 showFormStatus('success', 'Thank you for your message! We will typically respond within 1-3 business days.');
                 
                 // Reset form
@@ -455,7 +454,7 @@ function validateEmail(value) {
 function validateSubject(value) {
     const subjectError = document.getElementById('subjectError');
     
-    if (!value || value === '') {
+    if (!value || value.trim().length === 0) {
         showError(subjectError, 'Subject is required.');
         return false;
     }
@@ -538,7 +537,7 @@ function showFormStatus(type, message, fallbackEmail) {
         }
 
         // Scroll to status message
-        formStatus.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        formStatus.scrollIntoView({ block: 'nearest' });
     }
 }
 
