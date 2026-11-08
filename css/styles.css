@@ -784,7 +784,6 @@ header {
     stroke-width: 1;
 }
 
-
 .grove-node {
     transform-box: fill-box;
     transform-origin: center;
@@ -1106,11 +1105,6 @@ header {
     color: var(--charcoal);
 }
 
-.cta-center {
-    text-align: center;
-    margin-top: var(--spacing-md);
-}
-
 .check-row {
     display: flex;
     align-items: flex-start;
@@ -1229,23 +1223,23 @@ header {
     z-index: 1;
 }
 
-/* A narrative row with no mark runs the full measure. index.html's three marks
-   were removed on 2026-11-06: the first rendered as a bold X directly beside the
-   words "An answer for the questionnaire", and its siblings were a classical
-   bank and a padlock, which is the exact security-vendor vocabulary DESIGN.md
-   rejects. DESIGN.md already prescribes typographic rows for narrative sections.
-   product.html and about.html keep their own marks, so the default below stays
-   two-column rather than being changed out from under them. */
-.feature-row:not(:has(.feature-visual)) {
-    grid-template-columns: minmax(0, 1fr);
-}
+/* One column, and no longer a default with an escape hatch. index.html's three
+   marks were removed on 2026-11-06 as the security-vendor vocabulary DESIGN.md
+   rejects, and the rule kept a two-column default for product.html and
+   about.html, which were said to keep theirs. Neither does now: product's went
+   with the Security Principles section and about.html never had any, so
+   .feature-visual appears in no HTML file and index.html holds the only three
+   .feature-row elements on the site. The icon column was also the second text
+   left edge on this page, pushing every h3 and p 112px right of the column the
+   section title sits on.
 
+   The rule this replaces was `.feature-row:not(:has(.feature-visual))`, which
+   is worth remembering: a dead class inside `:not(:has())` makes a selector
+   match MORE, not less, so a sweep that treats "mentions a dead class" as
+   "is dead" deletes exactly the rule that was keeping the page right. */
 .feature-row {
     display: grid;
-    /* `auto` sizes the icon column to the 80px glyph. It was `1fr`, which gave
-       each icon a 492px track and left about 412px of it empty, so three small
-       marks read as three large tiles adrift in the band. */
-    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--spacing-lg);
     /* Top, not centre: centred, the mark floated level with the middle of the
        body copy and left the heading with nothing beside it. */
@@ -1276,13 +1270,6 @@ header {
     margin-bottom: 0;
 }
 
-.feature-visual {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-}
-
 /* `.feature-content p` (0,1,1) outranked the bare `.feature-quote` (0,1,0) and
    zeroed its margin, welding each pull-quote to the paragraph beneath it. */
 .feature-content .feature-quote {
@@ -1308,47 +1295,15 @@ header {
    LIVE sitewide. This is the site's entire icon system. Not an alternative.
    =================================== */
 
-.card-icon {
-    margin-bottom: var(--spacing-md);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.card-icon svg {
-    width: 80px;
-    height: 80px;
-}
-
-.icon-bg {
-    fill: var(--black-forest);
-    opacity: 0.95;
-}
-
-.icon-shape {
-    fill: var(--floral-white);
-}
-
 /* The feature rows drop the filled tile and let the mark carry itself. Three
    identical dark rounded squares in a column is the icon-tile trio brand.md
    bans; the rest of the site's icon system is unchanged. The stroke is set
    because the row-1 glyph hardcodes `stroke="white"` as a presentation
    attribute, which is invisible once the tile behind it is gone. */
-.feature-row .icon-bg {
-    fill: none;
-}
-
-.feature-row .icon-shape {
-    fill: var(--black-forest);
-    stroke: var(--black-forest);
-}
 
 /* The validation-row glyph is a stroked check rather than a filled path, so it
    takes the stroke without the fill. Until it carried .icon-shape at all it
    kept a hardcoded floral-white stroke and rendered invisible on white. */
-.feature-row polyline.icon-shape {
-    fill: none;
-}
 
 /* Inline Icons - Professional icon style for inline use */
 .inline-icon {
@@ -1359,38 +1314,14 @@ header {
     flex-shrink: 0;
 }
 
-.inline-icon-sm {
-    width: 20px;
-    height: 20px;
-    display: inline-block;
-    vertical-align: middle;
-    flex-shrink: 0;
-}/* Protection and benefit item icons */
-.protection-icon,
-.benefit-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
+/* Protection and benefit item icons */
 
 /* Container icon sizing */
-.container-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.container-icon .inline-icon {
-    width: 24px;
-    height: 24px;
-}
 
 /* ===================================
    Timeline / Process Flow
    LIVE: about.html. Not an unused alternative.
    =================================== */
-
 
 /* ===================================
    QUARANTINED, PENDING REWRITE: product.html diagram CSS
@@ -1408,7 +1339,6 @@ header {
    Unique layered diagram showing how PandoCore fits
    =================================== */
 
-
 /* Stack Summary */
 .stack-summary {
     text-align: left;
@@ -1423,141 +1353,13 @@ header {
    Node-level view: workloads observed by the PandoCore agent
    =================================== */
 
-.k8s-pod-visual {
-    position: relative;
-    z-index: 1;
-    margin-bottom: var(--spacing-xl);
-}
-
-.pod-container {
-    background: linear-gradient(135deg, var(--floral-white) 0%, var(--azure-mist) 100%);
-    border: 3px dashed var(--black-forest);
-    border-radius: 16px;
-    padding: var(--spacing-lg);
-    position: relative;
-}
-
-.pod-header {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    margin-bottom: var(--spacing-lg);
-    padding-bottom: var(--spacing-md);
-    border-bottom: 1px solid rgba(0, 28, 6, 0.15);
-}
-
 .k8s-icon {
     width: 32px;
     height: 32px;
     color: var(--black-forest);
 }
 
-.pod-label {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--black-forest);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.pod-contents {
-    display: flex;
-    align-items: stretch;
-    gap: var(--spacing-md);
-    justify-content: center;
-}
-
-.container-box {
-    flex: 1;
-    max-width: 320px;
-    background: var(--white);
-    border-radius: 12px;
-    border: 2px solid rgba(0, 28, 6, 0.2);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    transition: all 0.3s ease;
-}
-
-.container-box:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 28, 6, 0.15);
-}
-
-.container-header {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    padding: var(--spacing-sm) var(--spacing-md);
-    background: var(--floral-white);
-    border-bottom: 1px solid rgba(0, 28, 6, 0.1);
-}
-
-.container-icon {
-    font-size: 1.25rem;
-}
-
-.container-title {
-    font-weight: 600;
-    font-size: 0.95rem;
-    color: var(--coffee-bean);
-}
-
-.container-body {
-    padding: var(--spacing-md);
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.container-footer {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    padding: var(--spacing-sm) var(--spacing-md);
-    background: rgba(0, 28, 6, 0.03);
-    font-size: 0.85rem;
-    color: var(--coffee-bean);
-}
-
 /* App Container Specifics */
-.code-block {
-    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
-    font-size: 0.8rem;
-    background: rgba(31, 17, 2, 0.05);
-    padding: var(--spacing-sm);
-    border-radius: 6px;
-    width: 100%;
-}
-
-.code-comment {
-    display: block;
-    color: var(--muted-ink);
-    font-style: italic;
-    margin-bottom: 4px;
-}
-
-.code-line {
-    display: block;
-    color: var(--black-forest);
-    padding: 2px 0;
-}
-
-.status-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    animation: pulse-status 2s ease-in-out infinite;
-}
-
-.status-dot.running {
-    background: var(--success-green);
-}
-
-.status-dot.protected {
-    background: var(--black-forest);
-}
 
 @keyframes pulse-status {
     0%, 100% { opacity: 1; }
@@ -1565,183 +1367,10 @@ header {
 }
 
 /* Sidecar Container Specifics */
-.agent-container {
-    border-color: var(--black-forest);
-    border-width: 3px;
-}
-
-.agent-header {
-    background: var(--black-forest);
-    flex-wrap: wrap;
-}
-
-.agent-header .container-icon,
-.agent-header .container-title {
-    color: var(--white);
-}
-
-.agent-body {
-    background: rgba(0, 28, 6, 0.02);
-}
-
-.protection-features {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-sm);
-    width: 100%;
-}
-
-.protection-item {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-xs) var(--spacing-sm);
-    background: rgba(0, 28, 6, 0.05);
-    border-radius: 6px;
-    font-size: 0.85rem;
-    color: var(--coffee-bean);
-    transition: all 0.2s ease;
-}
-
-.protection-item:hover {
-    background: rgba(0, 28, 6, 0.1);
-    transform: translateX(4px);
-}
-
-.protection-icon {
-    font-size: 1rem;
-}
-
-.agent-footer {
-    background: rgba(0, 28, 6, 0.08);
-}
 
 /* Shared Namespace Arrow */
-.shared-namespace {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 0 var(--spacing-sm);
-    min-width: 80px;
-}
-
-.namespace-arrow {
-    width: 60px;
-    height: 100px;
-}
-
-.namespace-arrow svg {
-    width: 100%;
-    height: 100%;
-}
-
-.namespace-label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--coffee-bean);
-    text-align: center;
-    opacity: 0.7;
-    line-height: 1.3;
-}
 
 /* Pod Benefits */
-.pod-benefits {
-    display: flex;
-    justify-content: center;
-    gap: var(--spacing-lg);
-    margin-top: var(--spacing-lg);
-    padding-top: var(--spacing-md);
-    border-top: 1px solid rgba(0, 28, 6, 0.15);
-    flex-wrap: wrap;
-}
-
-.benefit-item {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    font-size: 0.85rem;
-    color: var(--coffee-bean);
-    font-weight: 500;
-}
-
-.benefit-icon {
-    font-size: 1rem;
-}@media (max-width: 767px) {
-    /* K8s Pod Visual - Mobile */
-    .pod-contents {
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .container-box {
-        max-width: 100%;
-        width: 100%;
-    }
-    
-    .shared-namespace {
-        flex-direction: row;
-        padding: var(--spacing-sm) 0;
-        min-width: auto;
-        width: 100%;
-        justify-content: center;
-    }
-    
-    .namespace-arrow {
-        width: 100px;
-        height: 60px;
-        transform: rotate(90deg);
-    }
-    
-    .namespace-label {
-        white-space: nowrap;
-    }
-    
-    .pod-benefits {
-        gap: var(--spacing-sm);
-    }
-    
-    .benefit-item {
-        font-size: 0.8rem;
-    }
-}
-
-@media (max-width: 480px) {
-    
-    /* K8s Pod Visual - Small Mobile */
-    .pod-container {
-        padding: var(--spacing-md);
-    }
-    
-    .pod-header {
-        flex-wrap: wrap;
-    }
-    
-    .pod-label {
-        font-size: 0.95rem;
-    }
-    
-    .container-header {
-        padding: var(--spacing-xs) var(--spacing-sm);
-    }
-    
-    .container-title {
-        font-size: 0.85rem;
-    }
-    
-    .code-block {
-        font-size: 0.7rem;
-    }
-    
-    .protection-item {
-        font-size: 0.8rem;
-    }
-    
-    .pod-benefits {
-        flex-direction: column;
-        align-items: center;
-        gap: var(--spacing-xs);
-    }}
 
 /* ===================================
    Cluster-level K8s Visual
@@ -2105,16 +1734,6 @@ header {
     justify-content: center;
 }
 
-.zoom-heading {
-    text-align: center;
-    color: var(--black-forest);
-    font-size: var(--text-base);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: var(--spacing-md);
-    opacity: 0.75;
-}
-
 /* The side-by-side layout needs 1230px, not 900. .cluster-container's content
    floor is 1015px and .external-destinations is a fixed 200px track, so between
    901 and 1229 the row overflowed its wrapper and .content-section's
@@ -2171,7 +1790,6 @@ header {
    .feature-row. Names left unprefixed here so a grep for a selector does not
    match this comment.
    =================================== */
-
 
 .focus-list {
     list-style: none;
@@ -3377,7 +2995,6 @@ header {
    Responsive Grids (validation, workloads, checkmarks)
    =================================== */
 
-
 .checkmarks-grid {
     display: grid;
     grid-template-columns: repeat(2, auto);
@@ -3721,7 +3338,6 @@ textarea:focus-visible {
     font-size: var(--text-base);
     margin-left: 4px;
 }
-
 
 .pricing-meta {
     text-align: center;
