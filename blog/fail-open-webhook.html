@@ -76,7 +76,7 @@
             <article class="blog-article">
                 <aside class="blog-addendum">
                     <p><strong>Update, November 1, 2026.</strong> This post defends a design decision in the mutating admission webhook, which is deprecated and receives no further release. PandoCore now ships as a node sensor: a DaemonSet with no admission webhook anywhere in the path of pod creation, so the tradeoff argued here no longer applies to the product.</p>
-                    <p>The reasoning still holds for anything that does install a webhook, which is why the post stays up. For current behaviour, see the <a href="/trust">trust center</a>.</p>
+                    <p>The reasoning still holds for anything that does install a webhook, which is why the post stays up. For current behaviour, see the <a href="https://trust.pandocore.io">trust center</a>.</p>
                 </aside>
 
                 <p>Anything that installs an admission webhook into your cluster puts itself in the critical path of pod creation: service meshes, secret injectors, policy engines, security agents. One field in that config, <code>failurePolicy</code>, decides what happens when the vendor's code goes down. Most install guides don't mention it.</p>
