@@ -10,3 +10,5 @@
   Cache-Control: no-cache
 /blog/posts.json
   Cache-Control: no-cache
+/docs/search-index.json
+  Cache-Control: no-cache

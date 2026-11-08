@@ -45,6 +45,7 @@
 # docs/ directory
 - `docs/*.html` is the **live documentation site**, 14 pages. Its technical content (install commands, chart values, CRD fields, troubleshooting) is written from the local `/Users/eaferstl/eliotIdeas/pandoCore/` tree, which is the source of truth. Verify a command or a value against the charts before publishing it; do not write one from a summary or from memory. There are no version annotations in these pages, and the old "currently v1.3.2" gate was retired on 2026-11-02 along with the sidecar-era content.
 - `docs/*.md` (DESIGN_SPECIFICATIONS, MESSAGING_GUIDELINES, IMPROVEMENTS, etc.) are **historical planning docs**. Ignore them; don't read them as guidance and don't update them.
+- **Every h2 and h3 in `docs/*.html` carries an id**, and `docs/search-index.json` is generated from them. If you add, rename, remove or reword a heading, run `node scripts/build-search-index.mjs` in the same change. `--check` exits 1 when the index is stale and names the drift. Nothing rebuilds it at deploy time, so a stale index silently tells readers an answer does not exist.
 
 # README
 - `README.md` was brought current on 2026-11-02. If you find outdated info while working, **fix the README as part of your change**.

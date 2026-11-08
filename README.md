@@ -41,13 +41,16 @@ pandoWebsite/
 │   └── index.html          # Trust Center (served at trust.pandocore.io)
 ├── docs/
 │   ├── index.html          # Documentation site (14 pages, all *.html, prev/next paged)
+│   ├── search-index.json   # Generated. Run scripts/build-search-index.mjs after editing docs
 │   └── *.md                # Historical planning docs; see Documentation below
 ├── css/
 │   ├── styles.css          # Main stylesheet
 │   ├── docs.css            # Documentation site styles
 │   └── noscript.css        # Loaded only from <noscript>: static nav fallback
 ├── js/
-│   └── main.js             # Mobile nav, blog index rendering, contact form
+│   └── main.js             # Mobile nav, blog index rendering, docs search, contact form
+├── scripts/
+│   └── build-search-index.mjs  # Regenerates docs/search-index.json; --check fails if stale
 ├── images/
 │   ├── blog/               # Blog cover art: an .svg for the page, a .png for og:image
 │   ├── logo-nav.png        # 92x120 nav logo on every page (2x its 46x60 slot)
@@ -174,7 +177,16 @@ Two different things live under `docs/`, and the distinction matters:
 
 - **`docs/*.html` is the live documentation site.** Fourteen pages, served at
   `pandocore.io/docs/`, linked from every page's navigation. Edit these when the product
-  changes.
+  changes. **After editing one, regenerate the search index:**
+
+  ```bash
+  node scripts/build-search-index.mjs            # rewrite docs/search-index.json
+  node scripts/build-search-index.mjs --check    # exits 1 if the index is stale
+  ```
+
+  The index is generated and committed. Nothing runs at deploy time, so a forgotten
+  rebuild means the search quietly tells readers an answer does not exist. `--check`
+  prints which headings drifted; run it before committing a docs change.
 - **`docs/*.md` are historical planning documents** (`FILE_STRUCTURE.md`,
   `CONTENT_REQUIREMENTS.md`, `MESSAGING_GUIDELINES.md`, `DESIGN_SPECIFICATIONS.md`,
   `DEPLOYMENT.md`, `EMAILJS_SETUP.md`, `IMPROVEMENTS.md`,
