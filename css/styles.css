@@ -1624,31 +1624,7 @@ header {
 
 .benefit-icon {
     font-size: 1rem;
-}/* Mobile Responsive for Security Stack */
-@media (max-width: 767px) {    
-    .layer-bar {
-        padding: var(--spacing-sm) var(--spacing-md);
-    }
-    
-    .layer-bar.highlight-bar {
-        padding: var(--spacing-md);
-        flex-wrap: wrap;
-    }
-    
-    .new-badge {
-        margin-left: 0;
-        margin-top: var(--spacing-xs);
-    }
-    
-    .infra-options {
-        gap: var(--spacing-xs);
-    }
-    
-    .infra-badge {
-        padding: 6px 12px;
-        font-size: 0.8rem;
-    }
-    
+}@media (max-width: 767px) {
     /* K8s Pod Visual - Mobile */
     .pod-contents {
         flex-direction: column;
@@ -2145,9 +2121,12 @@ header {
 /* === END QUARANTINE: product.html diagram CSS === */
 
 /* ===================================
-   Split Focus Cards
-   LIVE: product.html (.split-focus/.focus-card), index.html (.focus-list).
-   Not an unused alternative.
+   Focus List
+   LIVE: index.html (.focus-list), inside the pilot band. The split-focus and
+   focus-card rules this section was named for went with the rest of the dead
+   selectors; no markup has carried those classes since it moved to
+   .feature-row. Names left unprefixed here so a grep for a selector does not
+   match this comment.
    =================================== */
 
 
@@ -3155,9 +3134,6 @@ header {
         font-size: 3rem;
     }
     
-    .problem-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
 }
 
 /* Desktop (1024px and up) */
@@ -3168,10 +3144,6 @@ header {
     
     .page-hero {
         padding: 100px 0;
-    }
-    
-    .problem-grid {
-        grid-template-columns: repeat(3, 1fr);
     }
     
     .content-section {
@@ -3235,14 +3207,6 @@ header {
         order: -1;
     }
     
-    .problem-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .use-cases-grid {
-        grid-template-columns: 1fr;
-    }
-    
     /* At 390 the command is 620px inside a 358px block. `overflow-x: auto`
        protects the page but offers no visible scrollbar on touch, so the chart
        coordinates, the part a reader is actually here for, are unreachable.
@@ -3263,45 +3227,9 @@ header {
            desktop rule does. Both were 32px here, which read as one long list. */
         margin-bottom: var(--spacing-xxl);
     }
-        .feature-icon {
-        width: 80px;
-        height: 80px;
-    }
-    
     /* --text-lg, not --text-xl: at --text-xl this rendered 24px, the same
        size as the section h2 above it, and the hierarchy collapsed. */
     .feature-content h3 {
-        font-size: var(--text-lg);
-    }
-    
-    .timeline-item {
-        grid-template-columns: 60px 1fr;
-        gap: var(--spacing-md);
-        margin-bottom: var(--spacing-lg);
-    }
-    
-    .timeline-number {
-        width: 50px;
-        height: 50px;
-        font-size: var(--text-lg);
-    }
-    
-    .timeline-content h3 {
-        font-size: var(--text-lg);
-    }
-    
-    .split-focus {
-        grid-template-columns: 1fr;
-        gap: var(--spacing-lg);
-    }
-    
-    .focus-card {
-        padding: var(--spacing-lg);
-    }
-    
-    /* --text-lg, not --text-xl: at --text-xl this rendered 24px, the same
-       size as the section h2 above it, and the hierarchy collapsed. */
-    .focus-card h3 {
         font-size: var(--text-lg);
     }
     
