@@ -22,18 +22,22 @@
 - No inline `style=` or `<style>` blocks in HTML. (The old `mobile-preview.html` exception is gone; the file was deleted 2026-11-02.)
 - `styles.css` is sectioned with `/* === ... === */` headers — add new rules to the matching section, don't append at the bottom.
 - Mobile-first. The intended breakpoints are 768px and 1024px, but the two sheets
-  actually carry ten. Counted 2026-11-07, with the three that were undocumented:
-  `styles.css` — 480, 560, 767, 768, 900, 999, 1023, 1024, 1230; `docs.css` — 600, 1023.
+  actually carry nine. Recounted 2026-11-08:
+  `styles.css` — 480, 560, 767, 768, 900, 999, 1023, 1024; `docs.css` — 600, 1023.
   999 collapses `.hero-split` to one column (below it the headline broke to four
-  lines with an orphan); 1230 collapses the product page's `.k8s-cluster-visual`
-  diagram; docs' 600 drops `.docs-quick-links` to one column and shrinks `pre`.
+  lines with an orphan); docs' 600 drops `.docs-quick-links` to one column and
+  shrinks `pre`. **1230 is gone.** It existed only to restack the product page's
+  `.k8s-cluster-visual` below the width its side-by-side row needed; that row is
+  now stacked by default, so the breakpoint had nothing to patch.
   Read the one you are editing before adding another. Two are load-bearing:
   - **1023px is coupled to JavaScript.** The nav drawer's media query
     (`@media (max-width: 1023px)` in `styles.css`) and `js/main.js`'s resize handler
     (`window.innerWidth > 1023`) must move together. If they disagree the drawer is
     stuck open, or cannot be closed, on every page. It is 1023 and not 767 because eight
     nav items need about 710px and the wrapper offers 735px at 1023px; below that,
-    items were rendering off-screen and unreachable.
+    items were rendering off-screen and unreachable. **Three JS call sites read
+    this number now**: the nav drawer, `initializeDocsSidebar` and
+    `initializeDocsToc`. All three must move together with the media query.
   - **480px is undocumented and was overriding a clamp.** Check whether a fluid value
     already covers the width before adding a fixed override inside it.
 

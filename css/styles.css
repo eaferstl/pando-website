@@ -1212,8 +1212,9 @@ header {
 }
 
 /* ===================================
-   Feature Rows: alternating side-by-side content
-   LIVE: index.html, product.html, about.html. Not an unused alternative.
+   Feature Rows
+   LIVE: index.html only, and one column now. product.html's rows went with the
+   Security Principles section on 2026-11-08; about.html has none.
    =================================== */
 
 .feature-rows {
@@ -1291,8 +1292,9 @@ header {
 }
 
 /* ===================================
-   Icon System: card, inline, tool and container icon sizing
-   LIVE sitewide. This is the site's entire icon system. Not an alternative.
+   Icon System
+   LIVE: .inline-icon, which is what the system is down to. The card, tool and
+   container icon rules went with the markup that used them.
    =================================== */
 
 /* The feature rows drop the filled tile and let the mark carry itself. Three
@@ -1319,24 +1321,17 @@ header {
 /* Container icon sizing */
 
 /* ===================================
-   Timeline / Process Flow
-   LIVE: about.html. Not an unused alternative.
-   =================================== */
+   Product Page Diagram
+   The cluster diagram on /product, plus .stack-summary and .k8s-icon, which
+   the node diagram shared before it was removed.
 
-/* ===================================
-   QUARANTINED, PENDING REWRITE: product.html diagram CSS
-   The three sections from here to the end of "Cluster-level K8s Visual"
-   style product.html's hand-authored diagrams. Those diagrams are being
-   rewritten for the node sensor: the pandocore.io/protect label inverted
-   from opt-in to opt-out, so the "unprotected pod, no label" case the
-   cluster diagram is built around no longer exists.
-   Do not tokenise, restyle or delete in here. New markup and new CSS land
-   together, or the work is done twice and conflicts.
-   =================================== */
-
-/* ===================================
-   Security Stack Visual (Product Page Integration)
-   Unique layered diagram showing how PandoCore fits
+   This was quarantined pending the node-sensor rewrite: the
+   pandocore.io/protect label inverting from opt-in to opt-out meant the
+   "unprotected pod, no label" case the diagram was built around no longer
+   existed. That rewrite has landed. The pod shape carries a state tag instead
+   of a second container, the destinations stack beneath the cluster box, and
+   the 1230px breakpoint that patched the old side-by-side row is gone. The
+   quarantine is lifted.
    =================================== */
 
 /* Stack Summary */
@@ -1347,11 +1342,6 @@ header {
     color: var(--coffee-bean);
     max-width: 100%;
 }
-
-/* ===================================
-   K8s Node Agent Visual
-   Node-level view: workloads observed by the PandoCore agent
-   =================================== */
 
 .k8s-icon {
     width: 32px;
@@ -1371,11 +1361,6 @@ header {
 /* Shared Namespace Arrow */
 
 /* Pod Benefits */
-
-/* ===================================
-   Cluster-level K8s Visual
-   Wide shot showing namespaces, labeled/unlabeled pods, and portal
-   =================================== */
 
 .k8s-cluster-visual {
     position: relative;
@@ -1756,8 +1741,6 @@ header {
         grid-template-columns: 1fr;
     }
 }
-
-/* === END QUARANTINE: product.html diagram CSS === */
 
 /* ===================================
    Focus List
