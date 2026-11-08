@@ -56,4 +56,4 @@
 # Scope discipline
 - Do exactly what's asked. No bonus refactors, no new features, no "while I'm here" cleanup.
 - Default to no comments in HTML/CSS/JS. Only add a comment when the *why* is non-obvious.
-- The `pitch/` directory is out of scope — leave it alone unless asked.
+- `pitch/` was deleted on 2026-11-08. Cloudflare Pages serves whatever is committed, so its six investor-slide and QR files were publicly fetchable at `/pitch/*` although nothing linked to them. It is still in git history. Do not restore it to the deploy.
