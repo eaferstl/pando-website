@@ -126,6 +126,93 @@
     border-radius: 2px;
 }
 
+/* "On this page". Built by js/main.js from the page's own headings, so these
+   rules style nothing until the script runs. Capped at the measure plus its
+   padding, like .docs-callout: the list holds short link text and would
+   otherwise draw a 900px box around a 300px column. */
+.docs-toc {
+    max-width: calc(var(--measure) + (2 * var(--spacing-md)));
+    padding: var(--spacing-md);
+    margin: var(--spacing-md) 0 var(--spacing-lg) 0;
+    border: 1px solid rgb(var(--forest-rgb) / 0.15);
+    border-radius: var(--radius-md);
+    background: var(--floral-white);
+}
+
+.docs-toc-title {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-xs);
+    min-height: 44px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--black-forest);
+}
+
+.docs-toc-title::-webkit-details-marker {
+    display: none;
+}
+
+.docs-toc-title::after {
+    content: "\25BE";
+    font-size: 0.9rem;
+    line-height: 1;
+    transition: transform var(--transition-speed);
+}
+
+.docs-toc[open] .docs-toc-title::after {
+    transform: rotate(180deg);
+}
+
+.docs-toc ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Indented with padding on the nested list, not a margin on its items, so the
+   28px hit area below still starts at the text. */
+.docs-toc ul ul {
+    padding-left: var(--spacing-md);
+}
+
+/* `.docs-toc ul li` and not `.docs-toc li`: `.docs-content li` sets
+   list-style: disc at equal specificity and is declared later in this sheet,
+   so the bare class lost on source order and every entry wore a bullet. The
+   extra element raises this to (0,1,2) and settles it by specificity rather
+   than by moving the rule, which would only move the trap. */
+.docs-toc ul li {
+    list-style: none;
+    margin: 0;
+}
+
+/* 20px of text in a <nav>, so WCAG 2.5.8's inline-text exception does not
+   apply. Padding grows the target to 28px and the negative margin absorbs it,
+   so the list keeps its rhythm. The same pattern as .trust-toc a. */
+.docs-toc a {
+    display: inline-block;
+    padding: 4px 0;
+    margin: -4px 0;
+    color: var(--coffee-bean);
+    font-size: 0.95rem;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.docs-toc ul ul a {
+    font-size: 0.9rem;
+    color: var(--muted-ink);
+}
+
+.docs-toc a:hover {
+    color: var(--black-forest);
+}
+
 /* A <summary>, so the 14-link list can collapse on a phone. On desktop the
    disclosure stays open and this just reads as the label it always was. */
 .docs-sidebar-title {

@@ -51,6 +51,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Build the docs search control (only runs where a docs sidebar exists)
     initializeDocsSearch();
 
+    // Build the "On this page" list from the headings of a docs page
+    initializeDocsToc();
+
     // Reveal the mobile conversion bar once the hero scrolls away
     initializeMobileCtaBar();
 });
@@ -826,6 +829,95 @@ function initializeDocsSearch() {
             links[0].click();
         }
     });
+}
+
+
+/**
+ * "On this page" for a documentation page.
+ *
+ * Built from the headings in the document rather than written into the 13
+ * pages, so it cannot drift from them: a renamed heading renames its own
+ * entry, and a new one appears without anybody remembering to add it. The
+ * trade is that a reader without JS does not get it, which is a real cost but
+ * a graceful one. Nothing is hidden behind it: the prose, the 14-link sidebar,
+ * the breadcrumb and the prev/next pager are all still there, and every
+ * heading is still a heading for find-in-page.
+ *
+ * A <details>, closed below 1024px, for the same reason the sidebar list is:
+ * the FAQ's 32 entries would otherwise push the first answer off two screens
+ * on a phone. The breakpoint is the one in js/main.js and styles.css already,
+ * and must move with them.
+ */
+function initializeDocsToc() {
+    const content = document.querySelector('.docs-content');
+    if (!content) return;
+
+    const headings = Array.prototype.slice.call(content.querySelectorAll('h2[id], h3[id]'));
+    const sections = headings.filter(function (h) { return h.tagName === 'H2'; });
+    // Under four sections the list says nothing the eye does not already have.
+    if (sections.length < 4) return;
+
+    const details = document.createElement('details');
+    details.className = 'docs-toc';
+
+    const summary = document.createElement('summary');
+    summary.className = 'docs-toc-title';
+    summary.textContent = 'On this page';
+    details.appendChild(summary);
+
+    const nav = document.createElement('nav');
+    nav.setAttribute('aria-label', 'On this page');
+    const list = document.createElement('ul');
+    list.setAttribute('role', 'list');
+    nav.appendChild(list);
+    details.appendChild(nav);
+
+    function entry(heading) {
+        const item = document.createElement('li');
+        const link = document.createElement('a');
+        link.href = '#' + heading.id;
+        link.textContent = (heading.textContent || '').trim();
+        item.appendChild(link);
+        return item;
+    }
+
+    let current = null;
+    headings.forEach(function (heading) {
+        if (heading.tagName === 'H2') {
+            current = entry(heading);
+            list.appendChild(current);
+            return;
+        }
+        // An h3 before any h2 is a structural oddity; list it at the top level
+        // rather than dropping it.
+        if (!current) {
+            list.appendChild(entry(heading));
+            return;
+        }
+        let sub = current.querySelector('ul');
+        if (!sub) {
+            sub = document.createElement('ul');
+            sub.setAttribute('role', 'list');
+            current.appendChild(sub);
+        }
+        sub.appendChild(entry(heading));
+    });
+
+    // After the subtitle where there is one, so the page still opens on its own
+    // sentence rather than on a list of links.
+    const anchor = content.querySelector('.docs-subtitle') || content.querySelector('h1');
+    if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(details, anchor.nextSibling);
+    else content.insertBefore(details, content.firstChild);
+
+    let wide = window.innerWidth > 1023;
+    details.open = wide;
+    window.addEventListener('resize', debounce(function () {
+        const nowWide = window.innerWidth > 1023;
+        if (nowWide !== wide) {
+            wide = nowWide;
+            details.open = nowWide;
+        }
+    }, 150));
 }
 
 
