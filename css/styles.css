@@ -1381,13 +1381,18 @@ header {
     position: relative;
     z-index: 1;
     display: flex;
+    /* Column, with the destinations restacked beneath the cluster box. As a
+       row, .cluster-container | .cluster-egress | .external-destinations needed
+       1015px, which is the arithmetic that produced the clipping at 901 to
+       1230 and the breakpoint that patched it. Stacked, the three cards share
+       the content column and nothing in this section wants a wide viewport. */
+    flex-direction: column;
     align-items: stretch;
     gap: var(--spacing-md);
     margin-bottom: var(--spacing-lg);
 }
 
 .cluster-container {
-    flex: 1;
     min-width: 0;
     background: linear-gradient(135deg, var(--floral-white) 0%, var(--azure-mist) 100%);
     border: 3px dashed var(--black-forest);
@@ -1600,40 +1605,46 @@ header {
 }
 
 .cluster-egress {
-    flex: 0 0 90px;
-    align-self: center;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 2px;
+    justify-content: center;
+    gap: var(--spacing-xs);
 }
 
 .egress-arrow {
-    width: 80px;
-    height: 20px;
+    width: 20px;
+    height: 44px;
     display: block;
 }
 
 .egress-label {
     font-size: 0.7rem;
     font-weight: 600;
-    color: var(--coffee-bean);
+    /* A colour, not an opacity: this label sat at 0.75 on the text element. */
+    color: var(--muted-ink);
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    opacity: 0.75;
 }
 
 .external-destinations {
-    flex: 0 0 200px;
-    align-self: center;
     display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xs);
+    gap: var(--spacing-md);
+}
+
+/* One column on a phone, like every other grid in this section. */
+@media (max-width: 767px) {
+    .external-destinations {
+        flex-direction: column;
+        gap: var(--spacing-xs);
+    }
 }
 
 .destination-card {
+    /* Equal thirds of the content column rather than a fixed 200px side rail. */
+    flex: 1 1 0;
     background: var(--white);
-    border: 2px solid rgba(0, 28, 6, 0.2);
+    /* Was a raw rgba(0, 28, 6, 0.2); --forest-rgb is the same colour as a token. */
+    border: 2px solid rgb(var(--forest-rgb) / 0.2);
     border-radius: 10px;
     padding: 10px 12px;
     display: flex;
@@ -1734,40 +1745,6 @@ header {
     justify-content: center;
 }
 
-/* The side-by-side layout needs 1230px, not 900. .cluster-container's content
-   floor is 1015px and .external-destinations is a fixed 200px track, so between
-   901 and 1229 the row overflowed its wrapper and .content-section's
-   overflow-x: hidden swallowed the remainder - up to 164px of the destination
-   cards at 901px, with no scrollbar to reveal them. Measured fit point is 1230. */
-@media (max-width: 1230px) {
-    .k8s-cluster-visual {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .cluster-egress {
-        flex: 0 0 auto;
-        width: 100%;
-        flex-direction: row;
-        gap: var(--spacing-xs);
-        justify-content: center;
-    }
-
-    .egress-arrow {
-        display: none;
-    }
-
-    .egress-label::after {
-        content: " \2193";
-    }
-
-    .external-destinations {
-        flex: 0 0 auto;
-        align-self: center;
-        width: 100%;
-        max-width: 320px;
-    }
-}
 
 /* Mobile: collapse the namespace grid and the callout row */
 @media (max-width: 900px) {
