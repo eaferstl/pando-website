@@ -79,9 +79,9 @@
                     <li><a href="/docs/faq">FAQ</a></li>
                     <li><a href="/docs/webhook">Admission Webhook (deprecated)</a></li>
                 </ul>
-
-                <a href="https://portal.pandocore.io/signup" class="btn btn-primary docs-sidebar-cta">Start free</a>
             </details>
+
+            <a href="https://portal.pandocore.io/signup" class="btn btn-primary docs-sidebar-cta">Start free</a>
         </aside>
 
         <!-- Main Content -->
@@ -104,7 +104,7 @@
                 <p>Evidence envelopes may contain additional fields that are internal to PandoCore's detection engine. These are not documented here and may change between releases without notice. Build your integrations against the fields listed on this page only.</p>
             </div>
 
-            <h2>Delivery Channels</h2>
+            <h2 id="delivery-channels">Delivery Channels</h2>
 
             <table>
                 <thead>
@@ -141,7 +141,7 @@
                 </tbody>
             </table>
 
-            <h3>Webhook Headers</h3>
+            <h3 id="webhook-headers">Webhook headers</h3>
 
             <table>
                 <thead>
@@ -177,7 +177,7 @@
                 <p>Evidence is sealed, signed and shipped before the response chain is even resolved, and a failed externalization aborts the response. That ordering is deliberate: there is no action without a durable record first. The consequence for a consumer is that a trip record carries <strong>intent</strong> rather than outcome, which is why there is a second record type for what actually happened.</p>
             </div>
 
-            <h3>Three event types</h3>
+            <h3 id="three-event-types">Three event types</h3>
 
             <table>
                 <thead>
@@ -207,7 +207,7 @@
                 <p><code>metadata.sidecar_version</code> and the <code>action_taken</code> value <code>sidecar_absent</code> keep their names although the component is now the node sensor. They are a wire contract: renaming them would break every parser, dashboard and SIEM rule written against them, so they are deliberately unchanged. Read both as referring to whatever is reporting, which on the supported install is the sensor.</p>
             </div>
 
-            <h2>JSON Example</h2>
+            <h2 id="json-example">JSON Example</h2>
 
             <pre><code>{
   "version": "3.3",
@@ -232,9 +232,9 @@
   }
 }</code></pre>
 
-            <h2>Field Reference</h2>
+            <h2 id="field-reference">Field Reference</h2>
 
-            <h3>Top-Level</h3>
+            <h3 id="top-level">Top-Level</h3>
 
             <table>
                 <thead>
@@ -288,7 +288,7 @@
                 </tbody>
             </table>
 
-            <h3>pod</h3>
+            <h3 id="pod">pod</h3>
 
             <table>
                 <thead>
@@ -317,7 +317,7 @@
                 </tbody>
             </table>
 
-            <h3>response_chain</h3>
+            <h3 id="response-chain">response_chain</h3>
 
             <p>Array of response actions attempted, in order, with whether each succeeded and when it ran. This appears on the <code>pando.response</code> receipt rather than on the trip record, because the trip record is sealed before the chain resolves. Correlate the two by <code>trip_evidence_id</code>.</p>
 
@@ -344,7 +344,7 @@
                 </tbody>
             </table>
 
-            <h3>metadata</h3>
+            <h3 id="metadata">metadata</h3>
 
             <table>
                 <thead>
@@ -369,11 +369,11 @@
                 </tbody>
             </table>
 
-            <h3>Tamper-evident chain</h3>
+            <h3 id="tamper-evident-chain">Tamper-evident chain</h3>
 
             <p>Evidence records form a SHA-256 hash chain. Each record's <code>previous_hash</code> links to the prior record, producing an audit log that downstream consumers can verify for tampering.</p>
 
-            <h2>Slack Alerts</h2>
+            <h2 id="slack-alerts">Slack Alerts</h2>
 
             <p>When a Slack destination is configured on the controller and the workload's mode is <code>alert</code> or <code>isolate</code>, PandoCore sends formatted messages colour-coded by severity.</p>
 
@@ -404,12 +404,12 @@
                 </tbody>
             </table>
 
-            <h2>Kubernetes Events</h2>
+            <h2 id="kubernetes-events">Kubernetes Events</h2>
 
             <pre><code># View PandoCore events
 kubectl get events -n YOUR_NAMESPACE --field-selector reason=PandoCollapse</code></pre>
 
-            <h2>Next Steps</h2>
+            <h2 id="next-steps">Next Steps</h2>
 
             <ul role="list">
                 <li><a href="/docs/configuration">Configuration</a>: every chart value with defaults and ranges</li>

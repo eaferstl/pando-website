@@ -79,9 +79,9 @@
                     <li><a href="/docs/faq">FAQ</a></li>
                     <li><a href="/docs/webhook">Admission Webhook (deprecated)</a></li>
                 </ul>
-
-                <a href="https://portal.pandocore.io/signup" class="btn btn-primary docs-sidebar-cta">Start free</a>
             </details>
+
+            <a href="https://portal.pandocore.io/signup" class="btn btn-primary docs-sidebar-cta">Start free</a>
         </aside>
 
         <!-- Main Content -->
@@ -92,28 +92,28 @@
 
             <p>PandoCore is a runtime execution-integrity security system for Kubernetes. It watches your containerized workloads as they run and responds when behaviour diverges from what that workload established as normal, adding a layer of protection that operates during execution rather than before it.</p>
 
-            <h2>Start Here</h2>
+            <h2 id="start-here">Start Here</h2>
 
             <div class="docs-quick-links">
                 <a href="/docs/getting-started" class="docs-quick-link">
-                    <h3>Getting Started</h3>
+                    <h3 id="getting-started">Getting Started</h3>
                     <p>Two Helm charts, one sensor pod per node, nothing to label.</p>
                 </a>
                 <a href="/docs/configuration" class="docs-quick-link">
-                    <h3>Configuration</h3>
+                    <h3 id="configuration">Configuration</h3>
                     <p>Reference for the chart values and what each one changes.</p>
                 </a>
                 <a href="/docs/operating-modes" class="docs-quick-link">
-                    <h3>Operating Modes</h3>
+                    <h3 id="operating-modes">Operating Modes</h3>
                     <p>Monitor, alert and isolate, and what sets the ceiling.</p>
                 </a>
                 <a href="/docs/emergency" class="docs-quick-link">
-                    <h3>Emergency Procedures</h3>
+                    <h3 id="emergency-procedures">Emergency Procedures</h3>
                     <p>How to stop it quickly.</p>
                 </a>
             </div>
 
-            <h2>What PandoCore Does</h2>
+            <h2 id="what-pandocore-does">What PandoCore Does</h2>
 
             <p>PandoCore installs as a node sensor: one DaemonSet pod per node that watches the workloads already running there, opt-out. Nothing is injected into your pods. When behaviour diverges from a workload's profile, PandoCore can:</p>
 
@@ -126,7 +126,7 @@
 
             <p>Isolate is the ceiling of the supported install. See <a href="/docs/operating-modes">Operating Modes</a> for what sets it.</p>
 
-            <h2>Architecture Overview</h2>
+            <h2 id="architecture-overview">Architecture Overview</h2>
 
             <p>Two components, both cluster-wide, installed once:</p>
 
@@ -135,7 +135,7 @@
                 <p>The sensor runs as a <code>hostPID</code> DaemonSet and reads the node's process namespace, so it observes the workloads on its node without running inside any of them and without any change to your application. That topology is also a real privilege posture: see <a href="/docs/production-hardening">Production Hardening</a> for what it runs as, and <a href="https://trust.pandocore.io">the trust center</a> for what it is not granted.</p>
             </div>
 
-            <h3>Key Components</h3>
+            <h3 id="key-components">Key components</h3>
 
             <table>
                 <thead>
@@ -172,7 +172,7 @@
                 </tbody>
             </table>
 
-            <h2>How It Works</h2>
+            <h2 id="how-it-works">How It Works</h2>
 
             <ol role="list">
                 <li><strong>The sensor picks up the pod.</strong> No label, patch or restart is involved; a pod opts out with <code>pandocore.io/protect: "false"</code> rather than opting in</li>
@@ -181,7 +181,7 @@
                 <li><strong>Response.</strong> According to the workload's mode and the license ceiling: record it (monitor), notify (alert), or contain the pod with a NetworkPolicy (isolate)</li>
             </ol>
 
-            <h2>Integration With Your Stack</h2>
+            <h2 id="integration-with-your-stack">Integration With Your Stack</h2>
 
             <ul role="list">
                 <li><strong>Observability:</strong> Prometheus metrics, with alerting rules shipped in the chart</li>
@@ -200,7 +200,7 @@
                 <p>The node sensor has been validated across 3,966 engine-hours on GKE, cumulative rather than one unbroken run, against production-representative synthetic workloads, with zero false isolations from sensors that were permitted to isolate, 1,231 engine-hours of them on the exact build we ship. A zero is an upper bound rather than a rate: at most one false isolation in 1,324 engine-hours, at 95 percent confidence. See the <a href="/product#validation">full validation results</a>.</p>
             </div>
 
-            <h2>Requirements</h2>
+            <h2 id="requirements">Requirements</h2>
 
             <table>
                 <thead>
@@ -229,7 +229,7 @@
                 </tbody>
             </table>
 
-            <h2>Next Steps</h2>
+            <h2 id="next-steps">Next Steps</h2>
 
             <p>Start with the <a href="/docs/getting-started">Getting Started guide</a>.</p>
             <nav class="docs-pager" aria-label="Documentation pages">

@@ -22,18 +22,24 @@
 - No inline `style=` or `<style>` blocks in HTML. (The old `mobile-preview.html` exception is gone; the file was deleted 2026-11-02.)
 - `styles.css` is sectioned with `/* === ... === */` headers — add new rules to the matching section, don't append at the bottom.
 - Mobile-first. The intended breakpoints are 768px and 1024px, but the two sheets
-  actually carry ten. Counted 2026-11-07, with the three that were undocumented:
-  `styles.css` — 480, 560, 767, 768, 900, 999, 1023, 1024, 1230; `docs.css` — 600, 1023.
+  actually carry nine. Recounted 2026-11-08:
+  `styles.css` — 480, 560, 767, 768, 900, 999, 1023, 1024; `docs.css` — 600, 1023.
   999 collapses `.hero-split` to one column (below it the headline broke to four
-  lines with an orphan); 1230 collapses the product page's `.k8s-cluster-visual`
-  diagram; docs' 600 drops `.docs-quick-links` to one column and shrinks `pre`.
+  lines with an orphan); docs' 600 drops `.docs-quick-links` to one column and
+  shrinks `pre`. **1230 is gone.** It existed only to restack the product page's
+  `.k8s-cluster-visual` below the width its side-by-side row needed; that row is
+  now stacked by default, so the breakpoint had nothing to patch.
   Read the one you are editing before adding another. Two are load-bearing:
   - **1023px is coupled to JavaScript.** The nav drawer's media query
     (`@media (max-width: 1023px)` in `styles.css`) and `js/main.js`'s resize handler
     (`window.innerWidth > 1023`) must move together. If they disagree the drawer is
     stuck open, or cannot be closed, on every page. It is 1023 and not 767 because eight
     nav items need about 710px and the wrapper offers 735px at 1023px; below that,
-    items were rendering off-screen and unreachable.
+    items were rendering off-screen and unreachable. **Two JS call sites read
+    this number**: the nav drawer and `initializeDocsSidebar`. Both must move
+    together with the media query. `initializeDocsToc` used to be a third; it no
+    longer reads the width at all, because the "On this page" disclosure is now
+    closed at every width rather than open above 1023.
   - **480px is undocumented and was overriding a clamp.** Check whether a fluid value
     already covers the width before adding a fixed override inside it.
 
@@ -45,6 +51,8 @@
 # docs/ directory
 - `docs/*.html` is the **live documentation site**, 14 pages. Its technical content (install commands, chart values, CRD fields, troubleshooting) is written from the local `/Users/eaferstl/eliotIdeas/pandoCore/` tree, which is the source of truth. Verify a command or a value against the charts before publishing it; do not write one from a summary or from memory. There are no version annotations in these pages, and the old "currently v1.3.2" gate was retired on 2026-11-02 along with the sidecar-era content.
 - `docs/*.md` (DESIGN_SPECIFICATIONS, MESSAGING_GUIDELINES, IMPROVEMENTS, etc.) are **historical planning docs**. Ignore them; don't read them as guidance and don't update them.
+- **Every h2 and h3 in `docs/*.html` carries an id**, and `docs/search-index.json` is generated from them. If you add, rename, remove or reword a heading, run `node scripts/build-search-index.mjs` in the same change. `--check` exits 1 when the index is stale and names the drift. Nothing rebuilds it at deploy time, so a stale index silently tells readers an answer does not exist.
+- **The generator also carries a hand-maintained `KEYWORDS` map**, which exists because the four framework names appear nowhere in `docs/*.html` and readers search for them anyway. Editing that map requires the same rebuild as editing a heading. **Only map a keyword to a page that genuinely answers it.** A keyword pointed at a page that does not answer it recreates the defect the map was added to fix, which was a search confidently returning the wrong thing rather than nothing.
 
 # README
 - `README.md` was brought current on 2026-11-02. If you find outdated info while working, **fix the README as part of your change**.
@@ -56,4 +64,4 @@
 # Scope discipline
 - Do exactly what's asked. No bonus refactors, no new features, no "while I'm here" cleanup.
 - Default to no comments in HTML/CSS/JS. Only add a comment when the *why* is non-obvious.
-- The `pitch/` directory is out of scope — leave it alone unless asked.
+- `pitch/` was deleted on 2026-11-08. Cloudflare Pages serves whatever is committed, so its six investor-slide and QR files were publicly fetchable at `/pitch/*` although nothing linked to them. It is still in git history. Do not restore it to the deploy.

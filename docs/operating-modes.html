@@ -79,9 +79,9 @@
                     <li><a href="/docs/faq">FAQ</a></li>
                     <li><a href="/docs/webhook">Admission Webhook (deprecated)</a></li>
                 </ul>
-
-                <a href="https://portal.pandocore.io/signup" class="btn btn-primary docs-sidebar-cta">Start free</a>
             </details>
+
+            <a href="https://portal.pandocore.io/signup" class="btn btn-primary docs-sidebar-cta">Start free</a>
         </aside>
 
         <!-- Main Content -->
@@ -101,7 +101,7 @@
 
             <p>Two things decide where a given workload sits: the ceiling your license permits, and the mode you set beneath it. A mode can only narrow what the license allows, never widen it.</p>
 
-            <h2>What Sets The Ceiling</h2>
+            <h2 id="what-sets-the-ceiling">What Sets The Ceiling</h2>
 
             <p>The response ceiling is a license property rather than a chart value, which is why raising it changes nothing in your cluster.</p>
 
@@ -133,7 +133,7 @@
 
             <p>A free license never clamps, because there is no node cap for a clamp to be a function of. What Free does not get is containment, and that comes from the license ceiling applying equally on every node rather than from protection being withdrawn from some of them.</p>
 
-            <h2>Mode Comparison</h2>
+            <h2 id="mode-comparison">Mode Comparison</h2>
 
             <table>
                 <thead>
@@ -182,7 +182,7 @@
                 </tbody>
             </table>
 
-            <h2>Monitor Mode</h2>
+            <h2 id="monitor-mode">Monitor Mode</h2>
 
             <p>Monitor detects and records, and does nothing outward. It is the node-wide default for a pod carrying no mode annotation.</p>
 
@@ -205,7 +205,7 @@
   "action": "logged_only"
 }</code></pre>
 
-            <h2>Alert Mode</h2>
+            <h2 id="alert-mode">Alert Mode</h2>
 
             <p>Alert adds notification. On a detection, the controller delivers to whichever destinations you have configured, and the workload is left alone.</p>
 
@@ -221,7 +221,7 @@
                 <p>Alert does not need a webhook URL per workload. The controller owns every outbound destination, so SIEM, Slack and webhook delivery are configured once, and no workload pod holds a third-party credential. See <a href="/docs/controller">Controller</a>.</p>
             </div>
 
-            <h2>Isolate Mode</h2>
+            <h2 id="isolate-mode">Isolate Mode</h2>
 
             <p>Isolate is the top of the ladder on the supported install. On a trip, PandoCore writes a Kubernetes NetworkPolicy that denies the pod's egress except DNS, and removes it again if the behaviour subsides.</p>
 
@@ -248,7 +248,7 @@
                 <p>For the same reason ingress can be denied as well, so containment can be in both directions rather than egress-only. That half depends on your CNI permitting host-to-pod traffic regardless of policy, which Cilium and therefore GKE Dataplane V2 guarantee. On other CNIs, treat containment as egress-only.</p>
             </div>
 
-            <h2>Debug Mode</h2>
+            <h2 id="debug-mode">Debug Mode</h2>
 
             <p>Debug is verbose logging with no response, and sits outside the ladder at the same intensity as Monitor. Use it to understand why something did or did not fire, then set it back.</p>
 
@@ -257,7 +257,7 @@
                 <p>Debug is substantially more verbose than Monitor. Leave it on a single workload while you investigate rather than node-wide, and do not leave it on.</p>
             </div>
 
-            <h2>Setting A Workload's Mode</h2>
+            <h2 id="setting-a-workloads-mode">Setting A Workload's Mode</h2>
 
             <p>Mode is a per-pod annotation. The node-wide setting is the fallback an unannotated pod gets.</p>
 
@@ -273,7 +273,7 @@ kubectl rollout restart deployment/your-app</code></pre>
                 <p><strong>A value that does not match falls back</strong> to the node-wide default rather than leaving the pod unwatched, and the sensor warns naming the pod. Refusing to watch a workload over a typo would be the worse failure, but check for that warning after a change.</p>
             </div>
 
-            <h2>Reading The Current State</h2>
+            <h2 id="reading-the-current-state">Reading The Current State</h2>
 
             <p>Ask a sensor what it is actually doing. <code>/status</code> reports the license ceiling and any node clamp as separate lines.</p>
 
@@ -284,7 +284,7 @@ kubectl rollout restart deployment/your-app</code></pre>
                 <p>A clamp applies only on a signed verdict from the portal. A portal outage, an unresolved node identity, a cluster with no fresh presence map and an expired verdict all report <code>none</code>, and all of them mean this node is fully protected. An absent clamp is never a silent restriction.</p>
             </div>
 
-            <h2>Recommended Path</h2>
+            <h2 id="recommended-path">Recommended Path</h2>
 
             <ol role="list">
                 <li><strong>Install on a free license, fleet-wide.</strong> The ceiling is Alert, so it detects and tells you, and contains nothing. There is no trial to remember to leave and no mode to set.</li>
@@ -294,7 +294,7 @@ kubectl rollout restart deployment/your-app</code></pre>
 
             <p>There is no fixed number of weeks here. The old advice to spend a week in each rung existed because the evaluation period was a mode you had to remember to leave; it is now simply the free tier, and you leave it when the evidence says so.</p>
 
-            <h2>Metrics</h2>
+            <h2 id="metrics">Metrics</h2>
 
             <pre><code># Current operating mode (0=monitor, 1=alert, 2=isolate, 4=debug)
 pando_operating_mode{pod="your-pod"} 2
@@ -305,7 +305,7 @@ pando_mode_ceiling 2
 # Isolation policies successfully applied
 pando_isolations_total{pod="your-pod"} 2</code></pre>
 
-            <h2>HTTP Endpoints</h2>
+            <h2 id="http-endpoints">HTTP Endpoints</h2>
 
             <p>The sensor serves four endpoints on port 9090.</p>
 
@@ -343,7 +343,7 @@ pando_isolations_total{pod="your-pod"} 2</code></pre>
 
             <p>There is no re-learning endpoint on the sensor. One sensor holds an engine per watched pod on its node, so a single node-wide rebuild is not a meaningful operation; a workload re-profiles when its pods restart.</p>
 
-            <h2>Next Steps</h2>
+            <h2 id="next-steps">Next Steps</h2>
 
             <ul role="list">
                 <li><a href="/docs/configuration">Configuration Reference</a>: every chart value with defaults and ranges</li>

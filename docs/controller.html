@@ -79,9 +79,9 @@
                     <li><a href="/docs/faq">FAQ</a></li>
                     <li><a href="/docs/webhook">Admission Webhook (deprecated)</a></li>
                 </ul>
-
-                <a href="https://portal.pandocore.io/signup" class="btn btn-primary docs-sidebar-cta">Start free</a>
             </details>
+
+            <a href="https://portal.pandocore.io/signup" class="btn btn-primary docs-sidebar-cta">Start free</a>
         </aside>
 
         <!-- Main Content -->
@@ -104,7 +104,7 @@
                 <p>The controller is its own Helm chart and the node sensor chart does not install it. Install the controller first: the sensor mounts its client certificate Secret with <code>optional: false</code>, so a sensor installed without a controller fails to start rather than running with nowhere to send evidence. See <a href="/docs/getting-started">Getting Started</a> for the order.</p>
             </div>
 
-            <h2>Install</h2>
+            <h2 id="install">Install</h2>
 
             <pre><code>helm install pando-controller \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-controller \
@@ -116,7 +116,7 @@
 
             <p><code>license.key</code> is required unless you set <code>license.existingSecret.name</code> instead. <code>portalURL</code> is also required, and already carries the right default.</p>
 
-            <h2>How Sensors Find It</h2>
+            <h2 id="how-sensors-find-it">How Sensors Find It</h2>
 
             <p>Nothing to wire by hand. The sensor composes the controller's evidence URL from the <code>controller.*</code> values in its own chart, which default to the service name, namespace and port this chart publishes, so the two agree out of the box.</p>
 
@@ -124,7 +124,7 @@
 
             <p>The client certificate Secret, <code>pando-controller-client-tls</code>, is mounted by the sensor chart in <code>pando-system</code>. There is nothing to mirror into your workload namespaces, because nothing of PandoCore's runs there.</p>
 
-            <h2>Ports</h2>
+            <h2 id="ports">Ports</h2>
 
             <table>
                 <thead>
@@ -148,7 +148,7 @@
                 </tbody>
             </table>
 
-            <h2>Security Posture</h2>
+            <h2 id="security-posture">Security Posture</h2>
 
             <p>The controller runs unprivileged and holds no Kubernetes API access at all:</p>
 
@@ -158,7 +158,7 @@
                 <li>Its ServiceAccount is deliberately bound to no Role and no ClusterRole. The controller reads a file and answers a socket; it never calls the API server</li>
             </ul>
 
-            <h2>The Spool</h2>
+            <h2 id="the-spool">The Spool</h2>
 
             <p>Each replica gets a PersistentVolumeClaim, <code>2Gi</code> by default. The default is 2 replicas, so that is two cluster-level volumes, not one per protected pod. It does not grow with the fleet.</p>
 
@@ -169,13 +169,13 @@
                 <p>A spooled record is unlinked once every configured destination confirms it. The controller guarantees that accepted evidence is not lost in transit; it does not retain evidence for you. For retention, deliver to a SIEM or the portal and apply your retention policy there.</p>
             </div>
 
-            <h2>Per-Namespace Destinations</h2>
+            <h2 id="per-namespace-destinations">Per-Namespace Destinations</h2>
 
             <p>When <code>destinations.enabled</code> is set, the controller mounts a Secret written by the destinations mirror and re-reads it every 30 seconds. The mirror is an unprivileged Deployment installed by the sensor chart, and it exists for a privilege reason: resolving a policy's <code>secretRef</code> needs cluster-wide <code>secrets get</code>, and that grant must not sit on a <code>hostPID</code> pod running as uid 0 on every node. One replica holds it instead.</p>
 
             <p>If <code>mirror.enabled=false</code> on the sensor chart, nothing writes that Secret: the mount is empty, the controller logs it once, and each namespace falls back to the portal and the environment baseline. The mount is optional by design so the controller still starts, which means per-namespace integrations declared in a policy fail quietly rather than loudly. Check the controller's log line if a policy's destination seems to do nothing.</p>
 
-            <h2>Next Steps</h2>
+            <h2 id="next-steps">Next Steps</h2>
 
             <ul role="list">
                 <li><a href="/docs/evidence-format">Evidence Format</a>: the record schema the controller receives and forwards</li>

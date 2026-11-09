@@ -41,13 +41,16 @@ pandoWebsite/
 │   └── index.html          # Trust Center (served at trust.pandocore.io)
 ├── docs/
 │   ├── index.html          # Documentation site (14 pages, all *.html, prev/next paged)
+│   ├── search-index.json   # Generated. Run scripts/build-search-index.mjs after editing docs
 │   └── *.md                # Historical planning docs; see Documentation below
 ├── css/
 │   ├── styles.css          # Main stylesheet
 │   ├── docs.css            # Documentation site styles
 │   └── noscript.css        # Loaded only from <noscript>: static nav fallback
 ├── js/
-│   └── main.js             # Mobile nav, blog index rendering, contact form
+│   └── main.js             # Mobile nav, blog index rendering, docs search, contact form
+├── scripts/
+│   └── build-search-index.mjs  # Regenerates docs/search-index.json; --check fails if stale
 ├── images/
 │   ├── blog/               # Blog cover art: an .svg for the page, a .png for og:image
 │   ├── logo-nav.png        # 92x120 nav logo on every page (2x its 46x60 slot)
@@ -56,6 +59,7 @@ pandoWebsite/
 │   ├── founder.jpg         # About page portrait
 │   └── favicon.png         # 64x64; it was a 512x512 at 221 KB on all 29 pages
 ├── sitemap.xml             # Generated from each page's canonical URL
+├── robots.txt              # Crawl policy; points crawlers at sitemap.xml
 ├── _headers                # Cloudflare Pages header rules
 ├── CLAUDE.md               # Working rules for this repository
 ├── PRODUCT.md              # Audience, positioning, copy constraints
@@ -173,7 +177,23 @@ Two different things live under `docs/`, and the distinction matters:
 
 - **`docs/*.html` is the live documentation site.** Fourteen pages, served at
   `pandocore.io/docs/`, linked from every page's navigation. Edit these when the product
-  changes.
+  changes. **After editing one, regenerate the search index:**
+
+  ```bash
+  node scripts/build-search-index.mjs            # rewrite docs/search-index.json
+  node scripts/build-search-index.mjs --check    # exits 1 if the index is stale
+  ```
+
+  The index is generated and committed. Nothing runs at deploy time, so a forgotten
+  rebuild means the search quietly tells readers an answer does not exist. `--check`
+  prints which headings drifted; run it before committing a docs change.
+
+  The generator also holds a hand-maintained `KEYWORDS` map. It exists because the
+  four compliance framework names appear nowhere in `docs/*.html` and readers search
+  for them anyway, so each keyworded page gets one synthetic record whose text is the
+  keywords and whose displayed heading is the page's real `h1`. Keywords are matched
+  against and never shown. Editing the map needs the same rebuild as editing a
+  heading, and a keyword should only point at a page that genuinely answers it.
 - **`docs/*.md` are historical planning documents** (`FILE_STRUCTURE.md`,
   `CONTENT_REQUIREMENTS.md`, `MESSAGING_GUIDELINES.md`, `DESIGN_SPECIFICATIONS.md`,
   `DEPLOYMENT.md`, `EMAILJS_SETUP.md`, `IMPROVEMENTS.md`,

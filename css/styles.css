@@ -166,6 +166,13 @@
     --radius-circle: 50%;
     --border-radius: var(--radius-sm);
 
+    /* Clearance for the sticky banner: its tallest rendered height, 96px at
+       390 and 76px from 768 up, plus --spacing-sm of air. Consumed by
+       scroll-padding-top, so an anchor never lands under the nav, and by the
+       docs sidebar's own sticky offset, for the same reason. The sheet's
+       previous 100px left a heading 4px clear of the nav at 390. */
+    --nav-offset: calc(96px + var(--spacing-sm));
+
     /* Layering. Only six declarations in this sheet are genuine layers; the
        many bare `z-index: 1` uses lift content over a ::before wash and are
        deliberately left alone. --z-skip-link must stay above --z-nav or the
@@ -200,7 +207,7 @@
 html {
     font-size: var(--font-size-base);
     scroll-behavior: smooth;
-    scroll-padding-top: 100px;
+    scroll-padding-top: var(--nav-offset);
 }
 
 body {
@@ -228,8 +235,14 @@ h1 {
     font-weight: 700;
 }
 
+/* One size, declared once. This was 1.75rem here, --text-2xl from 768 up and
+   --text-xl at 480 and below. The 480 step only reached the h2s with no
+   section rule of their own, so at 390 index.html drew three section headings
+   at 32px and two at 24px. Both breakpoint overrides are gone, and the four
+   section rules that pinned --text-2xl alongside their spine alignment no
+   longer set a size at all. */
 h2 {
-    font-size: 1.75rem;
+    font-size: var(--text-2xl);
     font-weight: 700;
 }
 
@@ -319,13 +332,24 @@ ul {
    Navigation
    =================================== */
 
+/* The banner carries the sticky, not .navbar. On .navbar it was inert: this
+   <header> wraps the navbar and nothing else, so the containing block was
+   exactly the navbar's own height and a sticky box had nowhere to travel. The
+   nav scrolled away on all 29 pages that have one, while this sheet's own
+   comments assumed it stayed, --z-skip-link above --z-nav "or the skip link
+   paints behind the sticky navbar" among them. The drawer and its scrim are
+   position: fixed inside .navbar, and sticky creates the stacking context
+   either way, so their layering is unchanged. */
+header {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-nav);
+}
+
 .navbar {
     background-color: var(--black-forest);
     padding: var(--spacing-xs) 0;
     box-shadow: 0 2px 8px rgb(var(--neutral-rgb) / 0.1);
-    position: sticky;
-    top: 0;
-    z-index: var(--z-nav);
 }
 
 .nav-wrapper {
@@ -766,7 +790,6 @@ ul {
     stroke-width: 1;
 }
 
-
 .grove-node {
     transform-box: fill-box;
     transform-origin: center;
@@ -878,6 +901,49 @@ ul {
     .hero-content-left {
         padding-right: 0;
     }
+}
+
+/* The way into a long page. #compliance and #validation have had ids for some
+   time with nothing on the page pointing at them, and /product runs to about
+   13,000px at 390. Centred, because it reads as the closing line of the centred
+   hero band above rather than as the opening line of the content column, which
+   starts at the section below. Same ground as the hero and as the alt-bg
+   section under it, so the three read as one band.
+
+   The hero's own padding is left alone, so the wave band closes the hero and
+   this strip starts after it. */
+.page-toc {
+    background: var(--floral-white);
+    padding-bottom: var(--spacing-xl);
+}
+
+.page-toc ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--spacing-xs) var(--spacing-sm);
+}
+
+/* Padded to a 44px target rather than left as a text box: these are navigation
+   links, so WCAG 2.5.8's inline-text exception does not cover them. */
+.page-toc a {
+    display: inline-block;
+    padding: 11px var(--spacing-sm);
+    border: 1px solid rgb(var(--forest-rgb) / 0.25);
+    border-radius: var(--radius-pill);
+    color: var(--coffee-bean);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+}
+
+.page-toc a:hover {
+    background-color: var(--black-forest);
+    color: var(--floral-white);
 }
 
 /* ===================================
@@ -1045,11 +1111,6 @@ ul {
     color: var(--charcoal);
 }
 
-.cta-center {
-    text-align: center;
-    margin-top: var(--spacing-md);
-}
-
 .check-row {
     display: flex;
     align-items: flex-start;
@@ -1106,7 +1167,6 @@ ul {
     max-width: var(--content-max-width);
     margin-left: auto;
     margin-right: auto;
-    font-size: var(--text-2xl);
     margin-bottom: var(--spacing-xl);
     color: var(--black-forest);
     position: relative;
@@ -1157,8 +1217,9 @@ ul {
 }
 
 /* ===================================
-   Feature Rows: alternating side-by-side content
-   LIVE: index.html, product.html, about.html. Not an unused alternative.
+   Feature Rows
+   LIVE: index.html only, and one column now. product.html's rows went with the
+   Security Principles section on 2026-11-08; about.html has none.
    =================================== */
 
 .feature-rows {
@@ -1168,23 +1229,23 @@ ul {
     z-index: 1;
 }
 
-/* A narrative row with no mark runs the full measure. index.html's three marks
-   were removed on 2026-11-06: the first rendered as a bold X directly beside the
-   words "An answer for the questionnaire", and its siblings were a classical
-   bank and a padlock, which is the exact security-vendor vocabulary DESIGN.md
-   rejects. DESIGN.md already prescribes typographic rows for narrative sections.
-   product.html and about.html keep their own marks, so the default below stays
-   two-column rather than being changed out from under them. */
-.feature-row:not(:has(.feature-visual)) {
-    grid-template-columns: minmax(0, 1fr);
-}
+/* One column, and no longer a default with an escape hatch. index.html's three
+   marks were removed on 2026-11-06 as the security-vendor vocabulary DESIGN.md
+   rejects, and the rule kept a two-column default for product.html and
+   about.html, which were said to keep theirs. Neither does now: product's went
+   with the Security Principles section and about.html never had any, so
+   .feature-visual appears in no HTML file and index.html holds the only three
+   .feature-row elements on the site. The icon column was also the second text
+   left edge on this page, pushing every h3 and p 112px right of the column the
+   section title sits on.
 
+   The rule this replaces was `.feature-row:not(:has(.feature-visual))`, which
+   is worth remembering: a dead class inside `:not(:has())` makes a selector
+   match MORE, not less, so a sweep that treats "mentions a dead class" as
+   "is dead" deletes exactly the rule that was keeping the page right. */
 .feature-row {
     display: grid;
-    /* `auto` sizes the icon column to the 80px glyph. It was `1fr`, which gave
-       each icon a 492px track and left about 412px of it empty, so three small
-       marks read as three large tiles adrift in the band. */
-    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--spacing-lg);
     /* Top, not centre: centred, the mark floated level with the middle of the
        body copy and left the heading with nothing beside it. */
@@ -1200,8 +1261,10 @@ ul {
     margin-bottom: 0;
 }
 
+/* --text-xl, so h2 to h3 is 32/24 = 1.33 rather than 32/28 = 1.14, which sat
+   under the 1.25 modular floor. 1.75rem was also not a value on the scale. */
 .feature-content h3 {
-    font-size: 1.75rem;
+    font-size: var(--text-xl);
     font-weight: 700;
     color: var(--black-forest);
     margin-bottom: var(--spacing-md);
@@ -1213,13 +1276,6 @@ ul {
     line-height: 1.7;
     color: var(--coffee-bean);
     margin-bottom: 0;
-}
-
-.feature-visual {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
 }
 
 /* `.feature-content p` (0,1,1) outranked the bare `.feature-quote` (0,1,0) and
@@ -1243,51 +1299,20 @@ ul {
 }
 
 /* ===================================
-   Icon System: card, inline, tool and container icon sizing
-   LIVE sitewide. This is the site's entire icon system. Not an alternative.
+   Icon System
+   LIVE: .inline-icon, which is what the system is down to. The card, tool and
+   container icon rules went with the markup that used them.
    =================================== */
-
-.card-icon {
-    margin-bottom: var(--spacing-md);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.card-icon svg {
-    width: 80px;
-    height: 80px;
-}
-
-.icon-bg {
-    fill: var(--black-forest);
-    opacity: 0.95;
-}
-
-.icon-shape {
-    fill: var(--floral-white);
-}
 
 /* The feature rows drop the filled tile and let the mark carry itself. Three
    identical dark rounded squares in a column is the icon-tile trio brand.md
    bans; the rest of the site's icon system is unchanged. The stroke is set
    because the row-1 glyph hardcodes `stroke="white"` as a presentation
    attribute, which is invisible once the tile behind it is gone. */
-.feature-row .icon-bg {
-    fill: none;
-}
-
-.feature-row .icon-shape {
-    fill: var(--black-forest);
-    stroke: var(--black-forest);
-}
 
 /* The validation-row glyph is a stroked check rather than a filled path, so it
    takes the stroke without the fill. Until it carried .icon-shape at all it
    kept a hardcoded floral-white stroke and rendered invisible on white. */
-.feature-row polyline.icon-shape {
-    fill: none;
-}
 
 /* Inline Icons - Professional icon style for inline use */
 .inline-icon {
@@ -1298,92 +1323,31 @@ ul {
     flex-shrink: 0;
 }
 
-.inline-icon-sm {
-    width: 20px;
-    height: 20px;
-    display: inline-block;
-    vertical-align: middle;
-    flex-shrink: 0;
-}/* Protection and benefit item icons */
-.protection-icon,
-.benefit-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
+/* Protection and benefit item icons */
 
 /* Container icon sizing */
-.container-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.container-icon .inline-icon {
-    width: 24px;
-    height: 24px;
-}
 
 /* ===================================
-   Timeline / Process Flow
-   LIVE: about.html. Not an unused alternative.
+   Product Page Diagram
+   The cluster diagram on /product, plus .stack-summary and .k8s-icon, which
+   the node diagram shared before it was removed.
+
+   This was quarantined pending the node-sensor rewrite: the
+   pandocore.io/protect label inverting from opt-in to opt-out meant the
+   "unprotected pod, no label" case the diagram was built around no longer
+   existed. That rewrite has landed. The pod shape carries a state tag instead
+   of a second container, the destinations stack beneath the cluster box, and
+   the 1230px breakpoint that patched the old side-by-side row is gone. The
+   quarantine is lifted.
    =================================== */
-
-
-/* ===================================
-   QUARANTINED, PENDING REWRITE: product.html diagram CSS
-   The three sections from here to the end of "Cluster-level K8s Visual"
-   style product.html's hand-authored diagrams. Those diagrams are being
-   rewritten for the node sensor: the pandocore.io/protect label inverted
-   from opt-in to opt-out, so the "unprotected pod, no label" case the
-   cluster diagram is built around no longer exists.
-   Do not tokenise, restyle or delete in here. New markup and new CSS land
-   together, or the work is done twice and conflicts.
-   =================================== */
-
-/* ===================================
-   Security Stack Visual (Product Page Integration)
-   Unique layered diagram showing how PandoCore fits
-   =================================== */
-
 
 /* Stack Summary */
 .stack-summary {
     text-align: left;
     margin-top: var(--spacing-xl);
-    font-size: 1.05rem;
+    font-size: var(--text-md);
     color: var(--coffee-bean);
-    opacity: 0.9;
     max-width: 100%;
-}
-
-/* ===================================
-   K8s Node Agent Visual
-   Node-level view: workloads observed by the PandoCore agent
-   =================================== */
-
-.k8s-pod-visual {
-    position: relative;
-    z-index: 1;
-    margin-bottom: var(--spacing-xl);
-}
-
-.pod-container {
-    background: linear-gradient(135deg, var(--floral-white) 0%, var(--azure-mist) 100%);
-    border: 3px dashed var(--black-forest);
-    border-radius: 16px;
-    padding: var(--spacing-lg);
-    position: relative;
-}
-
-.pod-header {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    margin-bottom: var(--spacing-lg);
-    padding-bottom: var(--spacing-md);
-    border-bottom: 1px solid rgba(0, 28, 6, 0.15);
 }
 
 .k8s-icon {
@@ -1392,112 +1356,7 @@ ul {
     color: var(--black-forest);
 }
 
-.pod-label {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--black-forest);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.pod-contents {
-    display: flex;
-    align-items: stretch;
-    gap: var(--spacing-md);
-    justify-content: center;
-}
-
-.container-box {
-    flex: 1;
-    max-width: 320px;
-    background: var(--white);
-    border-radius: 12px;
-    border: 2px solid rgba(0, 28, 6, 0.2);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    transition: all 0.3s ease;
-}
-
-.container-box:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 28, 6, 0.15);
-}
-
-.container-header {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    padding: var(--spacing-sm) var(--spacing-md);
-    background: var(--floral-white);
-    border-bottom: 1px solid rgba(0, 28, 6, 0.1);
-}
-
-.container-icon {
-    font-size: 1.25rem;
-}
-
-.container-title {
-    font-weight: 600;
-    font-size: 0.95rem;
-    color: var(--coffee-bean);
-}
-
-.container-body {
-    padding: var(--spacing-md);
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.container-footer {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    padding: var(--spacing-sm) var(--spacing-md);
-    background: rgba(0, 28, 6, 0.03);
-    font-size: 0.85rem;
-    color: var(--coffee-bean);
-}
-
 /* App Container Specifics */
-.code-block {
-    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
-    font-size: 0.8rem;
-    background: rgba(31, 17, 2, 0.05);
-    padding: var(--spacing-sm);
-    border-radius: 6px;
-    width: 100%;
-}
-
-.code-comment {
-    display: block;
-    color: var(--muted-ink);
-    font-style: italic;
-    margin-bottom: 4px;
-}
-
-.code-line {
-    display: block;
-    color: var(--black-forest);
-    padding: 2px 0;
-}
-
-.status-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    animation: pulse-status 2s ease-in-out infinite;
-}
-
-.status-dot.running {
-    background: var(--success-green);
-}
-
-.status-dot.protected {
-    background: var(--black-forest);
-}
 
 @keyframes pulse-status {
     0%, 100% { opacity: 1; }
@@ -1505,224 +1364,27 @@ ul {
 }
 
 /* Sidecar Container Specifics */
-.agent-container {
-    border-color: var(--black-forest);
-    border-width: 3px;
-}
-
-.agent-header {
-    background: var(--black-forest);
-    flex-wrap: wrap;
-}
-
-.agent-header .container-icon,
-.agent-header .container-title {
-    color: var(--white);
-}
-
-.agent-body {
-    background: rgba(0, 28, 6, 0.02);
-}
-
-.protection-features {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-sm);
-    width: 100%;
-}
-
-.protection-item {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-xs) var(--spacing-sm);
-    background: rgba(0, 28, 6, 0.05);
-    border-radius: 6px;
-    font-size: 0.85rem;
-    color: var(--coffee-bean);
-    transition: all 0.2s ease;
-}
-
-.protection-item:hover {
-    background: rgba(0, 28, 6, 0.1);
-    transform: translateX(4px);
-}
-
-.protection-icon {
-    font-size: 1rem;
-}
-
-.agent-footer {
-    background: rgba(0, 28, 6, 0.08);
-}
 
 /* Shared Namespace Arrow */
-.shared-namespace {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 0 var(--spacing-sm);
-    min-width: 80px;
-}
-
-.namespace-arrow {
-    width: 60px;
-    height: 100px;
-}
-
-.namespace-arrow svg {
-    width: 100%;
-    height: 100%;
-}
-
-.namespace-label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--coffee-bean);
-    text-align: center;
-    opacity: 0.7;
-    line-height: 1.3;
-}
 
 /* Pod Benefits */
-.pod-benefits {
-    display: flex;
-    justify-content: center;
-    gap: var(--spacing-lg);
-    margin-top: var(--spacing-lg);
-    padding-top: var(--spacing-md);
-    border-top: 1px solid rgba(0, 28, 6, 0.15);
-    flex-wrap: wrap;
-}
-
-.benefit-item {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-xs);
-    font-size: 0.85rem;
-    color: var(--coffee-bean);
-    font-weight: 500;
-}
-
-.benefit-icon {
-    font-size: 1rem;
-}/* Mobile Responsive for Security Stack */
-@media (max-width: 767px) {    
-    .layer-bar {
-        padding: var(--spacing-sm) var(--spacing-md);
-    }
-    
-    .layer-bar.highlight-bar {
-        padding: var(--spacing-md);
-        flex-wrap: wrap;
-    }
-    
-    .new-badge {
-        margin-left: 0;
-        margin-top: var(--spacing-xs);
-    }
-    
-    .infra-options {
-        gap: var(--spacing-xs);
-    }
-    
-    .infra-badge {
-        padding: 6px 12px;
-        font-size: 0.8rem;
-    }
-    
-    /* K8s Pod Visual - Mobile */
-    .pod-contents {
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .container-box {
-        max-width: 100%;
-        width: 100%;
-    }
-    
-    .shared-namespace {
-        flex-direction: row;
-        padding: var(--spacing-sm) 0;
-        min-width: auto;
-        width: 100%;
-        justify-content: center;
-    }
-    
-    .namespace-arrow {
-        width: 100px;
-        height: 60px;
-        transform: rotate(90deg);
-    }
-    
-    .namespace-label {
-        white-space: nowrap;
-    }
-    
-    .pod-benefits {
-        gap: var(--spacing-sm);
-    }
-    
-    .benefit-item {
-        font-size: 0.8rem;
-    }
-}
-
-@media (max-width: 480px) {
-    
-    /* K8s Pod Visual - Small Mobile */
-    .pod-container {
-        padding: var(--spacing-md);
-    }
-    
-    .pod-header {
-        flex-wrap: wrap;
-    }
-    
-    .pod-label {
-        font-size: 0.95rem;
-    }
-    
-    .container-header {
-        padding: var(--spacing-xs) var(--spacing-sm);
-    }
-    
-    .container-title {
-        font-size: 0.85rem;
-    }
-    
-    .code-block {
-        font-size: 0.7rem;
-    }
-    
-    .protection-item {
-        font-size: 0.8rem;
-    }
-    
-    .pod-benefits {
-        flex-direction: column;
-        align-items: center;
-        gap: var(--spacing-xs);
-    }}
-
-/* ===================================
-   Cluster-level K8s Visual
-   Wide shot showing namespaces, labeled/unlabeled pods, and portal
-   =================================== */
 
 .k8s-cluster-visual {
     position: relative;
     z-index: 1;
     display: flex;
+    /* Column, with the destinations restacked beneath the cluster box. As a
+       row, .cluster-container | .cluster-egress | .external-destinations needed
+       1015px, which is the arithmetic that produced the clipping at 901 to
+       1230 and the breakpoint that patched it. Stacked, the three cards share
+       the content column and nothing in this section wants a wide viewport. */
+    flex-direction: column;
     align-items: stretch;
     gap: var(--spacing-md);
     margin-bottom: var(--spacing-lg);
 }
 
 .cluster-container {
-    flex: 1;
     min-width: 0;
     background: linear-gradient(135deg, var(--floral-white) 0%, var(--azure-mist) 100%);
     border: 3px dashed var(--black-forest);
@@ -1743,7 +1405,7 @@ ul {
 }
 
 .cluster-label {
-    font-size: 1.1rem;
+    font-size: var(--text-md);
     font-weight: 700;
     color: var(--black-forest);
     text-transform: uppercase;
@@ -1801,14 +1463,15 @@ ul {
 }
 
 .ns-name {
-    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
-    font-size: 0.85rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
     font-weight: 700;
     color: var(--black-forest);
 }
 
-.ns-tag {
-    font-size: 0.65rem;
+.ns-tag,
+.mini-pod-state {
+    font-size: var(--text-2xs);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -1845,13 +1508,13 @@ ul {
 }
 
 .system-pod-title {
-    font-size: 0.85rem;
+    font-size: var(--text-xs);
     font-weight: 600;
     color: var(--black-forest);
 }
 
 .system-pod-sub {
-    font-size: 0.7rem;
+    font-size: var(--text-2xs);
     color: var(--coffee-bean);
     opacity: 0.7;
 }
@@ -1877,8 +1540,8 @@ ul {
 }
 
 .mini-pod-label {
-    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
-    font-size: 0.65rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-2xs);
     color: var(--black-forest);
     background: rgba(223, 159, 21, 0.2);
     border-radius: 4px;
@@ -1888,6 +1551,9 @@ ul {
 }
 
 .mini-pod-label.dim {
+    /* "no label needed" is prose, not a selector, so it drops the mono the
+       base chip earns by carrying pandocore.io/protect=false. */
+    font-family: var(--font-family);
     background: rgba(0, 28, 6, 0.06);
     color: var(--coffee-bean);
     opacity: 0.65;
@@ -1902,7 +1568,7 @@ ul {
 .mini-container {
     flex: 1;
     text-align: center;
-    font-size: 0.75rem;
+    font-size: var(--text-2xs);
     font-weight: 600;
     padding: 4px 6px;
     border-radius: 4px;
@@ -1913,9 +1579,16 @@ ul {
     color: var(--black-forest);
 }
 
-.mini-container.mini-watched {
-    background: var(--black-forest);
-    color: var(--floral-white);
+/* The pod carries its own watched state, as a tag, the way .ns-tag marks a
+   namespace. It was a second .mini-container beside App, which drew two equal
+   containers inside one pod outline while the opted-out pod drew one: a picture
+   of an injected container, on the page whose intro says nothing is injected.
+   The HTML had already moved to node-sensor language; this had not. */
+.mini-pod-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
 }
 
 .ns-empty {
@@ -1927,40 +1600,46 @@ ul {
 }
 
 .cluster-egress {
-    flex: 0 0 90px;
-    align-self: center;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 2px;
+    justify-content: center;
+    gap: var(--spacing-xs);
 }
 
 .egress-arrow {
-    width: 80px;
-    height: 20px;
+    width: 20px;
+    height: 44px;
     display: block;
 }
 
 .egress-label {
-    font-size: 0.7rem;
+    font-size: var(--text-2xs);
     font-weight: 600;
-    color: var(--coffee-bean);
+    /* A colour, not an opacity: this label sat at 0.75 on the text element. */
+    color: var(--muted-ink);
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    opacity: 0.75;
 }
 
 .external-destinations {
-    flex: 0 0 200px;
-    align-self: center;
     display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xs);
+    gap: var(--spacing-md);
+}
+
+/* One column on a phone, like every other grid in this section. */
+@media (max-width: 767px) {
+    .external-destinations {
+        flex-direction: column;
+        gap: var(--spacing-xs);
+    }
 }
 
 .destination-card {
+    /* Equal thirds of the content column rather than a fixed 200px side rail. */
+    flex: 1 1 0;
     background: var(--white);
-    border: 2px solid rgba(0, 28, 6, 0.2);
+    /* Was a raw rgba(0, 28, 6, 0.2); --forest-rgb is the same colour as a token. */
+    border: 2px solid rgb(var(--forest-rgb) / 0.2);
     border-radius: 10px;
     padding: 10px 12px;
     display: flex;
@@ -1995,8 +1674,7 @@ ul {
 }
 
 .dest-title {
-    font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
-    font-size: 0.78rem;
+    font-size: var(--text-2xs);
     font-weight: 700;
     color: var(--black-forest);
     white-space: nowrap;
@@ -2005,13 +1683,13 @@ ul {
 }
 
 .dest-sub {
-    font-size: 0.68rem;
+    font-size: var(--text-2xs);
     color: var(--coffee-bean);
     opacity: 0.7;
 }
 
 .dest-optional {
-    font-size: 0.6rem;
+    font-size: var(--text-2xs);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
@@ -2054,57 +1732,13 @@ ul {
     border-radius: 50%;
     background: var(--black-forest);
     color: var(--floral-white);
-    font-size: 0.8rem;
+    font-size: var(--text-xs);
     font-weight: 700;
     display: inline-flex;
     align-items: center;
     justify-content: center;
 }
 
-.zoom-heading {
-    text-align: center;
-    color: var(--black-forest);
-    font-size: var(--text-base);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: var(--spacing-md);
-    opacity: 0.75;
-}
-
-/* The side-by-side layout needs 1230px, not 900. .cluster-container's content
-   floor is 1015px and .external-destinations is a fixed 200px track, so between
-   901 and 1229 the row overflowed its wrapper and .content-section's
-   overflow-x: hidden swallowed the remainder - up to 164px of the destination
-   cards at 901px, with no scrollbar to reveal them. Measured fit point is 1230. */
-@media (max-width: 1230px) {
-    .k8s-cluster-visual {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .cluster-egress {
-        flex: 0 0 auto;
-        width: 100%;
-        flex-direction: row;
-        gap: var(--spacing-xs);
-        justify-content: center;
-    }
-
-    .egress-arrow {
-        display: none;
-    }
-
-    .egress-label::after {
-        content: " \2193";
-    }
-
-    .external-destinations {
-        flex: 0 0 auto;
-        align-self: center;
-        width: 100%;
-        max-width: 320px;
-    }
-}
 
 /* Mobile: collapse the namespace grid and the callout row */
 @media (max-width: 900px) {
@@ -2117,14 +1751,14 @@ ul {
     }
 }
 
-/* === END QUARANTINE: product.html diagram CSS === */
-
 /* ===================================
-   Split Focus Cards
-   LIVE: product.html (.split-focus/.focus-card), index.html (.focus-list).
-   Not an unused alternative.
+   Focus List
+   LIVE: index.html (.focus-list), inside the pilot band. The split-focus and
+   focus-card rules this section was named for went with the rest of the dead
+   selectors; no markup has carried those classes since it moved to
+   .feature-row. Names left unprefixed here so a grep for a selector does not
+   match this comment.
    =================================== */
-
 
 .focus-list {
     list-style: none;
@@ -2246,7 +1880,6 @@ ul {
     max-width: var(--content-max-width);
     margin-left: auto;
     margin-right: auto;
-    font-size: var(--text-2xl);
     margin-bottom: var(--spacing-md);
     color: var(--black-forest);
     position: relative;
@@ -2271,7 +1904,6 @@ ul {
     max-width: var(--content-max-width);
     margin-left: auto;
     margin-right: auto;
-    font-size: var(--text-2xl);
     margin-bottom: var(--spacing-lg);
     color: var(--black-forest);
     position: relative;
@@ -2302,8 +1934,12 @@ ul {
    on purpose: `.vision-content p` is (0,2,0) and beats a bare class on
    font-size and margin. The qualifier stays attached to the figure; it is what
    makes the zero true, so never split them. */
+/* Level with a section subheading rather than two steps below it. This is the
+   page's strongest claim and it rendered at --text-lg, the same 20px as a
+   .problem-item h3, against .feature-content h3 at 28px. Its own band holds no
+   h3, so at --text-xl it is the largest text in the band after the heading. */
 .vision-content .proof-claim {
-    font-size: var(--text-lg);
+    font-size: var(--text-xl);
     font-weight: 700;
     color: var(--black-forest);
     text-wrap: balance;
@@ -2393,7 +2029,6 @@ ul {
     max-width: var(--content-max-width);
     margin-left: auto;
     margin-right: auto;
-    font-size: var(--text-2xl);
     margin-bottom: var(--spacing-xl);
     color: var(--black-forest);
     position: relative;
@@ -2560,6 +2195,45 @@ ul {
     flex-shrink: 0;
     white-space: nowrap;
     margin-right: 40px; /* Match the Fun Fact's left offset */
+}
+
+/* A conversion point partway down, at the head of the longest section. The
+   page's only call to action was the closing band at 94% scroll depth, which a
+   reader reaches after the 15-row compliance table and the validation figures.
+   Capped and centred on --content-max-width so it sits on the same left edge
+   as the section title and intro above it rather than on the table's wider
+   container.
+
+   Deliberately quieter than the closing band: one line and one button, no
+   heading. Both sentences are existing approved copy, from /pricing's Free
+   tier and its description, rather than new claims written for this spot. */
+.mid-cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-sm) var(--spacing-md);
+    max-width: var(--content-max-width);
+    margin: 0 auto var(--spacing-lg) auto;
+    padding: var(--spacing-md);
+    background: var(--white);
+    border: 1px solid rgb(var(--forest-rgb) / 0.2);
+    border-radius: var(--radius-md);
+}
+
+/* `flex: 1 1 18rem` and not the measure alone. At its full 56ch the line plus
+   the button came to 740px inside 736px of content box, so the row wrapped and
+   the button dropped under the text by four pixels' worth of overflow. The
+   measure stays as a ceiling for the wide case. */
+.mid-cta p {
+    flex: 1 1 18rem;
+    margin: 0;
+    max-width: var(--measure);
+    color: var(--coffee-bean);
+}
+
+.mid-cta .btn {
+    flex: 0 0 auto;
 }
 
 /* ===================================
@@ -3122,17 +2796,10 @@ ul {
         font-size: var(--text-3xl);
     }
     
-    h2 {
-        font-size: var(--text-2xl);
-    }
-    
     .page-hero h1 {
         font-size: 3rem;
     }
     
-    .problem-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
 }
 
 /* Desktop (1024px and up) */
@@ -3143,10 +2810,6 @@ ul {
     
     .page-hero {
         padding: 100px 0;
-    }
-    
-    .problem-grid {
-        grid-template-columns: repeat(3, 1fr);
     }
     
     .content-section {
@@ -3210,14 +2873,6 @@ ul {
         order: -1;
     }
     
-    .problem-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .use-cases-grid {
-        grid-template-columns: 1fr;
-    }
-    
     /* At 390 the command is 620px inside a 358px block. `overflow-x: auto`
        protects the page but offers no visible scrollbar on touch, so the chart
        coordinates, the part a reader is actually here for, are unreachable.
@@ -3238,48 +2893,6 @@ ul {
            desktop rule does. Both were 32px here, which read as one long list. */
         margin-bottom: var(--spacing-xxl);
     }
-        .feature-icon {
-        width: 80px;
-        height: 80px;
-    }
-    
-    /* --text-lg, not --text-xl: at --text-xl this rendered 24px, the same
-       size as the section h2 above it, and the hierarchy collapsed. */
-    .feature-content h3 {
-        font-size: var(--text-lg);
-    }
-    
-    .timeline-item {
-        grid-template-columns: 60px 1fr;
-        gap: var(--spacing-md);
-        margin-bottom: var(--spacing-lg);
-    }
-    
-    .timeline-number {
-        width: 50px;
-        height: 50px;
-        font-size: var(--text-lg);
-    }
-    
-    .timeline-content h3 {
-        font-size: var(--text-lg);
-    }
-    
-    .split-focus {
-        grid-template-columns: 1fr;
-        gap: var(--spacing-lg);
-    }
-    
-    .focus-card {
-        padding: var(--spacing-lg);
-    }
-    
-    /* --text-lg, not --text-xl: at --text-xl this rendered 24px, the same
-       size as the section h2 above it, and the hierarchy collapsed. */
-    .focus-card h3 {
-        font-size: var(--text-lg);
-    }
-    
     /* Single Founder - Mobile */
     .founder-single {
         display: flex;
@@ -3365,10 +2978,6 @@ ul {
         font-size: 1.75rem;
     }
     
-    h2 {
-        font-size: var(--text-xl);
-    }
-    
     /* `.hero h1` deliberately absent: it carries a clamp whose floor is
        2.25rem, and overriding it here produced a 28px headline against a
        20px/600 subtitle. `.page-hero h1` has no clamp and still needs this. */
@@ -3381,19 +2990,21 @@ ul {
    Responsive Grids (validation, workloads, checkmarks)
    =================================== */
 
-
+/* Capped and column-aligned, like .checkmarks-grid-simple beside it and for
+   the same reason. `width: fit-content` with auto margins centred the box on
+   its container, so its two columns of ticks started 85px right of the prose
+   above them: a third text left edge on the page, drawn by a box that had no
+   character count to justify one. The box edge now lands on the content
+   column and the ticks start where the prose does. */
 .checkmarks-grid {
     display: grid;
-    grid-template-columns: repeat(2, auto);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--spacing-lg) var(--spacing-xxl);
-    margin-top: var(--spacing-xl);
+    margin: var(--spacing-xl) auto 0 auto;
     padding: var(--spacing-xl);
     background: rgb(var(--forest-rgb) / 0.05);
     border-radius: 8px;
-    justify-content: center;
-    width: fit-content;
-    margin-left: auto;
-    margin-right: auto;
+    max-width: var(--content-max-width);
 }
 
 /* Capped at the measure plus its own padding, so the ticks inside get the
@@ -3459,8 +3070,24 @@ ul {
     color: var(--coffee-bean);
 }
 
-.compliance-table tbody tr:nth-child(even) {
+/* Four frameworks, four row groups, shaded by group rather than by row. A
+   `tr:nth-child(even)` zebra restarts its count inside each tbody, so groups of
+   3, 4, 4 and 4 put two unshaded rows together at every boundary: the striping
+   would fight the grouping it is sitting on. Shading the group makes the
+   boundary the point. No words changed to do this; the framework is already
+   named in every row, so the rule and the shading carry what the grouping adds. */
+.compliance-table tbody:nth-of-type(even) tr {
     background-color: var(--white);
+}
+
+.compliance-table tbody + tbody th,
+.compliance-table tbody + tbody td {
+    border-top: 0;
+}
+
+.compliance-table tbody + tbody tr:first-child th,
+.compliance-table tbody + tbody tr:first-child td {
+    border-top: 2px solid rgb(var(--forest-rgb) / 0.25);
 }
 
 @media (max-width: 1023px) {
@@ -3492,10 +3119,6 @@ ul {
         background-color: var(--white);
         border: 1px solid rgb(var(--forest-rgb) / 0.12);
         border-radius: var(--border-radius);
-    }
-
-    .compliance-table tbody tr:nth-child(even) {
-        background-color: var(--white);
     }
 
     .compliance-table th,
@@ -3725,7 +3348,6 @@ textarea:focus-visible {
     font-size: var(--text-base);
     margin-left: 4px;
 }
-
 
 .pricing-meta {
     text-align: center;
@@ -4133,9 +3755,13 @@ textarea:focus-visible {
     margin-bottom: var(--spacing-xs);
 }
 
-.trust-meta {
-    color: var(--coffee-bean);
-    opacity: 0.7;
+/* Scoped to the page class on purpose. As a bare `.trust-meta` the colour
+   never applied: `.trust-page p` below is (0,1,1) against this rule's (0,1,0)
+   and sits later in the sheet, so the line was only ever muted by the
+   `opacity: 0.7` that sat here. Removing that opacity, per the colour-not-
+   opacity rule, would have silently restored it to full-strength body text. */
+.trust-page .trust-meta {
+    color: var(--muted-ink);
     font-size: var(--text-sm);
     margin-bottom: var(--spacing-xl);
 }
@@ -4231,7 +3857,22 @@ textarea:focus-visible {
    stand on their own: --text-xs was 13.6px for a PEM key and a multi-line cosign
    command. They also carry tabindex="0" in the markup, because a scrollable
    region that only a mouse can reach fails WCAG 2.1.1 in Firefox and Safari -
-   Chrome 127+ makes scrollers focusable and hides the bug. */
+   Chrome 127+ makes scrollers focusable and hides the bug.
+
+   The same absence is why these wrap where every other `pre` on the site
+   scrolls: with no copy button the only way to take a command is to select it,
+   and the cosign line ran 1375px inside a 768px block at 1440 and a 358px one
+   at 390, hiding 607px and 1017px of itself - the image digest included -
+   behind an overlay scrollbar that paints nothing. `break-word` measured
+   identically to `anywhere` at 320, 390, 768 and 1440; `anywhere` matches the
+   inline `code` rule above and also bounds min-content. The hanging indent is
+   what stops a wrapped line reading as a second command: without it the
+   continuations sit at column 0, left of the command's own two-space indents,
+   and at 390 that is three of them. `hanging each-line` is the only thing that
+   indents soft wraps alone - padding-left with a negative text-indent outdents
+   the block's first line and nothing else, measured - and an engine that does
+   not parse the keywords drops the declaration and keeps the plain wrap.
+   Verified in Chrome 157 only. */
 .trust-page pre {
     background-color: var(--surface-inverse);
     color: var(--text-on-inverse);
@@ -4239,6 +3880,9 @@ textarea:focus-visible {
     border-radius: var(--radius-md);
     margin-bottom: var(--spacing-sm);
     overflow-x: auto;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    text-indent: 4ch hanging each-line;
     font-size: var(--text-sm);
     line-height: var(--leading-snug);
 }

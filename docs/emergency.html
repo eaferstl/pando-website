@@ -79,9 +79,9 @@
                     <li><a href="/docs/faq">FAQ</a></li>
                     <li><a href="/docs/webhook">Admission Webhook (deprecated)</a></li>
                 </ul>
-
-                <a href="https://portal.pandocore.io/signup" class="btn btn-primary docs-sidebar-cta">Start free</a>
             </details>
+
+            <a href="https://portal.pandocore.io/signup" class="btn btn-primary docs-sidebar-cta">Start free</a>
         </aside>
 
         <!-- Main Content -->
@@ -104,7 +104,7 @@
                 <p>The hardest automatic action on the supported install is a Kubernetes NetworkPolicy. Nothing deletes your pods: the sensor's ClusterRole withholds <code>pods: delete</code> by name and the sensor caps its own ceiling in code. So the worst case you are recovering from is a workload that lost egress, which you can see with <code>kubectl get networkpolicy</code> and undo in one command.</p>
             </div>
 
-            <h2>Quick Reference</h2>
+            <h2 id="quick-reference">Quick Reference</h2>
 
             <table>
                 <thead>
@@ -148,7 +148,7 @@
                 </tbody>
             </table>
 
-            <h2>Immediate: Release A Contained Pod</h2>
+            <h2 id="immediate-release-a-contained-pod">Immediate: Release A Contained Pod</h2>
 
             <p>If a workload has lost its network and you need it back now:</p>
 
@@ -170,7 +170,7 @@ kubectl delete networkpolicy &lt;name&gt; -n &lt;namespace&gt;</code></pre>
                 <p>Deleting the policy restores egress but does not resolve the detection, so if the behaviour is still present the pod can be contained again. Pair it with one of the scope changes below, which is what stops it recurring. If the behaviour has genuinely subsided, PandoCore removes the policy itself and you do not need this at all.</p>
             </div>
 
-            <h2>Stop Watching One Pod, With No Restart</h2>
+            <h2 id="stop-watching-one-pod-with-no-restart">Stop Watching One Pod, With No Restart</h2>
 
             <p>The opt-out label is evaluated every reconcile pass, not only when a pod starts, so it takes effect on a running pod without restarting anything:</p>
 
@@ -185,7 +185,7 @@ kubectl delete networkpolicy &lt;name&gt; -n &lt;namespace&gt;</code></pre>
 
             <p>A freed slot is refilled in the same pass, so on a node that is shedding at its engine cap, opting one pod out brings a previously unwatched pod under monitoring. Useful deliberately; worth knowing about before it surprises you.</p>
 
-            <h2>Stop One Workload Responding, But Keep Watching It</h2>
+            <h2 id="stop-one-workload-responding-but-keep-watching-it">Stop One Workload Responding, But Keep Watching It</h2>
 
             <p>Usually the better emergency move. The workload stays watched and keeps producing evidence, and stops acting:</p>
 
@@ -194,7 +194,7 @@ kubectl rollout restart deployment/&lt;name&gt;</code></pre>
 
             <p>The restart is required: the sensor reads a pod's annotations when it starts watching that pod. If you cannot restart the workload right now, use the opt-out label above instead, which needs no restart but also stops the evidence.</p>
 
-            <h2>Stop A Whole Namespace</h2>
+            <h2 id="stop-a-whole-namespace">Stop A Whole Namespace</h2>
 
             <pre><code>helm upgrade pando-node-sensor \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-node-sensor \
@@ -208,7 +208,7 @@ kubectl rollout restart deployment/&lt;name&gt;</code></pre>
                 <p>This value replaces the list rather than adding to it, so include the defaults you want to keep. And setting it to <code>[]</code> does not mean "exclude nothing": an empty list is read as unconfigured and falls back to the built-in eleven.</p>
             </div>
 
-            <h2>Stop The Whole Cluster</h2>
+            <h2 id="stop-the-whole-cluster">Stop The Whole Cluster</h2>
 
             <p>A DaemonSet cannot be scaled to zero, so the fastest cluster-wide stop is to delete the DaemonSet object and leave the Helm release in place:</p>
 
@@ -223,7 +223,7 @@ kubectl rollout restart deployment/&lt;name&gt;</code></pre>
   --reset-then-reuse-values \
   --set nodeSelector.pandocore\\.io/disabled=true</code></pre>
 
-            <h2>Complete Uninstall</h2>
+            <h2 id="complete-uninstall">Complete Uninstall</h2>
 
             <pre><code># Both charts
 helm uninstall pando-node-sensor -n pando-system
@@ -243,7 +243,7 @@ kubectl delete namespace pando-system</code></pre>
                 <p>The controller's <code>spool-*</code> PersistentVolumeClaims hold evidence it has acknowledged and not yet delivered. <code>helm uninstall</code> does not remove them, which is deliberate. Delete them only once you are satisfied that evidence has reached its destinations, or you are discarding it knowingly.</p>
             </div>
 
-            <h2>Diagnosing Before Disabling</h2>
+            <h2 id="diagnosing-before-disabling">Diagnosing Before Disabling</h2>
 
             <p>If you have a minute before acting, these three make the difference between a fix and a guess:</p>
 
@@ -258,7 +258,7 @@ kubectl get networkpolicy --all-namespaces</code></pre>
 
             <p><code>/status</code> reports the engine count, the license ceiling and any node clamp. A clamped node is held to Monitor by a portal-side verdict rather than by anything in your cluster, and <code>node_clamp: none</code> means no clamp applies.</p>
 
-            <h2>Common Causes</h2>
+            <h2 id="common-causes">Common Causes</h2>
 
             <table>
                 <thead>
@@ -297,7 +297,7 @@ kubectl get networkpolicy --all-namespaces</code></pre>
                 </tbody>
             </table>
 
-            <h2>Loosening Sensitivity</h2>
+            <h2 id="loosening-sensitivity">Loosening Sensitivity</h2>
 
             <p>Per namespace, through a policy, rather than per workload:</p>
 
@@ -306,7 +306,7 @@ kubectl get networkpolicy --all-namespaces</code></pre>
 
             <p><code>PANDO_SENSITIVITY</code> still exists but belongs to the DaemonSet on the node sensor, so it applies node-wide rather than to one workload. See <a href="/docs/policy">CRD Policy</a>.</p>
 
-            <h2>Re-Profiling A Workload</h2>
+            <h2 id="re-profiling-a-workload">Re-Profiling A Workload</h2>
 
             <p>There is no re-learn endpoint on the sensor. One sensor holds an engine per watched pod on its node, so a node-wide rebuild is not a meaningful operation. A workload re-profiles when its pods restart:</p>
 
@@ -314,7 +314,7 @@ kubectl get networkpolicy --all-namespaces</code></pre>
 
             <p>Expect 30 minutes and at least 900 samples, whichever is later, before the new profile is armed.</p>
 
-            <h2>Emergency Contacts</h2>
+            <h2 id="emergency-contacts">Emergency Contacts</h2>
 
             <p>Reach <a href="/contact">support</a>, or reply to your onboarding email thread. If a pod is contained and you need it back immediately, delete the NetworkPolicy first and tell us afterwards; you do not need our permission to undo a containment in your own cluster.</p>
             <nav class="docs-pager" aria-label="Documentation pages">

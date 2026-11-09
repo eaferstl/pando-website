@@ -1,0 +1,1125 @@
+[
+ {
+  "title": "Configuration Reference",
+  "url": "/docs/configuration",
+  "keywords": [],
+  "headings": [
+   {
+    "text": "Node Sensor Helm Values",
+    "slug": "node-sensor-helm-values",
+    "depth": 2,
+    "body": "Value Default Notes namespace pando-system Where the sensor and mirror run createNamespace false Leave off and use Helm's own --create-namespace . Setting it true over a namespace Helm did not create fails with invalid ownership metadata license.key \"\" Inline key. One of this or license.existingSecret.name must be set license.existingSecret.name \"\" An externally managed Secret. Prefer this wherever the values file is committed sampleIntervalMs 1000 Sampling cadence. Floor is 250; below that the sensor refuses by name at startup rather than clamping. At 250 the cost is roughly four times the default maxEngines 70 Monitored pods per node. Range 1 to 500. Pods beyond it get no engine port 9090 Serves /metrics , /healthz , /readyz and /status excludedNamespaces Eleven names Replaces the list rather than adding to it. See the warning below includedNamespaces [] Protect a namespace a default rule excludes. See the warning below resources 250m / 256Mi, limit 2 / 1Gi Per node nodeSelector {} Restricts which nodes get a sensor. Nodes without one are unwatched tolerations Tolerate everything Deliberate: a node left unwatched because the sensor would not schedule there is a silent gap maxUnavailable 1 DaemonSet rollout speed. Each node is briefly unwatched as its sensor restarts preflight.nodeCapacity true Refuses the install for nodes that cannot allocate the CPU request controller.* Service name, namespace, port The evidence URL is composed from these parts rather than written by hand mirror.enabled true The destinations mirror. Off means per-namespace policy integrations do nothing portalURL The production portal Where the sensor attests its evidence-signing key metrics.scrapeAnnotations true Prometheus scrape annotations on both pod templates metrics.podMonitoring.enabled false Required on GKE managed Prometheus. See the warning below alerts.enabled true Ships PrometheusRules for coverage, absence, refusal and cadence logging.level info With logging.json: true by default stateHostPath /var/lib/pando Host path, deliberately not a PersistentVolumeClaim seLinuxLevel \"\" Only meaningful where SELinux enforces for containers. Required on Bottlerocket Two namespace values that do not behave as their names suggest excludedNamespaces: [] does not mean \"exclude nothing\". An empty list is read as unconfigured and falls back to the built-in eleven. To protect a default-excluded namespace, add it to includedNamespaces . includedNamespaces overrides more than the namespace list. The opt-in is read before the exclusion rules and overrides the own-component exclusion as well, so listing pando-system puts PandoCore's own pods back under monitoring. An early soak run in that configuration took 67 false positives in six minutes, 34 of them from the controller pod. It does not override the sensor's own pod, hostPID , hostNetwork , or a pod's own opt-out label. On GKE managed Prometheus, the shipped alerting rules are inert Managed Prometheus does not honour the scrape annotations, so metrics.podMonitoring.enabled=true is the only thing that makes it scrape at all. It also reads neither the alert-rules ConfigMap nor a PrometheusRule , so the rules the chart ships are present but do nothing on that platform until they are converted to its own Rules resource. This matters because the coverage and absence rules are the ones that tell you a node has stopped being watched. If you run managed Prometheus, port those two across by hand rather than assuming the chart covered you."
+   },
+   {
+    "text": "Per-Pod Annotations",
+    "slug": "per-pod-annotations",
+    "depth": 2,
+    "body": "Six annotations apply to one workload. Each is read when the sensor starts watching a pod, so a change applies to pods created after it; kubectl rollout restart is what applies it to pods already running. Annotation Effect pandocore.io/mode monitor , alert , isolate or debug . Can only narrow what the license permits pandocore.io/profile http-server selects that profile's detection weights. Any other value leaves the inferred profile alone pandocore.io/target-container Which container's processes the engine is for pandocore.io/audit-network Network auditing for this workload pandocore.io/network-allowlist Expected network peers, taken verbatim pandocore.io/egress-allowlist-hosts Expected egress hosts The annotations do not share one dialect mode and profile are matched exactly, with no trimming and no case folding. audit-network is trimmed and lowercased. network-allowlist is taken verbatim and egress-allowlist-hosts is trimmed. That inconsistency is inherited from the webhook deliberately, so that migrating to the sensor does not change what an annotation you already had means. A mode value that does not match falls back to the node-wide default and the sensor warns naming the pod."
+   },
+   {
+    "text": "The opt-out label",
+    "slug": "the-opt-out-label",
+    "depth": 3,
+    "body": "Not an annotation, and the one setting that does not need a restart: kubectl label pod <pod> pandocore.io/protect=false --overwrite It is evaluated every reconcile pass, so a running pod stops being watched on the next scan. The comparison is byte-for-byte against \"false\" , with no trimming and no case folding, so False and 0 do not opt a pod out. The deprecated webhook's \"true\" value has no effect at all."
+   },
+   {
+    "text": "Three Annotations The Sensor Cannot Honour",
+    "slug": "three-annotations-the-sensor-cannot-honour",
+    "depth": 2,
+    "body": "pandocore.io/full-proc-signals , pandocore.io/provenance-enforce and pandocore.io/node-enforcer were applied at admission, by rewriting a pod before it was created. A sensor is outside the pod and runs after it exists, so none of them can be applied. The sensor warns once per pod carrying one, and the pod is still watched. See Production Hardening ."
+   },
+   {
+    "text": "What You Can't Configure",
+    "slug": "what-you-cant-configure",
+    "depth": 2,
+    "body": "Detection internals are managed automatically and not user-tunable. Use sensitivity in a policy, and thresholds within it for finer numeric control. If neither settles a workload, contact support . Two ceilings are also not configuration. The sensor caps its response at isolate in code, and its ClusterRole withholds pods: delete by name, so no value raises it. And a portal-side node clamp is a commercial verdict rather than a cluster setting."
+   },
+   {
+    "text": "Examples",
+    "slug": "examples",
+    "depth": 2,
+    "body": ""
+   },
+   {
+    "text": "Production install",
+    "slug": "production-install",
+    "depth": 3,
+    "body": "helm install pando-node-sensor \\ oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-node-sensor \\ --version 2.0.0 \\ --namespace pando-system --create-namespace \\ --set license.existingSecret.name=pando-license \\ --set 'excludedNamespaces={kube-system,kube-public,kube-node-lease,cert-manager,istio-system}' \\ --set metrics.podMonitoring.enabled=true"
+   },
+   {
+    "text": "One workload, narrowed to monitor",
+    "slug": "one-workload-narrowed-to-monitor",
+    "depth": 3,
+    "body": "kubectl annotate deployment your-app pandocore.io/mode=monitor --overwrite kubectl rollout restart deployment/your-app"
+   },
+   {
+    "text": "Next Steps",
+    "slug": "next-steps",
+    "depth": 2,
+    "body": "CRD Policy : per-namespace mode, sensitivity, thresholds and integrations Controller : evidence destinations Operating Modes : what sets the response ceiling Production Hardening : what to settle before production Previous Dashboard Next CRD Policy"
+   }
+  ]
+ },
+ {
+  "title": "Controller",
+  "url": "/docs/controller",
+  "keywords": [
+   "RBAC",
+   "ClusterRole"
+  ],
+  "headings": [
+   {
+    "text": "Install",
+    "slug": "install",
+    "depth": 2,
+    "body": "helm install pando-controller \\ oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-controller \\ --version 2.0.0 \\ --namespace pando-system --create-namespace \\ --set license.key=\"YOUR_LICENSE_KEY\" --version is not optional: installing an OCI chart without it fails outright rather than resolving to the newest release. license.key is required unless you set license.existingSecret.name instead. portalURL is also required, and already carries the right default."
+   },
+   {
+    "text": "How Sensors Find It",
+    "slug": "how-sensors-find-it",
+    "depth": 2,
+    "body": "Nothing to wire by hand. The sensor composes the controller's evidence URL from the controller.* values in its own chart, which default to the service name, namespace and port this chart publishes, so the two agree out of the box. That composition is deliberate rather than a convenience. An early live run dialled a hand-written :8443 while the controller's Service has only ever published its evidence listener on :9443 : the sensor reported a healthy channel, started its engines, and would have failed at the first detection, with hundreds of chart assertions green over it. If you override the controller's service name, namespace or port, override the matching controller.* value on the sensor rather than writing a URL. The client certificate Secret, pando-controller-client-tls , is mounted by the sensor chart in pando-system . There is nothing to mirror into your workload namespaces, because nothing of PandoCore's runs there."
+   },
+   {
+    "text": "Ports",
+    "slug": "ports",
+    "depth": 2,
+    "body": "Port Transport Serves 9090 Plaintext /healthz and /metrics 9443 mTLS /evidence , /heartbeat , /siem/*"
+   },
+   {
+    "text": "Security Posture",
+    "slug": "security-posture",
+    "depth": 2,
+    "body": "The controller runs unprivileged and holds no Kubernetes API access at all: runAsNonRoot , UID 1000, readOnlyRootFilesystem , allowPrivilegeEscalation: false , all capabilities dropped No hostPID , hostNetwork , hostIPC or hostPath mounts Its ServiceAccount is deliberately bound to no Role and no ClusterRole. The controller reads a file and answers a socket; it never calls the API server"
+   },
+   {
+    "text": "The Spool",
+    "slug": "the-spool",
+    "depth": 2,
+    "body": "Each replica gets a PersistentVolumeClaim, 2Gi by default. The default is 2 replicas, so that is two cluster-level volumes, not one per protected pod. It does not grow with the fleet. The controller answers 202 only after an fsync , and replays whatever is on disk at startup. That is what makes it safe for a sensor to drop a record once it has been accepted. The spool is a delivery hop, not a history A spooled record is unlinked once every configured destination confirms it. The controller guarantees that accepted evidence is not lost in transit; it does not retain evidence for you. For retention, deliver to a SIEM or the portal and apply your retention policy there."
+   },
+   {
+    "text": "Per-Namespace Destinations",
+    "slug": "per-namespace-destinations",
+    "depth": 2,
+    "body": "When destinations.enabled is set, the controller mounts a Secret written by the destinations mirror and re-reads it every 30 seconds. The mirror is an unprivileged Deployment installed by the sensor chart, and it exists for a privilege reason: resolving a policy's secretRef needs cluster-wide secrets get , and that grant must not sit on a hostPID pod running as uid 0 on every node. One replica holds it instead. If mirror.enabled=false on the sensor chart, nothing writes that Secret: the mount is empty, the controller logs it once, and each namespace falls back to the portal and the environment baseline. The mount is optional by design so the controller still starts, which means per-namespace integrations declared in a policy fail quietly rather than loudly. Check the controller's log line if a policy's destination seems to do nothing."
+   },
+   {
+    "text": "Next Steps",
+    "slug": "next-steps",
+    "depth": 2,
+    "body": "Evidence Format : the record schema the controller receives and forwards Configuration : every chart value with defaults and ranges Production Hardening : sizing, posture and rollout guidance Previous Getting Started Next Dashboard"
+   }
+  ]
+ },
+ {
+  "title": "Detection Events Dashboard",
+  "url": "/docs/dashboard",
+  "keywords": [],
+  "headings": [
+   {
+    "text": "Portal Dashboard",
+    "slug": "portal-dashboard",
+    "depth": 2,
+    "body": "Evidence is delivered by the controller to portal.pandocore.io , which is where detections, their reasons and their outcomes are read. No extra configuration is needed: the portal is a destination the controller carries by default."
+   },
+   {
+    "text": "Event data flow",
+    "slug": "event-data-flow",
+    "depth": 3,
+    "body": "A sensor detects behaviour diverging from a workload's profile It seals and signs an evidence record, and delivers it to the controller over mTLS The controller writes it to a durable spool and only then acknowledges it The controller delivers it onward to the portal, and to any SIEM, Slack or webhook destinations you have configured If a response ran, a second pando.response record follows carrying what it actually did Two records per response, and why The trip record is sealed and shipped before the response chain resolves, because there is no action without a durable record first. So the first record carries the intended response and the receipt carries the outcome. They are correlated by trip_evidence_id , not by sharing an id. See Evidence Format ."
+   },
+   {
+    "text": "What the portal shows",
+    "slug": "what-the-portal-shows",
+    "depth": 3,
+    "body": "Detections , with the reason, severity, pod, namespace and the response taken Your license , including the response ceiling it permits and its retention window Your plan , as a separate card derived independently of the license, so the two can be cross-checked rather than agreeing by construction Node protection , including any node held to monitor by a clamp The install commands for your cluster, pre-filled with your license key and the current chart version Retention is a floor, not a query window Your plan's retention figure is the period the portal undertakes to keep evidence for. Nothing deletes an event at the end of it, so it is not a promise that older evidence is gone, and it is not an availability claim about querying it. If you need evidence for a defined period under your own control, deliver it to your SIEM and apply your retention policy there."
+   },
+   {
+    "text": "Coverage And Health, In Prometheus",
+    "slug": "coverage-and-health-in-prometheus",
+    "depth": 2,
+    "body": "The portal shows what was detected. It does not tell you whether a node stopped being watched, and that is the question worth alerting on. Metric What it answers pando_node_sensor_pods_unmonitored Pods getting no engine. With reason=\"cap\" , pods you wanted watched that the node had no room for pando_operating_mode The mode in force (0 monitor, 1 alert, 2 isolate, 4 debug) pando_mode_ceiling The ceiling the license permits, same encoding pando_isolations_total Isolation policies successfully applied The sensor chart ships PrometheusRules covering coverage at the cap, the series going absent, a refusal at startup, and a cadence stretched past its configured interval. Absence matters most: it is the one condition no self-report can distinguish from healthy. Two ways this dashboard lies by omission A job selecting on the protect label matches nothing. The sensor's own pod carries pandocore.io/protect: \"false\" , so a Prometheus job written against protect=true finds no targets and reports a clean scrape of nothing, which renders identically to healthy. Select on app.kubernetes.io/name=pando-node-sensor . On GKE managed Prometheus the shipped rules are inert. It honours neither the chart's scrape annotations nor a PrometheusRule , so set metrics.podMonitoring.enabled=true to get scraping at all, and port the coverage and absence rules across by hand. See Configuration ."
+   },
+   {
+    "text": "Right Now, With kubectl",
+    "slug": "right-now-with-kubectl",
+    "depth": 2,
+    "body": "# One sensor per node, all Ready kubectl get pods -n pando-system -l app.kubernetes.io/name=pando-node-sensor -o wide # Engine count, license ceiling, node clamp, for one node kubectl exec -n pando-system <sensor-pod> -- wget -qO- http://localhost:9090/status # What is contained at this moment kubectl get networkpolicy --all-namespaces \\ -l app.kubernetes.io/managed-by=pandocore # Detections as Kubernetes events kubectl get events -n <namespace> --field-selector reason=PandoCollapse # Collapse-grade conditions where nothing acted kubectl get events -n <namespace> --field-selector reason=PandoRefrained"
+   },
+   {
+    "text": "What a detection looks like as an event",
+    "slug": "what-a-detection-looks-like-as-an-event",
+    "depth": 3,
+    "body": "Reason Type Meaning PandoAlert Normal A detection that called for no response chain PandoRefrained Warning A collapse-grade condition was detected and nothing acted, because of the mode, the license ceiling or the learning window PandoCollapse Warning A containment action was attempted PandoRefrained is how you evaluate before you let it act On a free license nothing is ever contained, so every collapse-grade finding arrives as PandoRefrained : this was serious enough to act on, and nothing did. That is the list to read before deciding whether to raise the ceiling, and it is evidence from your own cluster rather than a projection. It pairs with pando_collapses_total{outcome=\"refrained\"} , which is deliberately the same word so the event and the metric are recognisably the same fact. The event's machine-readable event_type_label remains would-collapse , unchanged on purpose: it is a selector, and changing one quietly is worse than a stale word inside it. /status reports the license ceiling and any node clamp as separate lines, deliberately: a clamped node is held to monitor by a portal-side verdict rather than by your license, so an operator reading one must not be sent to upgrade a license that was never the constraint. node_clamp: none means no clamp applies and the node is fully protected."
+   },
+   {
+    "text": "In-Cluster Dashboard",
+    "slug": "in-cluster-dashboard",
+    "depth": 2,
+    "body": "Deprecated with the admission webhook The in-cluster dashboard shipped as an optional component of the pando-webhook chart, off by default, and it worked by polling each protected pod's sidecar on port 9090. Neither that chart nor those per-pod endpoints is part of the supported install: a node sensor serves one /status per node, not one per pod. It receives no further release. Use the portal for detections, Prometheus for coverage and health, and kubectl for current state. Between them they cover everything it showed, and the Prometheus route covers the coverage question it never answered."
+   },
+   {
+    "text": "Troubleshooting",
+    "slug": "troubleshooting",
+    "depth": 2,
+    "body": ""
+   },
+   {
+    "text": "The portal shows no activity",
+    "slug": "the-portal-shows-no-activity",
+    "depth": 3,
+    "body": "Confirm the sensors are ready: /readyz returns 503 during learning and while refusing Confirm the controller is running and receiving. It is what delivers to the portal, so healthy sensors with an empty portal is a controller question Check the controller's logs for delivery errors, and your egress rules for blocked outbound calls"
+   },
+   {
+    "text": "Prometheus shows no PandoCore data",
+    "slug": "prometheus-shows-no-pandocore-data",
+    "depth": 3,
+    "body": "Check your job selects app.kubernetes.io/name=pando-node-sensor rather than the protect label Confirm the metrics port is 9090 On GKE managed Prometheus, confirm metrics.podMonitoring.enabled=true"
+   },
+   {
+    "text": "Some pods never appear",
+    "slug": "some-pods-never-appear",
+    "depth": 3,
+    "body": "Check pando_node_sensor_pods_unmonitored{reason=\"cap\"} first. Then check whether the pod is opted out, in an excluded namespace, or using hostPID or hostNetwork . See Troubleshooting ."
+   },
+   {
+    "text": "Next Steps",
+    "slug": "next-steps",
+    "depth": 2,
+    "body": "Evidence Format : the record schema and its wire fields Controller : configuring destinations Configuration : metrics and alerting values Production Hardening : what to alert on before production Previous Controller Next Configuration"
+   }
+  ]
+ },
+ {
+  "title": "Emergency Procedures",
+  "url": "/docs/emergency",
+  "keywords": [],
+  "headings": [
+   {
+    "text": "Quick Reference",
+    "slug": "quick-reference",
+    "depth": 2,
+    "body": "Scope Command Effect Release one contained pod kubectl delete networkpolicy <name> -n <ns> Egress restored at once Stop watching one pod kubectl label pod <pod> pandocore.io/protect=false --overwrite Engine retired on the next scan. No restart Stop one workload responding kubectl annotate deployment <name> pandocore.io/mode=monitor --overwrite Keeps watching, stops acting. Needs a restart Stop a whole namespace helm upgrade with the namespace in excludedNamespaces Everything in it unwatched Stop the whole cluster kubectl delete daemonset -n pando-system -l app.kubernetes.io/name=pando-node-sensor Every sensor gone. Helm release intact Remove entirely helm uninstall pando-node-sensor pando-controller -n pando-system Both charts removed"
+   },
+   {
+    "text": "Immediate: Release A Contained Pod",
+    "slug": "immediate-release-a-contained-pod",
+    "depth": 2,
+    "body": "If a workload has lost its network and you need it back now: # Find the policy PandoCore wrote. It carries both of these labels kubectl get networkpolicy -n <namespace> \\ -l app.kubernetes.io/managed-by=pandocore # Or go straight to the one for a given pod kubectl get networkpolicy -n <namespace> \\ -l pandocore.io/isolation=<pod> # Remove it kubectl delete networkpolicy <name> -n <namespace> Each policy carries an owner reference to the pod it contains, so it is garbage-collected with that pod: if you delete the pod instead, the policy goes with it and no orphan is left behind. This treats the symptom, not the cause Deleting the policy restores egress but does not resolve the detection, so if the behaviour is still present the pod can be contained again. Pair it with one of the scope changes below, which is what stops it recurring. If the behaviour has genuinely subsided, PandoCore removes the policy itself and you do not need this at all."
+   },
+   {
+    "text": "Stop Watching One Pod, With No Restart",
+    "slug": "stop-watching-one-pod-with-no-restart",
+    "depth": 2,
+    "body": "The opt-out label is evaluated every reconcile pass, not only when a pod starts, so it takes effect on a running pod without restarting anything: kubectl label pod <pod> pandocore.io/protect=false --overwrite The engine for that pod is retired on the next scan. Remove the label to resume, which starts a fresh learning window for that workload. The exact string matters The comparison is byte-for-byte against \"false\" , with no trimming and no case folding. False , FALSE and 0 do not opt a pod out. If you are in a hurry, this is the mistake to avoid: the command will succeed and nothing will change. A freed slot is refilled in the same pass, so on a node that is shedding at its engine cap, opting one pod out brings a previously unwatched pod under monitoring. Useful deliberately; worth knowing about before it surprises you."
+   },
+   {
+    "text": "Stop One Workload Responding, But Keep Watching It",
+    "slug": "stop-one-workload-responding-but-keep-watching-it",
+    "depth": 2,
+    "body": "Usually the better emergency move. The workload stays watched and keeps producing evidence, and stops acting: kubectl annotate deployment <name> pandocore.io/mode=monitor --overwrite kubectl rollout restart deployment/<name> The restart is required: the sensor reads a pod's annotations when it starts watching that pod. If you cannot restart the workload right now, use the opt-out label above instead, which needs no restart but also stops the evidence."
+   },
+   {
+    "text": "Stop A Whole Namespace",
+    "slug": "stop-a-whole-namespace",
+    "depth": 2,
+    "body": "helm upgrade pando-node-sensor \\ oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-node-sensor \\ --version 2.0.0 \\ --namespace pando-system \\ --reset-then-reuse-values \\ --set 'excludedNamespaces={kube-system,kube-public,kube-node-lease,<your-namespace>}' Write the list out in full This value replaces the list rather than adding to it, so include the defaults you want to keep. And setting it to [] does not mean \"exclude nothing\": an empty list is read as unconfigured and falls back to the built-in eleven."
+   },
+   {
+    "text": "Stop The Whole Cluster",
+    "slug": "stop-the-whole-cluster",
+    "depth": 2,
+    "body": "A DaemonSet cannot be scaled to zero, so the fastest cluster-wide stop is to delete the DaemonSet object and leave the Helm release in place: kubectl delete daemonset -n pando-system \\ -l app.kubernetes.io/name=pando-node-sensor Every sensor pod goes with it and nothing is watched. The Helm release, the license Secret and the controller are untouched, so helm upgrade brings the DaemonSet back when you are ready, with a fresh learning window per workload. If you would rather keep the DaemonSet but have it schedule nowhere, give it a label no node carries: helm upgrade pando-node-sensor ... \\ --reset-then-reuse-values \\ --set nodeSelector.pandocore\\\\.io/disabled=true"
+   },
+   {
+    "text": "Complete Uninstall",
+    "slug": "complete-uninstall",
+    "depth": 2,
+    "body": "# Both charts helm uninstall pando-node-sensor -n pando-system helm uninstall pando-controller -n pando-system # Any isolation policies still in place kubectl get networkpolicy --all-namespaces \\ -l app.kubernetes.io/managed-by=pandocore # The namespace, if nothing else lives there kubectl delete namespace pando-system Nothing has to be removed from your workloads, because nothing was ever added to them. There are no sidecars to strip out of deployment manifests and no pod specs to revert; the opt-out labels you may have added are inert once the sensor is gone. Check the controller's spool before you delete its volumes The controller's spool-* PersistentVolumeClaims hold evidence it has acknowledged and not yet delivered. helm uninstall does not remove them, which is deliberate. Delete them only once you are satisfied that evidence has reached its destinations, or you are discarding it knowingly."
+   },
+   {
+    "text": "Diagnosing Before Disabling",
+    "slug": "diagnosing-before-disabling",
+    "depth": 2,
+    "body": "If you have a minute before acting, these three make the difference between a fix and a guess: # What does the sensor think it is doing? kubectl exec -n pando-system <sensor-pod> -- wget -qO- http://localhost:9090/status # What fired, and against which pod? kubectl get events -n <namespace> --field-selector involvedObject.name=<pod> # What is actually in place right now? kubectl get networkpolicy --all-namespaces /status reports the engine count, the license ceiling and any node clamp. A clamped node is held to Monitor by a portal-side verdict rather than by anything in your cluster, and node_clamp: none means no clamp applies."
+   },
+   {
+    "text": "Common Causes",
+    "slug": "common-causes",
+    "depth": 2,
+    "body": "Symptom Likely cause Action A workload is contained repeatedly Behaviour genuinely outside its profile, or a profile built during unusual conditions Put it in monitor , then restart it to re-profile. Loosen sensitivity in a policy if it recurs Alerts immediately after a deploy The workload's behaviour changed and the profile describes the old release Expected. A restarted pod re-profiles; wait out the learning window Nothing is being watched on a node Sensor refusing, or no sensor scheduled Check /readyz and the logs. See Troubleshooting Some pods on a node are never watched The node is at its engine cap Check pando_node_sensor_pods_unmonitored{reason=\"cap\"} . Spread the workload or raise maxEngines with resources to match A node alerts on nothing while others do A portal-side node clamp holding it to Monitor Check the clamp line in /status and the portal, not your license"
+   },
+   {
+    "text": "Loosening Sensitivity",
+    "slug": "loosening-sensitivity",
+    "depth": 2,
+    "body": "Per namespace, through a policy, rather than per workload: kubectl patch pandocorepolicy default -n <namespace> \\ --type merge -p '{\"spec\":{\"sensitivity\":\"low\"}}' PANDO_SENSITIVITY still exists but belongs to the DaemonSet on the node sensor, so it applies node-wide rather than to one workload. See CRD Policy ."
+   },
+   {
+    "text": "Re-Profiling A Workload",
+    "slug": "re-profiling-a-workload",
+    "depth": 2,
+    "body": "There is no re-learn endpoint on the sensor. One sensor holds an engine per watched pod on its node, so a node-wide rebuild is not a meaningful operation. A workload re-profiles when its pods restart: kubectl rollout restart deployment/<name> Expect 30 minutes and at least 900 samples, whichever is later, before the new profile is armed."
+   },
+   {
+    "text": "Emergency Contacts",
+    "slug": "emergency-contacts",
+    "depth": 2,
+    "body": "Reach support , or reply to your onboarding email thread. If a pod is contained and you need it back immediately, delete the NetworkPolicy first and tell us afterwards; you do not need our permission to undo a containment in your own cluster. Previous Troubleshooting Next Evidence Format"
+   }
+  ]
+ },
+ {
+  "title": "Evidence Format",
+  "url": "/docs/evidence-format",
+  "keywords": [
+   "SOC 2",
+   "SOC2",
+   "ISO 27001",
+   "ISO27001",
+   "PCI DSS",
+   "PCI-DSS",
+   "HIPAA"
+  ],
+  "headings": [
+   {
+    "text": "Delivery Channels",
+    "slug": "delivery-channels",
+    "depth": 2,
+    "body": "Channel Format The controller Records are delivered to it over mTLS and written to a durable spool before it acknowledges them. It owns every outbound destination from there Your webhook HTTP POST of Evidence JSON, configured on the controller stdout One JSON record per line Kubernetes Event K8s Event object, survives pod deletion SIEM Splunk, Elastic, Datadog or syslog, configured on the controller Slack Formatted message, configured on the controller"
+   },
+   {
+    "text": "Webhook headers",
+    "slug": "webhook-headers",
+    "depth": 3,
+    "body": "Header Description Content-Type application/json X-Pando-Evidence-ID UUID of the evidence record X-Pando-Event-Type Event type, currently collapse X-Pando-Schema-Version Schema version of the payload Delivery is retried with exponential backoff, configured on the controller. No workload pod holds a destination credential: the sensor delivers to the controller and the controller delivers onward, which is why these are controller settings rather than per-workload ones. See Controller . A record is externalized before any action is taken Evidence is sealed, signed and shipped before the response chain is even resolved, and a failed externalization aborts the response. That ordering is deliberate: there is no action without a durable record first. The consequence for a consumer is that a trip record carries intent rather than outcome, which is why there is a second record type for what actually happened."
+   },
+   {
+    "text": "Three event types",
+    "slug": "three-event-types",
+    "depth": 3,
+    "body": "event_type Meaning pando.evidence A detection. Carries the intended response pando.response What the response chain actually did. Correlated to the trip by trip_evidence_id , not by sharing its id pando.heartbeat Periodic liveness, so a consumer can tell silence from health Two wire names still say \"sidecar\" metadata.sidecar_version and the action_taken value sidecar_absent keep their names although the component is now the node sensor. They are a wire contract: renaming them would break every parser, dashboard and SIEM rule written against them, so they are deliberately unchanged. Read both as referring to whatever is reporting, which on the supported install is the sensor."
+   },
+   {
+    "text": "JSON Example",
+    "slug": "json-example",
+    "depth": 2,
+    "body": "{ \"version\": \"3.3\", \"event_type\": \"pando.evidence\", \"id\": \"550e8400-e29b-41d4-a716-446655440000\", \"timestamp\": \"2026-03-16T14:30:00.123Z\", \"pod\": { \"name\": \"my-app-7d4f9b8c5-x2kl9\", \"namespace\": \"production\", \"uid\": \"f3b2c1d4-...\", \"node\": \"gke-cluster-pool-1-abc123\" }, \"trip_reason\": \"drift_threshold_exceeded\", \"action_taken\": \"collapse\", \"hash\": \"a1b2c3d4e5f6...\", \"previous_hash\": \"9f8e7d6c5b4a...\", \"sequence\": 42, \"metadata\": { \"sidecar_version\": \"0.1.0\", \"mode\": \"isolate\", \"customer_id\": \"cust_abc123\" } }"
+   },
+   {
+    "text": "Field Reference",
+    "slug": "field-reference",
+    "depth": 2,
+    "body": ""
+   },
+   {
+    "text": "Top-Level",
+    "slug": "top-level",
+    "depth": 3,
+    "body": "Field Type Description version string Schema version of the payload. id UUID Unique evidence record ID. timestamp ISO 8601 When the detection occurred. trip_reason string Short machine-readable label for the detection category (e.g., drift_threshold_exceeded , integrity_violation , deadman_timeout ). action_taken string The intended response at the moment the record was sealed, which is before any action runs. One of alert_only (benign, no response chain), monitor_collapse (collapse-grade, but the mode or the learning window meant nothing acted), collapse (a containment action was attempted), sidecar_absent (the controller noticed a sensor that should be reporting has stopped) or absence_detection_degraded (absence detection itself could not run). The last two are stamped by the controller rather than by a sensor. hash string SHA-256 hash of this record. Used for the tamper-evident chain. previous_hash string Hash of the previous record in the chain. sequence integer Monotonically increasing record counter."
+   },
+   {
+    "text": "pod",
+    "slug": "pod",
+    "depth": 3,
+    "body": "Field Description pod.name Full pod name. pod.namespace Kubernetes namespace. pod.uid Pod UID, when available. pod.node Node the pod was scheduled on, when available."
+   },
+   {
+    "text": "response_chain",
+    "slug": "response-chain",
+    "depth": 3,
+    "body": "Array of response actions attempted, in order, with whether each succeeded and when it ran. This appears on the pando.response receipt rather than on the trip record, because the trip record is sealed before the chain resolves. Correlate the two by trip_evidence_id . Field Description action alert or isolate . Isolate is the ceiling of the supported install success Whether the action completed successfully timestamp ISO 8601 timestamp when the action ran"
+   },
+   {
+    "text": "metadata",
+    "slug": "metadata",
+    "depth": 3,
+    "body": "Field Description metadata.sidecar_version Version of the component that emitted the record, which on the supported install is the node sensor. The field name is retained for wire compatibility, so a parser written against it keeps working. metadata.mode Operating mode at the time: monitor , alert , isolate or debug . metadata.customer_id Your customer identifier, derived from the license."
+   },
+   {
+    "text": "Tamper-evident chain",
+    "slug": "tamper-evident-chain",
+    "depth": 3,
+    "body": "Evidence records form a SHA-256 hash chain. Each record's previous_hash links to the prior record, producing an audit log that downstream consumers can verify for tampering."
+   },
+   {
+    "text": "Slack Alerts",
+    "slug": "slack-alerts",
+    "depth": 2,
+    "body": "When a Slack destination is configured on the controller and the workload's mode is alert or isolate , PandoCore sends formatted messages colour-coded by severity. Severity Trigger Critical A containment action was attempted High Significant anomaly detected Warning Detection below the response threshold Info Low-severity detection"
+   },
+   {
+    "text": "Kubernetes Events",
+    "slug": "kubernetes-events",
+    "depth": 2,
+    "body": "# View PandoCore events kubectl get events -n YOUR_NAMESPACE --field-selector reason=PandoCollapse"
+   },
+   {
+    "text": "Next Steps",
+    "slug": "next-steps",
+    "depth": 2,
+    "body": "Configuration : every chart value with defaults and ranges Operating Modes : the monitor → alert → isolate ladder FAQ : common questions about deployment, evidence and cost Previous Emergency Procedures Next FAQ"
+   }
+  ]
+ },
+ {
+  "title": "Frequently Asked Questions",
+  "url": "/docs/faq",
+  "keywords": [
+   "RBAC",
+   "ClusterRole"
+  ],
+  "headings": [
+   {
+    "text": "General",
+    "slug": "general",
+    "depth": 2,
+    "body": ""
+   },
+   {
+    "text": "What is PandoCore?",
+    "slug": "what-is-pandocore",
+    "depth": 3,
+    "body": "PandoCore is a runtime execution-integrity security system for Kubernetes. It watches containerized workloads as they run, detects behaviour that diverges from what each workload established as normal, and can respond, complementing your existing security stack rather than replacing it."
+   },
+   {
+    "text": "How does PandoCore differ from other security tools?",
+    "slug": "how-does-pandocore-differ-from-other-security-tools",
+    "depth": 3,
+    "body": "Aspect Traditional Security PandoCore Focus Prevention, detection, alerting Runtime detection with automated response Baseline Signatures and rules you maintain A profile learned per workload Integration Often requires code changes or agents in the pod No application changes, and nothing added to your pods Language support Often language-specific Language-agnostic"
+   },
+   {
+    "text": "Does PandoCore replace my firewall, WAF or scanner?",
+    "slug": "does-pandocore-replace-my-firewall-waf-or-scanner",
+    "depth": 3,
+    "body": "No. PandoCore focuses specifically on runtime execution integrity, which means issues that appear while code is running. Use it alongside your existing preventive measures."
+   },
+   {
+    "text": "Deployment",
+    "slug": "deployment",
+    "depth": 2,
+    "body": ""
+   },
+   {
+    "text": "What Kubernetes versions are supported?",
+    "slug": "what-kubernetes-versions-are-supported",
+    "depth": 3,
+    "body": "PandoCore supports Kubernetes 1.25 and later. It has been tested on: GKE (Google Kubernetes Engine) kind (local development) minikube (local development) EKS and AKS support is expected but not yet validated."
+   },
+   {
+    "text": "Will it run on GKE Autopilot or EKS Fargate?",
+    "slug": "will-it-run-on-gke-autopilot-or-eks-fargate",
+    "depth": 3,
+    "body": "No. The sensor runs as a hostPID DaemonSet with a host path mount, and neither is permitted on those platforms, so there is no install path on either. This is a change from the deprecated sidecar, which ran unprivileged. See Production Hardening for what the sensor runs as."
+   },
+   {
+    "text": "What are the resource requirements?",
+    "slug": "what-are-the-resource-requirements",
+    "depth": 3,
+    "body": "Per node, not per workload. One sensor pod runs on each node whatever that node is running, so the figure does not grow with your deployment count. Resource Request Limit CPU per node 250m 2 cores Memory per node 256Mi 1Gi Measured warm and enforcing on the shipping build, across two runs: a 130.4 mCPU p95 with a 106.9 MiB working set over a 24-hour warm window, and 127.3 mCPU with 110.6 MiB over a 34-hour run. The working-set slope was flat in both, at -0.015 and +0.008 MiB per hour, so there is no leak to grow into the limit. There was no CFS throttling, no OOMKill, and no sensor restart in 77 hours. The request is sized for the 70-pod cap rather than for the engine counts these runs carried. The controller is separate and smaller."
+   },
+   {
+    "text": "Does PandoCore require code changes?",
+    "slug": "does-pandocore-require-code-changes",
+    "depth": 3,
+    "body": "No, and it requires no changes to your pod specifications either. The sensor runs beside your workloads rather than inside them, so there is nothing to add to a deployment manifest and nothing to label."
+   },
+   {
+    "text": "How long does deployment take?",
+    "slug": "how-long-does-deployment-take",
+    "depth": 3,
+    "body": "Two Helm installs, controller first. Detection does not begin at install time: see the learning phase question below for the warm-up, and the Getting Started guide for the steps."
+   },
+   {
+    "text": "Operations",
+    "slug": "operations",
+    "depth": 2,
+    "body": ""
+   },
+   {
+    "text": "What is the \"learning phase\"?",
+    "slug": "what-is-the-learning-phase",
+    "depth": 3,
+    "body": "When the sensor starts watching a workload, it spends a short window building an operational profile for it before detection begins. During that window: /readyz returns 503 Nothing can fire, whatever the mode The window is 30 minutes and at least 900 samples, whichever is later After it completes, /readyz returns 200 and the deterministic checks are armed. Two behavioural scales keep warming past that point: The short scale needs roughly 100 minutes from a cold start The long scale needs roughly 10 hours A scale that is not yet warm does not contribute, so the fuller detection envelope is in place around 10 hours after a workload is first watched, not at install time. Longer-period scales keep warming for days beyond that."
+   },
+   {
+    "text": "How do I know if PandoCore is working?",
+    "slug": "how-do-i-know-if-pandocore-is-working",
+    "depth": 3,
+    "body": "# One sensor per node, all Ready kubectl get pods -n pando-system -l app.kubernetes.io/name=pando-node-sensor -o wide # Armed and watching (200 once learning completes) kubectl exec -n pando-system <sensor-pod> -- wget -qO- http://localhost:9090/readyz # Engine count, license ceiling, node clamp kubectl exec -n pando-system <sensor-pod> -- wget -qO- http://localhost:9090/status # Detection metrics kubectl exec -n pando-system <sensor-pod> -- wget -qO- http://localhost:9090/metrics | grep pando_ Select on app.kubernetes.io/name=pando-node-sensor rather than on the protect label: the sensor's own pod carries pandocore.io/protect: \"false\" , so a selector written against protect=true matches nothing and reports a clean scrape of nothing."
+   },
+   {
+    "text": "Is every pod on a node watched?",
+    "slug": "is-every-pod-on-a-node-watched",
+    "depth": 3,
+    "body": "Not necessarily, and the exceptions are worth knowing. Each sensor runs at most 70 monitored pods per node by default. Pods beyond that cap get no engine and are shed in a stable order, so the same pods stay unwatched across restarts rather than rotating. The gauge pando_node_sensor_pods_unmonitored{reason=\"cap\"} reports them and the chart ships an alerting rule for it. Four classes are also excluded whatever the configuration says: the sensor's own pod, hostPID pods, hostNetwork pods, and any pod labelled pandocore.io/protect: \"false\" . Eleven namespaces are excluded by default."
+   },
+   {
+    "text": "What happens if a sensor crashes?",
+    "slug": "what-happens-if-a-sensor-crashes",
+    "depth": 3,
+    "body": "The workloads on that node keep running, unwatched, and Kubernetes restarts the sensor pod. The new sensor re-profiles the workloads on its node. Your application containers are unaffected either way, because nothing of PandoCore's runs inside them. Note that a sensor refusing to monitor is not the same as crashing: it parks instead of exiting, and /healthz deliberately keeps returning 200 so the kubelet does not crash-loop the refusal logs away. /readyz is what reports it, so alert on readiness rather than on pod phase."
+   },
+   {
+    "text": "What if PandoCore keeps isolating my pods?",
+    "slug": "what-if-pandocore-keeps-isolating-my-pods",
+    "depth": 3,
+    "body": "Release the pod now by deleting the NetworkPolicy, which is an ordinary Kubernetes object: kubectl delete networkpolicy -n <ns> -l pandocore.io/isolation=<pod> Stop it acting on that workload while keeping it watched: kubectl annotate deployment <name> pandocore.io/mode=monitor --overwrite kubectl rollout restart deployment/<name> Review the evidence in the portal to understand what triggered it Loosen sensitivity for that namespace in a PandoCorePolicy if it recurs See Emergency Procedures for the full set of levers."
+   },
+   {
+    "text": "How do I tune the detection sensitivity?",
+    "slug": "how-do-i-tune-the-detection-sensitivity",
+    "depth": 3,
+    "body": "Per namespace, in a PandoCorePolicy : sensitivity: low | medium | high , where a higher preset is a tighter gate, plus thresholds for finer numeric control. Thresholds can only tighten what learning derived, never loosen it; use sensitivity to loosen. PANDO_SENSITIVITY still exists but belongs to the DaemonSet on the node sensor, so it applies node-wide rather than to one workload. See CRD Policy ."
+   },
+   {
+    "text": "Detection",
+    "slug": "detection",
+    "depth": 2,
+    "body": ""
+   },
+   {
+    "text": "What does PandoCore detect?",
+    "slug": "what-does-pandocore-detect",
+    "depth": 3,
+    "body": "Runtime behavioural divergence from a workload's learned operational profile, which is the class of problem signature-based tools tend to miss. It complements your prevention stack rather than replacing it."
+   },
+   {
+    "text": "What doesn't PandoCore detect?",
+    "slug": "what-doesnt-pandocore-detect",
+    "depth": 3,
+    "body": "PandoCore focuses on runtime execution integrity. It does not detect: Pre-execution issues: supply chain compromise, malicious images, dependency vulnerabilities (use image scanning) Application logic flaws: SQL injection, authentication bypass, business logic bugs (use application security testing) Network attacks: man-in-the-middle, denial of service, DNS spoofing (use network security tools)"
+   },
+   {
+    "text": "Can PandoCore cause false positives?",
+    "slug": "can-pandocore-cause-false-positives",
+    "depth": 3,
+    "body": "Yes, and profiling each workload individually is how it keeps them low rather than how it eliminates them. Legitimate behavioural change, such as a new release, a load spike or a batch job, can trigger a detection. What helps: Spend time on a free license first, where the ceiling is alert and nothing is contained, and read what it reports before raising it Expect a workload to re-profile after a deployment that genuinely changes its behaviour Set sensitivity per namespace to match the workload"
+   },
+   {
+    "text": "Security",
+    "slug": "security",
+    "depth": 2,
+    "body": ""
+   },
+   {
+    "text": "What permissions does the sensor need?",
+    "slug": "what-permissions-does-the-sensor-need",
+    "depth": 3,
+    "body": "The sensor holds one ClusterRole . It contains exactly: get , list , watch on pods create on events create , delete , get on networkpolicies get on replicasets, statefulsets and daemonsets list on pandocorepolicies list on services get on namespaces, restricted to kube-system Three grants are withheld by name, each with its reason recorded in the chart: pods: patch , pods: delete and endpoints: get . The sensor cannot delete a pod, and that is a property of the grant and of the code, not a configuration choice. The cluster-wide secrets get that per-namespace policy integrations need does not sit on the sensor at all. The destinations mirror is a separate unprivileged Deployment so that grant is not held by a hostPID pod running as uid 0 on every node."
+   },
+   {
+    "text": "Does the sensor run privileged?",
+    "slug": "does-the-sensor-run-privileged",
+    "depth": 3,
+    "body": "It runs as a hostPID DaemonSet, as uid 0, with CAP_SYS_PTRACE , mounting the node's /proc read-only and a host path for its own state. That is a real increase in node surface compared with the deprecated sidecar, which ran unprivileged, and it is stated plainly rather than buried: see the trust center . On uid 0 specifically, it is load-bearing rather than inherited. CAP_SYS_PTRACE becomes effective through the uid-0 path, and the alternative is a file capability raised in-process with privilege escalation enabled, which is more escalation surface than root with escalation switched off. Of the two postures that work, this is the narrower one."
+   },
+   {
+    "text": "Can an attacker disable PandoCore?",
+    "slug": "can-an-attacker-disable-pandocore",
+    "depth": 3,
+    "body": "The sensor runs outside the pods it watches, on the node, so an attacker who compromises an application container is not in the same container, the same pod, or the same process namespace as the thing watching them. Escaping the container does not by itself reach the sensor, and the behaviour involved in trying is the kind of divergence the sensor exists to notice. An attacker with root on the node can stop the sensor process. That is a genuine limit of software monitoring on a compromised host, and it is why the chart ships an absence alerting rule: a sensor that has gone quiet is the one condition no self-report can distinguish from healthy, so it is alerted on from outside."
+   },
+   {
+    "text": "Where is evidence stored?",
+    "slug": "where-is-evidence-stored",
+    "depth": 3,
+    "body": "The controller: records are delivered to it over mTLS and written to a durable spool before it acknowledges them, so evidence does not die with the pod that produced it Your destinations: the controller owns delivery onward to SIEM, Slack, syslog or your own webhook Kubernetes events: stored in the API and surviving pod deletion stdout: picked up by your log aggregator Prometheus: metrics in your own metrics stack Each record is signed with Ed25519 over a digest of its canonical form, and records are linked by previous_hash into a chain, which makes later tampering detectable rather than preventing it. See Evidence Format ."
+   },
+   {
+    "text": "Troubleshooting",
+    "slug": "troubleshooting",
+    "depth": 2,
+    "body": ""
+   },
+   {
+    "text": "A workload has shown \"learning\" for a long time",
+    "slug": "a-workload-has-shown-learning-for-a-long-time",
+    "depth": 3,
+    "body": "The window is 30 minutes and at least 900 samples, whichever is later, so a workload that is sampled slowly takes longer than 30 minutes. For slow-warmup workloads the window can be extended with PANDO_LEARNING_DURATION_SECONDS and PANDO_LEARNING_MIN_SAMPLES on the DaemonSet, which applies node-wide."
+   },
+   {
+    "text": "Detections are happening but nothing is being contained",
+    "slug": "detections-are-happening-but-nothing-is-being-contained",
+    "depth": 3,
+    "body": "Check the ceiling before the mode, because the ceiling is the more common answer: kubectl exec -n pando-system <sensor-pod> -- wget -qO- http://localhost:9090/status A free license is held to alert and contains nothing, which is the tier working as intended rather than a misconfiguration. If the ceiling permits isolation, check the workload's mode annotation, and remember it is read when the sensor starts watching a pod, so a recent change may not have reached pods already running. A clamped node is held to monitor by a portal-side verdict and does not alert either."
+   },
+   {
+    "text": "Grafana shows no PandoCore data",
+    "slug": "grafana-shows-no-pandocore-data",
+    "depth": 3,
+    "body": "Check your Prometheus job selects app.kubernetes.io/name=pando-node-sensor . A job written against the protect label matches nothing and looks healthy Confirm the metrics port is 9090 Confirm Grafana's data source"
+   },
+   {
+    "text": "How do I get support?",
+    "slug": "how-do-i-get-support",
+    "depth": 3,
+    "body": "Contact support with: The evidence record from the detection What the workload was doing at the time Your sensitivity setting, and the policy it came from Sensor logs and /status output from around the time"
+   },
+   {
+    "text": "Still Have Questions?",
+    "slug": "still-have-questions",
+    "depth": 2,
+    "body": "If your question is not answered here, contact us and we will be happy to help. Previous Evidence Format"
+   }
+  ]
+ },
+ {
+  "title": "Getting Started",
+  "url": "/docs/getting-started",
+  "keywords": [],
+  "headings": [
+   {
+    "text": "Install",
+    "slug": "install",
+    "depth": 2,
+    "body": "Two charts, controller first. The controller is what the sensor delivers evidence to, so installing it second leaves the sensor with nowhere to send anything. # 1. The controller: receives evidence and owns every outbound destination helm install pando-controller \\ oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-controller \\ --version 2.0.0 \\ --namespace pando-system --create-namespace \\ --set license.key=\"YOUR_LICENSE_KEY\" # 2. The node sensor: one pod per node helm install pando-node-sensor \\ oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-node-sensor \\ --version 2.0.0 \\ --namespace pando-system \\ --set license.key=\"YOUR_LICENSE_KEY\" That is the whole install. There is no third step: the sensor protects the workloads on its node without being told which ones, so no labelling, patching or restarting is involved. Your portal dashboard carries both lines pre-filled with your license key and the current chart version. --version is not optional Installing an OCI chart without --version fails outright rather than resolving to the newest release. Take the version from your portal dashboard, or from helm show chart against the same reference. Keeping the license out of your values file Both charts accept an externally managed Secret instead of an inline key, which is what you want wherever the values file is committed: kubectl create secret generic pando-license \\ -n pando-system --from-literal=license-key=\"YOUR_LICENSE_KEY\" helm install pando-node-sensor ... \\ --set license.existingSecret.name=pando-license Either way the pod reads it through a secretKeyRef , so the credential is never a literal in the rendered pod spec. Create the Secret with --from-literal rather than from a file: the key is not trimmed, and a trailing newline fails validation."
+   },
+   {
+    "text": "What Just Happened",
+    "slug": "what-just-happened",
+    "depth": 2,
+    "body": "The DaemonSet placed one sensor pod on each schedulable node. Each sensor watches the pods on its own node, opt-out, and runs a short learning window per workload (30 minutes, and at least 900 samples, whichever is later) to build an operational profile. Deterministic checks arm when learning completes; the behavioural checks that depend on longer baselines keep warming for hours after that. Because the model is opt-out, the question is no longer which pods are watched but which are not. Four classes are excluded whatever the configuration says: The sensor's own pod Pods using hostPID Pods using hostNetwork Pods carrying the opt-out label below metadata: labels: pandocore.io/protect: \"false\" The opt-out string is exact The comparison is byte-for-byte against \"false\" , with no trimming and no case folding. \"False\" , \"0\" and \"no\" do not opt a pod out. The label's sense is the reverse of the deprecated webhook's, where \"true\" opted a pod in ; that old value now has no effect at all. There is a per-node coverage cap Each sensor runs at most 70 monitored pods per node by default ( maxEngines ). Pods beyond the cap get no engine, and they are shed in a stable order, so the same pods stay unwatched across restarts rather than rotating. This is reported rather than silent: the gauge pando_node_sensor_pods_unmonitored{reason=\"cap\"} counts them, and the chart ships a PrometheusRule that alerts on it. Treat a non-zero value as a coverage gap, not a capacity hint."
+   },
+   {
+    "text": "Verify It's Working",
+    "slug": "verify-its-working",
+    "depth": 2,
+    "body": "# One sensor pod per node, all Ready kubectl get pods -n pando-system -l app.kubernetes.io/name=pando-node-sensor -o wide # Follow a sensor's logs kubectl logs -f -n pando-system <sensor-pod> # Readiness: 503 during learning and while refusing, 200 once armed kubectl exec -n pando-system <sensor-pod> -- wget -qO- http://localhost:9090/readyz # What this sensor currently sees kubectl exec -n pando-system <sensor-pod> -- wget -qO- http://localhost:9090/status Select on the component label, not the protect label The sensor's own pod carries pandocore.io/protect: \"false\" , because it excludes itself. A Prometheus job or kubectl selector written against protect=true matches nothing and reports a clean scrape of nothing, which looks identical to healthy. Select on app.kubernetes.io/name=pando-node-sensor . /healthz returns 200 even while the sensor is refusing to monitor, deliberately, so the kubelet does not crash-loop the refusal logs away. /readyz is the one that gates. If pods will not start or the logs show license errors, see Troubleshooting ."
+   },
+   {
+    "text": "Progressive Rollout",
+    "slug": "progressive-rollout",
+    "depth": 2,
+    "body": "Everything above gets you to installed and alerting. The sections below go from there to production, in the order most teams adopt them."
+   },
+   {
+    "text": "1. Let it respond",
+    "slug": "let-it-respond",
+    "depth": 3,
+    "body": "A free license detects and alerts, and never contains. The response ceiling is a property of the license, so raising it is a billing change rather than a configuration change: on a paid license the sensor may apply containment, and the install above starts doing so without being reinstalled. Below that ceiling, mode is set per workload with an annotation: kubectl annotate deployment your-app pandocore.io/mode=isolate --overwrite kubectl rollout restart deployment/your-app The sensor reads a pod's annotations when it starts watching that pod, so the restart is what applies the change to workloads already running. The annotation can only narrow what the license already permits, never widen it, and a value it cannot parse is warned about by name and falls back to the node-wide default rather than leaving the pod unwatched. See Operating Modes for the ladder and Pricing for what each license permits. What containment does PandoCore writes a Kubernetes NetworkPolicy that denies the pod's egress except DNS, holding the workload in place without restarting it. The right durable response for stateful workloads where a restart is expensive. If the behaviour subsides, the policy is removed again. The sensor applies and removes that policy from outside the pod, which is why the policy needs no API-server exception and why ingress can be denied as well. The bidirectional half of that depends on your CNI permitting host-to-pod traffic regardless of policy, which Cilium and therefore GKE Dataplane V2 guarantee; on other CNIs treat containment as egress-only."
+   },
+   {
+    "text": "2. Point evidence where you want it",
+    "slug": "point-evidence-where-you-want-it",
+    "depth": 3,
+    "body": "Every detection emits a structured, signed JSON evidence record. The controller owns delivery, so SIEM, Slack and webhook destinations are configured once on the controller rather than per workload, and no workload pod ever holds a third-party credential. See Controller for the destination settings and Evidence Format for the schema."
+   },
+   {
+    "text": "3. Manage behaviour declaratively",
+    "slug": "manage-behaviour-declaratively",
+    "depth": 3,
+    "body": "For anything beyond a handful of namespaces, use the PandoCorePolicy CRD. One YAML file in your GitOps repo controls mode, sensitivity and alert destinations per namespace. See CRD Policy for the schema. Per-namespace integrations need the mirror Integrations declared in a PandoCorePolicy reach the controller through the destinations mirror, which the sensor chart installs by default. If you set mirror.enabled=false , nothing writes the destinations Secret and those per-namespace integrations will not take effect. The controller's own destinations are unaffected."
+   },
+   {
+    "text": "4. Decide what is out of scope",
+    "slug": "decide-what-is-out-of-scope",
+    "depth": 3,
+    "body": "Eleven namespaces are excluded by default, covering kube-system and the GKE managed namespaces. To protect one of them anyway, add it to includedNamespaces . helm upgrade pando-node-sensor ... \\ --set 'includedNamespaces={my-platform-namespace}' Two sharp edges in namespace scoping Do not list pando-system in includedNamespaces . The opt-in is read before the exclusion rules and overrides the own-component exclusion as well as the namespace list, so listing it puts PandoCore's own pods back under monitoring. An early soak run in that configuration took 67 false positives in six minutes, 34 of them from the controller pod. Setting excludedNamespaces: [] does not mean \"exclude nothing\". An empty list is read as unconfigured and falls back to the built-in eleven. Use includedNamespaces to protect a default-excluded namespace; emptying the exclusion list will not do it."
+   },
+   {
+    "text": "5. Tune the cadence, carefully",
+    "slug": "tune-the-cadence-carefully",
+    "depth": 3,
+    "body": "The sensor samples every 1000 ms by default. The floor is 250 ms, and a value below it is refused by name at startup rather than quietly clamped. Shortening the interval costs roughly four times as much CPU at 250 ms as at the default, so lower it only alongside a larger request. helm upgrade pando-node-sensor ... --set sampleIntervalMs=1000"
+   },
+   {
+    "text": "6. Alert on the sensor itself",
+    "slug": "alert-on-the-sensor-itself",
+    "depth": 3,
+    "body": "The chart ships PrometheusRules covering the conditions that a sensor cannot report on its own behalf: the series going absent, a refusal at startup, shedding at the cap, and a cadence that has stretched past its configured interval. Absence is the one condition no self-report can distinguish from healthy, which is why it is alerted on from outside. See Production Hardening ."
+   },
+   {
+    "text": "What This Costs Per Node",
+    "slug": "what-this-costs-per-node",
+    "depth": 2,
+    "body": "The sensor requests 250m CPU and 256Mi per node and is limited to 2 cores and 1Gi . One pod per node, whatever that node is running. Measured warm and enforcing on the shipping build, across two runs: 130.4 mCPU at the p95 with a 106.9 MiB working set over a 24-hour warm window, and 127.3 mCPU with 110.6 MiB over a 34-hour run. The working set stayed flat in both, so there is no leak to grow into the limit, and there was no CFS throttling, no OOMKill and no sensor restart. The request is sized for the 70-pod cap rather than for the engine counts these runs carried. The install refuses nodes that cannot fit the sensor A Helm preflight check compares the sensor's CPU request against each node's allocatable CPU and fails the install rather than letting pods sit Pending on nodes that will never fit them, because a green install that leaves a node unwatched is the failure it exists to catch. It runs only against a live cluster, so helm template and --dry-run=client skip it, as does a credential that cannot list nodes. Bypass it deliberately with --set preflight.nodeCapacity=false ."
+   },
+   {
+    "text": "Quick Reference",
+    "slug": "quick-reference",
+    "depth": 2,
+    "body": "Task Command List sensors kubectl get pods -n pando-system -l app.kubernetes.io/name=pando-node-sensor -o wide View sensor logs kubectl logs -n pando-system <sensor-pod> Check readiness kubectl exec -n pando-system <sensor-pod> -- wget -qO- http://localhost:9090/readyz View metrics kubectl exec -n pando-system <sensor-pod> -- wget -qO- http://localhost:9090/metrics Check coverage gaps pando_node_sensor_pods_unmonitored in Prometheus Set a workload's mode kubectl annotate deployment <name> pandocore.io/mode=isolate --overwrite Opt a workload out kubectl label pod <name> pandocore.io/protect=false"
+   },
+   {
+    "text": "Next Steps",
+    "slug": "next-steps",
+    "depth": 2,
+    "body": "Operating Modes : the response ladder and what sets the ceiling Configuration Reference : every chart value with defaults and ranges Controller : evidence delivery and outbound destinations CRD Policy : declarative per-namespace configuration Production Hardening : privileges, exclusions and alerting Upgrading : moving off the deprecated webhook, and bumping versions Troubleshooting : refusals, license errors, coverage gaps Emergency Procedures : how to stop it quickly Previous Overview Next Controller"
+   }
+  ]
+ },
+ {
+  "title": "PandoCore Documentation",
+  "url": "/docs/",
+  "keywords": [],
+  "headings": [
+   {
+    "text": "Start Here",
+    "slug": "start-here",
+    "depth": 2,
+    "body": ""
+   },
+   {
+    "text": "Getting Started",
+    "slug": "getting-started",
+    "depth": 3,
+    "body": "Two Helm charts, one sensor pod per node, nothing to label."
+   },
+   {
+    "text": "Configuration",
+    "slug": "configuration",
+    "depth": 3,
+    "body": "Reference for the chart values and what each one changes."
+   },
+   {
+    "text": "Operating Modes",
+    "slug": "operating-modes",
+    "depth": 3,
+    "body": "Monitor, alert and isolate, and what sets the ceiling."
+   },
+   {
+    "text": "Emergency Procedures",
+    "slug": "emergency-procedures",
+    "depth": 3,
+    "body": "How to stop it quickly."
+   },
+   {
+    "text": "What PandoCore Does",
+    "slug": "what-pandocore-does",
+    "depth": 2,
+    "body": "PandoCore installs as a node sensor: one DaemonSet pod per node that watches the workloads already running there, opt-out. Nothing is injected into your pods. When behaviour diverges from a workload's profile, PandoCore can: Monitor: detect and record evidence, taking no outward action Alert: detect and notify, through destinations configured on the controller Isolate: detect, alert, and contain the pod with a NetworkPolicy that denies egress except DNS, released automatically when behaviour recovers and without restarting the workload Debug: verbose logging for troubleshooting and tuning Isolate is the ceiling of the supported install. See Operating Modes for what sets it."
+   },
+   {
+    "text": "Architecture Overview",
+    "slug": "architecture-overview",
+    "depth": 2,
+    "body": "Two components, both cluster-wide, installed once: One sensor per node, outside your pods The sensor runs as a hostPID DaemonSet and reads the node's process namespace, so it observes the workloads on its node without running inside any of them and without any change to your application. That topology is also a real privilege posture: see Production Hardening for what it runs as, and the trust center for what it is not granted."
+   },
+   {
+    "text": "Key components",
+    "slug": "key-components",
+    "depth": 3,
+    "body": "Component Description Node sensor A DaemonSet, one pod per node. Watches the workloads on its node and decides responses Controller A StatefulSet that receives evidence, spools it durably, and owns every outbound destination Destinations mirror An unprivileged Deployment that resolves per-namespace policy integrations for the controller PandoCorePolicy CRD Declarative per-namespace configuration for GitOps workflows Metrics endpoint Prometheus-compatible /metrics , plus shipped PrometheusRules for coverage and liveness Evidence output Signed, hash-chained JSON records suitable for SIEM integration"
+   },
+   {
+    "text": "How It Works",
+    "slug": "how-it-works",
+    "depth": 2,
+    "body": "The sensor picks up the pod. No label, patch or restart is involved; a pod opts out with pandocore.io/protect: \"false\" rather than opting in Learning window. PandoCore builds a profile for that workload over 30 minutes and at least 900 samples, whichever is later Detection. Deterministic checks arm when learning completes; the behavioural checks that rest on longer baselines keep warming for hours after that. Findings are classified by severity Response. According to the workload's mode and the license ceiling: record it (monitor), notify (alert), or contain the pod with a NetworkPolicy (isolate)"
+   },
+   {
+    "text": "Integration With Your Stack",
+    "slug": "integration-with-your-stack",
+    "depth": 2,
+    "body": "Observability: Prometheus metrics, with alerting rules shipped in the chart Log aggregation: structured JSON evidence for Splunk, Elastic, Datadog and syslog Kubernetes events: detections and responses emit events for audit trails Alerting: use your existing alerting on PandoCore's metrics No application changes PandoCore needs no modification to your application code, no SDK and no rules to write. It also needs nothing added to your pod specs, since the sensor runs beside your workloads rather than inside them. Validated results The node sensor has been validated across 3,966 engine-hours on GKE, cumulative rather than one unbroken run, against production-representative synthetic workloads, with zero false isolations from sensors that were permitted to isolate, 1,231 engine-hours of them on the exact build we ship. A zero is an upper bound rather than a rate: at most one false isolation in 1,324 engine-hours, at 95 percent confidence. See the full validation results ."
+   },
+   {
+    "text": "Requirements",
+    "slug": "requirements",
+    "depth": 2,
+    "body": "Requirement Version Kubernetes 1.25+ Helm 3.0+ (3.14+ recommended, for --reset-then-reuse-values ) kubectl Compatible with your cluster version Nodes Nodes you control. hostPID is required, so GKE Autopilot and EKS Fargate have no install path"
+   },
+   {
+    "text": "Next Steps",
+    "slug": "next-steps",
+    "depth": 2,
+    "body": "Start with the Getting Started guide . Next Getting Started"
+   }
+  ]
+ },
+ {
+  "title": "Operating Modes",
+  "url": "/docs/operating-modes",
+  "keywords": [],
+  "headings": [
+   {
+    "text": "What Sets The Ceiling",
+    "slug": "what-sets-the-ceiling",
+    "depth": 2,
+    "body": "The response ceiling is a license property rather than a chart value, which is why raising it changes nothing in your cluster. License Ceiling Free Alert. Detects and alerts on as many nodes as you install on, and never contains Growth, Enterprise Isolate Isolate is the ceiling of the supported install The node sensor's ClusterRole withholds pods: delete by name, and the sensor caps its own ceiling at Isolate in code rather than relying on that grant being absent. So the hardest automatic action available is a NetworkPolicy that contains the pod. A mode or license naming something harder resolves down to Isolate rather than failing, which is deliberate: the alternative is a sensor that attempts a forbidden call on every response and learns about it as a 403 each time. There is a second, separate limit. The portal can clamp an individual node, holding it to Monitor regardless of license or annotation. That is a commercial verdict about the node rather than anything to do with your license, and the consequence is worth being precise about: a clamped node does not alert either, where a free node does. The two limits are reported separately on purpose, so an operator reading a clamped node is not sent to upgrade a license that was never the constraint. A free license never clamps, because there is no node cap for a clamp to be a function of. What Free does not get is containment, and that comes from the license ceiling applying equally on every node rather than from protection being withdrawn from some of them."
+   },
+   {
+    "text": "Mode Comparison",
+    "slug": "mode-comparison",
+    "depth": 2,
+    "body": "Mode Detection Evidence Alerts NetworkPolicy isolation Use Case Monitor ✓ ✓ ✗ ✗ Tuning a noisy workload, or a workload you want watched silently Alert ✓ ✓ ✓ ✗ Production visibility with a human deciding what to do Isolate ✓ ✓ ✓ ✓ Containment without restarting the workload Debug ✓ ✓ ✗ ✗ Troubleshooting, with verbose logs"
+   },
+   {
+    "text": "Monitor Mode",
+    "slug": "monitor-mode",
+    "depth": 2,
+    "body": "Monitor detects and records, and does nothing outward. It is the node-wide default for a pod carrying no mode annotation. Watches workload behaviour and builds a profile per workload Logs detections as JSON to stdout Emits Kubernetes events for detections Updates Prometheus metrics Sends no alerts and applies no NetworkPolicy Reach for it when a specific workload is noisy and you want it watched while you tune, rather than as a fleet-wide starting posture: on a free license the fleet-wide posture is already Alert, and alerts you can read are the point of running it. { \"level\": \"warn\", \"timestamp\": \"2026-03-16T14:30:00Z\", \"message\": \"anomaly_detected\", \"mode\": \"monitor\", \"severity\": \"high\", \"action\": \"logged_only\" }"
+   },
+   {
+    "text": "Alert Mode",
+    "slug": "alert-mode",
+    "depth": 2,
+    "body": "Alert adds notification. On a detection, the controller delivers to whichever destinations you have configured, and the workload is left alone. Everything Monitor does, plus: Delivers each detection to the destinations configured on the controller Alerts carry pod name, namespace, severity and timestamp Applies no NetworkPolicy Destinations live on the controller Alert does not need a webhook URL per workload. The controller owns every outbound destination, so SIEM, Slack and webhook delivery are configured once, and no workload pod holds a third-party credential. See Controller ."
+   },
+   {
+    "text": "Isolate Mode",
+    "slug": "isolate-mode",
+    "depth": 2,
+    "body": "Isolate is the top of the ladder on the supported install. On a trip, PandoCore writes a Kubernetes NetworkPolicy that denies the pod's egress except DNS, and removes it again if the behaviour subsides. Everything Alert does, plus: Applies a NetworkPolicy to the tripped pod Releases automatically on recovery A repeated attack on the same pod can resolve to an alert The first excursion's own samples are folded into the baseline that judges the next one, so a second identical attack against the same pod is scored against a baseline that has partly learned it. It can therefore stay under the gate and resolve to an alert rather than an isolation. The second attack is not quieter and not less novel: in the measured case its peak was within a few percent of the first and its peak drift score was marginally higher, and what changed was that the score stayed under the gate for the whole excursion rather than crossing it. Detection and evidence are unaffected. In the soak runs, each attack was detected and produced a signed evidence record, and Alert is the floor the ladder never drops below. A fix for the absorption is in test and is not in this release. Why containment rather than a restart A restart destroys the thing you want to look at and costs you the workload. Containment holds the pod still, keeps it available for inspection, and is survivable for stateful workloads where a restart is expensive: databases, caches, queues. If the behaviour was transient, the policy comes off and nothing was lost. The policy is tighter than the sidecar's was The sensor applies and removes the policy from outside the pod, so the policy needs no API-server exception: the deprecated sidecar ran inside the pod it was containing and had to be able to call the API to release itself, which meant granting an isolated workload reach it did not otherwise need. Dropping that also takes endpoints: get out of the sensor's grant entirely. For the same reason ingress can be denied as well, so containment can be in both directions rather than egress-only. That half depends on your CNI permitting host-to-pod traffic regardless of policy, which Cilium and therefore GKE Dataplane V2 guarantee. On other CNIs, treat containment as egress-only."
+   },
+   {
+    "text": "Debug Mode",
+    "slug": "debug-mode",
+    "depth": 2,
+    "body": "Debug is verbose logging with no response, and sits outside the ladder at the same intensity as Monitor. Use it to understand why something did or did not fire, then set it back. Log volume Debug is substantially more verbose than Monitor. Leave it on a single workload while you investigate rather than node-wide, and do not leave it on."
+   },
+   {
+    "text": "Setting A Workload's Mode",
+    "slug": "setting-a-workloads-mode",
+    "depth": 2,
+    "body": "Mode is a per-pod annotation. The node-wide setting is the fallback an unannotated pod gets. kubectl annotate deployment your-app pandocore.io/mode=isolate --overwrite kubectl rollout restart deployment/your-app Accepted values are monitor , alert , isolate and debug . Three things worth knowing about this annotation It is read when the sensor starts watching a pod , so a change applies to pods created after it. The rollout restart above is what applies it to pods already running. The value is matched exactly , with no trimming and no case folding. Isolate and isolate are not the same string as isolate . A value that does not match falls back to the node-wide default rather than leaving the pod unwatched, and the sensor warns naming the pod. Refusing to watch a workload over a typo would be the worse failure, but check for that warning after a change."
+   },
+   {
+    "text": "Reading The Current State",
+    "slug": "reading-the-current-state",
+    "depth": 2,
+    "body": "Ask a sensor what it is actually doing. /status reports the license ceiling and any node clamp as separate lines. kubectl exec -n pando-system <sensor-pod> -- wget -qO- http://localhost:9090/status node_clamp: none is a reading, not a gap A clamp applies only on a signed verdict from the portal. A portal outage, an unresolved node identity, a cluster with no fresh presence map and an expired verdict all report none , and all of them mean this node is fully protected. An absent clamp is never a silent restriction."
+   },
+   {
+    "text": "Recommended Path",
+    "slug": "recommended-path",
+    "depth": 2,
+    "body": "Install on a free license, fleet-wide. The ceiling is Alert, so it detects and tells you, and contains nothing. There is no trial to remember to leave and no mode to set. Read what it reports. Decide from your own evidence whether these are detections you would have wanted acted on. Put a noisy workload in monitor while you tune it rather than turning anything off. Raise the ceiling when you are ready for it to act. That is a license change, so the install does not change. Workloads then reach Isolate as their annotations permit. There is no fixed number of weeks here. The old advice to spend a week in each rung existed because the evaluation period was a mode you had to remember to leave; it is now simply the free tier, and you leave it when the evidence says so."
+   },
+   {
+    "text": "Metrics",
+    "slug": "metrics",
+    "depth": 2,
+    "body": "# Current operating mode (0=monitor, 1=alert, 2=isolate, 4=debug) pando_operating_mode{pod=\"your-pod\"} 2 # The ceiling this license permits, same encoding pando_mode_ceiling 2 # Isolation policies successfully applied pando_isolations_total{pod=\"your-pod\"} 2"
+   },
+   {
+    "text": "HTTP Endpoints",
+    "slug": "http-endpoints",
+    "depth": 2,
+    "body": "The sensor serves four endpoints on port 9090. Endpoint Method Description /healthz GET Liveness. Returns 200 even while the sensor is refusing to monitor, deliberately, so the kubelet does not crash-loop the refusal logs away /readyz GET Readiness. 503 during learning and while refusing, 200 once armed. This is the one that gates /metrics GET Prometheus metrics /status GET Plain-text summary: engine count, license ceiling, node clamp There is no re-learning endpoint on the sensor. One sensor holds an engine per watched pod on its node, so a single node-wide rebuild is not a meaningful operation; a workload re-profiles when its pods restart."
+   },
+   {
+    "text": "Next Steps",
+    "slug": "next-steps",
+    "depth": 2,
+    "body": "Configuration Reference : every chart value with defaults and ranges CRD Policy : setting mode per namespace declaratively Controller : where alerts and evidence go Production Hardening : what to settle before raising the ceiling Emergency Procedures : stopping it quickly Previous CRD Policy Next Production Hardening"
+   }
+  ]
+ },
+ {
+  "title": "CRD-Based Policy",
+  "url": "/docs/policy",
+  "keywords": [],
+  "headings": [
+   {
+    "text": "Quick Start",
+    "slug": "quick-start",
+    "depth": 2,
+    "body": "Create a file called pando-policy.yaml : apiVersion: pandocore.io/v1alpha1 kind: PandoCorePolicy metadata: name: default namespace: production spec: mode: isolate sensitivity: high Apply it: kubectl apply -f pando-policy.yaml Verify: kubectl get pcp -n production NAME MODE SENSITIVITY AGE default isolate high 5s"
+   },
+   {
+    "text": "Full Policy Reference",
+    "slug": "full-policy-reference",
+    "depth": 2,
+    "body": "Every field is optional. Any field you leave out falls back to the environment, and then to the built-in defaults. On the node sensor that environment is the DaemonSet's own, which is node-wide rather than per-workload. apiVersion: pandocore.io/v1alpha1 kind: PandoCorePolicy metadata: name: default # must be \"default\", one policy per namespace namespace: production spec: # Operating mode, a cumulative ladder: each tier adds to the one before it. # monitor : observe and log only # alert : + notify (Slack / SIEM) # isolate : + quarantine via NetworkPolicy, auto-release on recovery. # Never deletes a pod. This is the node sensor's ceiling. # debug : monitor plus verbose logging, no enforcement mode: isolate # monitor | alert | isolate | debug # Sensitivity preset. Maps to threshold multipliers: a higher preset is a # tighter gate. Ignored if explicit thresholds are set below. sensitivity: medium # low | medium | high # Tighten the auto-learned drift gates. A lower number is a tighter gate. # Both bounds are exclusive: greater than 0.0 and less than 1.0. thresholds: incremental: 0.15 # incremental (sample-to-sample) drift cumulative: 0.45 # cumulative (baseline) drift # Per-namespace evidence destinations. Credentials are Secret references, # never literals: a Secret in this namespace, read by name and key. integrations: slackWebhook: urlSecretRef: name: pando-slack key: url pagerdutyEvents: routingKeySecretRef: name: pando-pagerduty key: routingKey"
+   },
+   {
+    "text": "Precedence",
+    "slug": "precedence",
+    "depth": 2,
+    "body": "PandoCore uses a layered configuration model: Priority Source Description 1 (highest) CRD Policy Values in PandoCorePolicy win 2 Environment Variables Fallback when no CRD field is set. On the node sensor this is the DaemonSet's own environment, which is node-wide rather than per-workload. 3 (lowest) Built-in Defaults Hardcoded sane defaults What a poll finds decides what happens next, and there are three answers rather than two: A policy exists: it is applied. A namespace with no policy of its own is left as it was, not reset. No PandoCorePolicy exists anywhere on the cluster: every protected workload returns to its environment-variable configuration on that poll. The read failed: whatever was already applied stays applied, so an API blip never disarms a node."
+   },
+   {
+    "text": "Spec Fields",
+    "slug": "spec-fields",
+    "depth": 2,
+    "body": ""
+   },
+   {
+    "text": "mode",
+    "slug": "mode",
+    "depth": 3,
+    "body": "Value Description monitor Detect and record only. No alerts and no network action. alert Everything in monitor , plus Slack / portal alerts on trip. isolate Everything in alert , plus a NetworkPolicy that blocks pod egress (except DNS) on trip. This is the ceiling of the supported install. Policy is removed automatically once drift subsides. debug Verbose logging for troubleshooting. No response actions."
+   },
+   {
+    "text": "sensitivity",
+    "slug": "sensitivity",
+    "depth": 3,
+    "body": "Value Description low Most permissive. Good starting point for chatty workloads (JVMs, databases, batch jobs). medium Default. Balanced for typical production workloads. high Strictest. Catches subtler deviations. Use after a workload has been running cleanly for weeks, or on security-critical services. For finer numeric control, set thresholds below. The PANDO_SENSITIVITY environment variable is the other route (see Configuration ), but on the node sensor it belongs to the DaemonSet and so applies node-wide rather than to one workload."
+   },
+   {
+    "text": "thresholds",
+    "slug": "thresholds",
+    "depth": 3,
+    "body": "Tighten the auto-learned drift gates. A lower number is a tighter gate. Thresholds can only tighten what learning derived, never loosen it; use sensitivity to loosen. Setting either field overrides the sensitivity preset for that gate. Both bounds are exclusive, and the CRD rejects a value at or outside them at admission, so a bad number is an error on your kubectl command rather than a surprise at runtime. Field Type Description incremental number, 0.0 < n < 1.0 Incremental (sample-to-sample) drift threshold. cumulative number, 0.0 < n < 1.0 Cumulative (baseline) drift threshold."
+   },
+   {
+    "text": "integrations",
+    "slug": "integrations",
+    "depth": 3,
+    "body": "Per-namespace evidence destinations. The admission webhook reads this block cluster-wide, resolves every Secret reference against a Secret in the policy's own namespace, and hands the resolved set to the controller, which delivers each namespace's evidence to that namespace's destinations. Credentials are given by Secret reference, never as a literal. A PandoCorePolicy is a namespaced object, so a token written into one is readable by anyone who can read policies in that namespace. Non-credential settings (endpoint URL, index, site, facility, port, protocol) stay literal: they are configuration, not secrets. Field Type Description slackWebhook object Slack incoming webhook. urlSecretRef ( name , key ) holds the webhook URL. pagerdutyEvents object PagerDuty Events v2. routingKeySecretRef ( name , key ) holds the routing key. splunk object Splunk HTTP Event Collector. url is the HEC base URL, without /services/collector/event . tokenSecretRef holds the HEC token. Optional: index , sourcetype , source , ackEnabled . elastic object Elasticsearch _bulk . url is the cluster base URL, without /_bulk . authType is api_key or basic , with the matching apiKeySecretRef or basicAuthSecretRef . Optional: index , refresh , stdoutEnabled . datadog object Datadog Logs API. site takes a short name, a bare site domain, or a full URL for a proxy. apiKeySecretRef holds the API key. Optional: service , source , clusterName , extraTags . syslog object RFC-5424 syslog, the one destination with no credential. host , port and protocol ( udp , tcp or tls ). Optional: appName , facility , severity , enterpriseId . Every destination also takes enabled , which defaults to true. Setting it to false pauses that destination, which is not the same as leaving the block out: a paused destination still overrides the controller's own baseline, while an absent one lets the baseline apply."
+   },
+   {
+    "text": "Examples",
+    "slug": "examples",
+    "depth": 2,
+    "body": ""
+   },
+   {
+    "text": "Production Namespace",
+    "slug": "production-namespace",
+    "depth": 3,
+    "body": "apiVersion: pandocore.io/v1alpha1 kind: PandoCorePolicy metadata: name: default namespace: production spec: mode: isolate sensitivity: medium thresholds: incremental: 0.12 cumulative: 0.35 integrations: slackWebhook: urlSecretRef: name: pando-slack key: url"
+   },
+   {
+    "text": "Staging namespace (monitor only)",
+    "slug": "staging-namespace-monitor-only",
+    "depth": 3,
+    "body": "apiVersion: pandocore.io/v1alpha1 kind: PandoCorePolicy metadata: name: default namespace: staging spec: mode: monitor sensitivity: high"
+   },
+   {
+    "text": "Verifying",
+    "slug": "verifying",
+    "depth": 2,
+    "body": "Check that the CRD is registered: kubectl get crd pandocorepolicies.pandocore.io List policies across namespaces: kubectl get pcp --all-namespaces Check for policy pickup. On the node sensor, read the sensor on the node rather than a container in the pod: DS=$(kubectl -n pando-system get ds -l app.kubernetes.io/name=pando-node-sensor \\ -o jsonpath='{.items[0].metadata.name}') kubectl -n pando-system logs \"ds/$DS\" | grep -i \"PandoCorePolicy\" Expected output: PandoCorePolicy CRD found namespace=production name=default Applied PandoCorePolicy mode=isolate resource_version=\"12345\" The spec is exactly these four fields mode , sensitivity , thresholds and integrations are the whole of it, and they are all that PandoCore reads from a policy. Anything else under spec is not part of the schema, so the API server drops it before the object is stored. If you need something the four do not cover, talk to support ."
+   },
+   {
+    "text": "Polling Interval",
+    "slug": "polling-interval",
+    "depth": 2,
+    "body": "The sensor polls for policy changes every 30 seconds by default, through PANDO_POLICY_POLL_INTERVAL_SECS . It belongs to the DaemonSet and is therefore node-wide, so there is one poll interval covering the pods on a node rather than one per workload."
+   },
+   {
+    "text": "GitOps Integration",
+    "slug": "gitops-integration",
+    "depth": 2,
+    "body": "Because PandoCorePolicy is a standard Kubernetes resource, it integrates naturally with GitOps workflows: Store policy YAML in your Git repository alongside application manifests Review policy changes in pull requests Apply via ArgoCD, Flux, or any kubectl apply pipeline Track policy history with git log"
+   },
+   {
+    "text": "Next Steps",
+    "slug": "next-steps",
+    "depth": 2,
+    "body": "Configuration : every chart value with defaults and ranges Operating Modes : the monitor → alert → isolate ladder Production Hardening : sizing, posture and rollout guidance Previous Configuration Next Operating Modes"
+   }
+  ]
+ },
+ {
+  "title": "Production Hardening",
+  "url": "/docs/production-hardening",
+  "keywords": [
+   "RBAC",
+   "ClusterRole"
+  ],
+  "headings": [
+   {
+    "text": "1. Spend Time On A Free License First",
+    "slug": "spend-time-on-a-free-license-first",
+    "depth": 2,
+    "body": "The most important hardening step is discipline rather than configuration. A free license detects and alerts and never contains, on as many nodes as you want to install it on, so the validation period is not a trial mode you have to remember to leave: it is simply the tier. Run it across the fleet, read what it reports, and decide from evidence whether the detections are ones you would have wanted acted on. The response ceiling is a property of the license rather than a chart value, so nothing in your cluster has to change when you decide to raise it. See Operating Modes for the ladder."
+   },
+   {
+    "text": "2. Size The Per-Node Request",
+    "slug": "size-the-per-node-request",
+    "depth": 2,
+    "body": "The sensor requests 250m CPU and 256Mi per node and is limited to 2 cores and 1Gi . That is one pod per node rather than one per workload, so the figure to plan against is per node and does not grow with your deployment count. Measured warm and enforcing on the shipping build, across two runs: a 130.4 mCPU p95 with a 106.9 MiB working set over a 24-hour warm window, and 127.3 mCPU with 110.6 MiB over a 34-hour run. Both held a flat working-set slope, with no CFS throttling and no OOMKills. The request is sized for the 70-pod cap rather than for the engine counts these runs carried. helm upgrade pando-node-sensor ... \\ --set resources.requests.cpu=250m \\ --set resources.requests.memory=256Mi Check actual usage with kubectl top pod -n pando-system after a week. Raise the request before shortening the sampling cadence, never after: at the 250 ms floor the same build costs roughly four times as much CPU as at the 1000 ms default, and CPU is shared by request under contention."
+   },
+   {
+    "text": "3. Decide What Is Out Of Scope",
+    "slug": "decide-what-is-out-of-scope",
+    "depth": 2,
+    "body": "Eleven namespaces are excluded by default, covering kube-system and the GKE managed namespaces. Add your own infrastructure namespaces to that list: cert-manager, service meshes, CI runners, and anything else whose behaviour you do not want profiled. helm upgrade pando-node-sensor ... \\ --set 'excludedNamespaces={kube-system,kube-public,kube-node-lease,cert-manager,istio-system}' Two sharp edges here excludedNamespaces: [] does not mean \"exclude nothing\". An empty list is read as unconfigured and falls back to the built-in eleven. If you override the list, write out the full set you want, including the defaults you intend to keep. Never list pando-system in includedNamespaces . That opt-in is read before the exclusion rules and overrides the own-component exclusion as well as the namespace list, so it puts PandoCore's own pods back under monitoring. An early soak run in that configuration took 67 false positives in six minutes, 34 of them from the controller pod. Four classes stay excluded whatever the configuration says, and includedNamespaces does not override them: the sensor's own pod, hostPID pods, hostNetwork pods, and any pod carrying pandocore.io/protect: \"false\" . An operator opting a namespace in has not acquired the pod owner's decision."
+   },
+   {
+    "text": "4. Pin The Chart Version",
+    "slug": "pin-the-chart-version",
+    "depth": 2,
+    "body": "Both charts resolve their image tag from the chart version, so pinning the chart pins what runs. Installing an OCI chart without --version fails outright rather than drifting to the newest release, which is the behaviour you want here; keep the version explicit in whatever applies your releases. helm upgrade pando-node-sensor \\ oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-node-sensor \\ --version 2.0.0 \\ --reuse-values"
+   },
+   {
+    "text": "5. Run The Controller With Two Replicas",
+    "slug": "run-the-controller-with-two-replicas",
+    "depth": 2,
+    "body": "The sensor is a DaemonSet and needs no replica planning: one pod per node is the topology. The controller is the component with an availability question, because a single replica means a node drain or a rolling update is a window in which sensors have nowhere to deliver evidence. The chart defaults to two. Below two the PodDisruptionBudget does not render at all, so if you have overridden it down, restore it. helm upgrade pando-controller ... --set replicas=2"
+   },
+   {
+    "text": "6. Back Up The License Secret",
+    "slug": "back-up-the-license-secret",
+    "depth": 2,
+    "body": "The license Secret ( pando-license in pando-system ) is the one thing worth keeping a copy of. You can always reissue from the portal, but a copy makes recovery a one-liner. kubectl get secret pando-license -n pando-system -o yaml > pando-license-backup.yaml Sensor state does not need backup Each sensor keeps working state under /var/lib/pando on its node, as a hostPath rather than a PersistentVolumeClaim, deliberately: a restored state directory is refused as older than the pod reading it. Profiles rebuild on start, which is the intent, since a profile should describe the workload running now rather than a stale snapshot. Evidence durability is the controller's job, not the node's."
+   },
+   {
+    "text": "7. Point Evidence Somewhere Humans Watch",
+    "slug": "point-evidence-somewhere-humans-watch",
+    "depth": 2,
+    "body": "Detections without a consumer are log entries. The controller owns every outbound destination, so SIEM, Slack and webhook delivery are configured once there rather than per workload, and no workload pod ever holds a third-party credential. See Controller and Evidence Format . Test the path before you need it, and confirm an alert lands where you expect."
+   },
+   {
+    "text": "8. Alert On The Sensor Itself",
+    "slug": "alert-on-the-sensor-itself",
+    "depth": 2,
+    "body": "The chart ships PrometheusRules for the conditions a sensor cannot report on its own behalf. The one to wire first is coverage: pando_node_sensor_pods_unmonitored{reason=\"cap\"} is a gauge of pods that got no engine because the node hit its cap, and those are pods you wanted watched. It is not a capacity hint. The rules also cover the series going absent, a refusal at startup, and a cadence that has stretched past its configured interval. Absence matters most, because it is the one condition no self-report can distinguish from healthy, which is why it is alerted on from outside. On GKE managed Prometheus these rules do nothing Managed Prometheus does not honour the chart's scrape annotations, so metrics.podMonitoring.enabled=true is what makes it scrape at all. It also reads neither the alert-rules ConfigMap nor a PrometheusRule , so the rules ship and sit inert until they are converted to its own Rules resource. Port the coverage and absence rules across by hand if you run it. Those two are what tell you a node has stopped being watched, and this is the configuration in which you would least want to assume the chart had covered you. Select on the component label The sensor's own pod carries pandocore.io/protect: \"false\" . A Prometheus job written against protect=true matches nothing and reports a clean scrape of nothing, which is indistinguishable from healthy on a dashboard. Select on app.kubernetes.io/name=pando-node-sensor ."
+   },
+   {
+    "text": "9. Use CRD Policy For Anything Non-Trivial",
+    "slug": "use-crd-policy-for-anything-non-trivial",
+    "depth": 2,
+    "body": "Configuring a handful of deployments by annotation is fine. Managing dozens of services across namespaces with kubectl annotate is not. Commit a PandoCorePolicy resource to your GitOps repo so mode, sensitivity and alert destinations are version-controlled alongside everything else. See CRD Policy . Per-namespace integrations declared in a policy reach the controller through the destinations mirror, which the sensor chart installs by default. Setting mirror.enabled=false leaves them inert."
+   },
+   {
+    "text": "10. Understand What The Sensor Runs As",
+    "slug": "understand-what-the-sensor-runs-as",
+    "depth": 2,
+    "body": "This is the section to read before you install, and it is a real increase in node surface compared with the deprecated sidecar. The sensor runs as a hostPID DaemonSet, as uid 0, with CAP_SYS_PTRACE , mounting the node's /proc read-only and a host path for its own state. The node's PID namespace is the whole point of the topology: the sensor sits outside every pod it watches, so that namespace is the only way it sees their processes. Not compatible with restricted Pod Security, GKE Autopilot or EKS Fargate The deprecated sidecar ran unprivileged and satisfied the restricted Pod Security Standard. The sensor does not, and there is no install path on GKE Autopilot or EKS Fargate, both of which forbid hostPID . If you need those, the node sensor is not deployable for you today. Standard GKE is the configuration this release was validated on. On uid 0 specifically: it is load-bearing rather than inherited. CAP_SYS_PTRACE becomes effective through the uid-0 path, and the alternative posture is a file capability raised in-process with allowPrivilegeEscalation: true , which is more escalation surface than root with escalation switched off. Of the two postures that work, this is the narrower one. What bounds it instead is the grant. The sensor's ClusterRole holds pods get/list/watch, events create, networkpolicies create/delete/get, the three workload-owner kinds get, policies list, services list, and namespaces get scoped to kube-system . pods: patch , pods: delete and endpoints: get are withheld by name, each with its reason recorded in the chart. The cluster-wide secrets get that per-namespace integrations need does not sit on this pod at all: the destinations mirror is a separate unprivileged Deployment precisely so that grant is not held by a hostPID pod running as uid 0 on every node."
+   },
+   {
+    "text": "11. Three Annotations The Sensor Cannot Honour",
+    "slug": "three-annotations-the-sensor-cannot-honour",
+    "depth": 2,
+    "body": "If you are migrating from the webhook, these three do nothing now: pandocore.io/full-proc-signals pandocore.io/provenance-enforce pandocore.io/node-enforcer All three were applied at admission, by rewriting a pod before it was created: the first two mutated its securityContext and the third added a hostPath volume and mount. A sensor is outside the pod and runs after it already exists, so there is no point at which it could apply any of them. The sensor warns once per pod carrying one, and the pod is still monitored. The signal coverage the first two used to buy is not lost, because the sensor already holds CAP_SYS_PTRACE on the node. They were a per-pod posture choice under a topology where each pod carried its own observer; there is no longer a per-pod posture to choose. On SELinux and Bottlerocket seLinuxLevel is empty by default and is ignored where SELinux is not the enforcing module for containers, which covers GKE's Container-Optimized OS (AppArmor) and EKS AL2023 (SELinux permissive). On Bottlerocket it is required for the file-age routes to work at all: every container runs as container_t with its own category pair, so without a clearance the sensor's pair does not dominate the target's and the path walk is refused."
+   },
+   {
+    "text": "Production Hardening Checklist",
+    "slug": "production-hardening-checklist",
+    "depth": 2,
+    "body": "Ran on a free license across the fleet long enough to judge the detections before raising the response ceiling Per-node request sized to observed usage, and raised before any cadence change rather than after Infrastructure namespaces added to excludedNamespaces , written out in full rather than emptied pando-system absent from includedNamespaces Chart version pinned explicitly with --version Controller running with replicas >= 2 , keeping its PodDisruptionBudget in effect pando-license Secret included in your Kubernetes backup process Evidence destinations configured on the controller and tested end to end pando_node_sensor_pods_unmonitored and the shipped absence rule wired into monitoring, selecting on the component label Configuration managed as PandoCorePolicy in GitOps rather than ad-hoc annotations The sensor's privilege posture reviewed and accepted by whoever owns node security Emergency procedures documented and tested (see Emergency Procedures ) Previous Operating Modes Next Upgrading"
+   }
+  ]
+ },
+ {
+  "title": "Troubleshooting",
+  "url": "/docs/troubleshooting",
+  "keywords": [],
+  "headings": [
+   {
+    "text": "A Workload Is Not Being Watched",
+    "slug": "a-workload-is-not-being-watched",
+    "depth": 2,
+    "body": "Symptom: a pod is running, but it never appears in detections and no engine was started for it. # Is there a sensor on that pod's node at all? kubectl get pods -n pando-system -o wide \\ -l app.kubernetes.io/name=pando-node-sensor | grep <node> # How many engines is that node's sensor running, and is it shedding? kubectl exec -n pando-system <sensor-pod> -- wget -qO- http://localhost:9090/status # Is the pod opted out? kubectl get pod <pod> -o jsonpath='{.metadata.labels}'"
+   },
+   {
+    "text": "Common causes",
+    "slug": "common-causes",
+    "depth": 3,
+    "body": "The node is over the engine cap. Each sensor runs at most maxEngines monitored pods (70 by default). Pods beyond it get no engine, and they are shed in a stable order, so the same pods stay unwatched across restarts rather than rotating. Check pando_node_sensor_pods_unmonitored{reason=\"cap\"} . This is the most likely cause on a dense node, and it is a coverage gap rather than a capacity hint. The pod opted out. pandocore.io/protect: \"false\" excludes a pod, and nothing an operator sets overrides it. Note the comparison is byte-for-byte: \"False\" or \"0\" do not opt out, so an intended opt-out may also be silently inactive. The namespace is excluded. Eleven are by default, covering kube-system and the GKE managed namespaces. Add the namespace to includedNamespaces to protect it anyway; emptying excludedNamespaces does not work, because an empty list is read as unconfigured and falls back to the built-in eleven. The pod uses hostPID or hostNetwork . Both are excluded and neither is overridable. A pod whose process view or socket table is the node's cannot have a pod-scoped baseline, so watching it on request would answer the question wrongly rather than narrowly. No sensor is scheduled on that node. The DaemonSet tolerates everything by default, so this usually means a nodeSelector was set, or the node cannot allocate the sensor's CPU request. The install preflight refuses the latter case at install time; if it was bypassed with preflight.nodeCapacity=false , the sensor pod will sit Pending instead."
+   },
+   {
+    "text": "A Sensor Is Refusing Or Crash-Looping",
+    "slug": "a-sensor-is-refusing-or-crash-looping",
+    "depth": 2,
+    "body": "Symptom: the sensor pod is running but /readyz returns 503 indefinitely, or the pod is in CrashLoopBackOff . # Current and previous logs kubectl logs -n pando-system <sensor-pod> kubectl logs -n pando-system <sensor-pod> --previous # Events and exit codes kubectl describe pod -n pando-system <sensor-pod> A refusal is not a crash, and /healthz will still say 200 When the sensor refuses to monitor it parks rather than exiting, and /healthz deliberately keeps returning 200 so the kubelet does not crash-loop the refusal logs away before you can read them. /readyz is the endpoint that reports it. A pod that looks healthy in kubectl get pods can be refusing, so check readiness rather than phase. A refusal names one of eight reasons, which is also the label on the refusal metric: config , licence , siem , node_name , state_dir , cluster_limit , revoked or channel . A refusal is a configuration error and will not clear on its own. licence : the license failed validation. A signature mismatch usually means the image and the license are from different environments. An expired license needs renewal from the portal. Note the key is not trimmed, so a Secret created from a file with a trailing newline fails validation; create it with --from-literal . config : a value was rejected at startup rather than silently clamped. The most common is sampleIntervalMs below its 250 ms floor, which is refused by name. There is no 100 ms option. channel : the sensor could not establish its evidence channel to the controller. Check the controller is installed and running, and that its Service publishes the evidence port the sensor expects. The sensor composes that URL from the controller's parts rather than taking a hand-written one, so a mismatch is usually a namespace or service-name override. state_dir : /var/lib/pando could not be created or written on the node. node_name : the sensor could not determine which node it is on, so it cannot attribute evidence or be metered correctly. cluster_limit or revoked : a portal-side verdict about this cluster or license. Check the portal. The controller client certificate is mandatory The sensor mounts the controller's client certificate Secret with optional: false , so a missing Secret fails the pod rather than starting a sensor whose evidence has nowhere to go. If the pod will not start at all and the events mention a missing Secret, that is this."
+   },
+   {
+    "text": "Memory or CPU pressure",
+    "slug": "memory-or-cpu-pressure",
+    "depth": 3,
+    "body": "The sensor requests 250m CPU and 256Mi per node, and is limited to 2 cores and 1Gi. If you have shortened the sampling cadence, raise the request to match: at the 250 ms floor the same build costs roughly four times as much CPU as at the 1000 ms default, and CPU is shared by request under contention. helm upgrade pando-node-sensor ... \\ --set resources.requests.cpu=500m \\ --set resources.limits.memory=1Gi"
+   },
+   {
+    "text": "Too Many Alerts",
+    "slug": "too-many-alerts",
+    "depth": 2,
+    "body": "Symptom: detections firing on normal workload behaviour during batch jobs, traffic bursts or other legitimate variance. First, confirm the workload finished learning. A profile takes 30 minutes and at least 900 samples, whichever is later, and detections before that are not meaningful. Behavioural checks that rest on longer baselines keep warming for hours beyond it, so a workload that has been watched for forty minutes is not yet fully calibrated. kubectl exec -n pando-system <sensor-pod> -- wget -qO- http://localhost:9090/readyz"
+   },
+   {
+    "text": "Tuning options, in order of preference",
+    "slug": "tuning-options-in-order-of-preference",
+    "depth": 3,
+    "body": "Loosen sensitivity in a PandoCorePolicy for that namespace. low , medium or high , where a higher preset is a tighter gate. This is the right lever because it is per-namespace and version-controlled. See CRD Policy . kubectl patch pandocorepolicy default -n production \\ --type merge -p '{\"spec\":{\"sensitivity\":\"low\"}}' Put the workload in monitor . It keeps being watched and keeps producing evidence, and stops alerting, which is the right move while you calibrate rather than switching anything off. kubectl annotate deployment your-app pandocore.io/mode=monitor --overwrite kubectl rollout restart deployment/your-app Restart the workload to re-profile it. If its traffic pattern genuinely changed, the old profile no longer describes normal. There is no re-learn endpoint on the sensor; a workload re-profiles when its pods restart. Contact support. If the preset and a re-profile do not settle it, reach out. We would rather debug it with you. Sensitivity is not a per-workload environment variable any more PANDO_SENSITIVITY still exists, but on the node sensor it belongs to the DaemonSet, so it applies node-wide rather than to one workload. Use a PandoCorePolicy for per-namespace tuning, and thresholds within it for finer numeric control. Thresholds can only tighten what learning derived, never loosen it; use sensitivity to loosen."
+   },
+   {
+    "text": "Sensor Running But No Data",
+    "slug": "sensor-running-but-no-data",
+    "depth": 2,
+    "body": "Symptom: the sensor is ready, but /metrics looks empty or the portal dashboard shows no activity. # Metrics directly off the sensor kubectl exec -n pando-system <sensor-pod> -- wget -qO- http://localhost:9090/metrics # Is the controller receiving anything? kubectl logs -n pando-system -l app.kubernetes.io/name=pando-controller --tail=100 Your Prometheus job matches nothing. This is the most common cause and the most misleading, because it reports a clean scrape of nothing, which looks identical to healthy. The sensor's own pod carries pandocore.io/protect: \"false\" , so a job selecting on protect=true finds no targets. Select on app.kubernetes.io/name=pando-node-sensor . Learning has not finished. Wait for /readyz to return 200. Evidence is reaching the controller but not leaving it. The controller owns every outbound destination, so an empty SIEM or Slack channel with healthy sensors is a controller configuration question rather than a sensor one. See Controller . Egress is blocked. Your cluster's NetworkPolicy or firewall may be blocking the controller's outbound calls. Check the controller's logs for HTTP errors. Per-namespace integrations are inert. Integrations declared in a PandoCorePolicy reach the controller through the destinations mirror. If mirror.enabled=false , nothing writes the destinations Secret and those integrations do nothing. The controller's own destinations are unaffected."
+   },
+   {
+    "text": "A Pod Was Contained Unexpectedly",
+    "slug": "a-pod-was-contained-unexpectedly",
+    "depth": 2,
+    "body": "Symptom: a workload lost network egress and you need to understand why. Containment is a Kubernetes NetworkPolicy, so it is visible and reversible with ordinary tooling: # The policy PandoCore wrote kubectl get networkpolicy -n <namespace> # The detection that caused it kubectl get events -n <namespace> --field-selector involvedObject.name=<pod> Read the evidence record in the portal's Events tab for the detection reason and severity. Check the workload's mode. If you expected it only to alert, confirm with kubectl get deployment your-app -o jsonpath='{.spec.template.metadata.annotations}' . Remember the annotation is read when the sensor starts watching a pod, so a recent change may not have applied to pods already running. If the behaviour subsides, the policy is removed automatically. You do not need to delete it by hand, and deleting it does not resolve the underlying detection. If it was clearly a false positive, see Too Many Alerts above. To stop PandoCore responding immediately while you investigate, see Emergency Procedures ."
+   },
+   {
+    "text": "Getting Help",
+    "slug": "getting-help",
+    "depth": 2,
+    "body": "Collect the following before reaching out: kubectl version , and the chart versions from helm list -n pando-system kubectl logs -n pando-system <sensor-pod> (last 200 lines) kubectl exec -n pando-system <sensor-pod> -- wget -qO- http://localhost:9090/status kubectl describe pod -n pando-system <sensor-pod> The value of pando_node_sensor_pods_unmonitored if coverage is the question The relevant portal evidence record if a pod was contained Send to support or reply to your onboarding email thread. Previous Upgrading Next Emergency Procedures"
+   }
+  ]
+ },
+ {
+  "title": "Upgrading",
+  "url": "/docs/upgrading",
+  "keywords": [],
+  "headings": [
+   {
+    "text": "Migrating Off The Admission Webhook",
+    "slug": "migrating-off-the-admission-webhook",
+    "depth": 2,
+    "body": "If you are running the webhook and injected sidecars, this is the one upgrade that is not a version bump. The webhook and the sidecar are deprecated and receive no further release. Do not run both topologies at once The sensor excludes its own pod, hostPID pods, hostNetwork pods and anything carrying the opt-out label. It does not exclude a pod that already has a sidecar. Install the sensor while the webhook is still injecting and those pods are watched twice, by their own sidecar and by the node sensor, which means two sets of detections and two independent responses to the same behaviour. Follow the order below. Install the controller if you do not already run one. See Getting Started . Existing webhook installs usually have one. Stop the webhook injecting. Uninstall the webhook chart, or scale it to zero if you want to keep the release for rollback. Already-running pods keep their sidecars until they restart. Restart your protected workloads so their pods come back without a sidecar. kubectl rollout restart deployment/your-app , in batches, most critical last. Install the node sensor. It picks up every workload on each node without further labelling. Remove the old labels. pandocore.io/protect: \"true\" no longer does anything. Leaving it is harmless, but it reads as though it still means something. Your metered node count will change Under the webhook, the nodes that metered were the ones running injected pods. Under the sensor, every schedulable node runs a sensor and meters. A cluster that ran sidecars on 3 of 10 nodes metered 3; a DaemonSet on 10 schedulable nodes meters 10. Check Pricing against your node count before you migrate a large cluster. You can reuse the license Secret the webhook chart created rather than passing the key again: helm install pando-node-sensor ... \\ --set license.existingSecret.name=pando-license Three annotations stop working at this point: pandocore.io/full-proc-signals , pandocore.io/provenance-enforce and pandocore.io/node-enforcer . All three were applied by rewriting a pod at admission, which a sensor cannot do from outside it. See Production Hardening for why the coverage they bought is not lost."
+   },
+   {
+    "text": "Upgrade The Node Sensor",
+    "slug": "upgrade-the-node-sensor",
+    "depth": 2,
+    "body": "helm upgrade pando-node-sensor \\ oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-node-sensor \\ --version 2.0.0 \\ --namespace pando-system \\ --reset-then-reuse-values Use --reset-then-reuse-values (Helm 3.14 or later) rather than --reuse-values . It keeps what you set, such as your license key, and takes the new chart's defaults for everything else. --reuse-values keeps the old chart's defaults too, so a setting a newer chart introduced can render empty. The DaemonSet rolls node by node, at most maxUnavailable at a time (one by default). While a node's sensor is restarting, the workloads on that node are not being watched, so a rollout is a brief per-node coverage gap rather than a cluster-wide one. Nothing in your workloads restarts. The capacity preflight runs on upgrade too If the new chart raises the CPU request and a node cannot allocate it, the upgrade fails rather than leaving that node's sensor Pending for ever. The message names the nodes. Either give them room, exclude them with a nodeSelector and accept that they go unwatched, or proceed deliberately with --set preflight.nodeCapacity=false ."
+   },
+   {
+    "text": "Upgrade The Controller",
+    "slug": "upgrade-the-controller",
+    "depth": 2,
+    "body": "The controller is a StatefulSet that keeps each replica's evidence spool on its own volume. The StatefulSet replaces one replica at a time, and each new pod tries to deliver what is on its spool before it accepts new evidence. helm upgrade pando-controller \\ oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-controller \\ --version 2.0.0 \\ --namespace pando-system \\ --reset-then-reuse-values"
+   },
+   {
+    "text": "One-time step for controllers installed before 2026-09-28",
+    "slug": "one-time-step-for-controllers-installed-before-2026-09-28",
+    "depth": 3,
+    "body": "Controller charts published before 2026-09-28 wrote the chart version into the StatefulSet's volume claim template, which Kubernetes never lets change. A controller installed from one of them cannot be upgraded in place. helm upgrade stops with a message that begins: The live StatefulSet pando-system/pando-controller-pando-controller has a spool volumeClaimTemplate this chart cannot upgrade in place. and ends with the command to run. Tools that render with helm template , such as Argo CD, show the API server's message instead, spec: Forbidden: updates to statefulset spec for fields other than ... , and the fix is the same. To check whether your install needs it: kubectl get statefulset pando-controller-pando-controller -n pando-system \\ -o jsonpath='{.spec.volumeClaimTemplates[0].metadata.labels}' If the output includes app.kubernetes.io/version , delete the StatefulSet object once, keeping its pods and volumes, then run the upgrade: kubectl delete statefulset pando-controller-pando-controller -n pando-system --cascade=orphan helm upgrade pando-controller \\ oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-controller \\ --version 2.0.0 \\ --namespace pando-system \\ --reset-then-reuse-values Never delete the spool volumes --cascade=orphan removes only the StatefulSet object. The controller pods keep running and the spool-* PersistentVolumeClaims are untouched. Those volumes hold evidence the controller has acknowledged and not yet delivered. The new StatefulSet finds them by name ( spool-pando-controller-pando-controller-0 and -1 ), mounts the same volumes, and delivers what is on them. Run the upgrade straight after the delete: until it runs, a controller pod that is evicted or deleted is not recreated. Afterwards, confirm the claims are the ones you had, bound to the same volumes: kubectl get pvc -n pando-system -l app.kubernetes.io/instance=pando-controller Existing claims keep their old app.kubernetes.io/version label, because a StatefulSet never relabels a claim it already created. A helm rollback to a release made before this change needs the same one-time step."
+   },
+   {
+    "text": "Learning After An Upgrade",
+    "slug": "learning-after-an-upgrade",
+    "depth": 2,
+    "body": "A sensor builds its profiles in memory and keeps working state under /var/lib/pando on its node as a hostPath rather than a PersistentVolumeClaim, deliberately: a restored state directory is refused as older than the pod reading it. So a sensor restart re-profiles the workloads on that node. Expect a 30-minute learning window per workload after a sensor restarts, and at least 900 samples, whichever is later. The sensor's /readyz returns 503 until it is armed. Your workloads are unaffected and keep serving traffic throughout. Profiles are not carried across versions. Detection logic changes between releases and reusing old state would conflict with new scoring. The rollout is already staggered by maxUnavailable , so you do not need to stagger it yourself. Lower it to slow a large fleet down further."
+   },
+   {
+    "text": "Version Skew",
+    "slug": "version-skew",
+    "depth": 2,
+    "body": "Sensor and controller do not need to match exactly. Upgrade the controller first: it is what accepts evidence, and a newer sensor delivering to an older controller is the direction that can lose a field. Scenario Supported? Sensor and controller on the same minor version Yes Controller newer than the sensors delivering to it Yes. This is the order to upgrade in Sensor newer than the controller Not recommended. Upgrade the controller first Sensors on mixed patch versions mid-rollout Yes. This is what a DaemonSet rollout looks like"
+   },
+   {
+    "text": "Rollback",
+    "slug": "rollback",
+    "depth": 2,
+    "body": "# Roll back the most recent sensor upgrade helm rollback pando-node-sensor -n pando-system # Or the controller helm rollback pando-controller -n pando-system Your workloads do not restart either way, since nothing runs inside them. A sensor rollback is a DaemonSet rollout in reverse, with the same per-node learning window on the way back. If you need to stop PandoCore responding immediately rather than roll a version back, see Emergency Procedures ."
+   },
+   {
+    "text": "Upgrade Checklist",
+    "slug": "upgrade-checklist",
+    "depth": 2,
+    "body": "Read the release notes for the version you are targeting Upgrade in staging or a test cluster first Controller first, then the sensor --reset-then-reuse-values rather than --reuse-values Confirm the capacity preflight passed rather than being bypassed Watch one node's sensor reach ready and arm before the rollout continues Check pando_node_sensor_pods_unmonitored is back where it was afterwards Watch the portal for unexpected detection spikes on the first node's workloads Previous Production Hardening Next Troubleshooting"
+   }
+  ]
+ },
+ {
+  "title": "Admission Webhook",
+  "url": "/docs/webhook",
+  "keywords": [],
+  "headings": [
+   {
+    "text": "What replaced it",
+    "slug": "what-replaced-it",
+    "depth": 2,
+    "body": "The webhook mutated pods at admission time, adding a detector container to pods labelled pandocore.io/protect: \"true\" . The node sensor instead watches the workloads already running on its node, so there is no admission step, no pod mutation, and no restart needed to start or stop watching a workload. The label still matters, with its sense reversed: a pod now opts out , with the exact string pandocore.io/protect: \"false\" . The old \"true\" value has no effect."
+   },
+   {
+    "text": "Where to go instead",
+    "slug": "where-to-go-instead",
+    "depth": 2,
+    "body": "Getting Started installs the node sensor and the controller. Configuration covers the opt-out label and the per-node settings. Operating Modes covers what the sensor is permitted to do, and how to raise that ceiling. Upgrading is the path off the webhook if you are running it today. Trust Center states what the sensor runs as, what it reads, and what it is not granted. This page keeps its URL so existing links and bookmarks do not break."
+   }
+  ]
+ }
+]

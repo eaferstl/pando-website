@@ -79,9 +79,9 @@
                     <li><a href="/docs/faq">FAQ</a></li>
                     <li><a href="/docs/webhook">Admission Webhook (deprecated)</a></li>
                 </ul>
-
-                <a href="https://portal.pandocore.io/signup" class="btn btn-primary docs-sidebar-cta">Start free</a>
             </details>
+
+            <a href="https://portal.pandocore.io/signup" class="btn btn-primary docs-sidebar-cta">Start free</a>
         </aside>
 
         <!-- Main Content -->
@@ -112,7 +112,7 @@ kubectl get daemonset -n pando-system \
 curl -s https://portal.pandocore.io/api/version</code></pre>
             </div>
 
-            <h2>Migrating Off The Admission Webhook</h2>
+            <h2 id="migrating-off-the-admission-webhook">Migrating Off The Admission Webhook</h2>
 
             <p>If you are running the webhook and injected sidecars, this is the one upgrade that is not a version bump. The webhook and the sidecar are deprecated and receive no further release.</p>
 
@@ -141,7 +141,7 @@ curl -s https://portal.pandocore.io/api/version</code></pre>
 
             <p>Three annotations stop working at this point: <code>pandocore.io/full-proc-signals</code>, <code>pandocore.io/provenance-enforce</code> and <code>pandocore.io/node-enforcer</code>. All three were applied by rewriting a pod at admission, which a sensor cannot do from outside it. See <a href="/docs/production-hardening">Production Hardening</a> for why the coverage they bought is not lost.</p>
 
-            <h2>Upgrade The Node Sensor</h2>
+            <h2 id="upgrade-the-node-sensor">Upgrade The Node Sensor</h2>
 
             <pre><code>helm upgrade pando-node-sensor \
   oci://us-central1-docker.pkg.dev/pandocore-prod/charts/pando-node-sensor \
@@ -158,7 +158,7 @@ curl -s https://portal.pandocore.io/api/version</code></pre>
                 <p>If the new chart raises the CPU request and a node cannot allocate it, the upgrade fails rather than leaving that node's sensor <code>Pending</code> for ever. The message names the nodes. Either give them room, exclude them with a <code>nodeSelector</code> and accept that they go unwatched, or proceed deliberately with <code>--set preflight.nodeCapacity=false</code>.</p>
             </div>
 
-            <h2>Upgrade The Controller</h2>
+            <h2 id="upgrade-the-controller">Upgrade The Controller</h2>
 
             <p>The controller is a StatefulSet that keeps each replica's evidence spool on its own volume. The StatefulSet replaces one replica at a time, and each new pod tries to deliver what is on its spool before it accepts new evidence.</p>
 
@@ -168,7 +168,7 @@ curl -s https://portal.pandocore.io/api/version</code></pre>
   --namespace pando-system \
   --reset-then-reuse-values</code></pre>
 
-            <h3>One-time step for controllers installed before 2026-09-28</h3>
+            <h3 id="one-time-step-for-controllers-installed-before-2026-09-28">One-time step for controllers installed before 2026-09-28</h3>
 
             <p>Controller charts published before 2026-09-28 wrote the chart version into the StatefulSet's volume claim template, which Kubernetes never lets change. A controller installed from one of them cannot be upgraded in place. <code>helm upgrade</code> stops with a message that begins:</p>
 
@@ -201,7 +201,7 @@ helm upgrade pando-controller \
 
             <p>Existing claims keep their old <code>app.kubernetes.io/version</code> label, because a StatefulSet never relabels a claim it already created. A <code>helm rollback</code> to a release made before this change needs the same one-time step.</p>
 
-            <h2>Learning After An Upgrade</h2>
+            <h2 id="learning-after-an-upgrade">Learning After An Upgrade</h2>
 
             <p>A sensor builds its profiles in memory and keeps working state under <code>/var/lib/pando</code> on its node as a hostPath rather than a PersistentVolumeClaim, deliberately: a restored state directory is refused as older than the pod reading it. So a sensor restart re-profiles the workloads on that node.</p>
 
@@ -211,7 +211,7 @@ helm upgrade pando-controller \
                 <li><strong>The rollout is already staggered</strong> by <code>maxUnavailable</code>, so you do not need to stagger it yourself. Lower it to slow a large fleet down further.</li>
             </ul>
 
-            <h2>Version Skew</h2>
+            <h2 id="version-skew">Version Skew</h2>
 
             <p>Sensor and controller do not need to match exactly. Upgrade the controller first: it is what accepts evidence, and a newer sensor delivering to an older controller is the direction that can lose a field.</p>
 
@@ -242,7 +242,7 @@ helm upgrade pando-controller \
                 </tbody>
             </table>
 
-            <h2>Rollback</h2>
+            <h2 id="rollback">Rollback</h2>
 
             <pre><code># Roll back the most recent sensor upgrade
 helm rollback pando-node-sensor -n pando-system
@@ -252,7 +252,7 @@ helm rollback pando-controller -n pando-system</code></pre>
 
             <p>Your workloads do not restart either way, since nothing runs inside them. A sensor rollback is a DaemonSet rollout in reverse, with the same per-node learning window on the way back. If you need to stop PandoCore responding immediately rather than roll a version back, see <a href="/docs/emergency">Emergency Procedures</a>.</p>
 
-            <h2>Upgrade Checklist</h2>
+            <h2 id="upgrade-checklist">Upgrade Checklist</h2>
 
             <ul role="list">
                 <li>Read the release notes for the version you are targeting</li>

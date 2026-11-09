@@ -79,9 +79,9 @@
                     <li><a href="/docs/faq">FAQ</a></li>
                     <li><a href="/docs/webhook" class="active" aria-current="page">Admission Webhook (deprecated)</a></li>
                 </ul>
-
-                <a href="https://portal.pandocore.io/signup" class="btn btn-primary docs-sidebar-cta">Start free</a>
             </details>
+
+            <a href="https://portal.pandocore.io/signup" class="btn btn-primary docs-sidebar-cta">Start free</a>
         </aside>
 
         <!-- Main Content -->
@@ -102,13 +102,13 @@
                 <p>The admission webhook, and the injected sidecar it created, are deprecated and receive no further release. PandoCore now installs as a node sensor: one DaemonSet pod per node, plus a cluster controller. Nothing is injected into your workloads, and no webhook sits in the path of pod creation.</p>
             </div>
 
-            <h2>What replaced it</h2>
+            <h2 id="what-replaced-it">What replaced it</h2>
 
             <p>The webhook mutated pods at admission time, adding a detector container to pods labelled <code>pandocore.io/protect: "true"</code>. The node sensor instead watches the workloads already running on its node, so there is no admission step, no pod mutation, and no restart needed to start or stop watching a workload.</p>
 
             <p>The label still matters, with its sense reversed: a pod now opts <em>out</em>, with the exact string <code>pandocore.io/protect: "false"</code>. The old <code>"true"</code> value has no effect.</p>
 
-            <h2>Where to go instead</h2>
+            <h2 id="where-to-go-instead">Where to go instead</h2>
 
             <ul role="list">
                 <li><a href="/docs/getting-started">Getting Started</a> installs the node sensor and the controller.</li>

@@ -20,15 +20,260 @@
     min-height: calc(100vh - 200px);
 }
 
+/* A column, so the signup CTA is a flex sibling of the scrolling link list
+   rather than content inside it. The 14 links cannot fit a laptop: the sidebar
+   needs 1022px against a 636px slot at 1024x768. While the whole sidebar was
+   one scroll container the CTA sat 1038px down it and was invisible at 768,
+   800, 900, 1000 and 1080px of viewport height - every common laptop. Dropping
+   max-height instead was measured and is worse: a 1022px sticky box pinned at
+   --nav-offset can never show its own bottom, which left six targets reachable
+   by nothing at 1024x768. */
 .docs-sidebar {
     position: sticky;
-    top: 20px;
-    max-height: calc(100vh - 40px);
+    top: var(--nav-offset);
+    max-height: calc(100vh - var(--nav-offset) - 20px);
+    display: flex;
+    flex-direction: column;
+    /* Retained for the search results, which reach 1018px on a 12-hit query
+       and have always needed the sidebar's own scroll. With the list shrinking
+       to fit, this is inert in the resting state: scrollHeight now equals
+       clientHeight. */
     overflow-y: auto;
     padding: var(--spacing-lg);
     background: var(--floral-white);
     border-radius: 8px;
     border: 1px solid rgb(var(--forest-rgb) / 0.15);
+}
+
+/* Docs search. The markup is built by js/main.js and inserted ahead of the
+   disclosure, so these rules style nothing until the script runs: a reader
+   without JS gets the static page list and no dead control. */
+.docs-search {
+    margin-bottom: var(--spacing-md);
+}
+
+.docs-search-input {
+    width: 100%;
+    padding: 10px 12px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    color: var(--coffee-bean);
+    background: var(--white);
+    /* --border-field and not a hairline alpha: the border is the only thing
+       that says where this field is, which is what WCAG 1.4.11 covers, and at
+       0.25 forest it measured 1.74:1 on its own white fill. The contact form's
+       input already uses this token for the same reason. 3.48:1 on the
+       white fill, 3.16:1 on the sidebar's cream, measured from pixels. */
+    border: 1px solid var(--border-field);
+    border-radius: 6px;
+}
+
+.docs-search-input::placeholder {
+    /* A colour, not an opacity: placeholder text carries the only label this
+       control shows and has to clear 4.5:1 like any other text. */
+    color: var(--muted-ink);
+    opacity: 1;
+}
+
+.docs-search-input:focus-visible {
+    outline: 2px solid var(--black-forest);
+    outline-offset: 2px;
+}
+
+.docs-search-status {
+    margin: var(--spacing-xs) 0 0 0;
+    font-size: 0.8rem;
+    color: var(--muted-ink);
+}
+
+.docs-search-status:empty {
+    margin: 0;
+}
+
+.docs-search-results {
+    list-style: none;
+    padding: 0;
+    margin: var(--spacing-xs) 0 0 0;
+}
+
+.docs-search-results:not(:empty) {
+    margin-top: var(--spacing-sm);
+    padding-top: var(--spacing-sm);
+    border-top: 1px solid rgb(var(--forest-rgb) / 0.15);
+}
+
+.docs-search-results li {
+    margin-bottom: var(--spacing-xs);
+}
+
+/* Block, with its own padding, so each result is a target in its own right
+   rather than a line of text to hit. 44px tall at the two-line default. */
+.docs-search-results a {
+    display: block;
+    padding: 8px 12px;
+    border-radius: 6px;
+    color: var(--coffee-bean);
+    text-decoration: none;
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+}
+
+.docs-search-results a:hover,
+.docs-search-results a:focus-visible {
+    background-color: rgb(var(--forest-rgb) / 0.08);
+    color: var(--black-forest);
+}
+
+.docs-search-result-heading {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+/* The page a result lives on. Without it every hit is an orphan heading, and
+   "Install" alone does not say which of the three installs it is. */
+.docs-search-result-page {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--muted-ink);
+}
+
+/* The honey wash is the brand's own highlight. Text colour is restated rather
+   than inherited because the UA default for mark is near-black on yellow. */
+.docs-search-results mark {
+    background: var(--amber-honey);
+    color: var(--black-forest);
+    border-radius: 2px;
+}
+
+/* "On this page". Built by js/main.js from the page's own headings, so these
+   rules style nothing until the script runs. Capped at the measure plus its
+   padding, like .docs-callout: the list holds short link text and would
+   otherwise draw a 900px box around a 300px column. */
+.docs-toc {
+    max-width: calc(var(--measure) + (2 * var(--spacing-md)));
+    padding: var(--spacing-md);
+    margin: var(--spacing-md) 0 var(--spacing-lg) 0;
+    border: 1px solid rgb(var(--forest-rgb) / 0.15);
+    border-radius: var(--radius-md);
+    background: var(--floral-white);
+}
+
+.docs-toc-title {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-xs);
+    min-height: 44px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--black-forest);
+}
+
+.docs-toc-title::-webkit-details-marker {
+    display: none;
+}
+
+.docs-toc-title::after {
+    content: "\25BE";
+    font-size: 0.9rem;
+    line-height: 1;
+    transition: transform var(--transition-speed);
+}
+
+.docs-toc[open] .docs-toc-title::after {
+    transform: rotate(180deg);
+}
+
+.docs-toc ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Indented with padding on the nested list, not a margin on its items, so the
+   28px hit area below still starts at the text. */
+.docs-toc ul ul {
+    padding-left: var(--spacing-md);
+}
+
+/* `.docs-toc ul li` and not `.docs-toc li`: `.docs-content li` sets
+   list-style: disc at equal specificity and is declared later in this sheet,
+   so the bare class lost on source order and every entry wore a bullet. The
+   extra element raises this to (0,1,2) and settles it by specificity rather
+   than by moving the rule, which would only move the trap. */
+.docs-toc ul li {
+    list-style: none;
+    margin: 0;
+}
+
+/* 20px of text in a <nav>, so WCAG 2.5.8's inline-text exception does not
+   apply. Padding grows the target to 28px and the negative margin absorbs it,
+   so the list keeps its rhythm. The same pattern as .trust-toc a. */
+.docs-toc a {
+    display: inline-block;
+    padding: 4px 0;
+    margin: -4px 0;
+    color: var(--coffee-bean);
+    font-size: 0.95rem;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.docs-toc ul ul a {
+    font-size: 0.9rem;
+    color: var(--muted-ink);
+}
+
+.docs-toc a:hover {
+    color: var(--black-forest);
+}
+
+/* The scroll region above 1023. A scroll container's automatic minimum size is
+   0, so this is the flex item that yields height, which keeps the CTA below it
+   on screen at any viewport height. */
+.docs-nav-disclosure {
+    overflow-y: auto;
+    /* Room for the focus ring, not spacing. `overflow-y: auto` computes
+       overflow-x to auto as well, so this is a scrollport and it clips paint at
+       its padding box - and .docs-nav a is exactly the scrollport's content
+       width with a ring 4px outside it at outline-offset 2px, so the left and
+       right segments landed on the clip line and were never painted: 0 of 14
+       links showed all four sides. The padding moves the clip line 4px out and
+       the negative margin takes the same 4px back, so the content box, and with
+       it the left edge the links share with the search field and the CTA, does
+       not move at 1440, 1024 or 390. scroll-padding keeps Tab from parking a
+       link flush against that line, which is what cost the outer segment. */
+    padding: 4px;
+    margin: -4px;
+    scroll-padding: 4px;
+}
+
+/* Scroll cue. The list can rest scrolled with links hidden above the fold, and
+   on macOS overlay scrollbars nothing said so: offsetWidth - clientWidth is 0,
+   so there is no gutter to read. A mask costs no layout and no width, unlike an
+   inset shadow or a gradient pseudo-element, which would both have to sit over
+   a scrolling child. js/main.js toggles the two classes.
+   `:not(:focus-within)` is load-bearing, not caution. A mask fades everything
+   the element paints, a focus ring included, and a keyboard reader's ring is
+   exactly what ends up near an edge: measured with the guard removed, the ring
+   on a link parked 8px down the scrollport went from #001C06 to #D1D3C8, which
+   is 1.37:1 on the sidebar cream - an indicator that is not there. Dropping the
+   mask while focus is inside the list keeps the cue and the ring both. */
+.docs-nav-disclosure.has-scroll-above:not(:focus-within) {
+    mask-image: linear-gradient(to bottom, transparent 0, black 28px);
+}
+
+.docs-nav-disclosure.has-scroll-below:not(:focus-within) {
+    mask-image: linear-gradient(to top, transparent 0, black 28px);
+}
+
+.docs-nav-disclosure.has-scroll-above.has-scroll-below:not(:focus-within) {
+    mask-image: linear-gradient(to bottom, transparent 0, black 28px,
+        black calc(100% - 28px), transparent 100%);
 }
 
 /* A <summary>, so the 14-link list can collapse on a phone. On desktop the
@@ -120,7 +365,11 @@
     flex-direction: column;
     gap: 2px;
     padding: var(--spacing-sm);
-    border: 1px solid var(--hairline);
+    /* The border is the whole control: there is no fill at rest, so at
+       --hairline it measured 1.37:1 and the previous/next targets had no
+       boundary. Same 1.4.11 reasoning, same token, as the search field.
+       3.48:1 at rest and 3.78:1 over the --wash hover fill. */
+    border: 1px solid var(--border-field);
     border-radius: var(--radius-md);
     color: var(--black-forest);
     text-decoration: none;
@@ -366,9 +615,16 @@
     border: 1px solid;
 }
 
+/* The other three variants border in their own status hue, which carries a
+   visible edge. Azure-mist is a tint rather than an ink, so as a border it
+   measured 1.17:1 on white and the box had no edge at all. Not a 1.4.11
+   failure - the wash and the forest title carry the meaning - but the box has
+   to look like a box, so it takes the forest boundary alpha instead, which
+   lands inside the presence the other three set: 3.70:1 on white against
+   warning's 2.31, success's 4.12 and danger's 4.98. */
 .docs-callout.info {
     background: rgb(var(--azure-rgb) / 0.5);
-    border-color: var(--azure-mist);
+    border-color: var(--border-field);
 }
 
 .docs-callout.warning {
@@ -464,7 +720,6 @@
 .docs-subtitle {
     font-size: 1.15rem;
     color: var(--coffee-bean);
-    opacity: 0.9;
     margin-bottom: var(--spacing-lg);
     max-width: var(--measure);
 }
@@ -521,6 +776,28 @@
         overflow: visible;
     }
     
+    /* Nothing clips here, so the ring needs no room bought for it. Measured,
+       carrying the pair down costs nothing either - the chip cloud sits at the
+       same pixels with it or without it, because the negative margin cancels
+       the padding - so this is scoping rather than a fix: the geometry exists
+       for a clip box, and below 1023 there is no clip box. */
+    .docs-nav-disclosure {
+        overflow: visible;
+        padding: 0;
+        margin: 0;
+        scroll-padding: 0;
+    }
+
+    /* No scrollport here, so no cue - and the chip cloud wraps, so a fade
+       would land mid-row. The three selectors are restated rather than reset
+       on the bare class above: a media query adds no specificity, so a (0,1,0)
+       rule here loses to the (0,3,0) and (0,4,0) cue rules above it. */
+    .docs-nav-disclosure.has-scroll-above:not(:focus-within),
+    .docs-nav-disclosure.has-scroll-below:not(:focus-within),
+    .docs-nav-disclosure.has-scroll-above.has-scroll-below:not(:focus-within) {
+        mask-image: none;
+    }
+
     .docs-nav {
         display: flex;
         flex-wrap: wrap;
