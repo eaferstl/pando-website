@@ -56,6 +56,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Reveal the mobile conversion bar once the hero scrolls away
     initializeMobileCtaBar();
+
+    // Last: it measures a sidebar that initializeDocsSearch has just changed.
+    // Then again once the web fonts land, because they reflow the link list
+    // after this event and left it stranded a pixel or two under the fold, on
+    // some loads and not others. The second call is a no-op when the first one
+    // already worked.
+    revealActiveDocsLink();
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(revealActiveDocsLink);
+    }
 });
 
 /**
@@ -605,6 +615,105 @@ function initializeDocsSidebar() {
             disclosure.open = nowWide;
         }
     }, 150));
+
+}
+
+/**
+ * Bring the docs sidebar's active link into view.
+ *
+ * The link list scrolls inside itself above 1023px, so the active link can sit
+ * below its own fold: on /docs/faq at 1440x900 the one "you are here" cue was
+ * out of sight behind a scrollbar the reader had no reason to look for.
+ *
+ * It runs after initializeDocsSearch rather than inside initializeDocsSidebar,
+ * and that is not cosmetic: the search form is inserted at the top of the same
+ * sidebar, which shortens the scroll container under it. Measured before that
+ * insertion, the scroll was 73px short and the link stayed clipped.
+ *
+ * Which element carries the scroll is docs.css's business and has already moved
+ * once, so this looks for it rather than naming it. scrollTop and not
+ * scrollIntoView, which would also scroll the page when the link is below the
+ * viewport fold, and no `behavior` anywhere near it: see the note above
+ * handleFormSuccess. With nothing scrollable, or a collapsed list that has no
+ * layout box, this is a no-op rather than a jump.
+ */
+function revealActiveDocsLink() {
+    const active = document.querySelector('.docs-nav a.active');
+    if (!active || !active.getClientRects().length) return;
+
+    const outermost = document.querySelector('.docs-sidebar');
+    if (!outermost) return;
+
+    let scroller = active.parentElement;
+    while (scroller) {
+        const overflow = window.getComputedStyle(scroller).overflowY;
+        if ((overflow === 'auto' || overflow === 'scroll') && scroller.scrollHeight > scroller.clientHeight) break;
+        scroller = scroller === outermost ? null : scroller.parentElement;
+    }
+    if (!scroller) {
+        // Nothing scrolls, so nothing is hidden: drop any cue a previous pass
+        // left behind, since the fonts can land and shorten the list.
+        outermost.querySelectorAll('.has-scroll-above, .has-scroll-below').forEach(function (el) {
+            el.classList.remove('has-scroll-above', 'has-scroll-below');
+        });
+        return;
+    }
+
+    // The scrollport is the padding box, so it is clientTop and clientHeight
+    // rather than the border box: the two differ here, and every one of these
+    // edges is fractional. Measured against the border box and moved by the
+    // exact fraction, the link settled 0.4px to 1.8px under the fold at every
+    // viewport size, which clips it while leaving all the arithmetic looking
+    // correct.
+    const box = scroller.getBoundingClientRect();
+    const portTop = box.top + scroller.clientTop;
+    const port = scroller.clientHeight;
+    const link = active.getBoundingClientRect();
+
+    // A third up from the bottom of the scrollport, not the nearest edge. The
+    // nearest edge left the link flush against the bottom of the list on 8 of
+    // the 14 pages, which reads as the end of it: nothing below the one "you
+    // are here" cue, and no sign the list went on. Clamped to the scrollable
+    // range, so the first and last links and a list that fits are left alone.
+    //
+    // Two thirds and not one third, which is the counter-intuitive part. The
+    // list is 812px in a 409px port, so only 7 of 14 links fit and raising a
+    // link *inside* the port means scrolling *further down* it. Measured over
+    // the 14 pages at 1024x768, links hidden above the fold: 28 at the nearest
+    // edge, 35 here, 51 at one third down. One third was chosen to "keep
+    // context above the link" and does the exact opposite.
+    //
+    // Only when the link is out of sight, though. The list is 812px in a 409px
+    // port, so raising a link inside the port means scrolling further down it:
+    // moving a link the reader can already see is what hides the top of the
+    // list, and on /docs/ to /docs/configuration there was nothing to fix.
+    if (link.top < portTop || link.bottom > portTop + port) {
+        const target = scroller.scrollTop + (link.top - portTop) - Math.round(port * 2 / 3);
+        scroller.scrollTop = Math.max(0, Math.min(Math.round(target), scroller.scrollHeight - port));
+    }
+
+    markDocsNavScroll(scroller);
+    if (!docsNavScrollWatched) {
+        docsNavScrollWatched = true;
+        scroller.addEventListener('scroll', function () { markDocsNavScroll(scroller); }, { passive: true });
+        window.addEventListener('resize', debounce(function () { markDocsNavScroll(scroller); }, 150));
+    }
+}
+
+// Set once: revealActiveDocsLink runs a second time on document.fonts.ready
+// and must not bind the same listeners twice.
+let docsNavScrollWatched = false;
+
+/**
+ * Publish the sidebar's scroll state as classes, so docs.css can fade whichever
+ * edge has links behind it. Both edges are fractional here, so both comparisons
+ * carry a pixel of tolerance; an exact one toggles the cue on and off between
+ * two positions a reader would call identical.
+ */
+function markDocsNavScroll(scroller) {
+    const top = scroller.scrollTop;
+    scroller.classList.toggle('has-scroll-above', top > 1);
+    scroller.classList.toggle('has-scroll-below', top + scroller.clientHeight < scroller.scrollHeight - 1);
 }
 
 /**
@@ -941,10 +1050,12 @@ function initializeDocsSearch() {
  * the breadcrumb and the prev/next pager are all still there, and every
  * heading is still a heading for find-in-page.
  *
- * A <details>, closed below 1024px, for the same reason the sidebar list is:
- * the FAQ's 32 entries would otherwise push the first answer off two screens
- * on a phone. The breakpoint is the one in js/main.js and styles.css already,
- * and must move with them.
+ * A <details>, closed at every width. On a phone the FAQ's 32 entries pushed
+ * the first answer off two screens; on a desktop the cost was the same screen,
+ * measured rather than assumed, which is why this no longer reads the 1023px
+ * breakpoint at all. The sidebar list is the opposite case and still opens
+ * when wide: it is the route to the other 13 pages, not a second copy of the
+ * one being read.
  */
 function initializeDocsToc() {
     const content = document.querySelector('.docs-content');
@@ -960,7 +1071,7 @@ function initializeDocsToc() {
 
     const summary = document.createElement('summary');
     summary.className = 'docs-toc-title';
-    summary.textContent = 'On this page';
+    summary.textContent = 'On this page · ' + headings.length + ' sections';
     details.appendChild(summary);
 
     const nav = document.createElement('nav');
@@ -1007,15 +1118,12 @@ function initializeDocsToc() {
     if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(details, anchor.nextSibling);
     else content.insertBefore(details, content.firstChild);
 
-    let wide = window.innerWidth > 1023;
-    details.open = wide;
-    window.addEventListener('resize', debounce(function () {
-        const nowWide = window.innerWidth > 1023;
-        if (nowWide !== wide) {
-            wide = nowWide;
-            details.open = nowWide;
-        }
-    }, 150));
+    // Closed at every width, and no resize handler to reopen it. Open, it cost
+    // a screen on a desktop too, not only on a phone: the first h2 sat a median
+    // of 1,247px down the page across the 13 pages that carry one, and on the
+    // FAQ the first answer was 1,667px down. The count on the summary is what
+    // the closed state owes the reader in exchange.
+    details.open = false;
 }
 
 

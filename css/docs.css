@@ -20,10 +20,24 @@
     min-height: calc(100vh - 200px);
 }
 
+/* A column, so the signup CTA is a flex sibling of the scrolling link list
+   rather than content inside it. The 14 links cannot fit a laptop: the sidebar
+   needs 1022px against a 636px slot at 1024x768. While the whole sidebar was
+   one scroll container the CTA sat 1038px down it and was invisible at 768,
+   800, 900, 1000 and 1080px of viewport height - every common laptop. Dropping
+   max-height instead was measured and is worse: a 1022px sticky box pinned at
+   --nav-offset can never show its own bottom, which left six targets reachable
+   by nothing at 1024x768. */
 .docs-sidebar {
     position: sticky;
     top: var(--nav-offset);
     max-height: calc(100vh - var(--nav-offset) - 20px);
+    display: flex;
+    flex-direction: column;
+    /* Retained for the search results, which reach 1018px on a 12-hit query
+       and have always needed the sidebar's own scroll. With the list shrinking
+       to fit, this is inert in the resting state: scrollHeight now equals
+       clientHeight. */
     overflow-y: auto;
     padding: var(--spacing-lg);
     background: var(--floral-white);
@@ -45,7 +59,12 @@
     font-size: 0.95rem;
     color: var(--coffee-bean);
     background: var(--white);
-    border: 1px solid rgb(var(--forest-rgb) / 0.25);
+    /* --border-field and not a hairline alpha: the border is the only thing
+       that says where this field is, which is what WCAG 1.4.11 covers, and at
+       0.25 forest it measured 1.74:1 on its own white fill. The contact form's
+       input already uses this token for the same reason. 3.48:1 on the
+       white fill, 3.16:1 on the sidebar's cream, measured from pixels. */
+    border: 1px solid var(--border-field);
     border-radius: 6px;
 }
 
@@ -213,6 +232,50 @@
     color: var(--black-forest);
 }
 
+/* The scroll region above 1023. A scroll container's automatic minimum size is
+   0, so this is the flex item that yields height, which keeps the CTA below it
+   on screen at any viewport height. */
+.docs-nav-disclosure {
+    overflow-y: auto;
+    /* Room for the focus ring, not spacing. `overflow-y: auto` computes
+       overflow-x to auto as well, so this is a scrollport and it clips paint at
+       its padding box - and .docs-nav a is exactly the scrollport's content
+       width with a ring 4px outside it at outline-offset 2px, so the left and
+       right segments landed on the clip line and were never painted: 0 of 14
+       links showed all four sides. The padding moves the clip line 4px out and
+       the negative margin takes the same 4px back, so the content box, and with
+       it the left edge the links share with the search field and the CTA, does
+       not move at 1440, 1024 or 390. scroll-padding keeps Tab from parking a
+       link flush against that line, which is what cost the outer segment. */
+    padding: 4px;
+    margin: -4px;
+    scroll-padding: 4px;
+}
+
+/* Scroll cue. The list can rest scrolled with links hidden above the fold, and
+   on macOS overlay scrollbars nothing said so: offsetWidth - clientWidth is 0,
+   so there is no gutter to read. A mask costs no layout and no width, unlike an
+   inset shadow or a gradient pseudo-element, which would both have to sit over
+   a scrolling child. js/main.js toggles the two classes.
+   `:not(:focus-within)` is load-bearing, not caution. A mask fades everything
+   the element paints, a focus ring included, and a keyboard reader's ring is
+   exactly what ends up near an edge: measured with the guard removed, the ring
+   on a link parked 8px down the scrollport went from #001C06 to #D1D3C8, which
+   is 1.37:1 on the sidebar cream - an indicator that is not there. Dropping the
+   mask while focus is inside the list keeps the cue and the ring both. */
+.docs-nav-disclosure.has-scroll-above:not(:focus-within) {
+    mask-image: linear-gradient(to bottom, transparent 0, black 28px);
+}
+
+.docs-nav-disclosure.has-scroll-below:not(:focus-within) {
+    mask-image: linear-gradient(to top, transparent 0, black 28px);
+}
+
+.docs-nav-disclosure.has-scroll-above.has-scroll-below:not(:focus-within) {
+    mask-image: linear-gradient(to bottom, transparent 0, black 28px,
+        black calc(100% - 28px), transparent 100%);
+}
+
 /* A <summary>, so the 14-link list can collapse on a phone. On desktop the
    disclosure stays open and this just reads as the label it always was. */
 .docs-sidebar-title {
@@ -302,7 +365,11 @@
     flex-direction: column;
     gap: 2px;
     padding: var(--spacing-sm);
-    border: 1px solid var(--hairline);
+    /* The border is the whole control: there is no fill at rest, so at
+       --hairline it measured 1.37:1 and the previous/next targets had no
+       boundary. Same 1.4.11 reasoning, same token, as the search field.
+       3.48:1 at rest and 3.78:1 over the --wash hover fill. */
+    border: 1px solid var(--border-field);
     border-radius: var(--radius-md);
     color: var(--black-forest);
     text-decoration: none;
@@ -548,9 +615,16 @@
     border: 1px solid;
 }
 
+/* The other three variants border in their own status hue, which carries a
+   visible edge. Azure-mist is a tint rather than an ink, so as a border it
+   measured 1.17:1 on white and the box had no edge at all. Not a 1.4.11
+   failure - the wash and the forest title carry the meaning - but the box has
+   to look like a box, so it takes the forest boundary alpha instead, which
+   lands inside the presence the other three set: 3.70:1 on white against
+   warning's 2.31, success's 4.12 and danger's 4.98. */
 .docs-callout.info {
     background: rgb(var(--azure-rgb) / 0.5);
-    border-color: var(--azure-mist);
+    border-color: var(--border-field);
 }
 
 .docs-callout.warning {
@@ -702,6 +776,28 @@
         overflow: visible;
     }
     
+    /* Nothing clips here, so the ring needs no room bought for it. Measured,
+       carrying the pair down costs nothing either - the chip cloud sits at the
+       same pixels with it or without it, because the negative margin cancels
+       the padding - so this is scoping rather than a fix: the geometry exists
+       for a clip box, and below 1023 there is no clip box. */
+    .docs-nav-disclosure {
+        overflow: visible;
+        padding: 0;
+        margin: 0;
+        scroll-padding: 0;
+    }
+
+    /* No scrollport here, so no cue - and the chip cloud wraps, so a fade
+       would land mid-row. The three selectors are restated rather than reset
+       on the bare class above: a media query adds no specificity, so a (0,1,0)
+       rule here loses to the (0,3,0) and (0,4,0) cue rules above it. */
+    .docs-nav-disclosure.has-scroll-above:not(:focus-within),
+    .docs-nav-disclosure.has-scroll-below:not(:focus-within),
+    .docs-nav-disclosure.has-scroll-above.has-scroll-below:not(:focus-within) {
+        mask-image: none;
+    }
+
     .docs-nav {
         display: flex;
         flex-wrap: wrap;
