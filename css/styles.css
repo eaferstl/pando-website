@@ -3857,7 +3857,22 @@ textarea:focus-visible {
    stand on their own: --text-xs was 13.6px for a PEM key and a multi-line cosign
    command. They also carry tabindex="0" in the markup, because a scrollable
    region that only a mouse can reach fails WCAG 2.1.1 in Firefox and Safari -
-   Chrome 127+ makes scrollers focusable and hides the bug. */
+   Chrome 127+ makes scrollers focusable and hides the bug.
+
+   The same absence is why these wrap where every other `pre` on the site
+   scrolls: with no copy button the only way to take a command is to select it,
+   and the cosign line ran 1375px inside a 768px block at 1440 and a 358px one
+   at 390, hiding 607px and 1017px of itself - the image digest included -
+   behind an overlay scrollbar that paints nothing. `break-word` measured
+   identically to `anywhere` at 320, 390, 768 and 1440; `anywhere` matches the
+   inline `code` rule above and also bounds min-content. The hanging indent is
+   what stops a wrapped line reading as a second command: without it the
+   continuations sit at column 0, left of the command's own two-space indents,
+   and at 390 that is three of them. `hanging each-line` is the only thing that
+   indents soft wraps alone - padding-left with a negative text-indent outdents
+   the block's first line and nothing else, measured - and an engine that does
+   not parse the keywords drops the declaration and keeps the plain wrap.
+   Verified in Chrome 157 only. */
 .trust-page pre {
     background-color: var(--surface-inverse);
     color: var(--text-on-inverse);
@@ -3865,6 +3880,9 @@ textarea:focus-visible {
     border-radius: var(--radius-md);
     margin-bottom: var(--spacing-sm);
     overflow-x: auto;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    text-indent: 4ch hanging each-line;
     font-size: var(--text-sm);
     line-height: var(--leading-snug);
 }
