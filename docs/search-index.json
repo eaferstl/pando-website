@@ -274,7 +274,7 @@
     "body": "Channel Format The controller Records are delivered to it over mTLS and written to a durable spool before it acknowledges them. It owns every outbound destination from there Your webhook HTTP POST of Evidence JSON, configured on the controller stdout One JSON record per line Kubernetes Event K8s Event object, survives pod deletion SIEM Splunk, Elastic, Datadog or syslog, configured on the controller Slack Formatted message, configured on the controller"
    },
    {
-    "text": "Webhook Headers",
+    "text": "Webhook headers",
     "slug": "webhook-headers",
     "depth": 3,
     "body": "Header Description Content-Type application/json X-Pando-Evidence-ID UUID of the evidence record X-Pando-Event-Type Event type, currently collapse X-Pando-Schema-Version Schema version of the payload Delivery is retried with exponential backoff, configured on the controller. No workload pod holds a destination credential: the sensor delivers to the controller and the controller delivers onward, which is why these are controller settings rather than per-workload ones. See Controller . A record is externalized before any action is taken Evidence is sealed, signed and shipped before the response chain is even resolved, and a failed externalization aborts the response. That ordering is deliberate: there is no action without a durable record first. The consequence for a consumer is that a trip record carries intent rather than outcome, which is why there is a second record type for what actually happened."
@@ -574,37 +574,37 @@
     "body": "Everything above gets you to installed and alerting. The sections below go from there to production, in the order most teams adopt them."
    },
    {
-    "text": "1. Let It Respond",
+    "text": "1. Let it respond",
     "slug": "let-it-respond",
     "depth": 3,
     "body": "A free license detects and alerts, and never contains. The response ceiling is a property of the license, so raising it is a billing change rather than a configuration change: on a paid license the sensor may apply containment, and the install above starts doing so without being reinstalled. Below that ceiling, mode is set per workload with an annotation: kubectl annotate deployment your-app pandocore.io/mode=isolate --overwrite kubectl rollout restart deployment/your-app The sensor reads a pod's annotations when it starts watching that pod, so the restart is what applies the change to workloads already running. The annotation can only narrow what the license already permits, never widen it, and a value it cannot parse is warned about by name and falls back to the node-wide default rather than leaving the pod unwatched. See Operating Modes for the ladder and Pricing for what each license permits. What containment does PandoCore writes a Kubernetes NetworkPolicy that denies the pod's egress except DNS, holding the workload in place without restarting it. The right durable response for stateful workloads where a restart is expensive. If the behaviour subsides, the policy is removed again. The sensor applies and removes that policy from outside the pod, which is why the policy needs no API-server exception and why ingress can be denied as well. The bidirectional half of that depends on your CNI permitting host-to-pod traffic regardless of policy, which Cilium and therefore GKE Dataplane V2 guarantee; on other CNIs treat containment as egress-only."
    },
    {
-    "text": "2. Point Evidence Where You Want It",
+    "text": "2. Point evidence where you want it",
     "slug": "point-evidence-where-you-want-it",
     "depth": 3,
     "body": "Every detection emits a structured, signed JSON evidence record. The controller owns delivery, so SIEM, Slack and webhook destinations are configured once on the controller rather than per workload, and no workload pod ever holds a third-party credential. See Controller for the destination settings and Evidence Format for the schema."
    },
    {
-    "text": "3. Manage Behaviour Declaratively",
+    "text": "3. Manage behaviour declaratively",
     "slug": "manage-behaviour-declaratively",
     "depth": 3,
     "body": "For anything beyond a handful of namespaces, use the PandoCorePolicy CRD. One YAML file in your GitOps repo controls mode, sensitivity and alert destinations per namespace. See CRD Policy for the schema. Per-namespace integrations need the mirror Integrations declared in a PandoCorePolicy reach the controller through the destinations mirror, which the sensor chart installs by default. If you set mirror.enabled=false , nothing writes the destinations Secret and those per-namespace integrations will not take effect. The controller's own destinations are unaffected."
    },
    {
-    "text": "4. Decide What Is Out Of Scope",
+    "text": "4. Decide what is out of scope",
     "slug": "decide-what-is-out-of-scope",
     "depth": 3,
     "body": "Eleven namespaces are excluded by default, covering kube-system and the GKE managed namespaces. To protect one of them anyway, add it to includedNamespaces . helm upgrade pando-node-sensor ... \\ --set 'includedNamespaces={my-platform-namespace}' Two sharp edges in namespace scoping Do not list pando-system in includedNamespaces . The opt-in is read before the exclusion rules and overrides the own-component exclusion as well as the namespace list, so listing it puts PandoCore's own pods back under monitoring. An early soak run in that configuration took 67 false positives in six minutes, 34 of them from the controller pod. Setting excludedNamespaces: [] does not mean \"exclude nothing\". An empty list is read as unconfigured and falls back to the built-in eleven. Use includedNamespaces to protect a default-excluded namespace; emptying the exclusion list will not do it."
    },
    {
-    "text": "5. Tune The Cadence, Carefully",
+    "text": "5. Tune the cadence, carefully",
     "slug": "tune-the-cadence-carefully",
     "depth": 3,
     "body": "The sensor samples every 1000 ms by default. The floor is 250 ms, and a value below it is refused by name at startup rather than quietly clamped. Shortening the interval costs roughly four times as much CPU at 250 ms as at the default, so lower it only alongside a larger request. helm upgrade pando-node-sensor ... --set sampleIntervalMs=1000"
    },
    {
-    "text": "6. Alert On The Sensor Itself",
+    "text": "6. Alert on the sensor itself",
     "slug": "alert-on-the-sensor-itself",
     "depth": 3,
     "body": "The chart ships PrometheusRules covering the conditions that a sensor cannot report on its own behalf: the series going absent, a refusal at startup, shedding at the cap, and a cadence that has stretched past its configured interval. Absence is the one condition no self-report can distinguish from healthy, which is why it is alerted on from outside. See Production Hardening ."
@@ -676,7 +676,7 @@
     "body": "Two components, both cluster-wide, installed once: One sensor per node, outside your pods The sensor runs as a hostPID DaemonSet and reads the node's process namespace, so it observes the workloads on its node without running inside any of them and without any change to your application. That topology is also a real privilege posture: see Production Hardening for what it runs as, and the trust center for what it is not granted."
    },
    {
-    "text": "Key Components",
+    "text": "Key components",
     "slug": "key-components",
     "depth": 3,
     "body": "Component Description Node sensor A DaemonSet, one pod per node. Watches the workloads on its node and decides responses Controller A StatefulSet that receives evidence, spools it durably, and owns every outbound destination Destinations mirror An unprivileged Deployment that resolves per-namespace policy integrations for the controller PandoCorePolicy CRD Declarative per-namespace configuration for GitOps workflows Metrics endpoint Prometheus-compatible /metrics , plus shipped PrometheusRules for coverage and liveness Evidence output Signed, hash-chained JSON records suitable for SIEM integration"
@@ -850,7 +850,7 @@
     "body": "apiVersion: pandocore.io/v1alpha1 kind: PandoCorePolicy metadata: name: default namespace: production spec: mode: isolate sensitivity: medium thresholds: incremental: 0.12 cumulative: 0.35 integrations: slackWebhook: urlSecretRef: name: pando-slack key: url"
    },
    {
-    "text": "Staging Namespace (Monitor Only)",
+    "text": "Staging namespace (monitor only)",
     "slug": "staging-namespace-monitor-only",
     "depth": 3,
     "body": "apiVersion: pandocore.io/v1alpha1 kind: PandoCorePolicy metadata: name: default namespace: staging spec: mode: monitor sensitivity: high"

@@ -204,7 +204,7 @@ kubectl exec -n pando-system &lt;sensor-pod&gt; -- wget -qO- http://localhost:90
 
             <p>Everything above gets you to installed and alerting. The sections below go from there to production, in the order most teams adopt them.</p>
 
-            <h3 id="let-it-respond">1. Let It Respond</h3>
+            <h3 id="let-it-respond">1. Let it respond</h3>
 
             <p>A free license detects and alerts, and never contains. The response ceiling is a property of the license, so raising it is a billing change rather than a configuration change: on a paid license the sensor may apply containment, and the install above starts doing so without being reinstalled.</p>
 
@@ -221,11 +221,11 @@ kubectl rollout restart deployment/your-app</code></pre>
                 <p>The sensor applies and removes that policy from outside the pod, which is why the policy needs no API-server exception and why ingress can be denied as well. The bidirectional half of that depends on your CNI permitting host-to-pod traffic regardless of policy, which Cilium and therefore GKE Dataplane V2 guarantee; on other CNIs treat containment as egress-only.</p>
             </div>
 
-            <h3 id="point-evidence-where-you-want-it">2. Point Evidence Where You Want It</h3>
+            <h3 id="point-evidence-where-you-want-it">2. Point evidence where you want it</h3>
 
             <p>Every detection emits a structured, signed JSON evidence record. The controller owns delivery, so SIEM, Slack and webhook destinations are configured once on the controller rather than per workload, and no workload pod ever holds a third-party credential. See <a href="/docs/controller">Controller</a> for the destination settings and <a href="/docs/evidence-format">Evidence Format</a> for the schema.</p>
 
-            <h3 id="manage-behaviour-declaratively">3. Manage Behaviour Declaratively</h3>
+            <h3 id="manage-behaviour-declaratively">3. Manage behaviour declaratively</h3>
 
             <p>For anything beyond a handful of namespaces, use the <code>PandoCorePolicy</code> CRD. One YAML file in your GitOps repo controls mode, sensitivity and alert destinations per namespace. See <a href="/docs/policy">CRD Policy</a> for the schema.</p>
 
@@ -234,7 +234,7 @@ kubectl rollout restart deployment/your-app</code></pre>
                 <p>Integrations declared in a <code>PandoCorePolicy</code> reach the controller through the destinations mirror, which the sensor chart installs by default. If you set <code>mirror.enabled=false</code>, nothing writes the destinations Secret and those per-namespace integrations will not take effect. The controller's own destinations are unaffected.</p>
             </div>
 
-            <h3 id="decide-what-is-out-of-scope">4. Decide What Is Out Of Scope</h3>
+            <h3 id="decide-what-is-out-of-scope">4. Decide what is out of scope</h3>
 
             <p>Eleven namespaces are excluded by default, covering <code>kube-system</code> and the GKE managed namespaces. To protect one of them anyway, add it to <code>includedNamespaces</code>.</p>
 
@@ -247,13 +247,13 @@ kubectl rollout restart deployment/your-app</code></pre>
                 <p><strong>Setting <code>excludedNamespaces: []</code> does not mean "exclude nothing".</strong> An empty list is read as unconfigured and falls back to the built-in eleven. Use <code>includedNamespaces</code> to protect a default-excluded namespace; emptying the exclusion list will not do it.</p>
             </div>
 
-            <h3 id="tune-the-cadence-carefully">5. Tune The Cadence, Carefully</h3>
+            <h3 id="tune-the-cadence-carefully">5. Tune the cadence, carefully</h3>
 
             <p>The sensor samples every 1000 ms by default. The floor is 250 ms, and a value below it is refused by name at startup rather than quietly clamped. Shortening the interval costs roughly four times as much CPU at 250 ms as at the default, so lower it only alongside a larger request.</p>
 
             <pre><code>helm upgrade pando-node-sensor ... --set sampleIntervalMs=1000</code></pre>
 
-            <h3 id="alert-on-the-sensor-itself">6. Alert On The Sensor Itself</h3>
+            <h3 id="alert-on-the-sensor-itself">6. Alert on the sensor itself</h3>
 
             <p>The chart ships PrometheusRules covering the conditions that a sensor cannot report on its own behalf: the series going absent, a refusal at startup, shedding at the cap, and a cadence that has stretched past its configured interval. Absence is the one condition no self-report can distinguish from healthy, which is why it is alerted on from outside. See <a href="/docs/production-hardening">Production Hardening</a>.</p>
 
