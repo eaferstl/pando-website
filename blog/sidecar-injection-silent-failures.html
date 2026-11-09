@@ -79,13 +79,19 @@
                     <p>It is kept as a record of how the previous install behaved. For current behaviour, see the <a href="/docs/getting-started">install guide</a>.</p>
                 </aside>
 
+                <h2>Why the label looks right</h2>
+
                 <p>Running <code>kubectl label deployment my-app pandocore.io/inject=enabled</code> modifies the Deployment's top-level <code>metadata.labels</code>, not <code>spec.template.metadata.labels</code>. Those are two different things, and the difference is the bug.</p>
 
                 <p>Sidecar injection works through a mutating admission webhook that fires when a pod is created. The webhook matches on the pod's labels. Pods inherit their labels from exactly one place: the Deployment's pod template. Labels on the Deployment object itself never propagate down to pods. They exist so you can select the Deployment with things like <code>kubectl get deploy -l team=payments</code>.</p>
 
+                <h2>Three failures, none of them loud</h2>
+
                 <p>So when you label the Deployment, three things go wrong at once, all silently. First, kubectl prints <code>deployment.apps/my-app labeled</code>. Success. Second, because the pod template didn't change, the Deployment controller sees nothing to do, so no rollout happens and no new pods are created. Third, even if pods were recreated, they wouldn't carry the label, so the webhook would never match them. There is no error at any layer. You check the Deployment, the label is right there, and every pod is still running 1/1 with no sidecar in sight.</p>
 
                 <p>We hit this while reviewing our own onboarding docs. The instruction looked correct, the command succeeded, and injection never happened. It's an easy mistake to ship because nothing anywhere tells you it didn't work.</p>
+
+                <h2>Where the label belongs</h2>
 
                 <p>The fix is to put the label where pods are actually born: the pod template.</p>
 

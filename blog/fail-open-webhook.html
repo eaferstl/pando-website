@@ -79,15 +79,23 @@
                     <p>The reasoning still holds for anything that does install a webhook, which is why the post stays up. For current behaviour, see the <a href="https://trust.pandocore.io">trust center</a>.</p>
                 </aside>
 
+                <h2>The critical path you just joined</h2>
+
                 <p>Anything that installs an admission webhook into your cluster puts itself in the critical path of pod creation: service meshes, secret injectors, policy engines, security agents. One field in that config, <code>failurePolicy</code>, decides what happens when the vendor's code goes down. Most install guides don't mention it.</p>
 
                 <p>The textbook answer is fail-closed: <code>failurePolicy: Fail</code>, opt-in namespaces, an objectSelector so only labeled pods ever touch the webhook. PandoCore ships the opposite: <code>Ignore</code>, watching every namespace you haven't excluded. On purpose.</p>
 
+                <h2>What fail-closed does in practice</h2>
+
                 <p>Here's what <code>Fail</code> actually does. The webhook goes unreachable, crashed, evicted, mid-upgrade, slow past its timeout, and the API server rejects every matched pod creation until it's back. That doesn't look like a security incident. It looks like your cluster breaking: ReplicaSets throwing <code>FailedCreate</code>, deploys hanging, the autoscaler stuck, drained nodes with nowhere to put workloads. A protection tool that can freeze pod scheduling is a bigger operational risk than most of what it protects you from. If we're down, your cluster keeps working.</p>
+
+                <h2>What Ignore costs</h2>
 
                 <p>The cost of <code>Ignore</code> is real: during an outage, pods get admitted without the sidecar. Silently. For a security product, that's the worst failure there is; workloads look protected and aren't. A mesh pod missing its sidecar breaks loudly: no mTLS, no routing. A security sidecar missing is invisible: the workload runs perfectly and nothing pages. Fail-open is survivable for a mesh; here it's dangerous unless you engineer the alarm yourself. So the actual engineering isn't picking the field value. It's making the silent failure loud. That's why there's no objectSelector: our webhook sees every pod in a protected namespace, not just labeled ones, so it can flag the pods that should be protected and aren't. Each one raises a Kubernetes warning event and increments a Prometheus counter you can alert on. Scope the webhook down to labeled pods and that signal goes blind. The wide match is the detection.</p>
 
                 <p>Blast radius gets bounded at a different layer instead. <code>kube-system</code> and friends are excluded by default. Our own namespace is excluded unconditionally (you can't remove it in values), so combined with <code>Ignore</code>, the webhook can never block recreation of its own pods. Two replicas, a PodDisruptionBudget, anti-affinity across nodes, an explicit timeout. One gap, stated plainly: default-on alerting for when the webhook itself is down. The case where it can't count what it never saw isn't shipped yet. A single Prometheus absence rule on <code>pando_webhook_admissions_total</code> closes it.</p>
+
+                <h2>What to ask a vendor</h2>
 
                 <p>Whatever vendor you're evaluating, ask them: which <code>failurePolicy</code> do you ship, and where's the reasoning written down? What limits the damage when your webhook misbehaves? Can it block its own recovery? How do I find out you're skipping pods? How do I find out you're gone? We'd rather you ask us.</p>
             </article>

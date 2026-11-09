@@ -81,17 +81,29 @@
 
                 <p>We built PandoCore as a sidecar: one detector container injected into every pod it protects. We are replacing it with a node sensor, one process per node. It is still in development, and the sidecar is what ships today. We made the case for sidecars in public last month, so here is the case against them.</p>
 
+                <h2>Who can reach the detector</h2>
+
                 <p>Start with who can touch the detector. A sidecar lives inside the pod it watches. It shares that pod's lifecycle and network namespace, and if it wants to see processes, its PID namespace too. Anything with authority over the pod has authority over its monitor. A detector the workload can reach is a detector the workload's attacker can reach. A node sensor sits outside every workload pod: nothing in your pod can signal it, read its state, or restart it. The observer should not live inside the thing it observes.</p>
+
+                <h2>What it has to be granted</h2>
 
                 <p>Then count the grants. To see process-level signals from inside a pod, a sidecar needs privileges inside that pod: SYS_PTRACE, and either root or privilege escalation, in every pod spec. In our own soak, the only pods with full visibility were the ones where the app ran as the sidecar's own user ID or where that grant was made. Out of the box, most pods ran with those signals dark, and we published that. So the sidecar's advantage of needing no node privileges was mostly on paper. It needed pod privileges instead, once per pod, reviewed by nobody. A node sensor runs as a privileged DaemonSet with host PID access, the same kind of grant your CNI already holds on every node, plus cluster-wide read access to pods so it can attribute what it sees. You review it once, and it covers the node.</p>
 
                 <p>A sidecar also sees only what its pod's permissions let it see, which by default left process-level signals dark. A node sensor reads every pod's processes from the host, so full visibility stops depending on a grant in each pod spec.</p>
 
+                <h2>Why the cost scaled wrong</h2>
+
                 <p>Cost scales with the wrong thing. A sidecar is a full detector per pod. Ninety-four protected pods meant ninety-four collectors, each with its own loop and its own model. Every pod's resource request grows by the sidecar's, which shifts bin-packing and autoscaling for every workload, and the total scales with pod count. A node sensor makes one request per node. Bringing actual consumption down with it is the job of the collector rework that follows: the collector we have was built for one pod in view and is being reworked for a node with fifty. There will be no overhead numbers until they are measured on the node path. <a href="/blog/clean-run-soak-results.html">The sidecar figures we published</a> do not transfer.</p>
+
+                <h2>What installing it took</h2>
 
                 <p>Then there's the install. A sidecar needs a mutating admission webhook, a change to every pod spec, and a rollout of every workload to pick up injection or an upgrade. We wrote two posts about the sharp edges of that path. A node sensor is a DaemonSet: no admission webhook, no pod spec touched, upgrades that never restart a workload. When it ships, <a href="/blog/fail-open-webhook.html">our post on the webhook fail-open</a> will describe the previous install.</p>
 
+                <h2>What stays the same</h2>
+
                 <p>What does not change: the detector is the same code, baselines are still learned per pod, and the response ceiling is untouched. An anomaly can isolate a workload. Only cryptographic provenance can terminate one.</p>
+
+                <h2>What we are giving up</h2>
 
                 <p>What it costs. Node-level privileges are a larger single grant than any one sidecar's, and we would rather you review one than fifty. Some environments block node-level software outright: EKS Fargate runs no DaemonSets, and GKE Autopilot rejects privileged host-PID pods unless allowlisted. The node sensor will not run there. Also, the soak numbers we published were measured on the sidecar. They describe the detector, not the node path, and they do not get reused until there is a clean run on the node sensor scored under the same rules.</p>
 

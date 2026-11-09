@@ -79,15 +79,27 @@
                     <p>Two of the bars no longer mean here what they mean now. The denominator moved from pod-hours to engine-hours, an engine being the node sensor's per-pod detection instance, so a rate written against one cannot be compared with a rate written against the other. And the termination bar is structural rather than measured: the sensor's Kubernetes permissions withhold pod deletion outright, so the ceiling ends at isolation. What we publish today is on the <a href="/product#validation">product page</a>.</p>
                 </aside>
 
+                <h2>What a rate has to come with</h2>
+
                 <p>A false positive rate without an event definition, a denominator, and a labeling method is marketing. We wrote that in <a href="/blog/false-positive-denominator.html">our first post</a>. This is the other half: our largest soak to date is running right now. 94 protected pods across 14 namespaces, seven days, mostly stock upstream images (nginx, Postgres, Mongo, Kafka, Elasticsearch, RabbitMQ, plus JVM, Go, Python, and Node services). The results aren't in. So we're publishing the scoring rules first. Whatever the numbers turn out to be, they get graded against what's written here, in a post that went out before we saw them.</p>
+
+                <h2>The labelling method</h2>
 
                 <p>The run deploys zero attacks. That's the entire labeling method: every trip in this window is by definition a false positive. No adjudication, no &ldquo;we reviewed each alert and determined.&rdquo; Nothing gets subtracted.</p>
 
+                <h2>What gets counted</h2>
+
                 <p>Four counters, never blended: a detector fired; a signed evidence record was produced; an isolation was actually applied; a pod was actually terminated. Those are different failures with different costs, so the pass bars sit on different counters. Alerting is judged on evidence, response is judged on actions. The bars: zero false terminations, at most 0.1 false evidence records per pod-hour on the statistical plane, at most 0.01 false isolations per pod-hour. One caveat stated up front: zero false terminations is partly structural. Statistical events are capped below termination by design, so part of that zero is architecture, not model quality.</p>
+
+                <h2>The denominator</h2>
 
                 <p>The denominator is where FP numbers usually get flattered, so ours is strict: we count only pod-hours where the detection ensemble was actually online. Cold-start hours are excluded. The sidecar deliberately can't take action while warming, and counting hours where the measured event is impossible inflates the denominator. Churn is part of the campaign, not an excuse: every 12 hours the run recreates pods, kills pods, and restarts sidecars on a rotation, and every post-churn relearn window is excluded too. Both exclusions shrink the denominator. Both make our reported rate worse. That's the direction the arithmetic should err.</p>
 
+                <h2>Cohorts, declared in advance</h2>
+
                 <p>Also stated now, because it would be conspicuous later: part of the fleet runs out-of-the-box config and part runs with integrity baselining armed. Of the armed group, half needed a privilege grant most customers won't make, so those cohorts get reported separately. &ldquo;Armed&rdquo; doesn't mean &ldquo;default.&rdquo; And the measured build is the released chart plus a staging-signed sidecar carrying the same detector code as the release. Same code, different artifact.</p>
+
+                <h2>The failure mode we watch for</h2>
 
                 <p>The failure mode we worry about most on a clean run is a wrong zero. Deploy no attacks and a broken counter looks identical to a good result: mislabel one event class and it reads 0.000 forever, which looks like success. So the analyzer refuses unclaimed events. Every trip must be claimed by a named event class, and any remainder means the taxonomy has a hole, not that the product is clean. We have caught real mislabelings exactly this way. A zero we can't cross-check doesn't get published.</p>
 
