@@ -2,6 +2,7 @@
  {
   "title": "Configuration Reference",
   "url": "/docs/configuration",
+  "keywords": [],
   "headings": [
    {
     "text": "Node Sensor Helm Values",
@@ -62,6 +63,10 @@
  {
   "title": "Controller",
   "url": "/docs/controller",
+  "keywords": [
+   "RBAC",
+   "ClusterRole"
+  ],
   "headings": [
    {
     "text": "Install",
@@ -110,6 +115,7 @@
  {
   "title": "Detection Events Dashboard",
   "url": "/docs/dashboard",
+  "keywords": [],
   "headings": [
    {
     "text": "Portal Dashboard",
@@ -188,6 +194,7 @@
  {
   "title": "Emergency Procedures",
   "url": "/docs/emergency",
+  "keywords": [],
   "headings": [
    {
     "text": "Quick Reference",
@@ -266,6 +273,15 @@
  {
   "title": "Evidence Format",
   "url": "/docs/evidence-format",
+  "keywords": [
+   "SOC 2",
+   "SOC2",
+   "ISO 27001",
+   "ISO27001",
+   "PCI DSS",
+   "PCI-DSS",
+   "HIPAA"
+  ],
   "headings": [
    {
     "text": "Delivery Channels",
@@ -350,6 +366,10 @@
  {
   "title": "Frequently Asked Questions",
   "url": "/docs/faq",
+  "keywords": [
+   "RBAC",
+   "ClusterRole"
+  ],
   "headings": [
    {
     "text": "General",
@@ -548,6 +568,7 @@
  {
   "title": "Getting Started",
   "url": "/docs/getting-started",
+  "keywords": [],
   "headings": [
    {
     "text": "Install",
@@ -632,6 +653,7 @@
  {
   "title": "PandoCore Documentation",
   "url": "/docs/",
+  "keywords": [],
   "headings": [
    {
     "text": "Start Here",
@@ -710,6 +732,7 @@
  {
   "title": "Operating Modes",
   "url": "/docs/operating-modes",
+  "keywords": [],
   "headings": [
    {
     "text": "What Sets The Ceiling",
@@ -788,6 +811,7 @@
  {
   "title": "CRD-Based Policy",
   "url": "/docs/policy",
+  "keywords": [],
   "headings": [
    {
     "text": "Quick Start",
@@ -884,6 +908,10 @@
  {
   "title": "Production Hardening",
   "url": "/docs/production-hardening",
+  "keywords": [
+   "RBAC",
+   "ClusterRole"
+  ],
   "headings": [
    {
     "text": "1. Spend Time On A Free License First",
@@ -962,6 +990,7 @@
  {
   "title": "Troubleshooting",
   "url": "/docs/troubleshooting",
+  "keywords": [],
   "headings": [
    {
     "text": "A Workload Is Not Being Watched",
@@ -1022,6 +1051,7 @@
  {
   "title": "Upgrading",
   "url": "/docs/upgrading",
+  "keywords": [],
   "headings": [
    {
     "text": "Migrating Off The Admission Webhook",
@@ -1076,6 +1106,7 @@
  {
   "title": "Admission Webhook",
   "url": "/docs/webhook",
+  "keywords": [],
   "headings": [
    {
     "text": "What replaced it",

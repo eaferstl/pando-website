@@ -685,20 +685,80 @@ function initializeDocsSearch() {
                             haystack: (heading.text + ' ' + page.title + ' ' + heading.body).toLowerCase()
                         });
                     });
+                    // One record for the page's keywords, so a word the reader
+                    // arrives with that is nowhere in the prose lands on the
+                    // page that answers it rather than nowhere. Only the
+                    // keywords are matched, and none of them is ever displayed:
+                    // what the reader sees is the page's own title.
+                    if (page.keywords && page.keywords.length) {
+                        records.push({
+                            page: 'Documentation',
+                            url: page.url,
+                            heading: page.title,
+                            depth: 2,
+                            headingLower: page.title.toLowerCase(),
+                            haystack: page.keywords.join(' ').toLowerCase()
+                        });
+                    }
                 });
                 return records;
             });
         return pending;
     }
 
-    function rank(terms, query) {
+    const WORD_CHAR = /[a-z0-9]/;
+
+    // The whole word a short term has to land on may carry one of these, so the
+    // same question asked two ways gets the same answer: `cost` could not reach
+    // "What This Costs Per Node" at all while `costs` ranked it first, and `log`
+    // reached 8 sections where `logs` reached 15. `ed` and `ing` were measured
+    // too and are deliberately absent: they take `arm` from 3 hits to 9, and all
+    // six extra ones are the word `armed`, which is this product's term for an
+    // enforcing sensor and not the architecture the reader typed.
+    const SHORT_SUFFIXES = ['s', 'es'];
+
+    // A term of four characters or fewer has to land on a whole word, give or
+    // take one of those suffixes. Matching substrings returned 18 sections for
+    // `arm`, every one of them inside warm, armed, warming or disarms, and two
+    // for `SOC`, both of them the word socket. Five characters and up keep
+    // substring matching, which is what finds `helm install` and `evidence
+    // format` mid-paragraph. `prefixOk` is the fallback pass below, for a short
+    // term that is still being typed.
+    function endsWord(haystack, at) {
+        if (!WORD_CHAR.test(haystack.charAt(at))) return true;
+        return SHORT_SUFFIXES.some(function (suffix) {
+            return haystack.startsWith(suffix, at) && !WORD_CHAR.test(haystack.charAt(at + suffix.length));
+        });
+    }
+
+    function occurs(haystack, term, prefixOk) {
+        if (term.length > 4) return haystack.indexOf(term) !== -1;
+        let at = haystack.indexOf(term);
+        while (at !== -1) {
+            const before = at === 0 ? ' ' : haystack.charAt(at - 1);
+            if (!WORD_CHAR.test(before) && (prefixOk || endsWord(haystack, at + term.length))) return true;
+            at = haystack.indexOf(term, at + 1);
+        }
+        return false;
+    }
+
+    // Ties break on the heading alphabetically, but digits sort ahead of
+    // letters, and production-hardening numbers its sections `1.` to `11.`.
+    // That prefix alone was taking rank 1 on 18% of queries and 13% of all
+    // results shown, for headings that are 10% of the index. Dropping it from
+    // the comparison leaves the sort as stable and deterministic as it was.
+    function sortKey(heading) {
+        return heading.replace(/^\d+\.\s*/, '');
+    }
+
+    function collect(terms, query, prefixOk) {
         const hits = [];
         records.forEach(function (record) {
             let score = 0;
             for (let i = 0; i < terms.length; i++) {
                 const term = terms[i];
                 // Every term has to appear somewhere, or the result is noise.
-                if (record.haystack.indexOf(term) === -1) return;
+                if (!occurs(record.haystack, term, prefixOk)) return;
                 if (record.headingLower === term) score += 100;
                 else if (record.headingLower.indexOf(term) === 0) score += 50;
                 else if (record.headingLower.indexOf(term) !== -1) score += 25;
@@ -715,9 +775,20 @@ function initializeDocsSearch() {
             hits.push({ record: record, score: score });
         });
         hits.sort(function (a, b) {
-            return b.score - a.score || a.record.heading.localeCompare(b.record.heading);
+            return b.score - a.score || sortKey(a.record.heading).localeCompare(sortKey(b.record.heading));
         });
-        return hits.slice(0, 12);
+        return hits;
+    }
+
+    // Two passes. The first demands whole words of the short terms, so `SOC`
+    // can never reach socket while anything answers it properly. Only when
+    // that finds nothing at all does a short term get to match the start of a
+    // word, which is what keeps `isol` reaching Isolate Mode mid-keystroke.
+    function rank(terms, query) {
+        const hits = collect(terms, query, false);
+        if (hits.length) return hits;
+        const short = terms.some(function (term) { return term.length <= 4; });
+        return short ? collect(terms, query, true) : hits;
     }
 
     // Wraps each matched run in <mark> without ever assigning markup.
@@ -775,6 +846,27 @@ function initializeDocsSearch() {
         status.textContent = '';
     }
 
+    // "Try a shorter term" was advice that could not be taken: a shorter term
+    // is what produced the false hits, and for `rbac` or `price` there is no
+    // shorter term to try. Name the two places that can answer instead. Built
+    // with createElement for the reason buildBlogCard gives.
+    function showNoMatches() {
+        const fragment = document.createDocumentFragment();
+        fragment.appendChild(document.createTextNode('No matches. The '));
+        const faq = document.createElement('a');
+        faq.href = '/docs/faq';
+        faq.textContent = 'FAQ';
+        fragment.appendChild(faq);
+        fragment.appendChild(document.createTextNode(' may cover it, or '));
+        const contact = document.createElement('a');
+        contact.href = '/contact';
+        contact.textContent = 'ask us';
+        fragment.appendChild(contact);
+        fragment.appendChild(document.createTextNode('.'));
+        status.textContent = '';
+        status.appendChild(fragment);
+    }
+
     function run() {
         const query = input.value.trim();
         if (query.length < 2) {
@@ -787,9 +879,15 @@ function initializeDocsSearch() {
                 const lowered = query.toLowerCase();
                 const terms = lowered.split(/\s+/).filter(Boolean);
                 const hits = rank(terms, lowered);
-                render(hits, terms);
+                const shown = hits.slice(0, 12);
+                render(shown, terms);
                 if (!hits.length) {
-                    status.textContent = 'No matches. Try a shorter term.';
+                    showNoMatches();
+                } else if (shown.length < hits.length) {
+                    // The list is capped at 12; the count never was. Reporting
+                    // the cap as the count told a reader that 50 matches were
+                    // 12, with no sign that anything had been left out.
+                    status.textContent = shown.length + ' of ' + hits.length + ' matches';
                 } else {
                     status.textContent = hits.length === 1 ? '1 result' : hits.length + ' results';
                 }

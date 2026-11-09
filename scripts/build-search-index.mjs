@@ -34,6 +34,22 @@ const OUT = join(DOCS, 'search-index.json');
 // against one pathological section, not a budget.
 const MAX_BODY = 4000;
 
+// Search keywords, per page. The vocabulary a reader arrives with is not always
+// in the prose: SOC 2, ISO 27001, PCI DSS and HIPAA appear nowhere in these 14
+// pages, and neither does RBAC, so each of those searches returned nothing at
+// all while the homepage names every framework four times. A keyword is matched
+// and never displayed, and it is listed only against a page that answers it:
+// the frameworks against the evidence record an auditor would be shown, RBAC
+// and ClusterRole against the three pages that state what the grant holds and
+// what it withholds. A keyword on a page that does not answer it is the same
+// defect as a false substring match, one level up.
+const KEYWORDS = {
+  'evidence-format.html': ['SOC 2', 'SOC2', 'ISO 27001', 'ISO27001', 'PCI DSS', 'PCI-DSS', 'HIPAA'],
+  'faq.html': ['RBAC', 'ClusterRole'],
+  'production-hardening.html': ['RBAC', 'ClusterRole'],
+  'controller.html': ['RBAC', 'ClusterRole'],
+};
+
 const ENTITIES = {
   '&lt;': '<', '&gt;': '>', '&amp;': '&', '&quot;': '"', '&apos;': "'",
   '&nbsp;': ' ', '&copy;': '(c)', '&rarr;': '→', '&larr;': '←',
@@ -92,7 +108,7 @@ function build() {
       body: clip(toText(body.slice(mk.end, i + 1 < marks.length ? marks[i + 1].at : body.length)), MAX_BODY),
     }));
 
-    pages.push({ title, url: urlFor(file), headings });
+    pages.push({ title, url: urlFor(file), keywords: KEYWORDS[file] || [], headings });
   }
   return pages;
 }
