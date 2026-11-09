@@ -187,6 +187,13 @@ Two different things live under `docs/`, and the distinction matters:
   The index is generated and committed. Nothing runs at deploy time, so a forgotten
   rebuild means the search quietly tells readers an answer does not exist. `--check`
   prints which headings drifted; run it before committing a docs change.
+
+  The generator also holds a hand-maintained `KEYWORDS` map. It exists because the
+  four compliance framework names appear nowhere in `docs/*.html` and readers search
+  for them anyway, so each keyworded page gets one synthetic record whose text is the
+  keywords and whose displayed heading is the page's real `h1`. Keywords are matched
+  against and never shown. Editing the map needs the same rebuild as editing a
+  heading, and a keyword should only point at a page that genuinely answers it.
 - **`docs/*.md` are historical planning documents** (`FILE_STRUCTURE.md`,
   `CONTENT_REQUIREMENTS.md`, `MESSAGING_GUIDELINES.md`, `DESIGN_SPECIFICATIONS.md`,
   `DEPLOYMENT.md`, `EMAILJS_SETUP.md`, `IMPROVEMENTS.md`,

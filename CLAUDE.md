@@ -35,9 +35,11 @@
     (`window.innerWidth > 1023`) must move together. If they disagree the drawer is
     stuck open, or cannot be closed, on every page. It is 1023 and not 767 because eight
     nav items need about 710px and the wrapper offers 735px at 1023px; below that,
-    items were rendering off-screen and unreachable. **Three JS call sites read
-    this number now**: the nav drawer, `initializeDocsSidebar` and
-    `initializeDocsToc`. All three must move together with the media query.
+    items were rendering off-screen and unreachable. **Two JS call sites read
+    this number**: the nav drawer and `initializeDocsSidebar`. Both must move
+    together with the media query. `initializeDocsToc` used to be a third; it no
+    longer reads the width at all, because the "On this page" disclosure is now
+    closed at every width rather than open above 1023.
   - **480px is undocumented and was overriding a clamp.** Check whether a fluid value
     already covers the width before adding a fixed override inside it.
 
@@ -50,6 +52,7 @@
 - `docs/*.html` is the **live documentation site**, 14 pages. Its technical content (install commands, chart values, CRD fields, troubleshooting) is written from the local `/Users/eaferstl/eliotIdeas/pandoCore/` tree, which is the source of truth. Verify a command or a value against the charts before publishing it; do not write one from a summary or from memory. There are no version annotations in these pages, and the old "currently v1.3.2" gate was retired on 2026-11-02 along with the sidecar-era content.
 - `docs/*.md` (DESIGN_SPECIFICATIONS, MESSAGING_GUIDELINES, IMPROVEMENTS, etc.) are **historical planning docs**. Ignore them; don't read them as guidance and don't update them.
 - **Every h2 and h3 in `docs/*.html` carries an id**, and `docs/search-index.json` is generated from them. If you add, rename, remove or reword a heading, run `node scripts/build-search-index.mjs` in the same change. `--check` exits 1 when the index is stale and names the drift. Nothing rebuilds it at deploy time, so a stale index silently tells readers an answer does not exist.
+- **The generator also carries a hand-maintained `KEYWORDS` map**, which exists because the four framework names appear nowhere in `docs/*.html` and readers search for them anyway. Editing that map requires the same rebuild as editing a heading. **Only map a keyword to a page that genuinely answers it.** A keyword pointed at a page that does not answer it recreates the defect the map was added to fix, which was a search confidently returning the wrong thing rather than nothing.
 
 # README
 - `README.md` was brought current on 2026-11-02. If you find outdated info while working, **fix the README as part of your change**.
