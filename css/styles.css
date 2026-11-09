@@ -235,8 +235,14 @@ h1 {
     font-weight: 700;
 }
 
+/* One size, declared once. This was 1.75rem here, --text-2xl from 768 up and
+   --text-xl at 480 and below. The 480 step only reached the h2s with no
+   section rule of their own, so at 390 index.html drew three section headings
+   at 32px and two at 24px. Both breakpoint overrides are gone, and the four
+   section rules that pinned --text-2xl alongside their spine alignment no
+   longer set a size at all. */
 h2 {
-    font-size: 1.75rem;
+    font-size: var(--text-2xl);
     font-weight: 700;
 }
 
@@ -1161,7 +1167,6 @@ header {
     max-width: var(--content-max-width);
     margin-left: auto;
     margin-right: auto;
-    font-size: var(--text-2xl);
     margin-bottom: var(--spacing-xl);
     color: var(--black-forest);
     position: relative;
@@ -1256,8 +1261,10 @@ header {
     margin-bottom: 0;
 }
 
+/* --text-xl, so h2 to h3 is 32/24 = 1.33 rather than 32/28 = 1.14, which sat
+   under the 1.25 modular floor. 1.75rem was also not a value on the scale. */
 .feature-content h3 {
-    font-size: 1.75rem;
+    font-size: var(--text-xl);
     font-weight: 700;
     color: var(--black-forest);
     margin-bottom: var(--spacing-md);
@@ -1871,7 +1878,6 @@ header {
     max-width: var(--content-max-width);
     margin-left: auto;
     margin-right: auto;
-    font-size: var(--text-2xl);
     margin-bottom: var(--spacing-md);
     color: var(--black-forest);
     position: relative;
@@ -1896,7 +1902,6 @@ header {
     max-width: var(--content-max-width);
     margin-left: auto;
     margin-right: auto;
-    font-size: var(--text-2xl);
     margin-bottom: var(--spacing-lg);
     color: var(--black-forest);
     position: relative;
@@ -1927,8 +1932,12 @@ header {
    on purpose: `.vision-content p` is (0,2,0) and beats a bare class on
    font-size and margin. The qualifier stays attached to the figure; it is what
    makes the zero true, so never split them. */
+/* Level with a section subheading rather than two steps below it. This is the
+   page's strongest claim and it rendered at --text-lg, the same 20px as a
+   .problem-item h3, against .feature-content h3 at 28px. Its own band holds no
+   h3, so at --text-xl it is the largest text in the band after the heading. */
 .vision-content .proof-claim {
-    font-size: var(--text-lg);
+    font-size: var(--text-xl);
     font-weight: 700;
     color: var(--black-forest);
     text-wrap: balance;
@@ -2018,7 +2027,6 @@ header {
     max-width: var(--content-max-width);
     margin-left: auto;
     margin-right: auto;
-    font-size: var(--text-2xl);
     margin-bottom: var(--spacing-xl);
     color: var(--black-forest);
     position: relative;
@@ -2786,10 +2794,6 @@ header {
         font-size: var(--text-3xl);
     }
     
-    h2 {
-        font-size: var(--text-2xl);
-    }
-    
     .page-hero h1 {
         font-size: 3rem;
     }
@@ -2887,12 +2891,6 @@ header {
            desktop rule does. Both were 32px here, which read as one long list. */
         margin-bottom: var(--spacing-xxl);
     }
-    /* --text-lg, not --text-xl: at --text-xl this rendered 24px, the same
-       size as the section h2 above it, and the hierarchy collapsed. */
-    .feature-content h3 {
-        font-size: var(--text-lg);
-    }
-    
     /* Single Founder - Mobile */
     .founder-single {
         display: flex;
@@ -2976,10 +2974,6 @@ header {
     
     h1 {
         font-size: 1.75rem;
-    }
-    
-    h2 {
-        font-size: var(--text-xl);
     }
     
     /* `.hero h1` deliberately absent: it carries a clamp whose floor is
